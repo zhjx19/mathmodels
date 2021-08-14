@@ -1,16 +1,29 @@
 Package: mathmodels
-Title: What the Package Does (One Line, Title Case)
+Title: Implement Common Mathematical Modeling Algorithms With R
 Version: 0.0.0.9000
 Authors@R: 
-    person(given = "First",
-           family = "Last",
+    person(given = "Jingxin",
+           family = "Zhang",
            role = c("aut", "cre"),
-           email = "first.last@example.com",
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
-License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
-    license
+           email = "zhjx_19@hrbcu.edu.cn")
+Description: Mathematical modeling algorithms are classified as evaluation, 
+  optimization, prediction, dynamics, graph theory, statistics, 
+  intelligence, etc. This package is dedicated to implementing various 
+  common mathematical modeling algorithms with R.
+License: AGPL (>= 3)
+URL: https://github.com/zhjx19/mathmodels
+BugReports: https://github.com/zhjx19/mathmodels/issues
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
+Imports: 
+    deSolve
+Depends: 
+    R (>= 2.10)
+Suggests: 
+    rmarkdown,
+    knitr,
+    testthat (>= 3.0.0)
+VignetteBuilder: knitr
+Config/testthat/edition: 3
