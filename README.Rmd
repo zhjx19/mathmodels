@@ -22,7 +22,7 @@ The goal of mathmodels is to create a mathematical modeling toolbox with R, impl
   optimization, prediction, dynamics, graph theory, statistics, 
   intelligence, etc.
   
-**Attention:** The package is currently only a very vert early version!
+**Attention:** The package is currently only a very very early version!
 
 ## Installation
 
