@@ -1,10 +1,10 @@
 Package: mathmodels
-Title: Implement Common Mathematical Modeling Algorithms With R
-Version: 0.0.0.9000
+Title: Implement Common Mathematical Modeling Algorithms with R
+Version: 0.0.1
 Authors@R: 
     person(given = "Jingxin",
            family = "Zhang",
-           role = c("aut", "cre"),
+           role = c("aut", "cre", "cph"),
            email = "zhjx_19@hrbcu.edu.cn")
 Description: Mathematical modeling algorithms are classified as evaluation, 
   optimization, prediction, dynamics, graph theory, statistics, 
