@@ -26,7 +26,7 @@ devtools::install_github("zhjx19/mathmodels")
 Or download to current path, unzip and use:
 
 ``` r
-install.packages("mathmodels", repos=NULL, type="source")
+install.packages("mathmodels-master", repos=NULL, type="source")
 ```
 
 ## Example
