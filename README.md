@@ -11,7 +11,7 @@ R, implement common mathematical modeling algorithms: evaluation,
 optimization, prediction, dynamics, graph theory, statistics,
 intelligence, etc.
 
-**Attention:** The package is currently only a very vert early version!
+**Attention:** The package is currently only a very very early version!
 
 ## Installation
 
