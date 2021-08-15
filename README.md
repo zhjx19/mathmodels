@@ -20,13 +20,13 @@ from [GitHub](https://github.com/zhjx19/mathmodes) use:
 
 ``` r
 library(devtools) 
-devtools::install_github("zhjx19/mathmodes")
+devtools::install_github("zhjx19/mathmodels")
 ```
 
 Or download to current path, unzip and use:
 
 ``` r
-install.packages("mathmodes", repos=NULL, type="source")
+install.packages("mathmodels", repos=NULL, type="source")
 ```
 
 ## Example
