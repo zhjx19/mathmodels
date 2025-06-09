@@ -4,7 +4,7 @@
 #'
 #' @param mu Numeric vector, membership degrees for evaluation levels, in [0, 1].
 #' @param scores Numeric vector, scores corresponding to each evaluation level (e.g., c(100, 80, 60, 40) for "Excellent", "Good", "Fair", "Poor").
-#' @param method Character, defuzzification method: "weighted_average" or "max_membership".
+#' @param method Character, defuzzification method: "weighted_average", "max_membership", "centroid".
 #' @return Numeric, defuzzified output value.
 #'
 #' @examples
@@ -13,11 +13,13 @@
 #' scores = c(30, 60, 75, 90)  # Scores for "Poor", "Fair", "Good", "Excellent"
 #' defuzzify(mu, scores, method = "weighted_average")
 #' defuzzify(mu, scores, method = "max_membership")
+#' defuzzify(mu, scores, method = "centroid")
 
 #' @export
 defuzzify = function(mu, scores, method = "weighted_average") {
   switch(method,
          weighted_average = sum(mu * scores),
-         max_membership = scores[mu == max(mu)]
+         max_membership = scores[mu == max(mu)],
+         centroid = sum(mu * scores) / sum(mu)
   )
 }

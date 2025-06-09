@@ -10,11 +10,7 @@
 \usage{
 GM11(X)
 
-<<<<<<< HEAD
 GM1N(dat, new_data = NULL)
-=======
-GM1N(dat)
->>>>>>> 3e92d3d55418301db33a496b2db922076ea97b15
 
 DGM21(X)
 

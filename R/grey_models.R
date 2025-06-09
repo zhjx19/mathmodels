@@ -83,7 +83,7 @@ GM11 = function(X) {
 
 #' @rdname grey_models
 #' @export
-<<<<<<< HEAD
+
 GM1N = function(dat, new_data = NULL) {
   # Function: Simplified GM(1,N) grey model, predicts only one future value
   # Inputs:
@@ -152,44 +152,6 @@ GM1N = function(dat, new_data = NULL) {
   }
 
   list(fitted = fitted, pred = pred, vr = C, err = P, f = f)
-=======
-GM1N = function(dat) {
-  # Implements GM(1,N) algorithm
-  # Input: data frame or matrix, last column is characteristic series, others are related factors
-  # Returns fitted values (fitted), variance ratio (vr), error probability (err), prediction function (f)
-  X0 = as.matrix(dat)
-  n = nrow(X0)
-  m = ncol(X0)
-  X = X0[,m]
-  # Level ratio test
-  lam = X[1:n-1] / X[2:n]                # Compute level ratios
-  rng = exp(c(-2,2) / (n + 1))           # Acceptable range
-  if(all(rng[1]<lam & lam<rng[2])) {
-    cat("Level ratio test passed!\n")
-  } else {
-    cat("Level ratio test failed!\n")
-  }
-  # GM(1,N) modeling
-  X1 = apply(X0, 2, cumsum)
-  Z = (X1[,m][-n] + X1[,m][-1]) / 2
-  B = cbind(-Z, X1[-1,-m])
-  Y = X[-1]
-  u = MASS::ginv(B) %*% Y
-  f = \(k, CX) {
-    sbx = (1/u[1]) * sum(CX * u[2:m])
-    (X[1] - sbx) * exp(-u[1] * (k-1)) + sbx
-  }
-  X1h = sapply(1:n, \(k) f(k, X1[k,-m]))
-  pred = c(X1h[1], diff(X1h))       # Predicted values
-  names(pred) = NULL
-  # Model evaluation
-  S1 = sd(X)
-  S2 = sd(X - pred)
-  C = S2 / S1           # Posterior variance ratio
-  Pe = mean(X - pred)
-  P = mean(abs((X - pred - Pe)) < 0.6745*S1)  # Small error probability
-  list(fitted = pred, vr = C, err = P, f = f)
->>>>>>> 3e92d3d55418301db33a496b2db922076ea97b15
 }
 
 #' @rdname grey_models

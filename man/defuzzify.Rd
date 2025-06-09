@@ -11,7 +11,7 @@ defuzzify(mu, scores, method = "weighted_average")
 
 \item{scores}{Numeric vector, scores corresponding to each evaluation level (e.g., c(100, 80, 60, 40) for "Excellent", "Good", "Fair", "Poor").}
 
-\item{method}{Character, defuzzification method: "weighted_average" or "max_membership".}
+\item{method}{Character, defuzzification method: "weighted_average", "max_membership", "centroid".}
 }
 \value{
 Numeric, defuzzified output value.
@@ -25,4 +25,5 @@ mu = c(0.318, 0.351, 0.203, 0.128)
 scores = c(30, 60, 75, 90)  # Scores for "Poor", "Fair", "Good", "Excellent"
 defuzzify(mu, scores, method = "weighted_average")
 defuzzify(mu, scores, method = "max_membership")
+defuzzify(mu, scores, method = "centroid")
 }
