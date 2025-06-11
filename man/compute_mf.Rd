@@ -2,15 +2,18 @@
 % Please edit documentation in R/compute_mf.R
 \name{compute_mf}
 \alias{compute_mf}
+\alias{compute_mf_funs}
 \title{Compute fuzzy membership vector and return corresponding membership functions.}
 \usage{
+compute_mf_funs(thresholds)
+
 compute_mf(x, thresholds)
 }
 \arguments{
-\item{x}{A numeric scalar representing the value of an indicator.}
-
 \item{thresholds}{A numeric vector containing at least two threshold values that define
 the boundaries between evaluation levels.}
+
+\item{x}{A numeric scalar representing the value of an indicator.}
 }
 \value{
 A list with two elements:
@@ -20,19 +23,20 @@ A list with two elements:
 }
 }
 \description{
-This function transforms a single indicator value into a fuzzy membership vector,
+\code{compute_mf} transforms a single indicator value into a fuzzy membership vector,
 where each element represents the degree of membership to a specific evaluation level.
-It also returns the list of membership functions for visualization purposes.
+\code{compute_mf_funs} returns the list of membership functions for visualization purposes.
 }
 \examples{
 # Example: SO2 concentration = 0.07, thresholds = c(0.05, 0.15, 0.25, 0.5)
 th = c(0.05, 0.15, 0.25, 0.5)
-res = compute_mf(0.07, th)
-res$mv
+compute_mf(0.07, th)
 
 \dontrun{
-plots = lapply(res$mfs, \(x) plot_mf(x, xlim = c(0, 0.6)))
+mfs = compute_mf_funs(th)
+plots = lapply(mfs, \(x) plot_mf(x, xlim = c(0, 0.6)))
 gridExtra::grid.arrange(grobs = plots, nrow = 2)
 }
+
 
 }
