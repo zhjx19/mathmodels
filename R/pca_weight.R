@@ -26,36 +26,43 @@
 #' ind = c("+","+","-","-")
 #' pca_weight(iris[1:10, 1:4], ind, nfs = 2)
 
-
 pca_weight = function(X, index = NULL, nfs = NULL) {
   # Compute indicator weights using Principal Component Analysis (PCA)
   # X: original data matrix, rows are samples, columns are indicators
   # index: direction of each indicator, "+" for positive, "-" for negative
-  # w: returned normalized weights, lambda: principal eigenvalues
+  # w: returned normalized weights, lambda: eigenvalues
   # B and beta: intermediate results (loadings matrix and weight contributions)
 
   if(is.null(index)) index = rep("+", ncol(X))
   pos = which(index == "+")
   neg = which(index == "-")
 
-  # Normalize the data
-  X[,pos] = lapply(X[,pos, drop = FALSE], rescale)
-  X[,neg] = lapply(X[,neg, drop = FALSE], rescale, type = "-")
+  # Standardize data
+  X = scale(X)
+  X[,neg] = -X[,neg]
 
   # Perform PCA with all components and varimax rotation
   if(is.null(nfs)) nfs = ncol(X)
-  pc = psych::principal(X, nfactors = nfs, rotate = "varimax")
-  A = matrix(pc$loadings, ncol = pc$factors)
-  lambda = pc$values[1:ncol(A)]
+
+  # Replace psych::principal with prcomp + varimax
+  pc = prcomp(X, center = FALSE, scale. = FALSE) # Already scaled above
+  loadings = pc$rotation[, 1:nfs, drop = FALSE]  # Extract first nfs loadings
+
+  # Varimax rotation
+  rotated = varimax(loadings)
+  A = unclass(rotated$loadings)
+
+  # Eigenvalues = variance explained by each PC
+  lambda = pc$sdev[1:nfs]^2
 
   # Scale loadings by sqrt of corresponding eigenvalues
   B = A / sqrt(matrix(rep(lambda, times = nrow(A)), ncol = ncol(A), byrow = TRUE))
 
   # Variance accounted by each component
-  varP = pc$Vaccounted[2,]
+  varP = lambda / sum(lambda) * 100  # Percentage of variance explained
 
   # Compute weighted contribution of each loading
-  beta = abs(B %*% varP) / sum(varP)
+  beta = abs(B %*% varP) / 100
 
   # Normalize weights
   w = beta / sum(beta)
