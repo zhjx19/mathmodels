@@ -19,7 +19,6 @@ Imports:
 Depends: 
     R (>= 4.1)
 Suggests: 
-    rcasualdown,
     knitr,
     testthat (>= 3.0.0)
 VignetteBuilder: knitr
