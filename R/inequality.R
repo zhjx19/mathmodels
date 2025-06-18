@@ -10,8 +10,7 @@
 #' \code{theil_g} calculates the Theil index and decomposition for grouped average data.
 #' \code{theil_g2} calculates the Theil index and decomposition for two-level grouped average data.
 #'
-#' @param x For \code{gini}: Numeric vector of non-negative values (e.g., income).
-#' @param income For \code{gini2}: Numeric vector of group incomes or income shares.
+#' @param x For \code{gini}, \code{gini2}: Numeric vector of non-negative values (e.g., income).
 #' @param pop For \code{gini2}: Numeric vector of group populations or population shares.
 #' For \code{theil}, \code{theil_g}: Name of population variable (character).
 #' For \code{theil_g2}: Name of population variable (character, aliased as `pop`).
@@ -93,13 +92,13 @@ gini = function(x) {
 
 #' @rdname inequality
 #' @export
-gini2 = function(income, pop) {
+gini2 = function(x, pop) {
   # Computes Gini coefficient for grouped data
   # income: numeric vector of group incomes or income shares
   # pop: numeric vector of group populations or population shares
-  x = c(0, cumsum(pop) / sum(pop))
-  y = c(0, cumsum(income) / sum(income))
-  (0.5 - trapz(x, y)) / 0.5
+  y = c(0, cumsum(pop) / sum(pop))
+  z = c(0, cumsum(x) / sum(x))
+  (0.5 - trapz(y, z)) / 0.5
 }
 
 #' @rdname inequality
@@ -113,13 +112,13 @@ theil0 = function(y) {
 
 #' @rdname inequality
 #' @export
-theil = function(y, p) {
+theil = function(y, pop) {
   # Computes Theil index for grouped average data
   # y: vector of group average incomes
-  # p: vector of group population sizes
-  Yb = sum(y * p) / sum(p)
+  # pop: vector of group population sizes
+  Yb = sum(y * pop) / sum(pop)
   Yr = y / Yb
-  sum(p / sum(p) * Yr * ifelse(Yr > 0, log(Yr), 0))
+  sum(pop / sum(pop) * Yr * ifelse(Yr > 0, log(Yr), 0))
 }
 
 #' @rdname inequality

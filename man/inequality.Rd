@@ -13,11 +13,11 @@
 \usage{
 gini(x)
 
-gini2(income, pop)
+gini2(x, pop)
 
 theil0(y)
 
-theil(y, p)
+theil(y, pop)
 
 theil0_g(data, group, y)
 
@@ -26,9 +26,7 @@ theil_g(data, group, y, p)
 theil_g2(data, group1, group2, y, pop)
 }
 \arguments{
-\item{x}{For \code{gini}: Numeric vector of non-negative values (e.g., income).}
-
-\item{income}{For \code{gini2}: Numeric vector of group incomes or income shares.}
+\item{x}{For \code{gini}, \code{gini2}: Numeric vector of non-negative values (e.g., income).}
 
 \item{pop}{For \code{gini2}: Numeric vector of group populations or population shares.
 For \code{theil}, \code{theil_g}: Name of population variable (character).

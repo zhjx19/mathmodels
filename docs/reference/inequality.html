@@ -24,7 +24,7 @@ theil_g2 calculates the Theil index and decomposition for two-level grouped aver
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">mathmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.3</span>
       </span>
     </div>
 
@@ -79,11 +79,11 @@ theil_g2 calculates the Theil index and decomposition for two-level grouped aver
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">gini</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">gini2</span><span class="op">(</span><span class="va">income</span>, <span class="va">pop</span><span class="op">)</span></span>
+<span><span class="fu">gini2</span><span class="op">(</span><span class="va">x</span>, <span class="va">pop</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">theil0</span><span class="op">(</span><span class="va">y</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">theil</span><span class="op">(</span><span class="va">y</span>, <span class="va">p</span><span class="op">)</span></span>
+<span><span class="fu">theil</span><span class="op">(</span><span class="va">y</span>, <span class="va">pop</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">theil0_g</span><span class="op">(</span><span class="va">data</span>, <span class="va">group</span>, <span class="va">y</span><span class="op">)</span></span>
 <span></span>
@@ -97,11 +97,7 @@ theil_g2 calculates the Theil index and decomposition for two-level grouped aver
 
 
 <dl><dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
-<dd><p>For <code>gini</code>: Numeric vector of non-negative values (e.g., income).</p></dd>
-
-
-<dt id="arg-income">income<a class="anchor" aria-label="anchor" href="#arg-income"></a></dt>
-<dd><p>For <code>gini2</code>: Numeric vector of group incomes or income shares.</p></dd>
+<dd><p>For <code>gini</code>, <code>gini2</code>: Numeric vector of non-negative values (e.g., income).</p></dd>
 
 
 <dt id="arg-pop">pop<a class="anchor" aria-label="anchor" href="#arg-pop"></a></dt>
@@ -257,7 +253,7 @@ For <code>theil_g2</code>: List with total Theil index and decomposition (<code>
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by Jingxin Zhang.</p>
+  <p></p><p>Developed by Jingxin zhang.</p>
 </div>
 
 <div class="pkgdown">
