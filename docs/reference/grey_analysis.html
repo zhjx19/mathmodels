@@ -20,7 +20,7 @@ the relational degree between sequences."><!-- mathjax --><script src="https://c
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">mathmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.3</span>
       </span>
     </div>
 
@@ -35,7 +35,7 @@ the relational degree between sequences."><!-- mathjax --><script src="https://c
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/Evaluation-Algorithm.html">Evaluation-Algorithm</a>
+      <a href="../articles/Grey-Relational-Analysis.html">Grey-Relational-Analysis</a>
     </li>
   </ul></li>
 <li>
@@ -69,21 +69,21 @@ the relational degree between sequences.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">gray_corr</span><span class="op">(</span><span class="va">ck</span>, <span class="va">bj</span>, rho <span class="op">=</span> <span class="fl">0.5</span>, w <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">grey_corr</span><span class="op">(</span><span class="va">ref</span>, <span class="va">cmp</span>, rho <span class="op">=</span> <span class="fl">0.5</span>, w <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">gray_corr_eval</span><span class="op">(</span><span class="va">A</span>, <span class="va">w</span>, rho <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">grey_corr_eval</span><span class="op">(</span><span class="va">A</span>, <span class="va">w</span>, rho <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
 
 
-<dl><dt id="arg-ck">ck<a class="anchor" aria-label="anchor" href="#arg-ck"></a></dt>
-<dd><p>Numeric vector, the reference sequence for <code>gray_corr</code>.</p></dd>
+<dl><dt id="arg-ref">ref<a class="anchor" aria-label="anchor" href="#arg-ref"></a></dt>
+<dd><p>Numeric vector, the reference sequence for <code>grey_corr</code>.</p></dd>
 
 
-<dt id="arg-bj">bj<a class="anchor" aria-label="anchor" href="#arg-bj"></a></dt>
-<dd><p>Numeric matrix or data.frame, the comparison sequences for <code>gray_corr</code>.</p></dd>
+<dt id="arg-cmp">cmp<a class="anchor" aria-label="anchor" href="#arg-cmp"></a></dt>
+<dd><p>Numeric matrix or data.frame, the comparison sequences for <code>grey_corr</code>.</p></dd>
 
 
 <dt id="arg-rho">rho<a class="anchor" aria-label="anchor" href="#arg-rho"></a></dt>
@@ -95,22 +95,22 @@ the relational degree between sequences.</p>
 
 
 <dt id="arg-a">A<a class="anchor" aria-label="anchor" href="#arg-a"></a></dt>
-<dd><p>Numeric matrix or data.frame, the decision matrix for <code>gray_corr_eval</code>.</p></dd>
+<dd><p>Numeric matrix or data.frame, the decision matrix for <code>grey_corr_eval</code>.</p></dd>
 
 </dl></div>
     <div id="value">
     <h2>Value</h2>
 
-<ul><li><p><code>gray_corr</code>: Numeric vector, the grey correlation degree for each comparison sequence.</p></li>
-<li><p><code>gray_corr_eval</code>: Numeric vector, normalized evaluation scores in 0, 100.</p></li>
+<ul><li><p><code>grey_corr</code>: Numeric vector, the grey correlation degree for each comparison sequence.</p></li>
+<li><p><code>grey_corr_eval</code>: Numeric vector, normalized evaluation scores in 0, 100.</p></li>
 </ul></div>
     <div id="details">
     <h2>Details</h2>
     <p>These functions implement grey relational analysis for evaluating relationships
-between sequences or decision alternatives:</p><ul><li><p><code>gray_corr</code>: Computes the grey correlation degree between a reference
-sequence (<code>ck</code>) and comparison sequences (<code>bj</code>) using the distinguishing
+between sequences or decision alternatives:</p><ul><li><p><code>grey_corr</code>: Computes the grey correlation degree between a reference
+sequence (<code>ref</code>) and comparison sequences (<code>cmp</code>) using the distinguishing
 coefficient (<code>rho</code>) and optional weights (<code>w</code>).</p></li>
-<li><p><code>gray_corr_eval</code>: Evaluates a decision matrix (<code>A</code>) by normalizing
+<li><p><code>grey_corr_eval</code>: Evaluates a decision matrix (<code>A</code>) by normalizing
 it, applying weights (<code>w</code>), computing grey correlation with the ideal sequence,
 and scaling results to 0, 100.</p></li>
 </ul></div>
@@ -118,16 +118,16 @@ and scaling results to 0, 100.</p></li>
     <div id="ref-examples">
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Grey correlation degree</span></span></span>
-<span class="r-in"><span><span class="va">ck</span> <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">3</span></span></span>
-<span class="r-in"><span><span class="va">bj</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>x1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">4</span><span class="op">)</span>, x2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">3</span>, <span class="fl">5</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">gray_corr</span><span class="op">(</span><span class="va">ck</span>, <span class="va">bj</span>, rho <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">ref</span> <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">3</span></span></span>
+<span class="r-in"><span><span class="va">cmp</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>x1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">4</span><span class="op">)</span>, x2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">3</span>, <span class="fl">5</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">grey_corr</span><span class="op">(</span><span class="va">ref</span>, <span class="va">cmp</span>, rho <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        x1        x2 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 0.6521739 0.3478261 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 0.8333333 0.4444444 </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Grey correlation evaluation#'</span></span></span>
 <span class="r-in"><span><span class="va">w</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.4</span>, <span class="fl">0.6</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">gray_corr_eval</span><span class="op">(</span><span class="va">bj</span>, <span class="va">w</span>, rho <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1]   0.00000  14.72496 100.00000</span>
+<span class="r-in"><span><span class="fu">grey_corr_eval</span><span class="op">(</span><span class="va">cmp</span>, <span class="va">w</span>, rho <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.3456484 0.4420014 1.0000000</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
@@ -139,7 +139,7 @@ and scaling results to 0, 100.</p></li>
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by Jingxin Zhang.</p>
+  <p></p><p>Developed by Jingxin zhang.</p>
 </div>
 
 <div class="pkgdown">

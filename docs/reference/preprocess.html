@@ -32,7 +32,7 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/Evaluation-Algorithm.html">Evaluation-Algorithm</a>
+      <a href="../articles/Grey-Relational-Analysis.html">Grey-Relational-Analysis</a>
     </li>
   </ul></li>
 <li>
@@ -75,7 +75,7 @@
 <span></span>
 <span><span class="fu">rescale_extreme</span><span class="op">(</span><span class="va">x</span>, type <span class="op">=</span> <span class="st">"+"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">rescale_initial</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
+<span><span class="fu">rescale_initial</span><span class="op">(</span><span class="va">x</span>, type <span class="op">=</span> <span class="st">"+"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">rescale_mean</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
 <span></span>
@@ -100,10 +100,10 @@
 
 <dt id="arg-type">type<a class="anchor" aria-label="anchor" href="#arg-type"></a></dt>
 <dd><p>Character scalar specifying the transformation direction or method:</p><dl><dt>"+"</dt>
-<dd><p>Positive direction (larger values are better, for <code>rescale</code> and <code>rescale_extreme</code>).</p></dd>
+<dd><p>Positive direction (larger values are better, for <code>rescale</code>, <code>rescale_extreme</code> and <code>rescale_initial</code>).</p></dd>
 
 <dt>"-"</dt>
-<dd><p>Negative direction (smaller values are better, for <code>rescale</code> and <code>rescale_extreme</code>).</p></dd>
+<dd><p>Negative direction (smaller values are better, for <code>rescale</code> <code>rescale_extreme</code> and <code>rescale_initial</code>).</p></dd>
 
 <dt>"minmax"</dt>
 <dd><p>Min-max transformation (for <code>to_positive</code>).</p></dd>
@@ -135,7 +135,7 @@
 <li><p><code>rescale_middle</code>: Centered-type normalized values in 0, 1, where 1 indicates <code>x = m</code>.</p></li>
 <li><p><code>rescale_interval</code>: Interval-type normalized values in 0, 1, where 1 indicates <code>x</code> in <code>[a, b]</code>.</p></li>
 <li><p><code>rescale_extreme</code>: Extreme-based normalized values using <code>min(x)/x</code> (positive) or <code>x/max(x)</code> (negative).</p></li>
-<li><p><code>rescale_initial</code>: Initial-based normalized values using <code>x/x[1]</code>.</p></li>
+<li><p><code>rescale_initial</code>: Initial-based normalized values using <code>x/x[1]</code> or <code>x[1]/x</code>.</p></li>
 <li><p><code>rescale_mean</code>: Mean-based normalized values using <code>x/mean(x)</code>.</p></li>
 <li><p><code>to_positive</code>: Transformed values converting negative indicators to positive using min-max or reciprocal transformation.</p></li>
 </ul></div>
@@ -147,7 +147,7 @@
 <li><p><code>rescale_middle</code>: Normalizes centered-type indicators, where values closer to an optimal value <code>m</code> are better, mapping to 0, 1.</p></li>
 <li><p><code>rescale_interval</code>: Normalizes interval-type indicators, where values within <code>[a, b]</code> are optimal, mapping to 0, 1.</p></li>
 <li><p><code>rescale_extreme</code>: Normalizes using extreme values: <code>min(x)/x</code> for positive indicators or <code>x/max(x)</code> for negative indicators, often used in grey relational analysis.</p></li>
-<li><p><code>rescale_initial</code>: Normalizes by dividing by the first value (<code>x/x[1]</code>), commonly used in grey relational analysis.</p></li>
+<li><p><code>rescale_initial</code>: Normalizes by dividing by the first value (<code>x/x[1]</code> or <code>x[1]/x</code>), commonly used in grey relational analysis.</p></li>
 <li><p><code>rescale_mean</code>: Normalizes by dividing by the mean (<code>x/mean(x)</code>), commonly used in grey relational analysis.</p></li>
 <li><p><code>to_positive</code>: Converts negative indicators to positive using either min-max (<code>max(x) - x</code>) or reciprocal (<code>1/x</code>) transformation.</p></li>
 </ul><p>Missing values (<code>NA</code>) are preserved in the output. For <code>rescale_initial</code> and <code>rescale_mean</code>, the initial value or mean must be non-zero, respectively.</p>

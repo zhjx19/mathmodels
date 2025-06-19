@@ -6,8 +6,8 @@
 #' @param x Numeric vector to be preprocessed.
 #' @param type Character scalar specifying the transformation direction or method:
 #' \describe{
-#'   \item{"+"}{Positive direction (larger values are better, for \code{rescale} and \code{rescale_extreme}).}
-#'   \item{"-"}{Negative direction (smaller values are better, for \code{rescale} and \code{rescale_extreme}).}
+#'   \item{"+"}{Positive direction (larger values are better, for \code{rescale}, \code{rescale_extreme} and \code{rescale_initial}).}
+#'   \item{"-"}{Negative direction (smaller values are better, for \code{rescale} \code{rescale_extreme} and \code{rescale_initial}).}
 #'   \item{"minmax"}{Min-max transformation (for \code{to_positive}).}
 #'   \item{"reciprocal"}{Reciprocal transformation (for \code{to_positive}).}
 #' }
@@ -25,7 +25,7 @@
 #'   \item \code{rescale_middle}: Centered-type normalized values in [0, 1], where 1 indicates \code{x = m}.
 #'   \item \code{rescale_interval}: Interval-type normalized values in [0, 1], where 1 indicates \code{x} in \code{[a, b]}.
 #'   \item \code{rescale_extreme}: Extreme-based normalized values using \code{min(x)/x} (positive) or \code{x/max(x)} (negative).
-#'   \item \code{rescale_initial}: Initial-based normalized values using \code{x/x[1]}.
+#'   \item \code{rescale_initial}: Initial-based normalized values using \code{x/x[1]} or \code{x[1]/x}.
 #'   \item \code{rescale_mean}: Mean-based normalized values using \code{x/mean(x)}.
 #'   \item \code{to_positive}: Transformed values converting negative indicators to positive using min-max or reciprocal transformation.
 #' }
@@ -39,7 +39,7 @@
 #'   \item \code{rescale_middle}: Normalizes centered-type indicators, where values closer to an optimal value \code{m} are better, mapping to [0, 1].
 #'   \item \code{rescale_interval}: Normalizes interval-type indicators, where values within \code{[a, b]} are optimal, mapping to [0, 1].
 #'   \item \code{rescale_extreme}: Normalizes using extreme values: \code{min(x)/x} for positive indicators or \code{x/max(x)} for negative indicators, often used in grey relational analysis.
-#'   \item \code{rescale_initial}: Normalizes by dividing by the first value (\code{x/x[1]}), commonly used in grey relational analysis.
+#'   \item \code{rescale_initial}: Normalizes by dividing by the first value (\code{x/x[1]} or \code{x[1]/x}), commonly used in grey relational analysis.
 #'   \item \code{rescale_mean}: Normalizes by dividing by the mean (\code{x/mean(x)}), commonly used in grey relational analysis.
 #'   \item \code{to_positive}: Converts negative indicators to positive using either min-max (\code{max(x) - x}) or reciprocal (\code{1/x}) transformation.
 #' }
@@ -136,10 +136,14 @@ rescale_extreme = function(x, type = "+") {
 
 #' @rdname preprocess
 #' @export
-rescale_initial = function(x) {
-  # Normalization using x/x[1], commonly used in grey relational analysis.
+rescale_initial = function(x, type = "+") {
+  # Normalization using x/x[1] for positive indicators, or x[1]/x for negative indicators.
+  # Commonly used in grey relational analysis.
   if (x[1] == 0 | is.na(x[1])) stop("x[1] must be non-zero.")
-  x / x[1]
+  if (type == "-" & any(x == 0)) stop("x must not contain zeros since reciprocal transformation is used.")
+  switch (type,
+    "+" = x / x[1],
+    "-" = x[1] / x)
 }
 
 #' @rdname preprocess
