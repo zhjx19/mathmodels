@@ -2,8 +2,8 @@
 % Please edit documentation in R/inequality.R
 \name{inequality}
 \alias{inequality}
+\alias{gini0}
 \alias{gini}
-\alias{gini2}
 \alias{theil0}
 \alias{theil}
 \alias{theil0_g}
@@ -11,9 +11,9 @@
 \alias{theil_g2}
 \title{Inequality Indices}
 \usage{
-gini(x)
+gini0(x)
 
-gini2(x, pop)
+gini(x, pop)
 
 theil0(y)
 
@@ -26,9 +26,9 @@ theil_g(data, group, y, p)
 theil_g2(data, group1, group2, y, pop)
 }
 \arguments{
-\item{x}{For \code{gini}, \code{gini2}: Numeric vector of non-negative values (e.g., income).}
+\item{x}{For \code{gini0}, \code{gini}: Numeric vector of non-negative values (e.g., income).}
 
-\item{pop}{For \code{gini2}: Numeric vector of group populations or population shares.
+\item{pop}{For \code{gini}: Numeric vector of group populations or population shares.
 For \code{theil}, \code{theil_g}: Name of population variable (character).
 For \code{theil_g2}: Name of population variable (character, aliased as \code{pop}).}
 
@@ -44,15 +44,15 @@ For \code{theil}, \code{theil0_g}, \code{theil_g}, \code{theil_g2}: Name of inco
 \item{group2}{For \code{theil_g2}: Name of second grouping variable (e.g., type).}
 }
 \value{
-For \code{gini}, \code{gini2}: Numeric Gini coefficient (0 to 1).
+For \code{gini0}, \code{gini}: Numeric Gini coefficient (0 to 1).
 For \code{theil0}, \code{theil}: Numeric Theil index.
 For \code{theil0_g}, \code{theil_g}: List with total Theil index (\code{theil}), between-group (\code{Tb}), within-group (\code{Tw}), within-group components (\code{Twi}), and contribution rates (\code{Rb}, \code{Rw}, \code{Rwi}).
 For \code{theil_g2}: List with total Theil index and decomposition (\code{Theil}) and within-group components (\code{Within}).
 }
 \description{
 Computes inequality indices:
-\code{gini} calculates the Gini coefficient for individual sample data.
-\code{gini2} calculates the Gini coefficient for grouped data using income and population shares.
+\code{gini0} calculates the Gini coefficient for individual sample data.
+\code{gini} calculates the Gini coefficient for grouped data using income and population shares.
 \code{theil0} calculates the Theil index for individual sample data.
 \code{theil} calculates the Theil index for grouped average data.
 \code{theil0_g} calculates the Theil index and decomposition for grouped sample data.
@@ -65,10 +65,10 @@ income = c(10, 20, 30, 40, 100)
 pop = c(100, 150, 200, 250, 300)
 
 # Gini coefficient (individual data)
-gini(income)
+gini0(income)
 
 # Gini coefficient (grouped data)
-gini2(income, pop)
+gini(income, pop)
 
 data = data.frame(g = c("A","A",rep("B",10),rep("A",6)),
                   y = c(10,10,rep(8,4),rep(6,6),rep(4,4),2,2))

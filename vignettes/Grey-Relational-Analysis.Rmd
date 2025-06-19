@@ -154,7 +154,7 @@ economy = economy |>
 economy
 ```
 
-### 批量计算灰色关联度
+### 优势分析：批量计算灰色关联度
 
 ```{r}
 map_dfc(economy[7:12], \(x) grey_corr(x, economy[2:6])) |> 
