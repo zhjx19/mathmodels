@@ -34,8 +34,8 @@ entropy_weight = function(X, index = NULL) {
   pos = which(index == "+")
   neg = which(index == "-")
   # Normalize the data
-  X[,pos] = lapply(X[,pos, drop = FALSE], rescale, a = 0.002, b = 0.996)
-  X[,neg] = lapply(X[,neg, drop = FALSE], rescale, type = "-", a = 0.002, b = 0.996)
+  X[,pos] = lapply(X[,pos, drop = FALSE], rescale, a = 0.002, b = 0.998)
+  X[,neg] = lapply(X[,neg, drop = FALSE], rescale, type = "-", a = 0.002, b = 0.998)
   # Compute proportion p(i,j) of sample i in indicator j
   P = data.frame(lapply(X, \(x) x / sum(x)))
   # Compute entropy e(j) for each indicator j

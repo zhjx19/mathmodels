@@ -31,7 +31,9 @@ coupling = function(u, w = NULL) {
   # w: vector of subsystem weights
   p = ncol(u)
   if(is.null(w)) w = rep(1/p,p)
-  C = p * apply(u,1,prod)^(1/p) / apply(u,1,sum)
+  row_prod = apply(u, 1, function(x) prod(pmax(x, 1e-10)))
+  row_sum = pmax(rowSums(u), 1e-10)     # Prevent division by 0
+  C = p * row_prod^(1/p) / row_sum
   TT = as.matrix(u) %*% w |> as.vector()
   D = sqrt(C * TT)
   data.frame(CD = C, CI = TT, CCD = D)
