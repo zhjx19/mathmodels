@@ -1,0 +1,6 @@
+pandoc: '3.4'
+pkgdown: 2.1.1
+pkgdown_sha: ~
+articles:
+  Evaluation-Algorithm: Evaluation-Algorithm.html
+last_built: 2025-05-23T08:08Z
