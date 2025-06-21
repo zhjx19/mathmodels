@@ -1,19 +1,24 @@
-#' CRITIC Weight Method for Indicator Weighting and Sample Scoring
+#' @title CRITIC Weight Method
 #'
-#' Computes objective weights of indicators and scores of samples using the CRITIC method.
+#' @description Computes objective weights of indicators and scores of samples using the CRITIC method.
 #' The method considers both the variance (contrast intensity) and correlation
 #' (conflict among indicators) to determine indicator importance.
 #'
 #' @param X A numeric data frame or matrix where rows represent samples (observations)
 #'          and columns represent indicators (variables).
+#'
 #' @param index A character vector indicating the direction of each indicator.
-#'              Use `"+"` for positive indicators (higher is better) and `"-"` for negative
-#'              indicators (lower is better). If not provided, all indicators are assumed
-#'              to be positive.
+#'              Use `"+"` for positive indicators (higher is better),
+#'              `"-"` for negative indicators (lower is better),
+#'              and `NA` for already normalized indicators (no rescaling will be applied).
+#'
+#'              If `index = NULL` (default), all indicators are treated as `NA`,
+#'              meaning no normalization or rescaling is performed.
 #'
 #' @return A list containing:
 #' \item{w}{Numeric vector of weights for each indicator.}
-#' \item{s}{Numeric vector of scores for each sample (row), scaled by 100.}
+#'
+#' \item{s}{Numeric vector of scores for each sample (row), scaled by 100.}#'
 #'
 #' @export
 #' @examples
@@ -28,10 +33,10 @@
 critic_weight = function(X, index = NULL) {
   # Compute indicator weights and sample scores using the CRITIC method
   # X: original data matrix, rows are samples, columns are indicators
-  # index: direction of each indicator, "+" for positive, "-" for negative
+  # index: direction of each indicator, "+" for positive, "-" for negative, NA means no rescaling.
   # w: returned weights of indicators, s: returned scores of samples
 
-  if(is.null(index)) index = rep("+", ncol(X))
+  if(is.null(index)) index = rep(NA, ncol(X))
   pos = which(index == "+")
   neg = which(index == "-")
 

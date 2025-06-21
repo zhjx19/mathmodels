@@ -1,25 +1,34 @@
-#' PCA-Based Weighting Method for Indicator Scoring
+#' @title PCA-Based Weighting Method
 #'
-#' Computes indicator weights using Principal Component Analysis (PCA).
+#' @description Computes indicator weights using Principal Component Analysis (PCA).
 #' The method extracts principal components and uses their variance contribution
 #' to derive objective weights for indicators. Optionally handles positive/negative
-#' directions of indicators.
+#' directions of indicators, and supports pre-standardized data.
 #'
 #' @param X A numeric data frame or matrix where rows represent samples and
 #'          columns represent indicators.
+#'
 #' @param index A character vector indicating the direction of each indicator.
 #'              Use `"+"` for positive indicators (higher is better),
-#'              `"-"` for negative indicators (lower is better).
-#'              If not provided, all indicators are assumed to be positive.
+#'              `"-"` for negative indicators (lower is better),
+#'              and `NA` for already standardized indicators (no standardization will be applied).
+#'
+#'              If `index = NULL` (default), all indicators are treated as `NA`,
+#'              meaning no standardization is performed.
+#'
+#' @param nfs Number of principal components to use; by default, all are used.
 #'
 #' @return A list containing:
 #' \item{w}{Numeric vector of normalized weights for each indicator.}
-#' \item{s}{Numeric vector of scores for each sample, scaled by 100.}
-#' \item{lambda}{Eigenvalues (explained variance) of principal components.}
-#' \item{B}{Loading matrix scaled by square root of eigenvalues.}
-#' \item{beta}{Weight contributions from loadings and variance explained.}
 #'
-#' @importFrom psych principal
+#' \item{s}{Numeric vector of scores for each sample, scaled by 100.}
+#'
+#' \item{lambda}{Eigenvalues of principal components (explained variance).}
+#'
+#' \item{B}{Loading matrix scaled by square root of eigenvalues.}
+#'
+#' \item{beta}{Weight contributions derived from loadings and variance explained.}
+#'
 #' @export
 #' @examples
 #' # Example: Using PCA to compute indicator weights
@@ -33,7 +42,7 @@ pca_weight = function(X, index = NULL, nfs = NULL) {
   # w: returned normalized weights, lambda: eigenvalues
   # B and beta: intermediate results (loadings matrix and weight contributions)
 
-  if(is.null(index)) index = rep("+", ncol(X))
+  if(is.null(index)) index = rep(NA, ncol(X))
   pos = which(index == "+")
   neg = which(index == "-")
 

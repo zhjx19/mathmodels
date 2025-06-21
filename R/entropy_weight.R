@@ -37,7 +37,7 @@
 entropy_weight = function(X, index = NULL, epsilon = 0.002) {
   # Compute weights of indicators and scores of samples using entropy method
   # X: original data matrix, rows are samples and columns are indicators
-  # index: direction of each indicator, "+" for positive, "-" for negative, NA means no = no rescaling
+  # index: direction of each indicator, "+" for positive, "-" for negative, NA means no rescaling.
   # w: returned weights of indicators, s: returned scores of samples
   if(is.null(index)) index = rep(NA, ncol(X))
   if(any(is.na(index))) {

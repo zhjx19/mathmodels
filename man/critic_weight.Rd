@@ -2,7 +2,7 @@
 % Please edit documentation in R/critic_weight.R
 \name{critic_weight}
 \alias{critic_weight}
-\title{CRITIC Weight Method for Indicator Weighting and Sample Scoring}
+\title{CRITIC Weight Method}
 \usage{
 critic_weight(X, index = NULL)
 }
@@ -11,14 +11,19 @@ critic_weight(X, index = NULL)
 and columns represent indicators (variables).}
 
 \item{index}{A character vector indicating the direction of each indicator.
-Use \code{"+"} for positive indicators (higher is better) and \code{"-"} for negative
-indicators (lower is better). If not provided, all indicators are assumed
-to be positive.}
+Use \code{"+"} for positive indicators (higher is better),
+\code{"-"} for negative indicators (lower is better),
+and \code{NA} for already normalized indicators (no rescaling will be applied).
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{         If `index = NULL` (default), all indicators are treated as `NA`,
+         meaning no normalization or rescaling is performed.
+}\if{html}{\out{</div>}}}
 }
 \value{
 A list containing:
 \item{w}{Numeric vector of weights for each indicator.}
-\item{s}{Numeric vector of scores for each sample (row), scaled by 100.}
+
+\item{s}{Numeric vector of scores for each sample (row), scaled by 100.}#'
 }
 \description{
 Computes objective weights of indicators and scores of samples using the CRITIC method.
