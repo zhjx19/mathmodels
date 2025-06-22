@@ -87,5 +87,5 @@ grey_corr_topsis = function(X, w, index = NULL, rho = 0.5) {
   C0 = apply(C, 2, min)
   Sstar = grey_corr(Cstar, t(C), rho)
   S0 = grey_corr(C0, t(C), rho)
-  S0 / (S0 + Sstar)
+  Sstar / (S0 + Sstar)
 }
