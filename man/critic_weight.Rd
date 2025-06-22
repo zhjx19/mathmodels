@@ -4,31 +4,45 @@
 \alias{critic_weight}
 \title{CRITIC Weight Method}
 \usage{
-critic_weight(X, index = NULL)
+critic_weight(
+  X,
+  index = NULL,
+  method = "std",
+  cor_method = "pearson",
+  epsilon = 0.002
+)
 }
 \arguments{
 \item{X}{A numeric data frame or matrix where rows represent samples (observations)
 and columns represent indicators (variables).}
 
-\item{index}{A character vector indicating the direction of each indicator.
+\item{index}{A character vector indicating the direction of each indicator:
 Use \code{"+"} for positive indicators (higher is better),
 \code{"-"} for negative indicators (lower is better),
 and \code{NA} for already normalized indicators (no rescaling will be applied).
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{         If `index = NULL` (default), all indicators are treated as `NA`,
-         meaning no normalization or rescaling is performed.
+\if{html}{\out{<div class="sourceCode">}}\preformatted{         If `index = NULL` (default), all indicators are treated as `NA`, meaning no normalization is performed.
 }\if{html}{\out{</div>}}}
+
+\item{method}{Character scalar; specifies the method used to compute contrast intensity.
+Options: \code{"std"} (standard deviation, default), or \code{"entropy"} (based on information redundancy).}
+
+\item{cor_method}{Character scalar; specifies the method for computing correlations.
+Options: \code{"pearson"} (default), \code{"spearman"}, or \code{"kendall"}.}
+
+\item{epsilon}{A small constant used to replace exact 0s and 1s in the data to prevent log(0) errors.
+Default is 0.002. Only used when \code{method = "entropy"}.}
 }
 \value{
 A list containing:
 \item{w}{Numeric vector of weights for each indicator.}
-
-\item{s}{Numeric vector of scores for each sample (row), scaled by 100.}#'
+\item{s}{Numeric vector of scores for each sample (row), scaled by 100.}
 }
 \description{
 Computes objective weights of indicators and scores of samples using the CRITIC method.
-The method considers both the variance (contrast intensity) and correlation
-(conflict among indicators) to determine indicator importance.
+The method considers both the contrast intensity (e.g., standard deviation or entropy)
+and conflict among indicators (based on correlation) to determine indicator importance.
+This version supports different methods for contrast intensity and correlation types.
 }
 \examples{
 # Example: Using CRITIC method on a simple dataset
@@ -38,4 +52,5 @@ X = data.frame(
 )
 index = c("+", "-")
 critic_weight(X, index)
+critic_weight(X, index, method = "entropy")
 }

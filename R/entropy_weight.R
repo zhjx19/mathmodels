@@ -54,9 +54,9 @@ entropy_weight = function(X, index = NULL, epsilon = 0.002) {
   X[,neg] = lapply(X[,neg, drop = FALSE],
                    function(x) rescale(x, type = "-", a = epsilon, b = 1-epsilon))
   # Compute proportion p(i,j) of sample i in indicator j
-  P = data.frame(lapply(X, \(x) x / sum(x)))
+  P = data.frame(lapply(X, function(x) x / sum(x)))
   # Compute entropy e(j) for each indicator j
-  e = sapply(P, \(x) sum(x * log(x)) *(-1/log(nrow(P))))
+  e = sapply(P, \(x) -sum(x * log(x)) / log(nrow(P)))
   d = 1 - e          # Compute redundancy degree
   w = d / sum(d)     # Compute weight vector
   # Compute sample scores
