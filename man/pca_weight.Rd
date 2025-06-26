@@ -4,7 +4,7 @@
 \alias{pca_weight}
 \title{PCA-Based Weighting Method}
 \usage{
-pca_weight(X, index = NULL, nfs = NULL)
+pca_weight(X, index = NULL, nfs = NULL, varimax = TRUE)
 }
 \arguments{
 \item{X}{A numeric data frame or matrix where rows represent samples and
@@ -20,6 +20,8 @@ and \code{NA} for already standardized indicators (no standardization will be ap
 }\if{html}{\out{</div>}}}
 
 \item{nfs}{Number of principal components to use; by default, all are used.}
+
+\item{varvarimax}{Whether to perform Varimax rotation, default is TRUE.}
 }
 \value{
 A list containing:
@@ -29,9 +31,7 @@ A list containing:
 
 \item{lambda}{Eigenvalues of principal components (explained variance).}
 
-\item{B}{Loading matrix scaled by square root of eigenvalues.}
-
-\item{beta}{Weight contributions derived from loadings and variance explained.}
+\item{varP}{Proportion of variance explained by selected PCs.}
 }
 \description{
 Computes indicator weights using Principal Component Analysis (PCA).

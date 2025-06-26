@@ -20,7 +20,7 @@ directions of indicators, and supports pre-standardized data."><!-- mathjax --><
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">mathmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.4</span>
       </span>
     </div>
 
@@ -69,7 +69,7 @@ directions of indicators, and supports pre-standardized data.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">pca_weight</span><span class="op">(</span><span class="va">X</span>, index <span class="op">=</span> <span class="cn">NULL</span>, nfs <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">pca_weight</span><span class="op">(</span><span class="va">X</span>, index <span class="op">=</span> <span class="cn">NULL</span>, nfs <span class="op">=</span> <span class="cn">NULL</span>, varimax <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -93,6 +93,10 @@ and <code>NA</code> for already standardized indicators (no standardization will
 <dt id="arg-nfs">nfs<a class="anchor" aria-label="anchor" href="#arg-nfs"></a></dt>
 <dd><p>Number of principal components to use; by default, all are used.</p></dd>
 
+
+<dt id="arg-varvarimax">varvarimax<a class="anchor" aria-label="anchor" href="#arg-varvarimax"></a></dt>
+<dd><p>Whether to perform Varimax rotation, default is TRUE.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
@@ -109,12 +113,8 @@ and <code>NA</code> for already standardized indicators (no standardization will
 <dd><p>Eigenvalues of principal components (explained variance).</p></dd>
 
 
-<dt>B</dt>
-<dd><p>Loading matrix scaled by square root of eigenvalues.</p></dd>
-
-
-<dt>beta</dt>
-<dd><p>Weight contributions derived from loadings and variance explained.</p></dd>
+<dt>varP</dt>
+<dd><p>Proportion of variance explained by selected PCs.</p></dd>
 
 </dl></div>
 
@@ -124,26 +124,17 @@ and <code>NA</code> for already standardized indicators (no standardization will
 <span class="r-in"><span><span class="va">ind</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"+"</span>,<span class="st">"+"</span>,<span class="st">"-"</span>,<span class="st">"-"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">pca_weight</span><span class="op">(</span><span class="va">iris</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span>, <span class="va">ind</span>, nfs <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $w</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Sepal.Length  Sepal.Width Petal.Length  Petal.Width </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    0.2429005    0.2741537    0.2359057    0.2470401 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.3653755 0.2576950 0.2288199 0.1481095</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $s</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [1]  54.15199  -7.15223  15.86684 -45.07737  54.74122 -13.29096 -27.77650</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [8]  15.04840 -57.76268  11.25129</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [1]  0.603861299 -0.066459291  0.062381683 -0.570617445  0.562358748</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [6]  0.304619966 -0.294827855  0.182708247 -0.777385321 -0.006640031</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $lambda</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 2.7523578 0.6296417</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $B</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                      PC1        PC2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Sepal.Length -0.42731673  0.4514143</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Sepal.Width  -0.30914776 -0.2473973</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Petal.Length  0.28371546  0.1355192</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Petal.Width   0.06825297  1.1423043</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $beta</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Sepal.Length  Sepal.Width Petal.Length  Petal.Width </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    0.2637195    0.2976514    0.2561251    0.2682138 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $varP</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.8138256 0.1861744</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 </code></pre></div>
     </div>
