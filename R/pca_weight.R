@@ -71,7 +71,7 @@ pca_weight = function(X, index = NULL, nfs = NULL) {
   varP = lambda / sum(lambda) * 100  # Percentage of variance explained
 
   # Compute weighted contribution of each loading
-  beta = abs(B %*% varP) / 100
+  beta = abs(B) %*% varP / 100
 
   # Normalize weights
   w = beta / sum(beta)
