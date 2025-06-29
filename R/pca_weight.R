@@ -20,10 +20,12 @@
 #'
 #' @param varvarimax Whether to perform Varimax rotation, default is TRUE.
 #'
+#' @param method Weighting Method, "abs" (default, |a_{ji}|) or "squared" (a_{ji}^2)
+#'
 #' @return A list containing:
 #' \item{w}{Numeric vector of normalized weights for each indicator.}
 #'
-#' \item{s}{Numeric vector of scores for each sample, scaled by 100.}
+#' \item{s}{Numeric vector of scores for each sample.}
 #'
 #' \item{lambda}{Eigenvalues of principal components (explained variance).}
 #'
@@ -35,14 +37,16 @@
 #' ind = c("+","+","-","-")
 #' pca_weight(iris[1:10, 1:4], ind, nfs = 2)
 
-pca_weight = function(X, index = NULL, nfs = NULL, varimax = TRUE) {
+pca_weight = function(X, index = NULL, nfs = NULL, varimax = TRUE,
+                      method = "abs") {
   # Compute indicator weights using Principal Component Analysis (PCA)
   # X: original data matrix, rows are samples, columns are indicators
   # index: direction of each indicator, "+" for positive, "-" for negative
   # nfs: numbers of PCs to extract
   # varimax: whether to perform Varimax rotation
+  # method: Weighting Method, "abs" (default, |a_{ji}|) or "squared" (a_{ji}^2)
   # w: returned normalized weights, lambda: eigenvalues
-  # B and beta: intermediate results (loadings matrix and weight contributions)
+  # s: scores for each sample
 
   if(is.null(index)) index = rep(NA, ncol(X))
   pos = which(index == "+")
@@ -68,20 +72,23 @@ pca_weight = function(X, index = NULL, nfs = NULL, varimax = TRUE) {
   }
 
   # Eigenvalues = variance explained by each PC
-  lambda = pc$sdev[1:nfs]^2
+  eigenvalues = pc$sdev ^ 2
+  lambda = eigenvalues[1:nfs]
 
   # Variance accounted by each component (proportion for selected components)
-  varP = lambda / sum(lambda)  # Proportion of variance explained by selected PCs
+  varP = lambda / sum(eigenvalues)  # Proportion of variance explained by selected PCs
 
   # Compute weighted contribution of each loading
-  beta = abs(A) %*% varP  # Weighted sum of absolute loadings
-
+  beta = switch(method,
+                "abs" = abs(A) %*% varP,
+                "squared" = (A^2) %*% varP)
   # Normalize weights
   w = beta / sum(beta)
 
   # Compute sample scores
   s = as.vector(X %*% w)  # Use standardized data
 
-  list(w = as.vector(w), s = s, lambda = lambda, varP = varP)
+  list(w = as.vector(w), s = s, cum_contrib = sum(varP), loading = A,
+       lambda = lambda, varP = varP)
 }
 #' @title PCA Weighting Method

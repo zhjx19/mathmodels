@@ -69,7 +69,7 @@ directions of indicators, and supports pre-standardized data.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">pca_weight</span><span class="op">(</span><span class="va">X</span>, index <span class="op">=</span> <span class="cn">NULL</span>, nfs <span class="op">=</span> <span class="cn">NULL</span>, varimax <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">pca_weight</span><span class="op">(</span><span class="va">X</span>, index <span class="op">=</span> <span class="cn">NULL</span>, nfs <span class="op">=</span> <span class="cn">NULL</span>, varimax <span class="op">=</span> <span class="cn">TRUE</span>, method <span class="op">=</span> <span class="st">"abs"</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -94,6 +94,10 @@ and <code>NA</code> for already standardized indicators (no standardization will
 <dd><p>Number of principal components to use; by default, all are used.</p></dd>
 
 
+<dt id="arg-method">method<a class="anchor" aria-label="anchor" href="#arg-method"></a></dt>
+<dd><p>Weighting Method, "abs" (default, |a_ji|) or "squared" (a_ji^2)</p></dd>
+
+
 <dt id="arg-varvarimax">varvarimax<a class="anchor" aria-label="anchor" href="#arg-varvarimax"></a></dt>
 <dd><p>Whether to perform Varimax rotation, default is TRUE.</p></dd>
 
@@ -106,7 +110,7 @@ and <code>NA</code> for already standardized indicators (no standardization will
 
 
 <dt>s</dt>
-<dd><p>Numeric vector of scores for each sample, scaled by 100.</p></dd>
+<dd><p>Numeric vector of scores for each sample.</p></dd>
 
 
 <dt>lambda</dt>
@@ -130,11 +134,21 @@ and <code>NA</code> for already standardized indicators (no standardization will
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [1]  0.603861299 -0.066459291  0.062381683 -0.570617445  0.562358748</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [6]  0.304619966 -0.294827855  0.182708247 -0.777385321 -0.006640031</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $cum_contrib</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.8454999</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $loading</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                     PC1        PC2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Sepal.Length -0.7089283  0.3581971</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Sepal.Width  -0.5128833 -0.1963096</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Petal.Length  0.4706905  0.1075345</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Petal.Width   0.1132333  0.9064181</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $lambda</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 2.7523578 0.6296417</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $varP</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.8138256 0.1861744</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.6880895 0.1574104</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 </code></pre></div>
     </div>

@@ -4,7 +4,7 @@
 \alias{pca_weight}
 \title{PCA-Based Weighting Method}
 \usage{
-pca_weight(X, index = NULL, nfs = NULL, varimax = TRUE)
+pca_weight(X, index = NULL, nfs = NULL, varimax = TRUE, method = "abs")
 }
 \arguments{
 \item{X}{A numeric data frame or matrix where rows represent samples and
@@ -21,13 +21,15 @@ and \code{NA} for already standardized indicators (no standardization will be ap
 
 \item{nfs}{Number of principal components to use; by default, all are used.}
 
+\item{method}{Weighting Method, "abs" (default, |a_{ji}|) or "squared" (a_{ji}^2)}
+
 \item{varvarimax}{Whether to perform Varimax rotation, default is TRUE.}
 }
 \value{
 A list containing:
 \item{w}{Numeric vector of normalized weights for each indicator.}
 
-\item{s}{Numeric vector of scores for each sample, scaled by 100.}
+\item{s}{Numeric vector of scores for each sample.}
 
 \item{lambda}{Eigenvalues of principal components (explained variance).}
 
