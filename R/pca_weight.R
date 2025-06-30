@@ -41,7 +41,7 @@ pca_weight = function(X, index = NULL, nfs = NULL, varimax = TRUE,
                       method = "abs") {
   # Compute indicator weights using Principal Component Analysis (PCA)
   # X: original data matrix, rows are samples, columns are indicators
-  # index: direction of each indicator, "+" for positive, "-" for negative
+  # index: direction of each indicator, "+" for positive, "-" for negative, `NA` for already normalized indicators
   # nfs: numbers of PCs to extract
   # varimax: whether to perform Varimax rotation
   # method: Weighting Method, "abs" (default, |a_{ji}|) or "squared" (a_{ji}^2)
@@ -53,7 +53,8 @@ pca_weight = function(X, index = NULL, nfs = NULL, varimax = TRUE,
   neg = which(index == "-")
 
   # Standardize data
-  X = scale(X)
+  idx = !is.na(index)
+  X[idx] = scale(X[idx])
   X[,neg] = -X[,neg]
 
   # Perform PCA with all components and varimax rotation
