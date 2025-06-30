@@ -87,7 +87,7 @@ pca_weight = function(X, index = NULL, nfs = NULL, varimax = TRUE,
   w = beta / sum(beta)
 
   # Compute sample scores
-  s = as.vector(X %*% w)  # Use standardized data
+  s = as.vector(as.matrix(X) %*% w)  # Use standardized data
 
   list(w = as.vector(w), s = s, cum_contrib = sum(varP), loading = A,
        lambda = lambda, varP = varP)
