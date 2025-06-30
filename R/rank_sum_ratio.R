@@ -16,7 +16,7 @@
 #'
 #' @return A list containing:
 #' \itemize{
-#'   \item \code{RSRtable}: Data frame with RSR values, ranks, cumulative frequencies,
+#'   \item \code{resultTable}: Data frame with RSR values, ranks, cumulative frequencies,
 #'   probit values, and fitted RSR values.
 #'   \item \code{reg}: Linear model object fitting RSR against probit values.
 #'   \item \code{rankTable}: Data frame with ranked indicator values.
@@ -43,7 +43,7 @@ rank_sum_ratio = function(data, w = NULL, method = "int") {
   # data: positive indicator data, first column is ID
   # w: weights for indicators
   # method: "int" for integer ranks, "non-int" for scaled ranks
-  # Returns: RSR table, linear regression, rank table
+  # Returns: result table, linear regression, rank table
   n = nrow(data)
   m = ncol(data) - 1
   if(is.null(w)) w = rep(1, m)
@@ -66,8 +66,9 @@ rank_sum_ratio = function(data, w = NULL, method = "int") {
                   barRn = ifelse(barRn == 1, 1-1/(4*n), barRn),
                   Probit = 5 + qnorm(barRn))
   reg = lm(RSR ~ Probit, rltTable)
-  RSRtable = rltTable |>
+  resultTable = rltTable |>
     dplyr::mutate(RSRfit = predict(reg, rltTable)) |>
-    tidyr::unnest_longer(ID)
-  list(RSRtable = RSRtable, reg = reg, rankTable = rankTable)
+    tidyr::unnest_longer(ID) |>
+    dplyr::relocate(ID, .before = 1)
+  list(resultTable = resultTable, reg = reg, rankTable = rankTable)
 }

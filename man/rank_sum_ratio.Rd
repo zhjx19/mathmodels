@@ -18,7 +18,7 @@ for identifying evaluation objects.}
 \value{
 A list containing:
 \itemize{
-\item \code{RSRtable}: Data frame with RSR values, ranks, cumulative frequencies,
+\item \code{resultTable}: Data frame with RSR values, ranks, cumulative frequencies,
 probit values, and fitted RSR values.
 \item \code{reg}: Linear model object fitting RSR against probit values.
 \item \code{rankTable}: Data frame with ranked indicator values.
