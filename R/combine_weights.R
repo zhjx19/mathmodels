@@ -38,13 +38,14 @@ combine_weights = function(w_subj, w_obj, type = "linear", alpha = 0.5) {
                # Solve linear system for game theory-based weights
                w_mat = cbind(w_subj, w_obj)
                S = crossprod(w_mat)
-               b = diag(S)
-
-               alpha = solve(S, b)
+               alpha = solve(S, diag(S))
                alpha = alpha / sum(alpha)
-
                as.vector(w_mat %*% alpha)
              }
   )
-  w / sum(w)   # Normalize weights
+  # If needed, perform normalization
+  if (type %in% c("multiplicative", "game")) {
+    w = w / sum(w)
+  }
+  w
 }
