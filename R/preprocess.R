@@ -127,11 +127,11 @@ rescale_interval = function(x, a, b) {
 #' @rdname preprocess
 #' @export
 rescale_extreme = function(x, type = "+") {
-  # Normalization using min(x)/x for positive indicators or x/max(x) for negative indicators.
+  # Normalization using x/max(x) for positive indicators or min(x)/x for negative indicators.
   # Commonly used in grey relational analysis.
   switch(type,
-         "+" = min(x, na.rm = TRUE) / x,
-         "-" = x / max(x, na.rm = TRUE))
+         "+" = x / max(x, na.rm = TRUE),
+         "-" = min(x, na.rm = TRUE) / x)
 }
 
 #' @rdname preprocess
