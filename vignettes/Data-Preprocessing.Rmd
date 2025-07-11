@@ -1,0 +1,214 @@
+---
+title: "Data Preprocessing for Multi-indicator Evaluation"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Data-Preprocessing}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(mathmodels)
+```
+
+多指标综合评价中，指标数据的预处理是确保评价结果科学、合理和具有可比性的关键。由于原始数据常存在量纲不同、数量级差异大以及指标方向不一致等问题，直接计算会导致量纲大的指标主导结果，或方向相反的指标相互抵消。因此，通常采用无量纲化、标准化、归一化等方法消除量纲影响；对负向指标进行正向化处理；必要时还可使用对数变换减少极端值的影响。
+
+这些预处理使得不同方向、量纲和数量级的指标能够在同一方向、统一尺度上进行比较与合成，从而更准确地体现各自的实际贡献，为后续的权重赋值和综合评价提供可靠基础。
+
+假设有$n$个评价对象，$m$个评价指标，形成原始指标数据矩阵$\mathbf{X}$，其中，$x_{ij}$表示第$i$个评价对象第$j$个指标的值。
+
+R 语言实现的话，指标数据$\mathbf{X}$通常用数据框存放，一个指标的数据是$\mathbf{X}$的 1 列（向量$\mathbf{x}$）。所以，指标数据预处理，就是用`mutate()`修改列，若同时对多列做某一种预处理，可以结合`across()`。
+
+以下所有预处理函数，都设计为接受一个向量`x`，返回同样长度的结果向量。
+
+## 方向一致性处理
+
+### 负向指标正向化
+
+**正向指标**，值越大越好，如GDP；负向指标，值越小越好，如失业率。
+
+正向指标不用处理，负向指标可用以下方式转化为正向指标：
+
+- 倒数变换：$\mathbf{x}' = 1 / \mathbf{x}$ 
+- 极小极大变换：$\mathbf{x}' = \max \mathbf{x} - \mathbf{x}$ 
+
+**注：**负向指标正向化，也可以在做归一化/标准化时同时完成（见下文）。
+
+`mathmodels`包提供了`to_positive()`函数实现负向指标正向化，基本语法为：
+
+```{r eval=FALSE}
+to_positive(x, type = "minmax")
+```
+
+- `type`指定处理方法：`"minmax"`（极小极大变换，默认）、`"reciprocal"`（倒数变换）。
+
+### 居中型指标正向化
+
+**居中型指标**，是指值越接近某个中间值$m$越好，如PH值，通常按如下公式变换：
+$$
+\mathbf{x}' = 1 - \dfrac{|\mathbf{x} - x_{best}|}{\max \{|\mathbf{x} - x_{best}|\}}
+$$
+
+`mathmodels`包提供了`rescale_middle()`函数实现居中型指标正向化，基本语法为：
+
+```{r eval=FALSE}
+rescale_middle(x, m)
+```
+
+- `m`为最佳的中间值。
+
+### 区间型指标正向化
+
+**区间型指标**，是指值在某个确定的区间范围$[a,b]$内为最好，如体温，通常做如下变换：
+$$
+\mathbf{x}' = \left\{ \begin{array}{cl} 1-\dfrac{a-\mathbf{x}}{M}, & \mathbf{x} <a \\ 1, & a \leq \mathbf{x} \leq b \\ 1-\dfrac{\mathbf{x}-b}{M}, & \mathbf{x} > b \end{array} \right.
+$$
+其中，$M = \max\{a - \min \mathbf{x}, \, \max \mathbf{x} - b \}$。
+
+`mathmodels`包提供了`rescale_interval()`函数实现区间型指标正向化，基本语法为：
+
+```{r eval=FALSE}
+rescale_interval(x, a, b)
+```
+
+- `a, b`为最佳区间的左右端点值
+
+注意，上述居中型、区间型指标正向化已含归一化，结果落在$[0,1]$，不必再做归一化。
+
+## 无量纲化处理
+
+各指标通常具有不同的量纲（单位）和数量级，若直接进行综合计算，容易使量纲或数值范围较大的指标主导结果，而量纲小或范围窄的指标被弱化，影响评价的客观性与准确性。因此，需对原始数据进行无量纲化处理，消除单位和量级差异，使得指标能够在统一尺度上进行比较与合成。
+
+### 标准化
+
+**标准化**，也称为$Z$标准化，将数据变成均值为$0$，标准差为$1$：
+$$
+\mathbf{x}' = \dfrac{\mathbf{x} - \mu}{\sigma}
+$$
+其中，$\mu$和$\sigma$分别为$\mathbf{x}$的均值和标准差。
+
+若是负向指标，可以标准化后再乘以$-1$进行正向化处理。
+
+**注：**若只减去均值，不除以标准差，叫做中心化。
+
+`mathmodels`包提供了`standardize()`函数实现标准化，基本语法为：
+
+```{r eval=FALSE}
+standardize(x, center = TRUE, scale = TRUE)
+```
+
+该函数是将自带的`scale()`函数封装为只处理向量，默认是做标准化，设置`scale = FALSE`则做中心化。
+
+### 归一化
+
+**归一化**，是指对数据进行线性变换，等比例缩放，并平移到目标区间$[a,b]$（通常取$[0,1]$），保持原始数据的相对大小关系不变。
+
+对于正向指标，
+$$
+\mathbf{x}' = (b - a) \cdot \dfrac{\mathbf{x} - \min \mathbf{x}}{\max \mathbf{x} - \min \mathbf{x}} + a
+$$
+
+对于负向指标，
+$$
+\mathbf{x}' = (b - a) \cdot \dfrac{\max \mathbf{x} - \mathbf{x}}{\max \mathbf{x} - \min \mathbf{x}} + a
+$$
+
+`mathmodels`包提供了`rescale()`函数实现归一化，基本语法为：
+
+```{r eval=FALSE}
+rescale(x, type = "+", a = 0, b = 1)
+```
+
+- `type`指定指标方向
+- `a, b`确定目标区间，默认是`0`和`1`
+
+**注：**标准化更适合应用到近似服从正态分布的数据；归一化更适合应用到近似服从均匀分布的数据。
+
+### 规范化
+
+**规范化**，是指将向量除以其范数，变成单位长度（即长度为$1$）：
+$$
+\mathbf{x}' = \dfrac{\mathbf{x}}{\|\mathbf{x}\|_2}
+$$
+这里使用$L_2$范数（欧几里德范数）：$\|\mathbf{x}\|_2 = \sqrt{x_1^2 + x_2^2 + \cdots + x_n^2}$。 
+
+规范化后，向量在欧氏空间中的长度为$1$，以便用于TOPSIS法。
+
+`mathmodels`包提供了`normalize()`函数实现$L_2$规范化：
+
+```{r eval=FALSE}
+normalize(x)
+```
+
+### 用于灰色关联分析的无量纲化
+
+**灰色关联分析**中，原始数据通常被视为具有时间序列特性的指标。通常优先使用初值化法，因其能保留序列的增长特性，与灰色系统理论强调的“少数据建模”特点契合。
+
+**初值化**：适合分析增长趋势（如经济指标、产量变化）
+$$
+\mathbf{x}' = \dfrac{\mathbf{x}}{\mathbf{x}[1]}, ~~ \text{（正向指标）} \quad \mathbf{x}' = \dfrac{\mathbf{x}[1]}{\mathbf{x}}, ~~ \text{（负向指标）}
+$$
+
+还有另外两种方法：
+
+**均值化**：适合稳定波动的数据（如温度、pH值）
+$$
+\mathbf{x}' = \dfrac{\mathbf{x}}{\mathrm{mean}(\mathbf{x})}
+$$
+
+**最大值化**：适合极差较大的数据
+$$
+\mathbf{x}' = \dfrac{\mathbf{x}}{\max(\mathbf{x})}, ~~ \text{（正向指标）} \quad \mathbf{x}' = \dfrac{\min(\mathbf{x})}{\mathbf{x}}, ~~ \text{（负向指标）}
+$$
+
+`mathmodels`包提供了如下三个函数实现这三种无量纲化方法：
+
+```{r eval=FALSE}
+rescale_extreme(x, type = "+")
+rescale_initial(x, type = "+")
+rescale_mean(x)
+```
+
+- `type`设置指标方向。
+
+## 综合案例
+
+加载包：
+
+```{r}
+library(tidyverse)
+library(mathmodels)
+```
+
+$20$条河流的水质数据，已内置到`mathmodels`包，直接访问：
+
+```{r}
+water_quality
+```
+
+指标包括：含氧量越高越好（正向指标）；PH值越接近$7$越好（居中型指标）；细菌总数越少越好（负向指标）；植物性营养物量介于$10-20$之间最佳（区间型指标）。
+
+做如下预处理：
+
+- 居中型、区间型指标做正向化（归一化）处理
+- 负向指标做极小极大正向化
+- （两个）正向指标做归一化
+
+前文说了，指标数据预处理就是`mutate()`修改列问题。
+
+```{r}
+water_quality |> 
+  mutate(PH = rescale_middle(PH, 7), 
+         nutrient = rescale_interval(nutrient, 10, 20), 
+         germ = to_positive(germ), 
+         across(c(O2, germ), rescale))
+```
+
+

@@ -17,7 +17,14 @@ basic_DEA(
   rts = "vrs"
 )
 
-super_DEA(data, inputs, outputs, orientation = "io", rts = "vrs")
+super_DEA(
+  data,
+  inputs,
+  outputs,
+  ud_outputs = NULL,
+  orientation = "io",
+  rts = "vrs"
+)
 
 basic_SBM(
   data,
@@ -40,8 +47,7 @@ indicating input variables.}
 \item{outputs}{A numeric vector of column indices or a character vector of column names
 indicating (desirable) output variables.}
 
-\item{ud_outputs}{Optional. A numeric vector of column indices or a character vector of
-column names indicating undesirable output variables. Defaults to \code{NULL}.}
+\item{ud_outputs}{Optional. A numeric vector of denoting the position of undesirable outputs in the outputs. Defaults to \code{NULL}.}
 
 \item{orientation}{Character string. Model orientation: \code{"io"} for input-oriented (default),
 or \code{"oo"} for output-oriented.}
@@ -50,16 +56,73 @@ or \code{"oo"} for output-oriented.}
 scale (default), or \code{"crs"} for constant returns to scale.}
 }
 \value{
-A list containing two elements:
-\item{efficiency}{A numeric vector of efficiency scores for each DMU.}
-\item{slack}{A data frame or matrix containing the slack values for inputs/outputs.}
+A list containing six elements:
+\item{efficiencies}{A numeric vector of efficiency scores for each DMU.}
+\item{slacks}{A data frame or matrix containing the slack values for inputs/outputs.}
+\item{lambdas}{A matrix or data frame containing the intensity variables (weights) for each DMU, representing the contribution of reference DMUs to the efficiency frontier.}
+\item{targets}{A data frame or matrix containing the efficient target values for inputs and outputs (including undesirable outputs) for each DMU.}
+\item{returns}{A character vector indicating the returns-to-scale (RTS) status of each DMU, such as "crs" (constant), "vrs" (variable), "irs" (increasing), or "drs" (decreasing).}
+\item{references}{A matrix or data frame listing the reference DMUs (peers) contributing to the efficiency frontier for each evaluated DMU.}
 }
 \description{
-Calculates standard or supper DEA/SBM efficiency scores (e.g., CCR or BCC models)
-and slacks.
+Calculates standard and super-efficiency DEA and SBM models (CCR, BCC, and slacks-based),
+including efficiency score, slacks, lambdas, targets, returns, and references,
+with support for undesirable outputs.
 }
 \details{
-This function serves as a wrapper around specific models from the \code{deaR} package.
+This function provides a simplified interface for computing efficiency scores using radial Data
+Envelopment Analysis (DEA) models (Charnes et al., 1978; Banker et al., 1984) and Slacks-Based
+Measure (SBM) models (Tone, 2001) via the \code{deaR} package. It supports both standard and
+super-efficiency models under constant (CRS) or variable (VRS) returns to scale, with optional
+handling of undesirable outputs. The package includes four functions: \code{basic_DEA}, \code{super_DEA},
+\code{basic_SBM}, and \code{super_SBM}, each tailored to specific DEA or SBM variants.
+\itemize{
+\item \strong{Model Types}:
+\itemize{
+\item \code{basic_DEA}: Implements standard radial DEA models, including CCR (CRS) and BCC (VRS),
+optimizing radial efficiency measures (input contraction or output expansion).
+\item \code{super_DEA}: Implements super-efficiency radial DEA, excluding the evaluated DMU from the
+reference set to allow efficiency scores beyond 1 (radial, output-oriented) or below 1
+(radial, input-oriented) for efficient DMUs (Andersen & Petersen, 1993).
+\item \code{basic_SBM}: Implements standard SBM, optimizing input and output slacks directly for a
+non-radial efficiency measure.
+\item \code{super_SBM}: Implements super-efficiency SBM, combining SBM with super-efficiency properties,
+excluding the evaluated DMU from the reference set.
+}
+\item \strong{Orientation}:
+\itemize{
+\item Input-oriented (\code{"io"}): Minimizes inputs while maintaining output levels. Efficiency scores
+are in (0, 1] ($\theta \leq 1$ for radial models, $\rho$ or $\delta \leq 1$ for SBM models).
+\item Output-oriented (\code{"oo"}): Maximizes outputs for given inputs. Efficiency scores are in
+(0, 1]. Radial models output $\eta \geq 1$, which is converted to $1/\eta$; SBM models output $1/\rho^*$ or
+$1/\delta$ directly.
+}
+\item \strong{Undesirable Outputs}:
+\itemize{
+\item Supported in \code{basic_DEA}, \code{super_DEA}, and \code{basic_SBM} using directional distance functions
+(DDF) with direction vector (g_y, -g_b) to increase desirable outputs and decrease undesirable
+outputs (Färe & Grosskopf, 2004).
+\item For \code{super_SBM}, undesirable outputs are supported by adapting the SBM super-efficiency model
+with DDF, ensuring undesirable outputs are minimized appropriately.
+}
+\item \strong{NA Values in Super-Efficiency Models}:
+\itemize{
+\item Super-efficiency models (\code{super_DEA}, \code{super_SBM}) may return NA for efficient DMUs due to
+infeasible linear programming solutions, particularly under VRS (Andersen & Petersen, 1993).
+This occurs when the reference set, excluding the evaluated DMU, cannot form a feasible
+production possibility set.
+\item Users can handle NA values externally, as described in the package vignette. Common approaches
+include replacing NA with standard efficiency scores (from \code{basic_DEA} or \code{basic_SBM}) or
+excluding DMUs with NA values from further analysis.
+}
+\item \strong{Returns to Scale (RTS)}:
+\itemize{
+\item CRS (\code{"crs"}): Assumes constant returns to scale, suitable for long-run analysis where scale
+effects are absent.
+\item VRS (\code{"vrs"}): Assumes variable returns to scale, allowing increasing ("irs") or decreasing
+("drs") returns, determined by the sum of intensity variables ($\lambda$).
+}
+}
 }
 \examples{
 # Sample data
@@ -73,29 +136,33 @@ data = data.frame(
 
 # Standard DEA
 result = basic_DEA(data, inputs = 2:3, outputs = 4)
-result$efficiency
+result$efficiencies
 
 # DEA with undesirable outputs
 result = basic_DEA(data, inputs = 2:3, outputs = 4:5, ud_outputs = 2)
-result$efficiency
+result$efficiencies
 
 # Super-efficiency DEA
 result = super_DEA(data, inputs = 2:3, outputs = 4)
-result$efficiency
+result$efficiencies
+
+# Super-efficiency DEA with undesirable outputs
+result = super_DEA(data, inputs = 2:3, outputs = 4:5, ud_outputs = 2)
+result$efficiencies
 
 # Standard SBM
 result = basic_SBM(data, inputs = 2:3, outputs = 4)
-result$efficiency
+result$efficiencies
 
 # SBM with undesirable outputs
 result = basic_SBM(data, inputs = 2:3, outputs = 4:5, ud_outputs = 2)
-result$efficiency
+result$efficiencies
 
 # Super-efficiency SBM
 result = super_SBM(data, inputs = 2:3, outputs = 4)
-result$efficiency
+result$efficiencies
 
-# Note: According to deaR, the super-efficiency model
+# Note: According to deaR, the SBM super-efficiency model
 # does not take into account undesirable inputs/outputs.
 
 }
