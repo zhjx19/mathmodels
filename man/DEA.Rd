@@ -72,57 +72,83 @@ with support for undesirable outputs.
 \details{
 This function provides a simplified interface for computing efficiency scores using radial Data
 Envelopment Analysis (DEA) models (Charnes et al., 1978; Banker et al., 1984) and Slacks-Based
-Measure (SBM) models (Tone, 2001) via the \code{deaR} package. It supports both standard and
+Measure (SBM) models (Tone, 2001) via the \pkg{deaR} package. It supports both standard and
 super-efficiency models under constant (CRS) or variable (VRS) returns to scale, with optional
-handling of undesirable outputs. The package includes four functions: \code{basic_DEA}, \code{super_DEA},
-\code{basic_SBM}, and \code{super_SBM}, each tailored to specific DEA or SBM variants.
+handling of undesirable outputs. The package includes four functions: \code{basic_DEA},
+\code{super_DEA}, \code{basic_SBM}, and \code{super_SBM}, each tailored to specific DEA or SBM
+variants.
 \itemize{
 \item \strong{Model Types}:
 \itemize{
 \item \code{basic_DEA}: Implements standard radial DEA models, including CCR (CRS) and BCC (VRS),
 optimizing radial efficiency measures (input contraction or output expansion).
-\item \code{super_DEA}: Implements super-efficiency radial DEA, excluding the evaluated DMU from the
-reference set to allow efficiency scores beyond 1 (radial, output-oriented) or below 1
+\item \code{super_DEA}: Implements super-efficiency radial DEA, excluding the evaluated DMU from
+the reference set to allow efficiency scores beyond 1 (radial, output-oriented) or below 1
 (radial, input-oriented) for efficient DMUs (Andersen & Petersen, 1993).
-\item \code{basic_SBM}: Implements standard SBM, optimizing input and output slacks directly for a
-non-radial efficiency measure.
-\item \code{super_SBM}: Implements super-efficiency SBM, combining SBM with super-efficiency properties,
-excluding the evaluated DMU from the reference set.
+\item \code{basic_SBM}: Implements standard SBM, optimizing input and output slacks directly for
+a non-radial efficiency measure.
+\item \code{super_SBM}: Implements super-efficiency SBM, combining SBM with super-efficiency
+properties, excluding the evaluated DMU from the reference set.
 }
 \item \strong{Orientation}:
 \itemize{
-\item Input-oriented (\code{"io"}): Minimizes inputs while maintaining output levels. Efficiency scores
-are in (0, 1] ($\theta \leq 1$ for radial models, $\rho$ or $\delta \leq 1$ for SBM models).
+\item Input-oriented (\code{"io"}): Minimizes inputs while maintaining output levels. Efficiency
+scores are in \eqn{(0, 1]}{(0, 1]} (\eqn{\theta \leq 1}{theta <= 1} for radial models,
+\eqn{\rho}{rho} or \eqn{\delta \leq 1}{delta <= 1} for SBM models).
 \item Output-oriented (\code{"oo"}): Maximizes outputs for given inputs. Efficiency scores are in
-(0, 1]. Radial models output $\eta \geq 1$, which is converted to $1/\eta$; SBM models output $1/\rho^*$ or
-$1/\delta$ directly.
+\eqn{(0, 1]}{(0, 1]}. Radial models output \eqn{\eta \geq 1}{eta >= 1}, which is converted
+to \eqn{1/\eta}{1/eta}; SBM models output \eqn{1/\rho^*}{1/rho*} or
+\eqn{1/\delta}{1/delta} directly.
 }
 \item \strong{Undesirable Outputs}:
 \itemize{
-\item Supported in \code{basic_DEA}, \code{super_DEA}, and \code{basic_SBM} using directional distance functions
-(DDF) with direction vector (g_y, -g_b) to increase desirable outputs and decrease undesirable
-outputs (Färe & Grosskopf, 2004).
-\item For \code{super_SBM}, undesirable outputs are supported by adapting the SBM super-efficiency model
-with DDF, ensuring undesirable outputs are minimized appropriately.
+\item Supported in \code{basic_DEA}, \code{super_DEA}, and \code{basic_SBM} using directional
+distance functions (DDF) with direction vector \eqn{(g_y, -g_b)}{(g_y, -g_b)} to increase
+desirable outputs and decrease undesirable outputs (Färe & Grosskopf, 2004).
+\item For \code{super_SBM}, undesirable outputs are supported by adapting the SBM super-efficiency
+model with DDF, ensuring undesirable outputs are minimized appropriately.
 }
 \item \strong{NA Values in Super-Efficiency Models}:
 \itemize{
-\item Super-efficiency models (\code{super_DEA}, \code{super_SBM}) may return NA for efficient DMUs due to
-infeasible linear programming solutions, particularly under VRS (Andersen & Petersen, 1993).
-This occurs when the reference set, excluding the evaluated DMU, cannot form a feasible
-production possibility set.
-\item Users can handle NA values externally, as described in the package vignette. Common approaches
-include replacing NA with standard efficiency scores (from \code{basic_DEA} or \code{basic_SBM}) or
-excluding DMUs with NA values from further analysis.
+\item Super-efficiency models (\code{super_DEA}, \code{super_SBM}) may return \code{NA} for
+efficient DMUs due to infeasible linear programming solutions, particularly under VRS
+(Andersen & Petersen, 1993). This occurs when the reference set, excluding the evaluated
+DMU, cannot form a feasible production possibility set.
+\item Users can handle \code{NA} values externally, as described in the package vignette. Common
+approaches include replacing \code{NA} with standard efficiency scores (from
+\code{basic_DEA} or \code{basic_SBM}) or excluding DMUs with \code{NA} values from further
+analysis.
 }
 \item \strong{Returns to Scale (RTS)}:
 \itemize{
-\item CRS (\code{"crs"}): Assumes constant returns to scale, suitable for long-run analysis where scale
-effects are absent.
-\item VRS (\code{"vrs"}): Assumes variable returns to scale, allowing increasing ("irs") or decreasing
-("drs") returns, determined by the sum of intensity variables ($\lambda$).
+\item CRS (\code{"crs"}): Assumes constant returns to scale, suitable for long-run analysis where
+scale effects are absent.
+\item VRS (\code{"vrs"}): Assumes variable returns to scale, allowing increasing (\code{"irs"}) or
+decreasing (\code{"drs"}) returns, determined by the sum of intensity variables
+(\eqn{\lambda}{lambda}).
+}
+\item \strong{Outputs}:
+\itemize{
+\item \code{efficiencies}: A named numeric vector of efficiency scores, standardized to
+\eqn{(0, 1]}{(0, 1]} for both input- and output-oriented models.
+\item \code{slacks}: A data frame or matrix of input and output slacks, including undesirable
+outputs, indicating excess inputs or output shortfalls.
+\item \code{lambdas}: A matrix or data frame of intensity variables (\eqn{\lambda}{lambda}),
+showing the contribution of reference DMUs to the efficiency frontier (self-excluded in
+super-efficiency models).
+\item \code{targets}: A data frame or matrix of efficient projection points for inputs and outputs,
+adjusted for undesirable outputs in DDF models.
+\item \code{returns}: A character vector indicating RTS status (\code{"crs"}, \code{"irs"},
+\code{"drs"}) for each DMU.
+\item \code{references}: A matrix or data frame listing reference DMUs (peers) contributing to the
+efficiency frontier (\eqn{\lambda > 0}{lambda > 0}).
 }
 }
+
+The package uses \pkg{deaR} for robust computation, handling zero values internally and ensuring
+compatibility with input/output specifications. Efficiency scores are standardized to
+\eqn{(0, 1]}{(0, 1]} for consistency across models and orientations. For detailed \code{NA}
+handling strategies, refer to the package vignette.
 }
 \examples{
 # Sample data
