@@ -35,7 +35,28 @@ the relational degree between sequences."><!-- mathjax --><script src="https://c
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/Grey-Relational-Analysis.html">Grey-Relational-Analysis</a>
+      <a href="../articles/AHP.html">AHP: Analytic Hierarchy Process</a>
+    </li>
+    <li>
+      <a href="../articles/Combine-Subjective-Objective-Weights.html">Combine Subjective and Objective Weights</a>
+    </li>
+    <li>
+      <a href="../articles/CRITIC-Weight-Method.html">CRITIC Weight Method</a>
+    </li>
+    <li>
+      <a href="../articles/Data-Preprocessing.html">Data Preprocessing for Multi-indicator Evaluation</a>
+    </li>
+    <li>
+      <a href="../articles/Entropy-Weight-Method.html">Entropy Weight Method</a>
+    </li>
+    <li>
+      <a href="../articles/Grey-Relational-Analysis.html">Grey Relational Analysis</a>
+    </li>
+    <li>
+      <a href="../articles/Malmquist-Index.html">Malmquist Index</a>
+    </li>
+    <li>
+      <a href="../articles/PCA-Based-Weighting-Method.html">PCA-Based Weighting Method</a>
     </li>
   </ul></li>
 <li>
@@ -102,8 +123,9 @@ the relational degree between sequences.</p>
 <dd><p>Character vector indicating indicator direction:
 Use <code>"+"</code> for positive indicators (higher is better),
 <code>"-"</code> for negative indicators (lower is better),
-and <code>NA</code> for already normalized indicators.
-If not provided, all indicators are assumed to be positive.</p></dd>
+and <code>NA</code> for already rescaled indicators (no rescaling will be applied).
+If <code>index = NULL</code> (default), all indicators are treated as <code>NA</code>,
+meaning no rescaling is performed.</p></dd>
 
 </dl></div>
     <div id="value">
@@ -146,7 +168,7 @@ Direction of indicators can be specified via <code>index</code>.</p></dd>
 <span class="r-in"><span><span class="va">w</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.4</span>, <span class="fl">0.6</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">idx</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"+"</span>, <span class="st">"-"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">grey_corr_topsis</span><span class="op">(</span><span class="va">cmp</span>, <span class="va">w</span>, <span class="va">idx</span>, rho <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in X %*% diag(w):</span> requires numeric/complex matrix/vector arguments</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.5172414 0.5018959 0.4827586</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
@@ -162,7 +184,7 @@ Direction of indicators can be specified via <code>index</code>.</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
       </footer></div>

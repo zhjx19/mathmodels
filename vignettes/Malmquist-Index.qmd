@@ -1,0 +1,44 @@
+---
+title: "Malmquist Index"
+vignette: >
+  %\VignetteIndexEntry{Malmquist Index}
+  %\VignetteEngine{quarto::html}
+  %\VignetteEncoding{UTF-8}
+format:
+  html:
+    toc: true
+    mathjax: true
+knitr:
+  opts_chunk:
+    collapse: true
+    comment: '#>'
+---
+
+```{r message=FALSE}
+#| label: setup
+library(tidyverse)
+library(mathmodels)
+```
+
+**Malmquist 指数**，是一种用于衡量生产率变化的指标，常用于评估决策单元（DMU）在不同时间点之间的生产效率变化。它基于 DEA 框架，通过比较不同时间点的效率前沿来分解生产率变化，通常分解为技术进步（TC）和 技术效率变化（EC）。
+
+**Malmquist 指数**是基于 Shephard 距离函数定义的，
+
+- 投入导向距离函数 $D_I^t(\mathbf{x},\mathbf{y})$ 表示在保持产出 $\mathbf{y}$  不变的情况下，投入 $\mathbf{x}$ 可以缩小的最小比例 $\theta$，使得 $(\theta\mathbf{x},\mathbf{y})$ 仍在生产可能集内：$D_I^t(\mathbf{x},\mathbf{y})=\inf\left\{\theta\mid(\theta\mathbf{x},\mathbf{y})\in P^t\right\}$，此时，距离函数等于效率值 $\theta^*$。
+
+- 产出导向距离函数 $D_O^t(\mathbf{x},\mathbf{y})$ 表示在保持投入 $\mathbf{x}$ 不变的情况下，产出 $\mathbf{y}$ 可以放大的最大比例 $\eta$ 的倒数，使得 $(\mathbf{x},\eta\mathbf{y})$ 仍在生产可能集内：$D_O^t(\mathbf{x},\mathbf{y})=\left(\sup\left\{\eta\mid(\mathbf{x},\eta\mathbf{y})\in P^t\right\}\right)^{-1}$，此时，距离函数等于效率值倒数 $1/\eta^*$。
+
+**注：**这里的生产可能集（DEA 技术集），就是如前文图示的前沿线（面）及其右下方的区域，可以是规模收益 CRS 或 VRS 假设下。
+
+再考虑不同时间点 $t$ 和 $t+1$ 下的（跨期）距离函数（投入或产出导向）：
+
+- $D^t(\mathbf{x}^t, \mathbf{y}^t)$：基于时间 $t$ 的技术，衡量 $(\mathbf{x}^t, \mathbf{y}^t)$ 到生产前沿的距离；
+- $D^{t+1}(\mathbf{x}^{t+1}, \mathbf{y}^{t+1})$： 基于时间 $t+1$ 的技术，衡量 $(\mathbf{x}^{t+1}, \mathbf{y}^{t+1})$ 到生产前沿的距离；
+- $D^t(\mathbf{x}^{t+1}, \mathbf{y}^{t+1})$ 和 $D^{t+1}(\mathbf{x}^t, \mathbf{y}^t)$：用于比较不同时间点的输入输出组合。
+
+Malmquist 指数（CRS 或 VRS，投入或产出导向）定义为：
+$$
+\text{MI}^t = \sqrt{\frac{D^t(\mathbf{x}^{t+1}, \mathbf{y}^{t+1})}{D^t(\mathbf{x}^t, \mathbf{y}^t)} \cdot \frac{D^{t+1}(\mathbf{x}^{t+1}, \mathbf{y}^{t+1})}{D^{t+1}(\mathbf{x}^t, \mathbf{y}^t)}}
+$$
+
+

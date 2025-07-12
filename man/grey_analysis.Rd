@@ -24,8 +24,9 @@ grey_corr_topsis(X, w, index = NULL, rho = 0.5)
 \item{index}{Character vector indicating indicator direction:
 Use \code{"+"} for positive indicators (higher is better),
 \code{"-"} for negative indicators (lower is better),
-and \code{NA} for already normalized indicators.
-If not provided, all indicators are assumed to be positive.}
+and \code{NA} for already rescaled indicators (no rescaling will be applied).
+If \code{index = NULL} (default), all indicators are treated as \code{NA},
+meaning no rescaling is performed.}
 }
 \value{
 \describe{

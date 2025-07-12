@@ -14,8 +14,9 @@
 #' @param index Character vector indicating indicator direction:
 #'   Use \code{"+"} for positive indicators (higher is better),
 #'   \code{"-"} for negative indicators (lower is better),
-#'   and \code{NA} for already normalized indicators.
-#'   If not provided, all indicators are assumed to be positive.
+#'   and \code{NA} for already rescaled indicators (no rescaling will be applied).
+#'   If `index = NULL` (default), all indicators are treated as `NA`,
+#'              meaning no rescaling is performed.
 #'
 #' @return
 #' \describe{
@@ -71,10 +72,10 @@ grey_corr_topsis = function(X, w, index = NULL, rho = 0.5) {
   # Perform grey correlation TOPSIS evaluation
   # X: decision matrix
   # w: weights for indicators, defaults to equal weights
-  # index: direction of each indicator, "+" for positive, "-" for negative
+  # index: direction of each indicator, "+" for positive, "-" for negative, NA means no rescaling
   # rho: distinguishing coefficient
   m = ncol(X)
-  if(is.null(index)) index = rep("+", m)
+  if(is.null(index)) index = rep(NA, m)
   if(is.null(w)) w = rep(1/m, m)
   pos = which(index == "+")
   neg = which(index == "-")
