@@ -37,7 +37,7 @@ library(mathmodels)
 - $D^{t+1}(\mathbf{x}^{t+1}, \mathbf{y}^{t+1})$： 基于时间 $t+1$ 的技术，衡量 $(\mathbf{x}^{t+1}, \mathbf{y}^{t+1})$ 到生产前沿的距离；
 - $D^t(\mathbf{x}^{t+1}, \mathbf{y}^{t+1})$ 和 $D^{t+1}(\mathbf{x}^t, \mathbf{y}^t)$：用于比较不同时间点的输入输出组合。
 
-Malmquist 指数（CRS 或 VRS，投入或产出导向）定义为：
+**Malmquist 指数**（CRS 或 VRS，投入或产出导向）定义为：
 $$
 \text{MI}^t = \sqrt{\frac{D^t(\mathbf{x}^{t+1}, \mathbf{y}^{t+1})}{D^t(\mathbf{x}^t, \mathbf{y}^t)} \cdot \frac{D^{t+1}(\mathbf{x}^{t+1}, \mathbf{y}^{t+1})}{D^{t+1}(\mathbf{x}^t, \mathbf{y}^t)}}
 $$
