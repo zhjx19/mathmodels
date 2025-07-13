@@ -8,6 +8,7 @@ format:
   html:
     toc: true
     mathjax: true
+    self-contained: true
 knitr:
   opts_chunk:
     collapse: true
