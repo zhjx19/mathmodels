@@ -164,10 +164,10 @@ theil0_g = function(data, group, y) {
 
   Tw = sum(dfb$Yr * dfw$Tw)
   TT = Tb + Tw            # total theil index
-  total = tibble(type = c("value", "rate"), theil = c(TT, 1),
-                 Tb = c(Tb, Tb/TT), Tw = c(Tw, Tw/TT))
-  within = tibble(group = dfw$group, Twi = dfw$Tw,
-                  Rwi = dfb$Yr * dfw$Tw / TT)
+  total = tibble::tibble(type = c("value", "rate"), theil = c(TT, 1),
+                         Tb = c(Tb, Tb/TT), Tw = c(Tw, Tw/TT))
+  within = tibble::tibble(group = dfw$group, Twi = dfw$Tw,
+                          Rwi = dfb$Yr * dfw$Tw / TT)
 
   list(total = total, within = within)
 }
@@ -195,10 +195,10 @@ theil_g = function(data, group, y, p) {
 
   Tw = sum(dfb$Yr * dfw$Tw)
   TT = Tb + Tw            # total theil index
-  total = tibble(type = c("value", "rate"), theil = c(TT, 1),
-                 Tb = c(Tb, Tb/TT), Tw = c(Tw, Tw/TT))
-  within = tibble(group = dfw$group, Twi = dfw$Tw,
-                  Rwi = dfb$Yr * dfw$Tw / TT)
+  total = tibble::tibble(type = c("value", "rate"), theil = c(TT, 1),
+                         Tb = c(Tb, Tb/TT), Tw = c(Tw, Tw/TT))
+  within = tibble::tibble(group = dfw$group, Twi = dfw$Tw,
+                          Rwi = dfb$Yr * dfw$Tw / TT)
 
   list(total = total, within = within)
 }
@@ -220,7 +220,7 @@ theil_g2_cross = function(data, group1, group2, y, pop) {
     stats::setNames(c("group1", "group2", "y", "pop"))
 
   # Compute total Theil index using theil()
-  Ta = theil(data$y, data$pop)
+  TT = theil(data$y, data$pop)
 
   # Compute group1-level aggregates for between-group inequality
   dfb = data |>
@@ -240,13 +240,11 @@ theil_g2_cross = function(data, group1, group2, y, pop) {
   Tw = sum(dfb$Yr * dfw$Tw)
 
   # Contribution rates
-  Rwi = dfb$Yr * dfw$Tw / Ta
+  Rwi = dfb$Yr * dfw$Tw / TT
 
   # Combine results
-  total = bind_rows(
-    theil = tibble::tibble(theil = Ta, Tw = Tw, Tb = Tb),
-    ratio = tibble::tibble(theil = Ta/Ta, Tw = Tw/Ta, Tb = Tb/Ta),
-    .id = "type")
+  total = tibble::tibble(type = c("value", "ratio"), theil = c(TT, 1),
+                         Tw = c(Tw, Tw / TT), Tb = c(Tb, Tb / TT))
   within = tibble::tibble(group1 = dfw$group1, Twi = dfw$Tw, Rwi = Rwi)
 
   list(total = total, within = within)
