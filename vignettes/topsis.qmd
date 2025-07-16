@@ -1,0 +1,141 @@
+---
+title: "Entropy-weighted TOPSIS"
+vignette: >
+  %\VignetteIndexEntry{Entropy-weighted TOPSIS}
+  %\VignetteEngine{quarto::html}
+  %\VignetteEncoding{UTF-8}
+format:
+  html:
+    toc: true
+    mathjax: true
+    self-contained: true
+knitr:
+  opts_chunk:
+    collapse: true
+    comment: '#>'
+---
+
+**TOPSIS 法**，也称为理想解法，是一种多目标决策方法，能充分利用原始数据的信息，结果能精确地反映各评价对象之间的差距。其基本原理是：
+
+- 将 $m$ 个评价指标看成 $m$ 条坐标轴，由此可以构造出一个 $m$ 维空间，则每个评价对象依照其各项指标值就对应 $m$ 维空间中一个坐标点；
+- 针对各项指标从所有评价对象中选出该指标的最优值（正理想解，对应最优坐标点）和最差值（负理想解，对应最差坐标点），依次求出各个待评价对象的坐标点分别到最优坐标点和最差坐标点的距离；
+- 距离正理想解越沂越好，距离负理想解越越远越好，为此构造综合评价指标：每个评价对象的相对接近度，据此确定评价对象的优劣。
+
+## 算法步骤
+
+设有 $n$ 个评价对象，$m$ 个评价指标，形成原始指标数据矩阵 $A$，称为**决策矩阵**，其中 $a_{ij}$ 表示第 $i$ 个评价对象第 $j$ 个指标的值。
+
+若存在居中型、区间型指标，先做归一化处理，得到的数据仍记为 $A$。
+
+#### (1) 数据无量纲化处理：规范化
+
+$$
+b_{ij}=\dfrac{a_{ij}}{\sqrt{\sum_{i=1}^n{a_{ij}}^2}},\quad i=1,\cdots n; \; j=1,\cdots,m
+$$
+记 $B_{n\times m}=(b_{ij})_{n\times m}$ 称为**规范决策矩阵**，规范化法处理后，同一评价指标的各样本值的平方和为 $1$，适合 TOPSIS 法中计算欧氏距离。
+
+#### (2)计算加权规范决策矩阵
+
+根据赋权法赋以合理的权重 $w=[w_1,w_2,\cdots,w_m]$，将 $B$ 的第 $j$ 列乘以其权重 $w_j$ 得到**加权规范决策矩阵**：
+$$
+C_{n\times m}=B_{n\times m}\cdot*\begin{pmatrix}w\\\vdots\\w\end{pmatrix}_{n\times m}
+$$
+
+#### (3) 确定正理想解 $C^∗$ 和负理想解 $C^0$
+
+$$
+C^* =  (c_1^*,c_2^*,\cdots,c_m^*), \quad C^0 = (c_1^0,c_2^0,\cdots,c_m^0)
+$$
+其中，
+$$
+c_j^* = \left\{ 
+\begin{array}{cc}
+\max\limits_i c_{ij}, & \text{若指标} ~j~ \text{为正向指标} \\
+\min\limits_i c_{ij}, & \text{若指标} ~j~ \text{为负向指标}
+\end{array}
+\right. \quad c_j^0 = \left\{ 
+\begin{array}{cc}
+\min\limits_i c_{ij}, & \text{若指标} ~j~ \text{为正向指标} \\
+\max\limits_i c_{ij}, & \text{若指标} ~j~ \text{为负向指标}
+\end{array}
+\right.
+$$
+ 
+#### (4) 计算各个样本到正理想解和负理想解的欧氏距离
+
+$$
+d_i^* = \sqrt{\sum\limits_{j=1}^m (c_{ij}-c_j^*)^2},\quad d_i^0 = \sqrt{\sum\limits_{j=1}^m (c_{ij}-c_j^0)^2}, \qquad i=1,\cdots n
+$$
+#### (5) 计算每个样本到理想解的相对接近度
+
+定义相对接近度如下，来评判各个评价对象的优劣：
+$$
+f_i=\dfrac{d_i^0}{d_i^0+d_i^*},\quad i=1,\cdots,n 
+$$
+
+## 案例：河流水质评价
+
+加载包：
+
+```{r message=FALSE}
+library(tidyverse)
+library(mathmodels)
+```
+
+使用内置的 `water_quality` 数据来演示：
+
+```{r}
+water_quality 
+```
+
+这是 $20$ 条河流的水质数据，含氧量越高越好（正向指标）；PH 值越接近 $7$ 越好（居中型指标）；细菌总数越少越好（负向指标）；植物性营养物量介于 $10 \sim 20$ 之间最佳（区间型指标）。
+
+### 数据预处理
+
+每个指标数据是一列，借助 `mathmodels` 包提供的预处理函数修改列即可。
+
+中间型、区间型指标必须要先做归一化处理。正向、负向指标不做处理，因为熵权法和 TOPSIS 都会自己对正向、负向指标做归一化/规范化处理。
+
+```{r}
+df = water_quality |>
+  mutate(PH = rescale_middle(PH, 7),
+         nutrient = rescale_interval(nutrient, 10, 20))
+df
+```
+
+### 指标权重：熵权法
+
+使用 `entropy_weight()`，`PH` 和 `nutrient` 已归一化，不再重复做：
+
+```{r}
+res = entropy_weight(df[2:5], c("+",NA,"-",NA))   
+res$w
+```
+
+### TOPSIS 评价
+
+`mathmodels` 包提供了 `topsis()` 函数实现 TOPSIS 法，该函数已内置规范化处理，基本语法：
+
+```{r eval=FALSE}
+topsis(X, w = NULL, index = NULL)
+```
+
+- `X` 为决策矩阵，`w` 为指标权重，`index` 指定指标正负向：`"+"` 表示正向指标，`"-"` 表示负向指标，默认为 `NULL` 表示都作为正向指标。 
+
+
+
+```{r}
+idx = c("+","+","-","+")
+RC = topsis(df[2:5], res$w, idx)
+RC               # 相对接近度
+```
+
+转化成 $0 \sim 100$ 分数，增加排名列：
+
+```{r}
+tibble(ID = df$ID, closeness = RC, score = rescale(closeness, b = 100),
+       rank = min_rank(-score)) |>
+  arrange(rank)
+```
+
+

@@ -5,3 +5,4 @@
 ^vignettes/\.quarto$
 ^vignettes/.*_files$
 ^vignettes/.*_cache$
+^vignettes/*_files$

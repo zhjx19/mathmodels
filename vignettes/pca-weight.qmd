@@ -172,6 +172,13 @@ res$w
 res$s
 ```
 
+- 对应到河流，增加排名列：
+
+```{r}
+tibble(ID = df$ID, score = res$s, rank = min_rank(-score)) |> 
+  arrange(rank)
+```
+
 - 查看 $3$ 个主成分的累积贡献：
 
 ```{r}
