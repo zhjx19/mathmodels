@@ -1,7 +1,7 @@
 Package: mathmodels
 Type: Package
 Title: Comprehensive Mathematical Modeling Algorithms in R
-Version: 0.0.4
+Version: 0.0.5
 Author: Jingxin Zhang
 Maintainer: Jingxin zhang <zhjx_19@163.com>
 Description: A versatile R package for mathematical modeling, developed as a companion to "Mathematical Modeling: Algorithms and Programming Implementation" (China Machine Press). The package implements algorithms across differential and difference equations, statistical analysis, optimization, evaluation, and prediction. Currently, it focuses on evaluation algorithms, including indicator data preprocessing (e.g., standardization, rescaling), subjective and objective weighting methods (e.g., AHP, entropy weighting, CRITIC, PCA weighting) and weight combination, comprehensive evaluation techniques (e.g., TOPSIS, fuzzy comprehensive evaluation, Rank Sum Ratio, DEA), inequality measures (e.g., Gini and Theil indices), and grey prediction models (e.g., GM(1,1), GM(1,N), Verhulst). Designed for researchers and practitioners in mathematical modeling. 

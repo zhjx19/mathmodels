@@ -168,9 +168,9 @@ $$
 `mathmodels` 包提供了如下三个函数实现这三种无量纲化方法：
 
 ```{r eval=FALSE}
-rescale_extreme(x, type = "+")
 rescale_initial(x, type = "+")
 rescale_mean(x)
+rescale_extreme(x, type = "+")
 ```
 
 - `type` 设置指标方向。

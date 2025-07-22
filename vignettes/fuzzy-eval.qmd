@@ -147,7 +147,7 @@ split(df, df$ID) |>
 该表记录了 129 位专家关于“青年人”年龄区间的调查结果。
 
 ```{r message=FALSE}
-df = readxl::read_excel("data/youth-stats.xlsx", 
+df = readxl::read_excel("data/youth.xlsx", 
                         col_names = FALSE) |> 
   set_names(str_c("g", 1:13))
 df

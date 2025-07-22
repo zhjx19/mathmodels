@@ -7,7 +7,8 @@ theil calculates the Theil index for grouped average data.
 theil0_g calculates the Theil index and decomposition for grouped sample data.
 theil_g calculates the Theil index and decomposition for grouped average data.
 theil_g2_cross calculates the Theil index and decomposition for two-level cross-grouped average data.
-theil_g2_nest calculates the Theil index and decomposition for two-level nested grouped average data."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
+theil_g2_nest calculates the Theil index and decomposition for two-level nested grouped average data.
+For theil, theil_g, theil_g2_cross, theil_g2_nest: Name of population variable (character)."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]--></head><body data-spy="scroll" data-target="#toc">
@@ -25,7 +26,7 @@ theil_g2_nest calculates the Theil index and decomposition for two-level nested 
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">mathmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.5</span>
       </span>
     </div>
 
@@ -61,7 +62,7 @@ theil_g2_nest calculates the Theil index and decomposition for two-level nested 
       <a href="../articles/grey-relational.html">Grey Relational Analysis</a>
     </li>
     <li>
-      <a href="../articles/malmquist.html">Malmquist Index</a>
+      <a href="../articles/inequality.html">Gini coefficient and Theil index</a>
     </li>
     <li>
       <a href="../articles/pca-weight.html">PCA-Based Weighting Method</a>
@@ -109,12 +110,13 @@ theil_g2_nest calculates the Theil index and decomposition for two-level nested 
 <code>theil_g</code> calculates the Theil index and decomposition for grouped average data.
 <code>theil_g2_cross</code> calculates the Theil index and decomposition for two-level cross-grouped average data.
 <code>theil_g2_nest</code> calculates the Theil index and decomposition for two-level nested grouped average data.</p>
+<p>For <code>theil</code>, <code>theil_g</code>, <code>theil_g2_cross</code>, <code>theil_g2_nest</code>: Name of population variable (character).</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">gini0</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">gini0</span><span class="op">(</span><span class="va">y</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">gini</span><span class="op">(</span><span class="va">x</span>, <span class="va">pop</span><span class="op">)</span></span>
+<span><span class="fu">gini</span><span class="op">(</span><span class="va">y</span>, <span class="va">pop</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">theil0</span><span class="op">(</span><span class="va">y</span><span class="op">)</span></span>
 <span></span>
@@ -122,7 +124,7 @@ theil_g2_nest calculates the Theil index and decomposition for two-level nested 
 <span></span>
 <span><span class="fu">theil0_g</span><span class="op">(</span><span class="va">data</span>, <span class="va">group</span>, <span class="va">y</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">theil_g</span><span class="op">(</span><span class="va">data</span>, <span class="va">group</span>, <span class="va">y</span>, <span class="va">p</span><span class="op">)</span></span>
+<span><span class="fu">theil_g</span><span class="op">(</span><span class="va">data</span>, <span class="va">group</span>, <span class="va">y</span>, <span class="va">pop</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">theil_g2_cross</span><span class="op">(</span><span class="va">data</span>, <span class="va">group1</span>, <span class="va">group2</span>, <span class="va">y</span>, <span class="va">pop</span><span class="op">)</span></span>
 <span></span>
@@ -133,17 +135,12 @@ theil_g2_nest calculates the Theil index and decomposition for two-level nested 
     <h2>Arguments</h2>
 
 
-<dl><dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
-<dd><p>For <code>gini0</code>, <code>gini</code>: Numeric vector of non-negative values (e.g., income).</p></dd>
+<dl><dt id="arg-y">y<a class="anchor" aria-label="anchor" href="#arg-y"></a></dt>
+<dd><p>For <code>gini0</code>, <code>gini</code>, <code>theil0</code>: Numeric vector of individual incomes.</p></dd>
 
 
 <dt id="arg-pop">pop<a class="anchor" aria-label="anchor" href="#arg-pop"></a></dt>
 <dd><p>For <code>gini</code>: Numeric vector of group populations or population shares.
-For <code>theil</code>, <code>theil_g</code>, <code>theil_g2_cross</code>, <code>theil_g2_nest</code>: Name of population variable (character).</p></dd>
-
-
-<dt id="arg-y">y<a class="anchor" aria-label="anchor" href="#arg-y"></a></dt>
-<dd><p>For <code>theil0</code>: Numeric vector of individual incomes.
 For <code>theil</code>, <code>theil0_g</code>, <code>theil_g</code>, <code>theil_g2_cross</code>, <code>theil_g2_nest</code>: Name of income variable (character).</p></dd>
 
 
@@ -167,12 +164,8 @@ For <code>theil</code>, <code>theil0_g</code>, <code>theil_g</code>, <code>theil
     <h2>Value</h2>
     <p>For <code>gini0</code>, <code>gini</code>: Numeric Gini coefficient (0 to 1).
 For <code>theil0</code>, <code>theil</code>: Numeric Theil index.
-For <code>theil0_g</code>, <code>theil_g</code>: List with two tibbles:</p><ul><li><p><code>total</code>: Tibble with columns <code>type</code> ("value", "rate"), <code>theil</code> (total Theil index and 1), <code>Tb</code> (between-group inequality and contribution rate), <code>Tw</code> (within-group inequality and contribution rate).</p></li>
-<li><p><code>within</code>: Tibble with columns <code>group</code> (grouping variable), <code>Twi</code> (within-group Theil indices), <code>Rwi</code> (within-group contribution rates).</p></li>
-</ul><p>For <code>theil_g2_cross</code>: List with two tibbles:</p><ul><li><p><code>total</code>: Tibble with columns <code>type</code> ("value", "rate"), <code>theil</code> (total Theil index and 1), <code>Tb</code> (between-group1 inequality and contribution rate), <code>Tw</code> (within-group1 inequality and contribution rate).</p></li>
-<li><p><code>within</code>: Tibble with columns <code>group1</code> (first grouping variable), <code>Twi</code> (within-group1 Theil indices), <code>Rwi</code> (within-group1 contribution rates).</p></li>
-</ul><p>For <code>theil_g2_nest</code>: Tibble with two rows:</p><ul><li><p>Row 1 (<code>type = "value"</code>): Columns <code>theil</code> (total Theil index), <code>Tw</code> (within-group2 inequality), <code>Tb</code> (between-group2 inequality), <code>Tb_group1</code> (between-group1 inequality), <code>Tb_group2</code> (within-group1 between-group2 inequality).</p></li>
-<li><p>Row 2 (<code>type = "ratio"</code>): Columns <code>theil</code> (1), <code>Tw</code> (within-group2 contribution rate), <code>Tb</code> (between-group2 contribution rate), <code>Tb_group1</code> (between-group1 contribution rate), <code>Tb_group2</code> (within-group1 between-group2 contribution rate).</p></li>
+For <code>theil0_g</code>, <code>theil_g</code>, <code>theil_g2_cross</code>, <code>theil_g2_nest</code>: List with two vectors:</p><ul><li><p><code>theil</code>: theil (Theil index and its decomposition),</p></li>
+<li><p><code>ratio</code>: ratio (contribution rates of each component).</p></li>
 </ul></div>
 
     <div id="ref-examples">
@@ -196,82 +189,50 @@ For <code>theil0_g</code>, <code>theil_g</code>: List with two tibbles:</p><ul><
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.07907822</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Theil index (grouped average)</span></span></span>
-<span class="r-in"><span><span class="va">data2</span> <span class="op">=</span> <span class="va">data</span> <span class="op">|&gt;</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html" class="external-link">count</a></span><span class="op">(</span><span class="va">g</span>, <span class="va">y</span>, name <span class="op">=</span> <span class="st">"p"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">theil</span><span class="op">(</span><span class="va">data2</span><span class="op">$</span><span class="va">y</span>, <span class="va">data2</span><span class="op">$</span><span class="va">p</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">data2</span> <span class="op">=</span> <span class="va">data</span> <span class="op">|&gt;</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html" class="external-link">count</a></span><span class="op">(</span><span class="va">g</span>, <span class="va">y</span>, name <span class="op">=</span> <span class="st">"pop"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">theil</span><span class="op">(</span><span class="va">data2</span><span class="op">$</span><span class="va">y</span>, <span class="va">data2</span><span class="op">$</span><span class="va">pop</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.07907822</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Theil index with grouping (sample data)</span></span></span>
 <span class="r-in"><span><span class="fu">theil0_g</span><span class="op">(</span><span class="va">data</span>, <span class="st">"g"</span>, <span class="st">"y"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $total</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 2 × 4</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   type   theil     Tb     Tw</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> value 0.079<span style="text-decoration: underline;">1</span> 0.011<span style="text-decoration: underline;">3</span> 0.067<span style="text-decoration: underline;">8</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> rate  1      0.143  0.857 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $theil</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>          T         Tb         Tw          A          B </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 0.07907822 0.01127992 0.06779830 0.16568710 0.01021666 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $within</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 2 × 3</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   group    Twi    Rwi</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> A     0.166  0.776 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> B     0.010<span style="text-decoration: underline;">2</span> 0.081<span style="text-decoration: underline;">3</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $ratio</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>          T         Tb         Tw          A          B </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1.00000000 0.14264257 0.85735743 0.77601127 0.08134615 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Theil index with grouping (average data)</span></span></span>
-<span class="r-in"><span><span class="fu">theil_g</span><span class="op">(</span><span class="va">data2</span>, <span class="st">"g"</span>, <span class="st">"y"</span>, <span class="st">"p"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $total</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 2 × 4</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   type   theil     Tb     Tw</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> value 0.079<span style="text-decoration: underline;">1</span> 0.011<span style="text-decoration: underline;">3</span> 0.067<span style="text-decoration: underline;">8</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> rate  1      0.143  0.857 </span>
+<span class="r-in"><span><span class="fu">theil_g</span><span class="op">(</span><span class="va">data2</span>, <span class="st">"g"</span>, <span class="st">"y"</span>, <span class="st">"pop"</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $theil</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>          T         Tb         Tw          A          B </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 0.07907822 0.01127992 0.06779830 0.16568710 0.01021666 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $within</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 2 × 3</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   group    Twi    Rwi</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> A     0.166  0.776 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> B     0.010<span style="text-decoration: underline;">2</span> 0.081<span style="text-decoration: underline;">3</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $ratio</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>          T         Tb         Tw          A          B </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1.00000000 0.14264257 0.85735743 0.77601127 0.08134615 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Theil index with two-level cross-grouping</span></span></span>
 <span class="r-in"><span><span class="va">data3</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  region <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Eastern"</span>, <span class="st">"Eastern"</span>, <span class="st">"Central"</span>, <span class="st">"Central"</span>, <span class="st">"Western"</span>, <span class="st">"Western"</span>, <span class="st">"Northeast"</span>, <span class="st">"Northeast"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Urban"</span>, <span class="st">"Rural"</span>, <span class="st">"Urban"</span>, <span class="st">"Rural"</span>, <span class="st">"Urban"</span>, <span class="st">"Rural"</span>, <span class="st">"Urban"</span>, <span class="st">"Rural"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  pop <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">24491</span>, <span class="fl">21854</span>, <span class="fl">12850</span>, <span class="fl">22321</span>, <span class="fl">12423</span>, <span class="fl">23522</span>, <span class="fl">5930</span>, <span class="fl">4823</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  per_income <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">13375</span>, <span class="fl">4720</span>, <span class="fl">8809</span>, <span class="fl">2957</span>, <span class="fl">8783</span>, <span class="fl">2379</span>, <span class="fl">8730</span>, <span class="fl">3379</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  industry <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"A"</span>, <span class="st">"A"</span>, <span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"B"</span>, <span class="st">"B"</span>, <span class="st">"B"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  area <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"East"</span>, <span class="st">"East"</span>, <span class="st">"West"</span>, <span class="st">"West"</span>, <span class="st">"East"</span>, <span class="st">"East"</span>, <span class="st">"West"</span>, <span class="st">"West"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  province <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Shanghai"</span>, <span class="st">"Beijing"</span>, <span class="st">"Sichuan"</span>, <span class="st">"Yunnan"</span>, <span class="st">"Shanghai"</span>, <span class="st">"Beijing"</span>, <span class="st">"Sichuan"</span>, <span class="st">"Yunnan"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  avg_wage <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">500</span>, <span class="fl">400</span>, <span class="fl">80</span>, <span class="fl">60</span>, <span class="fl">300</span>, <span class="fl">250</span>, <span class="fl">50</span>, <span class="fl">40</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  emp_num <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">100</span>, <span class="fl">80</span>, <span class="fl">90</span>, <span class="fl">70</span>, <span class="fl">120</span>, <span class="fl">100</span>, <span class="fl">80</span>, <span class="fl">60</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">theil_g2_cross</span><span class="op">(</span><span class="va">data3</span>, <span class="st">"region"</span>, <span class="st">"type"</span>, <span class="st">"per_income"</span>, <span class="st">"pop"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $total</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 2 × 4</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   type  theil    Tw     Tb</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> theil 0.187 0.137 0.049<span style="text-decoration: underline;">2</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> ratio 1     0.736 0.264 </span>
+<span class="r-in"><span><span class="fu">theil_g2_cross</span><span class="op">(</span><span class="va">data3</span>, <span class="st">"industry"</span>, <span class="st">"area"</span>, <span class="st">"avg_wage"</span>, <span class="st">"emp_num"</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $theil</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>           T          Tb          Tw        Tw_b        Tw_w           A </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 0.279831207 0.018158987 0.261672220 0.255126585 0.006545635 0.287178079 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>           B </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 0.226327305 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $within</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 4 × 3</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   group1       Twi    Rwi</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> Eastern   0.115  0.314 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> Central   0.145  0.166 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> Western   0.206  0.216 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> Northeast 0.094<span style="text-decoration: underline;">2</span> 0.040<span style="text-decoration: underline;">8</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-in"><span><span class="fu">theil_g2_cross</span><span class="op">(</span><span class="va">data3</span>, <span class="st">"type"</span>, <span class="st">"region"</span>, <span class="st">"per_income"</span>, <span class="st">"pop"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $total</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 2 × 4</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   type  theil     Tw    Tb</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> theil 0.187 0.027<span style="text-decoration: underline;">2</span> 0.159</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> ratio 1     0.146  0.854</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $within</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 2 × 3</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   group1    Twi    Rwi</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> Urban  0.022<span style="text-decoration: underline;">0</span> 0.084<span style="text-decoration: underline;">3</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> Rural  0.039<span style="text-decoration: underline;">9</span> 0.061<span style="text-decoration: underline;">3</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $ratio</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>          T         Tb         Tw       Tw_b       Tw_w          A          B </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1.00000000 0.06489265 0.93510735 0.91171598 0.02339137 0.59609568 0.33901168 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Theil index with two-level nested grouping</span></span></span>
@@ -283,11 +244,18 @@ For <code>theil0_g</code>, <code>theil_g</code>: List with two tibbles:</p><ul><
 <span class="r-in"><span>  pop <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10000</span>, <span class="fl">8000</span>, <span class="fl">15000</span>, <span class="fl">12000</span>, <span class="fl">10000</span>, <span class="fl">8000</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">theil_g2_nest</span><span class="op">(</span><span class="va">data4</span>, <span class="st">"province"</span>, <span class="st">"city"</span>, <span class="st">"y"</span>, <span class="st">"pop"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 2 × 6</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   type    theil       Tw      Tb Tb_group1 Tb_group2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> value 0.009<span style="text-decoration: underline;">55</span> 0.000<span style="text-decoration: underline;">944</span> 0.008<span style="text-decoration: underline;">60</span>   0.005<span style="text-decoration: underline;">80</span>   0.002<span style="text-decoration: underline;">80</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> ratio 1       0.098<span style="text-decoration: underline;">9</span>   0.901     0.608     0.293  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $theil</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>            T        Tb_g1        Tb_g2           Tw            A            B </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 0.0095463309 0.0058045406 0.0027974591 0.0009443311 0.0042077485 0.0000000000 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         A_A1         A_A2         B_B1 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 0.0013579722 0.0009278223 0.0006738577 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $ratio</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>          T      Tb_g1      Tb_g2         Tw          A          B       A_A1 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1.00000000 0.60803891 0.29304024 0.09892085 0.29304024 0.00000000 0.03360868 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       A_A2       B_B1          A          B </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 0.04165351 0.02365866 0.09892085 0.09892085 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

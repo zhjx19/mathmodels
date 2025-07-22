@@ -31,7 +31,7 @@ meaning no rescaling is performed.}
 \value{
 \describe{
 \item{grey_corr}{Returns a numeric vector of grey correlation degrees for each comparison sequence.}
-\item{grey_corr_topsis}{Returns a numeric vector of normalized evaluation scores in \link{0, 100}.}
+\item{grey_corr_topsis}{Returns a numeric vector of relative closeness (grey correlation degrees).}
 }
 }
 \description{

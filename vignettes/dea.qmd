@@ -230,16 +230,6 @@ $$
 \begin{aligned} & \min \theta \\ \text{s.t.} \quad & \sum_{\substack{i=1\\i \neq k}}^n \lambda_i x_{ij} \leq \theta x_{kj}, \quad j = 1, \cdots, m \\ & \sum_{\substack{i=1\\i \neq k}}^n \lambda_i y_{ir} \geq y_{kr}, \quad r = 1, \cdots, q \\ & \sum_{\substack{i=1\\i \neq k}}^n \lambda_i = 1, \\  &\lambda_i \geq 0, \quad i \neq k \end{aligned}
 $$
 
-
-## DEA 案例
-
-加载包：
-
-```{r message=FALSE}
-library(tidyverse)
-library(mathmodels)
-```
-
 `mathmodels` 包对 `deaR` 包中的相应函数做了封装，提供了四个函数：`basic_DEA`、`super_DEA`、`basic_SBM` 和 `super_SBM`，分别适用于不同类型的 DEA 或 SBM 模型变体：径向数据包络分析（DEA）模型（Charnes 等，1978；Banker 等，1984）和基于松弛变量测度的 SBM 模型（Tone，2001）计算效率得分提供了简化的操作接口，支持在规模报酬不变（CRS）或规模报酬可变（VRS）条件下，运行标准模型和超效率模型，并可选择性地处理非期望产出。
 
 基本语法为（同其它函数）：
@@ -255,10 +245,162 @@ basic_DEA(data, inputs, outputs, ud_outputs = NULL,
 - `orientation`：设置导向：`"io"`（默认，投入导向）、`"oo"`（产出导向）；
 - `rts`：设置规模收益：`"crs"（不变规模收益）、`"vrs"`（默认，可变规模收益）。
 
+
+### Malmquist 指数
+
+**Malmquist 指数** 是一种基于数据包络分析（DEA）框架、用于衡量决策单元（DMU）在不同时期之间**全要素生产率**变化的指标。它通过比较不同时间点的技术前沿，将生产率变化分解为 **技术效率变化（Efficiency Change, EC）** 和 **技术进步（Technical Change, TC）**。
+
+该指数建立在 **Shephard 距离函数** 的基础上，适用于投入导向或产出导向模型。无论选择哪种导向，计算时均采用原始距离函数值，而非人为归一化的“效率得分”。
+
+#### 1. Shephard 距离函数的定义
+
+- **投入导向距离函数** $D_I^t(\mathbf{x},\mathbf{y})$ 表示：在保持产出 $\mathbf{y}$ 不变的前提下，投入向量 $\mathbf{x}$ 可以按比例缩小的最大倍数 $\theta$，使得 $(\theta\mathbf{x}, \mathbf{y})$ 仍属于时期 $t$ 的生产可能集 $P^t$：
+
+$$
+D_I^t(\mathbf{x},\mathbf{y}) = \sup\left\{ \theta \geq 0 \mid (\theta\mathbf{x}, \mathbf{y}) \in P^t \right\}
+$$
+
+此时，$D_I^t \in (0,1]$，且当 $D_I^t = 1$ 时表示技术有效；$D_I^t < 1$ 表示存在投入冗余。该值即为 DEA 模型求解出的效率值 $\theta^*$。
+
+- **产出导向距离函数** $D_O^t(\mathbf{x},\mathbf{y})$ 表示：在保持投入 $\mathbf{x}$ 不变的前提下，产出向量 $\mathbf{y}$ 可以按比例放大的最大倍数 $\eta$，使得 $(\mathbf{x}, \eta\mathbf{y})$ 仍属于时期 $t$ 的生产可能集 $P^t$：
+$$
+D_O^t(\mathbf{x},\mathbf{y}) = \sup\left\{ \eta \geq 0 \mid (\mathbf{x}, \eta\mathbf{y}) \in P^t \right\}
+$$
+
+此时，$D_O^t \in [1,\infty)$，且当 $D_O^t = 1$ 时表示技术有效；$D_O^t > 1$ 表示存在产出不足。
+
+> 📌 **注意**：尽管实践中常将产出导向的“效率评分”定义为 $1/D_O^t \in (0,1]$ 以便解释，但在 Malmquist 指数的正式计算中，应直接使用原始的距离函数值 $D_O^t \geq 1$，以保证理论一致性。
+
+#### 2. 生产可能集说明
+
+这里的 **生产可能集** $P^t = \{(\mathbf{x},\mathbf{y}) \mid \mathbf{x} \text{ 可生产 } \mathbf{y}\}$ 是由 DEA 方法构建的技术集合，表示在时期 $t$ 下所有可行的“投入-产出”组合。其边界构成生产前沿。
+
+- 在 **规模报酬不变（CRS）** 假设下，技术集允许自由缩放；
+- 在 **规模报酬可变（VRS）** 假设下，技术集限制了大规模扩张的有效性。
+
+**注：**单投入单导出的生产可能集（DEA 技术集），就是如前文图示的前沿线（面）及其右下方的区域，可以是规模收益 CRS 或 VRS 假设下。
+
+#### 3. 跨期距离函数的构造
+
+考虑两个相邻时期 $t$ 和 $t+1$，我们需要计算以下四个距离函数（统一使用同一导向，例如产出导向）：
+
+- $D^t(\mathbf{x}^t, \mathbf{y}^t)$：用 $t$ 期技术评估 $t$ 期自身表现；
+- $D^{t+1}(\mathbf{x}^{t+1}, \mathbf{y}^{t+1})$：用 $t+1$ 期技术评估 $t+1$ 期自身表现；
+- $D^t(\mathbf{x}^{t+1}, \mathbf{y}^{t+1})$：将 $t+1$ 期的数据投影到 $t$ 期的技术前沿；
+- $D^{t+1}(\mathbf{x}^t, \mathbf{y}^t)$：将 $t$ 期的数据投影到 $t+1$ 期的技术前沿。
+
+这些距离函数通过 DEA 模型分别求解，是构建 Malmquist 指数的基础。
+
+#### 4. 参照集的选择
+
+Malmquist 指数需要比较不同时期的技术前沿（即生产可能集），因此必须明确：以哪些决策单元作为构建每个时期技术前沿的基础？ 这就是所谓的“参照集”选择问题。
+
+主要有三种构建方式：
+
+- **同期参照集**：每个时期的生产可能集仅基于该时期自身的观测数据构建，即各期技术前沿独立估计。距离函数的计算以当期样本为参考基准，不跨期混合数据。
+- **序列参照集**：技术前沿随时间逐步累积扩展，后期的技术集包含当前及之前所有时期的数据。由此构建的生产可能集具有非递减性，反映技术演进过程中对历史最佳实践的持续吸收。
+- **全局参照集**：将所有时间段的观测数据合并，共同构建一个跨期统一的“全局生产可能集”。该前沿代表整个样本期内的最优技术边界，不随时间变化，为所有时期提供一致的评估基准。
+
+#### 5. Malmquist 指数的定义
+
+**Malmquist 生产率指数**（MI）定义为：
+$$
+\text{MI}^t = \sqrt{ 
+\frac{D^t(\mathbf{x}^{t+1}, \mathbf{y}^{t+1}) / D^t(\mathbf{x}^t, \mathbf{y}^t)}
+     {D^{t+1}(\mathbf{x}^{t+1}, \mathbf{y}^{t+1}) / D^{t+1}(\mathbf{x}^t, \mathbf{y}^t)}
+}
+$$
+其中：
+
+- 若 $\text{MI}^t > 1$：表示生产率提高；
+- 若 $\text{MI}^t = 1$：表示生产率不变；
+- 若 $\text{MI}^t < 1$：表示生产率下降。
+
+#### 6. CRS 与 VRS 假设下的分解差异
+
+Malmquist 指数的分解结果会因是否假设 **规模报酬不变（CRS）** 或 **规模报酬可变（VRS）** 而有所不同。
+
+##### (1) CRS 假设下的 Malmquist 分解
+
+在 CRS 下，技术前沿满足线性齐次性，此时 Malmquist 指数仅反映：
+
+- **技术效率变化（EC）**
+- **技术进步（TC）**
+
+没有进一步区分规模效应。
+
+因此，CRS-Malmquist 指数分解为：
+$$
+\text{MI}_{\text{CRS}}^t = \underbrace{\frac{D_{\text{CRS}}^{t+1}(\mathbf{x}^{t+1}, \mathbf{y}^{t+1})}{D_{\text{CRS}}^t(\mathbf{x}^t, \mathbf{y}^t)}}_{\text{EC}_{\text{CRS}}} \times 
+\underbrace{\sqrt{ \frac{D_{\text{CRS}}^t(\mathbf{x}^{t+1}, \mathbf{y}^{t+1}) / D_{\text{CRS}}^{t+1}(\mathbf{x}^{t+1}, \mathbf{y}^{t+1})}{D_{\text{CRS}}^t(\mathbf{x}^t, \mathbf{y}^t) / D_{\text{CRS}}^{t+1}(\mathbf{x}^t, \mathbf{y}^t)} }}_{\text{TC}_{\text{CRS}}}
+$$
+
+此版本捕捉的是“纯技术”层面的变化，但包含了规模效率变动的影响。
+
+##### (2) VRS 假设下的 Malmquist 分解
+
+在 VRS 下，技术前沿不再允许任意缩放，因此可以剔除规模效率变化的影响，得到 **纯技术效率变化** 和 **纯技术进步**。
+
+VRS-Malmquist 指数为：
+$$
+\text{MI}_{\text{VRS}}^t = \underbrace{\frac{D_{\text{VRS}}^{t+1}(\mathbf{x}^{t+1}, \mathbf{y}^{t+1})}{D_{\text{VRS}}^t(\mathbf{x}^t, \mathbf{y}^t)}}_{\text{PEC}} \times 
+\underbrace{\sqrt{ \frac{D_{\text{VRS}}^t(\mathbf{x}^{t+1}, \mathbf{y}^{t+1}) / D_{\text{VRS}}^{t+1}(\mathbf{x}^{t+1}, \mathbf{y}^{t+1})}{D_{\text{VRS}}^t(\mathbf{x}^t, \mathbf{y}^t) / D_{\text{VRS}}^{t+1}(\mathbf{x}^t, \mathbf{y}^t)} }}_{\text{PTC}}
+$$
+
+其中：
+
+- $\text{PEC}$：Pure Efficiency Change（纯技术效率变化）
+- $\text{PTC}$：Pure Technical Change（纯技术进步）
+
+> ✅ **关键优势**：VRS 分解排除了规模效率波动的干扰，更适合识别“管理改进”或“技术创新”的真实影响。
+
+##### (3) 规模效率变化（SEC）的提取
+
+通过 CRS 与 VRS 结果的对比，还可进一步计算 **规模效率变化（SEC）**：
+$$
+\text{SEC}^t = \frac{\text{EC}_{\text{CRS}}}{\text{PEC}} = \frac{D_{\text{CRS}}^{t+1}/D_{\text{CRS}}^t}{D_{\text{VRS}}^{t+1}/D_{\text{VRS}}^t}
+$$
+若 $\text{SEC}^t > 1$：表示规模效率提升（更接近最优规模）；  
+若 $\text{SEC}^t < 1$：表示规模效率退化。
+
+最终完整的 TFP 分解为：
+
+$$
+\text{MI}^t = \text{PEC} \times \text{PTC} \times \text{SEC}
+$$
+
+这被称为 **三重分解法**，完整揭示了生产率增长的来源。
+
+`mathmodels` 包提供了 `malmquist()` 计算跨时期的 Malmquist 指数及其分解，该函数是对 `deaR` 包中相关函数做了封装，更便于使用。基本语法：
+
+```{r eval=FALSE}
+malmquist(data, period, inputs, outputs,
+          orientation = "oo", rts = "vrs",
+          type1 = "glob", type2 = "rd")
+```
+
+- `data`: 长格式数据框，第 1 列为决策单元，包含时期列
+- `period, inputs, outputs`: 时期、投入和产出对应的列索引或列名
+- `orientation`: `"io"`（投入导向），`"oo"`（产出导向，默认）
+- `rts`: `"vrs"`（可变规模报酬，默认），`"crs"`（不变规模报酬）
+- `type1`: 参照集：`"cont"`（当期），`"seq"`（序列）或 `"glob"`（全局，默认）
+- `type2`: 分解方法：`"fgnz"`（Färe 等，1994），`"rd"`（Ray 和 Desli，1997，默认），`"gl"`（广义 Malmquist）或 `"bias"`（偏向性技术变化）
+
+返回包含 Period、DMU、Malmquist 指数、EC（效率变化）、TC（技术变化）、PECH（纯效率变化）和 SECH（规模效率变化）的数据框。
+
+## DEA 案例
+
+加载包：
+
+```{r message=FALSE}
+library(tidyverse)
+library(mathmodels)
+```
+
 **案例数据：**2011 年各省（市、自治区）医院的部分投入和产出指标。以床位数和卫生技术人员数作为投入，以诊疗人次数和入院人数作为产出，（可选）医疗废弃物作为非期望产出。
 
 ```{r}
-df = readxl::read_excel("data/dea-data.xlsx")
+df = readxl::read_excel("data/hospital.xlsx")
 df
 ```
 
@@ -343,4 +485,38 @@ tibble(DMU = df$DMU, ccr_in = ccr_in$efficiencies,
        scale_eff = ccr_in / bbc_in)
 ```
 
-更多的 DEA 模型还有：考虑不同时期效率变化的 DEA-malmquist 模型；考虑环境因素和随机噪声对决策单元效率影响的三阶段 DEA 模型；固定前沿生产函数的参数法随机前沿模型；以及以效率为因变量研究效率的影响因素的 Tobit 回归模型。
+
+## DEA-malmquist 案例
+
+来自 `deaR` 包的 2005-2009 年中国各省份工业经济数据（长格式），共 155 行、5 列，包含决策单元（各省份）、年份，以及
+
+投入指标：
+
+- `Capital`：总资产（亿元）；
+- `Labor`：年平均从业人员（万人）。
+
+产出指标 ：
+
+- `GIOV`：工业总产值（亿元）。
+
+该数据集可评估中国工业部门在“十一五”期间的生产效率变化、技术进步与规模效益。数据结构清晰，适合进行跨期、跨区域的效率比较分析。
+
+```{r}
+dat = read_csv("data/economy.csv")
+dat
+```
+
+调用 `malmquist()` 函数计算 `Malmquist` 指数及其分解，需要提供长格式数据框，设置日期、投入、产出列，可选提供导向、规模收益假设、参照集、计算方法：
+
+
+```{r}
+malmquist(dat, period = 2, inputs = 3:4, outputs = 5,
+          orientation = "oo", rts = "vrs",
+          type1 = "glob", type2 = "rd")
+```
+
+`mi` 为 Malmquist 指数，`ec` 为技术效率变化，`tc` 为技术进步，`pech` 为纯技术效率变化，`sech` 为规模效率变化。
+
+更多的 DEA 模型还有：考虑环境因素和随机噪声对决策单元效率影响的三阶段 DEA 模型；固定前沿生产函数的参数法随机前沿模型；以及以效率为因变量研究效率的影响因素的 Tobit 回归模型。
+
+

@@ -12,9 +12,9 @@
 \alias{theil_g2_nest}
 \title{Inequality Indices}
 \usage{
-gini0(x)
+gini0(y)
 
-gini(x, pop)
+gini(y, pop)
 
 theil0(y)
 
@@ -22,19 +22,16 @@ theil(y, pop)
 
 theil0_g(data, group, y)
 
-theil_g(data, group, y, p)
+theil_g(data, group, y, pop)
 
 theil_g2_cross(data, group1, group2, y, pop)
 
 theil_g2_nest(data, group1, group2, y, pop)
 }
 \arguments{
-\item{x}{For \code{gini0}, \code{gini}: Numeric vector of non-negative values (e.g., income).}
+\item{y}{For \code{gini0}, \code{gini}, \code{theil0}: Numeric vector of individual incomes.}
 
 \item{pop}{For \code{gini}: Numeric vector of group populations or population shares.
-For \code{theil}, \code{theil_g}, \code{theil_g2_cross}, \code{theil_g2_nest}: Name of population variable (character).}
-
-\item{y}{For \code{theil0}: Numeric vector of individual incomes.
 For \code{theil}, \code{theil0_g}, \code{theil_g}, \code{theil_g2_cross}, \code{theil_g2_nest}: Name of income variable (character).}
 
 \item{data}{For \code{theil0_g}, \code{theil_g}, \code{theil_g2_cross}, \code{theil_g2_nest}: Data frame containing variables.}
@@ -48,20 +45,10 @@ For \code{theil}, \code{theil0_g}, \code{theil_g}, \code{theil_g2_cross}, \code{
 \value{
 For \code{gini0}, \code{gini}: Numeric Gini coefficient (0 to 1).
 For \code{theil0}, \code{theil}: Numeric Theil index.
-For \code{theil0_g}, \code{theil_g}: List with two tibbles:
+For \code{theil0_g}, \code{theil_g}, \code{theil_g2_cross}, \code{theil_g2_nest}: List with two vectors:
 \itemize{
-\item \code{total}: Tibble with columns \code{type} ("value", "rate"), \code{theil} (total Theil index and 1), \code{Tb} (between-group inequality and contribution rate), \code{Tw} (within-group inequality and contribution rate).
-\item \code{within}: Tibble with columns \code{group} (grouping variable), \code{Twi} (within-group Theil indices), \code{Rwi} (within-group contribution rates).
-}
-For \code{theil_g2_cross}: List with two tibbles:
-\itemize{
-\item \code{total}: Tibble with columns \code{type} ("value", "rate"), \code{theil} (total Theil index and 1), \code{Tb} (between-group1 inequality and contribution rate), \code{Tw} (within-group1 inequality and contribution rate).
-\item \code{within}: Tibble with columns \code{group1} (first grouping variable), \code{Twi} (within-group1 Theil indices), \code{Rwi} (within-group1 contribution rates).
-}
-For \code{theil_g2_nest}: Tibble with two rows:
-\itemize{
-\item Row 1 (\code{type = "value"}): Columns \code{theil} (total Theil index), \code{Tw} (within-group2 inequality), \code{Tb} (between-group2 inequality), \code{Tb_group1} (between-group1 inequality), \code{Tb_group2} (within-group1 between-group2 inequality).
-\item Row 2 (\code{type = "ratio"}): Columns \code{theil} (1), \code{Tw} (within-group2 contribution rate), \code{Tb} (between-group2 contribution rate), \code{Tb_group1} (between-group1 contribution rate), \code{Tb_group2} (within-group1 between-group2 contribution rate).
+\item \code{theil}: theil (Theil index and its decomposition),
+\item \code{ratio}: ratio (contribution rates of each component).
 }
 }
 \description{
@@ -74,6 +61,8 @@ Computes inequality indices for individual or grouped data:
 \code{theil_g} calculates the Theil index and decomposition for grouped average data.
 \code{theil_g2_cross} calculates the Theil index and decomposition for two-level cross-grouped average data.
 \code{theil_g2_nest} calculates the Theil index and decomposition for two-level nested grouped average data.
+
+For \code{theil}, \code{theil_g}, \code{theil_g2_cross}, \code{theil_g2_nest}: Name of population variable (character).
 }
 \examples{
 # Sample data
@@ -92,24 +81,24 @@ data = data.frame(g = c("A","A",rep("B",10),rep("A",6)),
 theil0(data$y)
 
 # Theil index (grouped average)
-data2 = data |> dplyr::count(g, y, name = "p")
-theil(data2$y, data2$p)
+data2 = data |> dplyr::count(g, y, name = "pop")
+theil(data2$y, data2$pop)
 
 # Theil index with grouping (sample data)
 theil0_g(data, "g", "y")
 
 # Theil index with grouping (average data)
-theil_g(data2, "g", "y", "p")
+theil_g(data2, "g", "y", "pop")
 
 # Theil index with two-level cross-grouping
 data3 = data.frame(
-  region = c("Eastern", "Eastern", "Central", "Central", "Western", "Western", "Northeast", "Northeast"),
-  type = c("Urban", "Rural", "Urban", "Rural", "Urban", "Rural", "Urban", "Rural"),
-  pop = c(24491, 21854, 12850, 22321, 12423, 23522, 5930, 4823),
-  per_income = c(13375, 4720, 8809, 2957, 8783, 2379, 8730, 3379)
+  industry = c("A", "A", "A", "A", "B", "B", "B", "B"),
+  area = c("East", "East", "West", "West", "East", "East", "West", "West"),
+  province = c("Shanghai", "Beijing", "Sichuan", "Yunnan", "Shanghai", "Beijing", "Sichuan", "Yunnan"),
+  avg_wage = c(500, 400, 80, 60, 300, 250, 50, 40),
+  emp_num = c(100, 80, 90, 70, 120, 100, 80, 60)
 )
-theil_g2_cross(data3, "region", "type", "per_income", "pop")
-theil_g2_cross(data3, "type", "region", "per_income", "pop")
+theil_g2_cross(data3, "industry", "area", "avg_wage", "emp_num")
 
 # Theil index with two-level nested grouping
 data4 = data.frame(

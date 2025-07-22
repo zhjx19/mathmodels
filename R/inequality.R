@@ -11,10 +11,9 @@
 #' \code{theil_g2_cross} calculates the Theil index and decomposition for two-level cross-grouped average data.
 #' \code{theil_g2_nest} calculates the Theil index and decomposition for two-level nested grouped average data.
 #'
-#' @param x For \code{gini0}, \code{gini}: Numeric vector of non-negative values (e.g., income).
-#' @param pop For \code{gini}: Numeric vector of group populations or population shares.
 #' For \code{theil}, \code{theil_g}, \code{theil_g2_cross}, \code{theil_g2_nest}: Name of population variable (character).
-#' @param y For \code{theil0}: Numeric vector of individual incomes.
+#' @param y For \code{gini0}, \code{gini}, \code{theil0}: Numeric vector of individual incomes.
+#' @param pop For \code{gini}: Numeric vector of group populations or population shares.
 #' For \code{theil}, \code{theil0_g}, \code{theil_g}, \code{theil_g2_cross}, \code{theil_g2_nest}: Name of income variable (character).
 #' @param data For \code{theil0_g}, \code{theil_g}, \code{theil_g2_cross}, \code{theil_g2_nest}: Data frame containing variables.
 #' @param group For \code{theil0_g}, \code{theil_g}: Name of grouping variable (e.g., province).
@@ -24,20 +23,10 @@
 #' @return
 #' For \code{gini0}, \code{gini}: Numeric Gini coefficient (0 to 1).
 #' For \code{theil0}, \code{theil}: Numeric Theil index.
-#' For \code{theil0_g}, \code{theil_g}: List with two tibbles:
+#' For \code{theil0_g}, \code{theil_g}, \code{theil_g2_cross}, \code{theil_g2_nest}: List with two vectors:
 #' \itemize{
-#'   \item \code{total}: Tibble with columns \code{type} ("value", "rate"), \code{theil} (total Theil index and 1), \code{Tb} (between-group inequality and contribution rate), \code{Tw} (within-group inequality and contribution rate).
-#'   \item \code{within}: Tibble with columns \code{group} (grouping variable), \code{Twi} (within-group Theil indices), \code{Rwi} (within-group contribution rates).
-#' }
-#' For \code{theil_g2_cross}: List with two tibbles:
-#' \itemize{
-#'   \item \code{total}: Tibble with columns \code{type} ("value", "rate"), \code{theil} (total Theil index and 1), \code{Tb} (between-group1 inequality and contribution rate), \code{Tw} (within-group1 inequality and contribution rate).
-#'   \item \code{within}: Tibble with columns \code{group1} (first grouping variable), \code{Twi} (within-group1 Theil indices), \code{Rwi} (within-group1 contribution rates).
-#' }
-#' For \code{theil_g2_nest}: Tibble with two rows:
-#' \itemize{
-#'   \item Row 1 (\code{type = "value"}): Columns \code{theil} (total Theil index), \code{Tw} (within-group2 inequality), \code{Tb} (between-group2 inequality), \code{Tb_group1} (between-group1 inequality), \code{Tb_group2} (within-group1 between-group2 inequality).
-#'   \item Row 2 (\code{type = "ratio"}): Columns \code{theil} (1), \code{Tw} (within-group2 contribution rate), \code{Tb} (between-group2 contribution rate), \code{Tb_group1} (between-group1 contribution rate), \code{Tb_group2} (within-group1 between-group2 contribution rate).
+#'   \item \code{theil}: theil (Theil index and its decomposition),
+#'   \item \code{ratio}: ratio (contribution rates of each component).
 #' }
 #'
 #' @examples
@@ -57,24 +46,24 @@
 #' theil0(data$y)
 #'
 #' # Theil index (grouped average)
-#' data2 = data |> dplyr::count(g, y, name = "p")
-#' theil(data2$y, data2$p)
+#' data2 = data |> dplyr::count(g, y, name = "pop")
+#' theil(data2$y, data2$pop)
 #'
 #' # Theil index with grouping (sample data)
 #' theil0_g(data, "g", "y")
 #'
 #' # Theil index with grouping (average data)
-#' theil_g(data2, "g", "y", "p")
+#' theil_g(data2, "g", "y", "pop")
 #'
 #' # Theil index with two-level cross-grouping
 #' data3 = data.frame(
-#'   region = c("Eastern", "Eastern", "Central", "Central", "Western", "Western", "Northeast", "Northeast"),
-#'   type = c("Urban", "Rural", "Urban", "Rural", "Urban", "Rural", "Urban", "Rural"),
-#'   pop = c(24491, 21854, 12850, 22321, 12423, 23522, 5930, 4823),
-#'   per_income = c(13375, 4720, 8809, 2957, 8783, 2379, 8730, 3379)
+#'   industry = c("A", "A", "A", "A", "B", "B", "B", "B"),
+#'   area = c("East", "East", "West", "West", "East", "East", "West", "West"),
+#'   province = c("Shanghai", "Beijing", "Sichuan", "Yunnan", "Shanghai", "Beijing", "Sichuan", "Yunnan"),
+#'   avg_wage = c(500, 400, 80, 60, 300, 250, 50, 40),
+#'   emp_num = c(100, 80, 90, 70, 120, 100, 80, 60)
 #' )
-#' theil_g2_cross(data3, "region", "type", "per_income", "pop")
-#' theil_g2_cross(data3, "type", "region", "per_income", "pop")
+#' theil_g2_cross(data3, "industry", "area", "avg_wage", "emp_num")
 #'
 #' # Theil index with two-level nested grouping
 #' data4 = data.frame(
@@ -94,32 +83,32 @@ NULL
 
 trapz = function(x, y) {
   # Computes numerical integral using trapezoidal rule
-  S = 0
-  for(i in 2:length(x)) {
-    S = S + (x[i] - x[i-1]) * (y[i-1] + y[i]) / 2
-  }
-  S
-}
-
-#' @rdname inequality
-#' @export
-gini0 = function(x) {
-  # Computes Gini coefficient for inequality
-  # x: numeric vector of non-negative values
   n = length(x)
-  d = outer(x, x, FUN = function(a, b) abs(a - b))
-  sum(d) / (2 * n^2 * mean(x))
+  sum((x[2:n] - x[1:(n-1)]) * (y[2:n] + y[1:(n-1)]) / 2)
 }
 
 #' @rdname inequality
 #' @export
-gini = function(x, pop) {
+gini0 = function(y) {
+  # Computes Gini coefficient for inequality
+  # y: numeric vector of non-negative values
+  n = length(y)
+  d = outer(y, y, FUN = function(a, b) abs(a - b))
+  sum(d) / (2 * n^2 * mean(y))
+}
+
+#' @rdname inequality
+#' @export
+gini = function(y, pop) {
   # Computes Gini coefficient for grouped data
-  # income: numeric vector of group incomes or income shares
+  # y: numeric vector of group incomes or income shares
   # pop: numeric vector of group populations or population shares
-  y = c(0, cumsum(pop) / sum(pop))
-  z = c(0, cumsum(x) / sum(x))
-  (0.5 - trapz(y, z)) / 0.5
+  ord = order(y / pop)
+  y = y[ord]
+  pop = pop[ord]
+  x = c(0, cumsum(pop) / sum(pop))
+  z = c(0, cumsum(y) / sum(y))
+  1 - 2 * trapz(x, z)
 }
 
 #' @rdname inequality
@@ -149,151 +138,211 @@ theil0_g = function(data, group, y) {
   # data: data frame
   # group: name of grouping variable (e.g., province)
   # y: name of income variable
-  # Returns Theil index, between/within components, and contribution rates
+  # Returns a list of two elements:
+  #   - theil: Total Theil index (T), between-group (Tb), within-group (Tw), and per-group1 within-group Theil indices
+  #   - ratio: corresponding contribution rates
+
+  # Rename columns for consistency
   vars = c(group, y)
   data = data |>
     dplyr::select(dplyr::all_of(vars)) |>
     stats::setNames(c("group", "y"))
+
   dfb = data |>
     dplyr::summarise(y = mean(y), p = dplyr::n(), .by = group) |>
     dplyr::mutate(yp = y * p, Yr = yp / sum(yp))
   Tb = theil(dfb$y, dfb$p)
+
   dfw = data |>
     tidyr::nest(.by = group) |>
     dplyr::mutate(Tw = sapply(data, function(d) theil0(d$y)))
-
   Tw = sum(dfb$Yr * dfw$Tw)
-  TT = Tb + Tw            # total theil index
-  total = tibble::tibble(type = c("value", "rate"), theil = c(TT, 1),
-                         Tb = c(Tb, Tb/TT), Tw = c(Tw, Tw/TT))
-  within = tibble::tibble(group = dfw$group, Twi = dfw$Tw,
-                          Rwi = dfb$Yr * dfw$Tw / TT)
 
-  list(total = total, within = within)
+  # total theil index
+  TT = Tb + Tw
+
+  # within-group contribution rates
+  Rwi = dfb$Yr * dfw$Tw / TT
+
+  list(theil = c(T=TT, Tb=Tb, Tw=Tw, setNames(dfw$Tw, dfw$group)),
+       ratio = c(T=1, Tb=Tb/TT, Tw=Tw/TT, setNames(Rwi, dfw$group)))
 }
 
 #' @rdname inequality
 #' @export
-theil_g = function(data, group, y, p) {
+theil_g = function(data, group, y, pop) {
   # Computes Theil index and decomposition for grouped average data
   # data: data frame
   # group: name of grouping variable (e.g., province)
   # y: name of average income variable
-  # p: name of population variable
-  # Returns Theil index, between/within components, and contribution rates
-  vars = c(group, y, p)
+  # pop: name of population variable
+  # Returns a list of two elements:
+  #   - theil: Total Theil index (T), between-group (Tb), within-group (Tw), and per-group within-group Theil indices
+  #   - ratio: Corresponding contribution rates
+
+  # Rename columns for consistency
+  vars = c(group, y, pop)
   data = data |>
     dplyr::select(dplyr::all_of(vars)) |>
-    stats::setNames(c("group", "y","p"))
+    stats::setNames(c("group", "y","pop"))
+
   dfb = data |>
-    dplyr::summarise(y = sum(y * p) / sum(p), p = sum(p), .by = group) |>
-    dplyr::mutate(yp = y * p, Yr = yp / sum(yp))
-  Tb = theil(dfb$y, dfb$p)
+    dplyr::summarise(y = sum(y*pop)/sum(pop), pop = sum(pop), .by = group) |>
+    dplyr::mutate(yp = y*pop, Yr = yp/sum(yp))
+  Tb = theil(dfb$y, dfb$pop)
+
   dfw = data |>
     tidyr::nest(.by = group) |>
-    dplyr::mutate(Tw = sapply(data, function(d) theil(d$y, d$p)))
-
+    dplyr::mutate(Tw = sapply(data, function(d) theil(d$y, d$pop)))
   Tw = sum(dfb$Yr * dfw$Tw)
-  TT = Tb + Tw            # total theil index
-  total = tibble::tibble(type = c("value", "rate"), theil = c(TT, 1),
-                         Tb = c(Tb, Tb/TT), Tw = c(Tw, Tw/TT))
-  within = tibble::tibble(group = dfw$group, Twi = dfw$Tw,
-                          Rwi = dfb$Yr * dfw$Tw / TT)
 
-  list(total = total, within = within)
+  # total theil index
+  TT = Tb + Tw
+
+  # within-group contribution rates
+  Rwi = dfb$Yr * dfw$Tw / TT
+
+  list(theil = c(T=TT, Tb=Tb, Tw=Tw, setNames(dfw$Tw, dfw$group)),
+       ratio = c(T=1, Tb=Tb/TT, Tw=Tw/TT, setNames(Rwi, dfw$group)))
 }
 
 #' @rdname inequality
 #' @export
 theil_g2_cross = function(data, group1, group2, y, pop) {
-  # Computes Theil index and decomposition for two-level grouped data
-  # data: data frame
-  # group1: name of first grouping variable (e.g., region)
-  # group2: name of second grouping variable (e.g., type)
-  # y: name of average income variable
-  # pop: name of population variable
-  # Returns list with Theil index, between/within components, and contribution rates
-  # Rename columns for consistency
+  # Computes Theil index and decomposition for two-level grouped average data
+  # group1: name of first grouping variable (e.g., industry)
+  # group2: name of second grouping variable (e.g., area: East, Central, West)
+  # y: name of average income variable (e.g., average wage)
+  # pop: name of population variable (e.g., employment number)
+  # Returns a list with two elements:
+  #   - theil: Total Theil index (T), between-group1 (Tb), within-group1 (Tw),
+  #            between-group2 (Tw_b), within-group2 (Tw_w), and per-group1 within-group Theil indices
+  #   - ratio: corresponding contribution rates
+
+  # Standardize column names
   vars = c(group1, group2, y, pop)
-  data = data |>
-    dplyr::select(dplyr::all_of(vars)) |>
-    stats::setNames(c("group1", "group2", "y", "pop"))
+  data = stats::setNames(dplyr::select(data, dplyr::all_of(vars)), c("group1", "group2", "y", "pop"))
 
-  # Compute total Theil index using theil()
-  TT = theil(data$y, data$pop)
-
-  # Compute group1-level aggregates for between-group inequality
-  dfb = data |>
-    dplyr::summarise(y = sum(y * pop) / sum(pop), p = sum(pop),
-                     .by = group1) |>
-    dplyr::mutate(yp = y * p, Yr = yp / sum(yp))
-
-  # Between-group Theil index using theil()
+  # Compute between-group1 Theil index (by group1)
+  dfb = dplyr::mutate(
+    dplyr::summarise(data, y = sum(y * pop) / sum(pop), p = sum(pop), .by = group1),
+    yp = y * p, Yr = yp / sum(yp))
   Tb = theil(dfb$y, dfb$p)
 
-  # Compute within-group Theil index for each group1
+  # Compute within-group1 Theil index with nested decomposition
   dfw = data |>
     tidyr::nest(.by = group1) |>
-    dplyr::mutate(Tw = sapply(data, function(d) theil(d$y, d$pop)))
-
-  # Total within-group inequality
+    dplyr::mutate(
+      # Compute between-group2 Theil index within each group1
+      T_g2_b = sapply(data, function(d) {
+        d_agg = dplyr::summarise(d, y = sum(y * pop) / sum(pop), pop = sum(pop), .by = group2)
+        theil(d_agg$y, d_agg$pop)
+      }),
+      # Compute within-group2 Theil index for each group2 within group1
+      T_g2_w = sapply(data, function(d) {
+        d_nested = tidyr::nest(d, .by = group2)
+        sum(sapply(d_nested$data, function(dr) {
+          if (nrow(dr) > 1) theil(dr$y, dr$pop) * sum(dr$pop) / sum(d$pop)
+          else 0
+        }), na.rm = TRUE)
+      }),
+      # Total within-group1 Theil index for each group1
+      Tw = T_g2_b + T_g2_w
+    )
   Tw = sum(dfb$Yr * dfw$Tw)
+  T_g2_b = sum(dfb$Yr * dfw$T_g2_b)
+  T_g2_w = sum(dfb$Yr * dfw$T_g2_w)
 
-  # Contribution rates
+  # Compute total Theil index as Tb + Tw
+  TT = Tb + Tw
+
+  # Compute contribution rates
   Rwi = dfb$Yr * dfw$Tw / TT
 
-  # Combine results
-  total = tibble::tibble(type = c("value", "ratio"), theil = c(TT, 1),
-                         Tw = c(Tw, Tw / TT), Tb = c(Tb, Tb / TT))
-  within = tibble::tibble(group1 = dfw$group1, Twi = dfw$Tw, Rwi = Rwi)
-
-  list(total = total, within = within)
+  # Return results
+  list(
+    theil = c(T = TT, Tb = Tb, Tw = Tw, Tw_b = T_g2_b, Tw_w = T_g2_w,
+              setNames(dfw$Tw, dfw$group1)),
+    ratio = c(T = 1, Tb = Tb/TT, Tw = Tw/TT, Tw_b = T_g2_b/TT, Tw_w = T_g2_w/TT,
+              setNames(Rwi, dfw$group1))
+  )
 }
 
 #' @rdname inequality
 #' @export
 theil_g2_nest = function(data, group1, group2, y, pop) {
   # Computes Theil index and decomposition for two-level nested grouped data
-  # data: data frame
   # group1: name of first grouping variable (e.g., province)
   # group2: name of second grouping variable (e.g., city)
-  # y: name of average income variable
-  # pop: name of population variable
-  # Returns tibble with Theil index, between/within components, and contribution rates
+  # y: name of average income variable (e.g., average wage)
+  # pop: name of population variable (e.g., employment number)
+  # Returns a list with two elements:
+  #   - theil: Total Theil index (T), between-group1 (Tb_g1), between-group2 (Tb_g2),
+  #            within-group2 (Tw), and per-group1/group2 Theil indices
+  #   - ratio: corresponding contribution rates
 
   # Standardize column names
-  data = data |>
-    dplyr::select(dplyr::all_of(c(group1, group2, y, pop))) |>
-    stats::setNames(c("group1", "group2", "y", "pop"))
+  vars = c(group1, group2, y, pop)
+  data = stats::setNames(dplyr::select(data, dplyr::all_of(vars)), c("group1", "group2", "y", "pop"))
 
-  # total theil index
-  TT = theil(data$y, data$pop)
+  # Compute total income for weights
+  total_income = sum(data$y * data$pop)
 
-  # Aggregate to city level, calculate Tb (inequality between cities)
-  df_group2 = data |>
-    dplyr::summarise(y = sum(y * pop) / sum(pop),             # City average wage
-                     pop = sum(pop), .by = c(group1, group2)) # City total pop
-  Tb = theil(df_group2$y, df_group2$pop)
+  # Compute between-group1 Theil index (by group1)
+  df_g1 = dplyr::summarise(data, y = sum(y * pop) / sum(pop), p = sum(pop), .by = group1) |>
+    dplyr::mutate(yp = y * p, Yr = yp / total_income)
+  Tb_g1 = theil(df_g1$y, df_g1$p)
 
-  # Aggregate to provincial level, calculate Tb_group1
-  df_prov = data |>
-    dplyr::summarise(y = sum(y * pop) / sum(pop),  # Province average wage
-                     pop = sum(pop), .by = group1) # Province total pop
-  Tb_g1 = theil(df_prov$y, df_prov$pop)
+  # Compute between-group2 Theil index within each group1
+  df_g2 = data |>
+    dplyr::summarise(y = sum(y * pop) / sum(pop), p = sum(pop), .by = c(group1, group2)) |>
+    tidyr::nest(.by = group1) |>
+    dplyr::mutate(
+      Tb_g2 = sapply(data, function(d) {
+        if (nrow(d) > 1) theil(d$y, d$p) else 0
+      }),
+      Yr = sapply(data, function(d) sum(d$y * d$p) / total_income)
+    )
+  Tb_g2 = sum(df_g2$Yr * df_g2$Tb_g2)
 
-  # Calculate Tb_group2
-  Tb_g2 = Tb - Tb_g1
-
-  # Calculate within-group inequality Tw (inequality within cities)
+  # Compute within-group2 Theil index for each group2
   df_within = data |>
     tidyr::nest(.by = c(group1, group2)) |>
-    dplyr::mutate(Tw = sapply(data, function(d) theil(d$y, d$pop)))
-  df_g2_weights = df_group2 |>
-    dplyr::mutate(Yr = (y * pop) / sum(y * pop))
-  Tw = sum(df_g2_weights$Yr * df_within$Tw)
+    dplyr::mutate(
+      Tw = sapply(data, function(d) {
+        if (nrow(d) > 1) theil(d$y, d$pop) else 0
+      }),
+      y = sapply(data, function(d) sum(d$y * d$pop) / sum(d$pop)),
+      p = sapply(data, function(d) sum(d$pop))
+    ) |>
+    dplyr::mutate(Yr = (y * p) / total_income)
+  Tw = sum(df_within$Yr * df_within$Tw, na.rm = TRUE)
 
-  tibble::tibble(type = c("value", "ratio"), theil = c(TT, 1),
-                 Tw = c(Tw, Tw / TT), Tb = c(Tb, Tb / TT),
-                 Tb_group1 = c(Tb_g1, Tb_g1 / TT),
-                 Tb_group2 = c(Tb_g2, Tb_g2 / TT))
+  # Compute total Theil index as Tb_g1 + Tb_g2 + Tw
+  Tb = Tb_g1 + Tb_g2
+  TT = Tb + Tw
+
+  # Compute contribution rates
+  # 1. Each group1's between-group2 contribution (weighted)
+  R_group1 = (df_g2$Yr * df_g2$Tb_g2) / TT
+
+  # 2. Each group1_group2's within-group2 contribution
+  Rwi = df_within$Yr * df_within$Tw / TT
+
+  # 3. Each group1's total contribution (sum of within-group2 contributions within each group1)
+  df_within_group1 = df_within |>
+    dplyr::group_by(group1) |>
+    dplyr::summarise(R_group1_total = sum(Rwi, na.rm = TRUE))
+  R_group1_total = setNames(df_within_group1$R_group1_total, df_within_group1$group1)
+
+  # Return results
+  list(
+    theil = c(T = TT, Tb_g1 = Tb_g1, Tb_g2 = Tb_g2, Tw = Tw,
+              setNames(df_g2$Tb_g2, df_g2$group1),
+              setNames(df_within$Tw, paste(df_within$group1, df_within$group2, sep = "_"))),
+    ratio = c(T = 1, Tb_g1 = Tb_g1/TT, Tb_g2 = Tb_g2/TT, Tw = Tw/TT,
+              setNames(R_group1, df_g2$group1),  # Each group1's between-group2 contribution
+              setNames(Rwi, paste(df_within$group1, df_within$group2, sep = "_")),  # Each group2's within contribution
+              setNames(R_group1_total, names(R_group1_total)))  # Each group1's total within contribution
+  )
 }

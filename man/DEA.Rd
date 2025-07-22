@@ -6,7 +6,8 @@
 \alias{super_DEA}
 \alias{basic_SBM}
 \alias{super_SBM}
-\title{Data Envelopment Analysis (DEA & SBM)}
+\alias{malmquist}
+\title{Data Envelopment Analysis and Malmquist Productivity Index}
 \usage{
 basic_DEA(
   data,
@@ -36,123 +37,195 @@ basic_SBM(
 )
 
 super_SBM(data, inputs, outputs, orientation = "io", rts = "vrs")
+
+malmquist(
+  data,
+  period,
+  inputs,
+  outputs,
+  orientation = "oo",
+  rts = "vrs",
+  type1 = "glob",
+  type2 = "rd"
+)
 }
 \arguments{
-\item{data}{A data frame. The first column should contain DMU (Decision Making Unit) names/identifiers.
-Subsequent columns are input/output variables.}
+\item{data}{For DEA functions (\code{basic_DEA}, \code{super_DEA}, \code{basic_SBM}, \code{super_SBM}):
+A data frame where the first column contains DMU (Decision Making Unit)
+names/identifiers, and subsequent columns are input/output variables.
+For \code{malmquist}: A long-format data frame with a period column, DMU identifiers,
+and input/output variables.}
 
-\item{inputs}{A numeric vector of column indices or a character vector of column names
-indicating input variables.}
+\item{inputs}{A numeric vector of column indices or a character vector of column
+names indicating input variables.}
 
-\item{outputs}{A numeric vector of column indices or a character vector of column names
-indicating (desirable) output variables.}
+\item{outputs}{A numeric vector of column indices or a character vector of column
+names indicating (desirable) output variables.}
 
-\item{ud_outputs}{Optional. A numeric vector of denoting the position of undesirable outputs in the outputs. Defaults to \code{NULL}.}
+\item{ud_outputs}{Optional. A numeric vector indicating the position of undesirable
+outputs within the \code{outputs} parameter. Defaults to \code{NULL}. Not applicable for
+\code{super_SBM} or \code{malmquist}.}
 
-\item{orientation}{Character string. Model orientation: \code{"io"} for input-oriented (default),
-or \code{"oo"} for output-oriented.}
+\item{orientation}{Character string. Model orientation: \code{"io"} (input-oriented,
+default for DEA functions) or \code{"oo"} (output-oriented, default for \code{malmquist}).}
 
-\item{rts}{Character string. Returns to scale assumption: \code{"vrs"} for variable returns to
-scale (default), or \code{"crs"} for constant returns to scale.}
+\item{rts}{Character string. Returns to scale assumption: \code{"vrs"} (variable returns
+to scale, default) or \code{"crs"} (constant returns to scale).}
+
+\item{period}{For \code{malmquist} only: A numeric or character index/name indicating
+the column in \code{data} containing time periods.}
+
+\item{type1}{For \code{malmquist} only: Reference technology for Malmquist index:
+\code{"cont"} (contemporary), \code{"seq"} (sequential), or \code{"glob"} (global, default).}
+
+\item{type2}{For \code{malmquist} only: Decomposition method for Malmquist index:
+\code{"fgnz"} (Färe et al., 1994), \code{"rd"} (Ray and Desli, 1997, default),
+\code{"gl"} (generalized), or \code{"bias"} (biased).}
 }
 \value{
+For DEA functions (\code{basic_DEA}, \code{super_DEA}, \code{basic_SBM}, \code{super_SBM}):
 A list containing six elements:
-\item{efficiencies}{A numeric vector of efficiency scores for each DMU.}
-\item{slacks}{A data frame or matrix containing the slack values for inputs/outputs.}
-\item{lambdas}{A matrix or data frame containing the intensity variables (weights) for each DMU, representing the contribution of reference DMUs to the efficiency frontier.}
-\item{targets}{A data frame or matrix containing the efficient target values for inputs and outputs (including undesirable outputs) for each DMU.}
-\item{returns}{A character vector indicating the returns-to-scale (RTS) status of each DMU, such as "crs" (constant), "vrs" (variable), "irs" (increasing), or "drs" (decreasing).}
-\item{references}{A matrix or data frame listing the reference DMUs (peers) contributing to the efficiency frontier for each evaluated DMU.}
+\itemize{
+\item \code{efficiencies}: A named numeric vector of efficiency scores for each
+DMU, standardized to (0, 1] for both input- and output-oriented models.
+\item \code{slacks}: A data frame or matrix containing slack values for inputs
+and outputs (including undesirable outputs, if specified).
+\item \code{lambdas}: A matrix or data frame of intensity variables
+(\eqn{\lambda}{lambda}), representing the contribution of reference DMUs to
+the efficiency frontier (self-excluded in super-efficiency models).
+\item \code{targets}: A data frame or matrix of efficient target values for
+inputs and outputs, adjusted for undesirable outputs in DDF models.
+\item \code{returns}: A character vector indicating returns-to-scale status for
+each DMU: \code{"crs"} (constant), \code{"irs"} (increasing), or \code{"drs"} (decreasing).
+\item \code{references}: A matrix or data frame listing reference DMUs (peers)
+contributing to the efficiency frontier (\eqn{\lambda > 0}{lambda > 0}).
+}
+
+For \code{malmquist}:
+A data frame containing:
+\itemize{
+\item \code{Period}: Time period transitions (e.g., "t~t+1").
+\item \code{DMU}: Decision Making Unit identifiers.
+\item \code{mi}: Malmquist productivity index, measuring total productivity change.
+\item \code{ec}: Efficiency change (EC), computed directly or as \code{mi / tc}
+if not available from the model.
+\item \code{tc}: Technical change (TC), measuring frontier shift.
+\item \code{pech}: Pure efficiency change (if applicable, based on decomposition
+method).
+\item \code{sech}: Scale efficiency change (if applicable, based on decomposition
+method).
+}
 }
 \description{
-Calculates standard and super-efficiency DEA and SBM models (CCR, BCC, and slacks-based),
-including efficiency score, slacks, lambdas, targets, returns, and references,
-with support for undesirable outputs.
+Computes standard and super-efficiency Data Envelopment Analysis (DEA) models
+(CCR, BCC, and slacks-based), including efficiency scores, slacks, lambdas,
+targets, returns to scale, and references, with support for undesirable outputs.
+Additionally, calculates the Malmquist productivity index to measure productivity
+changes over time, including efficiency change (EC), technical change (TC), and
+other decomposition components.
 }
 \details{
-This function provides a simplified interface for computing efficiency scores using radial Data
-Envelopment Analysis (DEA) models (Charnes et al., 1978; Banker et al., 1984) and Slacks-Based
-Measure (SBM) models (Tone, 2001) via the \pkg{deaR} package. It supports both standard and
-super-efficiency models under constant (CRS) or variable (VRS) returns to scale, with optional
-handling of undesirable outputs. The package includes four functions: \code{basic_DEA},
-\code{super_DEA}, \code{basic_SBM}, and \code{super_SBM}, each tailored to specific DEA or SBM
-variants.
+This package provides a unified interface for computing efficiency scores and
+productivity changes using the \pkg{deaR} package. It includes five functions:
+\code{basic_DEA}, \code{super_DEA}, \code{basic_SBM}, \code{super_SBM}, and
+\code{malmquist}, each tailored to specific DEA or productivity analysis models.
+
 \itemize{
-\item \strong{Model Types}:
+\item \strong{DEA Models}:
 \itemize{
-\item \code{basic_DEA}: Implements standard radial DEA models, including CCR (CRS) and BCC (VRS),
-optimizing radial efficiency measures (input contraction or output expansion).
-\item \code{super_DEA}: Implements super-efficiency radial DEA, excluding the evaluated DMU from
-the reference set to allow efficiency scores beyond 1 (radial, output-oriented) or below 1
-(radial, input-oriented) for efficient DMUs (Andersen & Petersen, 1993).
-\item \code{basic_SBM}: Implements standard SBM, optimizing input and output slacks directly for
-a non-radial efficiency measure.
-\item \code{super_SBM}: Implements super-efficiency SBM, combining SBM with super-efficiency
-properties, excluding the evaluated DMU from the reference set.
+\item \code{basic_DEA}: Implements standard radial DEA models (CCR for CRS,
+BCC for VRS) as described by Charnes et al. (1978) and Banker et al. (1984),
+optimizing radial efficiency (input contraction or output expansion).
+\item \code{super_DEA}: Computes super-efficiency radial DEA, excluding the
+evaluated DMU from the reference set to allow efficiency scores beyond 1
+(output-oriented) or below 1 (input-oriented) for efficient DMUs
+(Andersen & Petersen, 1993).
+\item \code{basic_SBM}: Implements standard Slacks-Based Measure (SBM) models
+(Tone, 2001), optimizing input and output slacks for a non-radial
+efficiency measure.
+\item \code{super_SBM}: Combines SBM with super-efficiency properties,
+excluding the evaluated DMU from the reference set. Note: \code{super_SBM}
+does not support undesirable outputs.
 }
-\item \strong{Orientation}:
+\item \strong{Malmquist Productivity Index}:
 \itemize{
-\item Input-oriented (\code{"io"}): Minimizes inputs while maintaining output levels. Efficiency
-scores are in \eqn{(0, 1]}{(0, 1]} (\eqn{\theta \leq 1}{theta <= 1} for radial models,
-\eqn{\rho}{rho} or \eqn{\delta \leq 1}{delta <= 1} for SBM models).
-\item Output-oriented (\code{"oo"}): Maximizes outputs for given inputs. Efficiency scores are in
-\eqn{(0, 1]}{(0, 1]}. Radial models output \eqn{\eta \geq 1}{eta >= 1}, which is converted
-to \eqn{1/\eta}{1/eta}; SBM models output \eqn{1/\rho^*}{1/rho*} or
-\eqn{1/\delta}{1/delta} directly.
-}
-\item \strong{Undesirable Outputs}:
-\itemize{
-\item Supported in \code{basic_DEA}, \code{super_DEA}, and \code{basic_SBM} using directional
-distance functions (DDF) with direction vector \eqn{(g_y, -g_b)}{(g_y, -g_b)} to increase
-desirable outputs and decrease undesirable outputs (Färe & Grosskopf, 2004).
-\item For \code{super_SBM}, undesirable outputs are supported by adapting the SBM super-efficiency
-model with DDF, ensuring undesirable outputs are minimized appropriately.
-}
-\item \strong{NA Values in Super-Efficiency Models}:
-\itemize{
-\item Super-efficiency models (\code{super_DEA}, \code{super_SBM}) may return \code{NA} for
-efficient DMUs due to infeasible linear programming solutions, particularly under VRS
-(Andersen & Petersen, 1993). This occurs when the reference set, excluding the evaluated
-DMU, cannot form a feasible production possibility set.
-\item Users can handle \code{NA} values externally, as described in the package vignette. Common
-approaches include replacing \code{NA} with standard efficiency scores (from
-\code{basic_DEA} or \code{basic_SBM}) or excluding DMUs with \code{NA} values from further
-analysis.
-}
-\item \strong{Returns to Scale (RTS)}:
-\itemize{
-\item CRS (\code{"crs"}): Assumes constant returns to scale, suitable for long-run analysis where
-scale effects are absent.
-\item VRS (\code{"vrs"}): Assumes variable returns to scale, allowing increasing (\code{"irs"}) or
-decreasing (\code{"drs"}) returns, determined by the sum of intensity variables
-(\eqn{\lambda}{lambda}).
-}
-\item \strong{Outputs}:
-\itemize{
-\item \code{efficiencies}: A named numeric vector of efficiency scores, standardized to
-\eqn{(0, 1]}{(0, 1]} for both input- and output-oriented models.
-\item \code{slacks}: A data frame or matrix of input and output slacks, including undesirable
-outputs, indicating excess inputs or output shortfalls.
-\item \code{lambdas}: A matrix or data frame of intensity variables (\eqn{\lambda}{lambda}),
-showing the contribution of reference DMUs to the efficiency frontier (self-excluded in
-super-efficiency models).
-\item \code{targets}: A data frame or matrix of efficient projection points for inputs and outputs,
-adjusted for undesirable outputs in DDF models.
-\item \code{returns}: A character vector indicating RTS status (\code{"crs"}, \code{"irs"},
-\code{"drs"}) for each DMU.
-\item \code{references}: A matrix or data frame listing reference DMUs (peers) contributing to the
-efficiency frontier (\eqn{\lambda > 0}{lambda > 0}).
+\item \code{malmquist}: Calculates the Malmquist productivity index to measure
+productivity changes over time, decomposing it into efficiency change (EC)
+and technical change (TC), with optional further decomposition into pure
+efficiency change (PECH) and scale efficiency change (SECH) based on
+\code{type2} (Färe et al., 1994; Ray & Desli, 1997). If EC is unavailable
+(e.g., under \code{rts = "vrs"} and \code{type1 = "glob"}), it is computed
+as \code{ec = mi / tc} to ensure consistent output.
 }
 }
 
-The package uses \pkg{deaR} for robust computation, handling zero values internally and ensuring
-compatibility with input/output specifications. Efficiency scores are standardized to
-\eqn{(0, 1]}{(0, 1]} for consistency across models and orientations. For detailed \code{NA}
-handling strategies, refer to the package vignette.
+\strong{Orientation}:
+\itemize{
+\item Input-oriented (\code{"io"}): Minimizes inputs while maintaining outputs.
+Efficiency scores are in \eqn{(0, 1]}{(0, 1]} (\eqn{\theta \leq 1}{theta <= 1}
+for radial models, \eqn{\rho}{rho} or \eqn{\delta \leq 1}{delta <= 1} for
+SBM models).
+\item Output-oriented (\code{"oo"}): Maximizes outputs for given inputs.
+Efficiency scores are in \eqn{(0, 1]}{(0, 1]}. Radial models output
+\eqn{\eta \geq 1}{eta >= 1}, converted to \eqn{1/\eta}{1/eta}; SBM models
+output \eqn{1/\rho^*}{1/rho*} or \eqn{1/\delta}{1/delta}.
+}
+
+\strong{Returns to Scale (RTS)}:
+\itemize{
+\item CRS (\code{"crs"}): Assumes constant returns to scale, suitable for
+long-run analysis.
+\item VRS (\code{"vrs"}): Allows variable returns to scale, with increasing
+(\code{"irs"}) or decreasing (\code{"drs"}) returns determined by the sum of
+intensity variables (\eqn{\lambda}{lambda}).
+}
+
+\strong{Undesirable Outputs}:
+\itemize{
+\item Supported in \code{basic_DEA}, \code{super_DEA}, and \code{basic_SBM}
+using directional distance functions (DDF) with direction vector
+\eqn{(g_y, -g_b)}{(g_y, -g_b)} to increase desirable outputs and decrease
+undesirable outputs (Färe & Grosskopf, 2004). Not supported in \code{super_SBM}
+or \code{malmquist}.
+}
+
+\strong{Malmquist-Specific Parameters}:
+\itemize{
+\item \code{type1}: Defines the reference technology for the Malmquist index:
+\itemize{
+\item \code{"cont"}: Contemporary technology, using each period’s frontier.
+\item \code{"seq"}: Sequential technology, incorporating all prior periods.
+\item \code{"glob"}: Global technology, using a single frontier across all
+periods.
+}
+\item \code{type2}: Specifies the decomposition method:
+\itemize{
+\item \code{"fgnz"}: Färe et al. (1994) decomposition.
+\item \code{"rd"}: Ray and Desli (1997) decomposition.
+\item \code{"gl"}: Generalized decomposition.
+\item \code{"bias"}: Bias-corrected decomposition.
+}
+}
+
+\strong{Handling NA Values}:
+\itemize{
+\item Super-efficiency models (\code{super_DEA}, \code{super_SBM}) may return
+\code{NA} for efficient DMUs due to infeasible linear programming solutions,
+especially under VRS (Andersen & Petersen, 1993). Users can replace \code{NA}
+with standard efficiency scores or exclude affected DMUs.
+\item For \code{malmquist}, if \code{ec} is \code{NULL} (e.g., under
+\code{rts = "vrs"} and \code{type1 = "glob"}), it is computed as
+\code{mi / tc} to ensure a complete result.
+}
+
+The package leverages \pkg{deaR} for robust computation, handling zero values
+internally and ensuring compatibility with input/output specifications. Efficiency
+scores are standardized to \eqn{(0, 1]} for DEA models, and Malmquist results are
+formatted as a data frame for easy analysis.
 }
 \examples{
-# Sample data
-data = data.frame(
+# Sample DEA data
+data_dea = data.frame(
   DMU = paste0("DMU", 1:5),
   input1 = c(10, 20, 15, 25, 30),
   input2 = c(5, 8, 7, 10, 12),
@@ -161,34 +234,33 @@ data = data.frame(
 )
 
 # Standard DEA
-result = basic_DEA(data, inputs = 2:3, outputs = 4)
+result = basic_DEA(data_dea, inputs = 2:3, outputs = 4)
 result$efficiencies
 
 # DEA with undesirable outputs
-result = basic_DEA(data, inputs = 2:3, outputs = 4:5, ud_outputs = 2)
+result = basic_DEA(data_dea, inputs = 2:3, outputs = 4:5, ud_outputs = 2)
 result$efficiencies
 
 # Super-efficiency DEA
-result = super_DEA(data, inputs = 2:3, outputs = 4)
-result$efficiencies
-
-# Super-efficiency DEA with undesirable outputs
-result = super_DEA(data, inputs = 2:3, outputs = 4:5, ud_outputs = 2)
+result = super_DEA(data_dea, inputs = 2:3, outputs = 4)
 result$efficiencies
 
 # Standard SBM
-result = basic_SBM(data, inputs = 2:3, outputs = 4)
-result$efficiencies
-
-# SBM with undesirable outputs
-result = basic_SBM(data, inputs = 2:3, outputs = 4:5, ud_outputs = 2)
+result = basic_SBM(data_dea, inputs = 2:3, outputs = 4)
 result$efficiencies
 
 # Super-efficiency SBM
-result = super_SBM(data, inputs = 2:3, outputs = 4)
+result = super_SBM(data_dea, inputs = 2:3, outputs = 4)
 result$efficiencies
 
-# Note: According to deaR, the SBM super-efficiency model
-# does not take into account undesirable inputs/outputs.
+# Sample Malmquist data (long format)
+data_malm = data.frame(
+  DMU = rep(paste0("DMU", 1:5), 3),
+  Period = rep(1:3, each = 5),
+  input1 = c(10, 20, 15, 25, 30, 12, 22, 17, 27, 32, 14, 24, 19, 29, 34),
+  input2 = c(5, 8, 7, 10, 12, 6, 9, 8, 11, 13, 7, 10, 9, 12, 14),
+  output = c(100, 150, 120, 180, 200, 110, 160, 130, 190, 210, 120, 170, 140, 200, 220)
+)
+malmquist(data_malm, period = 2, inputs = 3:4, outputs = 5)
 
 }
