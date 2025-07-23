@@ -316,5 +316,5 @@ malmquist = function(data, period, inputs, outputs,
     res = res |>
       dplyr::mutate(ec = mi / tc, .after = mi)
   }
-  res
+  tibble::as_tibble(res)
 }
