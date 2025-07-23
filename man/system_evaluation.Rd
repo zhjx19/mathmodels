@@ -6,34 +6,43 @@
 \alias{obstacle_degree}
 \title{System Evaluation Functions for Coupling and Obstacle Analysis}
 \usage{
-coupling_degree(data, w = NULL)
+coupling_degree(data, w = NULL, id_cols = NULL)
 
-obstacle_degree(data, w = NULL)
+obstacle_degree(data, w = NULL, id_cols = NULL)
 }
 \arguments{
 \item{data}{A numeric matrix or data frame with normalized scores (usually in \link{0,1}) as columns.}
 
 \item{w}{Optional vector of weights for indicators or subsystems; defaults to equal weights if NULL.}
+
+\item{id_cols}{Optional character vector of column names in \code{data} to preserve as identifiers (not used in calculations).}
 }
 \value{
-A list or data frame depending on the function:
+A tibble depending on the function:
 \describe{
-\item{coupling_degree}{Data frame with columns:
+\item{coupling_degree}{A tibble with columns:
 \itemize{
-\item \code{CD}: Coupling Degree (range 0-1)
-\item \code{CI}: Coordination Index (range 0-1)
-\item \code{CCD}: Coupling Coordination Degree (range 0-1)
+\item \code{ID}: Identifier columns specified by \code{id_cols} (if provided).
+\item \code{coupling}: Coupling Degree (range 0-1).
+\item \code{coord}: Coordination Index (range 0-1).
+\item \code{coupling_coord}: Coupling Coordination Degree (range 0-1).
 }
 }
-\item{obstacle_degree}{Data frame where each row sums to 100, showing percentage contribution of each indicator to total deviation.}
+\item{obstacle_degree}{A tibble with:
+\itemize{
+\item \code{ID}: Identifier columns specified by \code{id_cols} (if provided).
+\item Columns for secondary indicator obstacle degrees (\eqn{O_{ij} = (1 - X_{ij}) \cdot w_{ij}}).
+}
+Suitable for grouping and summarizing (e.g., with tidyverse) to compute primary indicator obstacle degrees (\( U_i \)).
+}
 }
 }
 \description{
-These functions provide two key tools for system-level evaluation in multi-indicator systems:
+These functions provide tools for system-level evaluation in multi-indicator systems:
 
 \itemize{
 \item \code{coupling_degree()}: Computes coupling degree, coordination index, and coupling coordination degree for subsystems.
-\item \code{obstacle_degree()}: Computes obstacle degree of each indicator to identify key constraints in the system.
+\item \code{obstacle_degree()}: Computes obstacle degrees for secondary indicators to identify key constraints in the system, enabling batch processing with tidyverse for grouping and summarization.
 }
 }
 \examples{

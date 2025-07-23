@@ -51,6 +51,7 @@ topsis = function(X, w = NULL, index = NULL) {
   C = B %*% diag(w)                  # Weighted normalized matrix, or
   # C = t(t(B) * w)
   # C = B * matrix(rep(w, each = n), nrow = n)
+  # sweep(B, 2, w, "*")
   # Calculate positive and negative ideal solutions
   max_vals = apply(C, 2, max)
   min_vals = apply(C, 2, min)
