@@ -68,10 +68,10 @@ For detailed documentation, tutorials, and in-depth examples on using the `mathm
 This online book is the definitive guide to the package's functionalities. Currently, only evaluation algorithms are fully implemented, including:
 
 - Indicator data preprocessing
-- Analytic Hierarchy Process (AHP)
+- AHP
 - Entropy weighting
-- CRITIC method
-- Principal Component Analysis (PCA) weighting
+- CRITIC weighting
+- PCA weighting
 - Combination of subjective and objective weighting
 - TOPSIS
 - Grey Relational Analysis (GRA)
