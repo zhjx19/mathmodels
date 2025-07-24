@@ -1,0 +1,87 @@
+---
+title: "mathmodels - A Powerful Toolkit for Mathematical Modeling"
+vignette: >
+  %\VignetteIndexEntry{mathmodels - A Powerful Toolkit for Mathematical Modeling}
+  %\VignetteEngine{quarto::html}
+  %\VignetteEncoding{UTF-8}
+knitr:
+  opts_chunk:
+    collapse: true
+    comment: '#>'
+---
+
+### Introduction
+
+Welcome to the `mathmodels` package! This is a comprehensive and user-friendly R toolkit designed for practitioners and researchers in the field of mathematical modeling. At its core, `mathmodels` embodies the philosophy of "simplifying the complex," encapsulating sophisticated mathematical algorithms into intuitive functions. This allows you to focus on model construction and interpretation, rather than getting bogged down in implementation details.
+
+The `mathmodels` package is developed as a companion to the book "[Mathematical Modeling: Algorithms and Programming Implementation](https://item.jd.com/13272295.html)" (China Machine Press). The current version (0.0.5) focuses on **evaluation algorithms**, offering a complete suite of solutions from data preprocessing to comprehensive evaluation.
+
+### Key Features
+
+1.  **Comprehensive and Rigorous Algorithms**: The package covers a wide range of mainstream evaluation and analysis algorithms, including the Analytic Hierarchy Process (AHP), Entropy Weighting, CRITIC, Principal Component Analysis (PCA) for weighting, Weight Combination methods, Technique for Order Preference by Similarity to Ideal Solution (TOPSIS), Grey Relational Analysis, Rank Sum Ratio (RSR), Fuzzy Comprehensive Evaluation, Data Envelopment Analysis (DEA), Inequality Measures (Gini coefficient, Theil index), System Evaluation (Coupling Coordination Degree, Obstacle Degree), and Grey Prediction Models.
+2.  **Elegant Interface, Extremely User-Friendly**: Functions are designed with consistency, featuring standardized parameter names. Many data preprocessing steps, such as normalization, scaling, and indicator direction adjustment, are intelligently handled internally, significantly streamlining the workflow.
+3.  **Seamless Integration with Tidyverse**: It integrates perfectly with `|>` pipe operations and other `tidyverse` tools like `dplyr` and `tidyr`, making data manipulation and batch analysis smooth and natural.
+
+### Quick Start
+
+To start using `mathmodels`, first ensure it's installed and loaded:
+
+```{r eval=FALSE}
+# Install from GitHub (recommended)
+remotes::install_github("zhjx19/mathmodels")
+
+# Or install from a local source package
+install.packages("mathmodels.tar.gz", repos = NULL, type = "source")
+```
+
+```{r message=FALSE}
+library(tidyverse)
+library(mathmodels)
+```
+
+Once loaded, you can immediately use its functions. For example, perform a quick entropy weighting TOPSIS analysis using the built-in `water_quality` dataset:
+
+```{r}
+# View example data
+water_quality
+
+# Preprocess data: handle centered and interval-type indicators
+df = water_quality |>
+  mutate(
+    # Optimal PH is 7 -> Centered-type positive
+    PH = rescale_middle(PH, 7),   
+    # Optimal nutrient is 10-20 -> Interval-type positive
+    nutrient = rescale_interval(nutrient, 10, 20) 
+  )
+```
+
+Calculate weights using the Entropy Method (normalization is handled internally). First, specify the indicator directions: since the indicator columns PH and nutrient have been pre-normalized, their directions are set to `NA` to avoid repeating the normalization process.
+
+```{r}
+idx = c("+", NA, "-", NA)     # 
+res = entropy_weight(df[-1], idx) 
+res$w                         # View calculated weights
+```
+
+When performing TOPSIS (which has built-in normalization), you need to specify the indicator directions in order to correctly determine the positive and negative ideal solutions.
+
+```{r}
+idx = c("+","+","-","+")
+topsis(df[2:5], res$w, idx)
+```
+
+The obtained result is the relative closeness score.
+
+### Getting Help and In-Depth Learning
+
+This Vignette offers just a glimpse into the capabilities of `mathmodels`. For a thorough understanding of all algorithms, their detailed principles, function usage, and practical case studies, we highly recommend consulting our comprehensive **online companion manual**:
+
+📘 **[mathmodels Package Manual - Simplifying Mathematical Modeling (Online Book)](https://zhjx19.github.io/mathmodels-book/)**
+
+This online manual serves as the definitive documentation for the `mathmodels` package. It consolidates content from the package vignettes and currently provides complete coverage of all evaluation algorithms with R implementations and extensive examples, making it your best resource for learning and using this package.
+
+---
+
+We hope `mathmodels` proves to be a valuable and reliable companion on your journey through mathematical modeling and scientific research.
+
+
