@@ -8,7 +8,7 @@
 #'   \item \code{obstacle_degree()}: Computes obstacle degrees for secondary indicators to identify key constraints in the system, enabling batch processing with tidyverse for grouping and summarization.
 #' }
 #'
-#' @param data A numeric matrix or data frame with normalized scores (usually in [0,1]) as columns.
+#' @param data A data frame with normalized scores (usually in [0,1]) as columns, .
 #' @param w Optional vector of weights for indicators or subsystems; defaults to equal weights if NULL.
 #' @param id_cols Optional character vector of column names in \code{data} to preserve as identifiers (not used in calculations).
 #'
@@ -52,7 +52,7 @@ NULL
 #' @export
 coupling_degree = function(data, w = NULL, id_cols = NULL) {
   # Computes coupling degree(CD), coordination index(CI), and coupling coordination degree(CCD)
-  # data: data frame with normalized subsystem scores as columns
+  # data: data frame with normalized subsystem scores as columns, Can include ID columns that do not participate in the calculation
   # w: vector of subsystem weights
   # id_cols: Non-subsystem columns to preserve (not used in calculation)
   # Returns: coupling (Coupling Degree), coord (Coordination Index), coupling_coord (Coupling Coordination Degree)

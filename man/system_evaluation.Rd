@@ -11,7 +11,7 @@ coupling_degree(data, w = NULL, id_cols = NULL)
 obstacle_degree(data, w = NULL, id_cols = NULL)
 }
 \arguments{
-\item{data}{A numeric matrix or data frame with normalized scores (usually in \link{0,1}) as columns.}
+\item{data}{A data frame with normalized scores (usually in \link{0,1}) as columns, .}
 
 \item{w}{Optional vector of weights for indicators or subsystems; defaults to equal weights if NULL.}
 
