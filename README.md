@@ -80,6 +80,7 @@ This online book is the definitive guide to the package's functionalities. Curre
 - Data Envelopment Analysis (DEA)
 - Gini coefficient and Theil index
 - Coupling coordination degree and obstacle degree
+- Regional Economics(LQ/HHI/EG)
 
 
 
