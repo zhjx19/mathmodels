@@ -115,7 +115,7 @@ EG = function(data, region, industry, y) {
     else (sum((s-x)^2) / (1 - sum(x^2)) - h) / (1 - h)
   }
   H = data |>
-    dplyr::summarise(h = HHI({{y}}, scaled = FALSE), .by = {{industry}}) |>
+    dplyr::summarise(h = HHI({{y}}), .by = {{industry}}) |>
     dplyr::arrange({{industry}})
   X = data |>
     dplyr::summarise(x = sum({{y}}), .by = {{region}}) |>
