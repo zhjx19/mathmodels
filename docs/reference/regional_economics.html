@@ -71,7 +71,7 @@ spatial concentration and market structure.</p>
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">LQ</span><span class="op">(</span><span class="va">data</span>, <span class="va">region</span>, <span class="va">total</span>, <span class="va">.cols</span>, .by <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">HHI</span><span class="op">(</span><span class="va">x</span>, scaled <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu">HHI</span><span class="op">(</span><span class="va">x</span>, scaled <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">EG</span><span class="op">(</span><span class="va">data</span>, <span class="va">region</span>, <span class="va">industry</span>, <span class="va">y</span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -108,7 +108,7 @@ region, industry, and indicator columns (e.g., employment or output).</p></dd>
 
 
 <dt id="arg-scaled">scaled<a class="anchor" aria-label="anchor" href="#arg-scaled"></a></dt>
-<dd><p>Logical; if <code>TRUE</code>, the HHI is scaled to account for the number of firms. Defaults to <code>TRUE</code>.</p></dd>
+<dd><p>Logical; if <code>TRUE</code>, the HHI is scaled to account for the number of firms. Defaults to <code>FALSE</code>.</p></dd>
 
 
 <dt id="arg-industry">industry<a class="anchor" aria-label="anchor" href="#arg-industry"></a></dt>
@@ -173,12 +173,12 @@ industries, and an indicator (e.g., employment or output).</p></dd>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Calculate HHI</span></span></span>
 <span class="r-in"><span><span class="va">x</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">50</span>, <span class="fl">30</span>, <span class="fl">20</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="co"># Calculate the standard (scaled) HHI</span></span></span>
-<span class="r-in"><span><span class="fu">HHI</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.07</span>
 <span class="r-in"><span><span class="co"># Calculate the raw HHI</span></span></span>
-<span class="r-in"><span><span class="fu">HHI</span><span class="op">(</span><span class="va">x</span>, scaled <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">HHI</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.38</span>
+<span class="r-in"><span><span class="co"># Calculate the standard (scaled) HHI</span></span></span>
+<span class="r-in"><span><span class="fu">HHI</span><span class="op">(</span><span class="va">x</span>, scaled <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.07</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Example data for EG</span></span></span>
 <span class="r-in"><span><span class="va">eg_data</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span></span>

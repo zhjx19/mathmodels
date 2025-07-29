@@ -9,7 +9,7 @@
 \usage{
 LQ(data, region, total, .cols, .by = NULL)
 
-HHI(x, scaled = TRUE)
+HHI(x, scaled = FALSE)
 
 EG(data, region, industry, y)
 }
@@ -29,7 +29,7 @@ region, industry, and indicator columns (e.g., employment or output).}
 
 \item{x}{A numeric vector for calculating the HHI (used in \code{HHI}).}
 
-\item{scaled}{Logical; if \code{TRUE}, the HHI is scaled to account for the number of firms. Defaults to \code{TRUE}.}
+\item{scaled}{Logical; if \code{TRUE}, the HHI is scaled to account for the number of firms. Defaults to \code{FALSE}.}
 
 \item{industry}{The name of the column in \code{data} specifying the industry (used in \code{EG}).}
 
@@ -76,10 +76,10 @@ LQ(data, region, total, starts_with("industry"))
 
 # Calculate HHI
 x = c(50, 30, 20)
-# Calculate the standard (scaled) HHI
-HHI(x)
 # Calculate the raw HHI
-HHI(x, scaled = FALSE)
+HHI(x)
+# Calculate the standard (scaled) HHI
+HHI(x, scaled = TRUE)
 
 # Example data for EG
 eg_data = data.frame(

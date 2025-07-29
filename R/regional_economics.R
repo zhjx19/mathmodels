@@ -20,7 +20,7 @@
 #' @param .cols The columns in \code{data} for which to calculate the location quotient (used in \code{LQ}).
 #' @param .by Optional grouping column for \code{LQ}, defaults to \code{NULL} (no grouping).
 #' @param x A numeric vector for calculating the HHI (used in \code{HHI}).
-#' @param scaled Logical; if \code{TRUE}, the HHI is scaled to account for the number of firms. Defaults to \code{TRUE}.
+#' @param scaled Logical; if \code{TRUE}, the HHI is scaled to account for the number of firms. Defaults to \code{FALSE}.
 #' @param industry The name of the column in \code{data} specifying the industry (used in \code{EG}).
 #' @param y The name of the column in \code{data} specifying the indicator (e.g., employment or output, used in \code{EG}).
 #'
@@ -59,10 +59,10 @@
 #'
 #' # Calculate HHI
 #' x = c(50, 30, 20)
-#' # Calculate the standard (scaled) HHI
-#' HHI(x)
 #' # Calculate the raw HHI
-#' HHI(x, scaled = FALSE)
+#' HHI(x)
+#' # Calculate the standard (scaled) HHI
+#' HHI(x, scaled = TRUE)
 #'
 #' # Example data for EG
 #' eg_data = data.frame(
@@ -93,7 +93,7 @@ LQ = function(data, region, total, .cols, .by = NULL) {
 
 #' @rdname regional_economics
 #' @export
-HHI = function(x, scaled = TRUE) {
+HHI = function(x, scaled = FALSE) {
   # x: a numeric vector
   # scaled: a logical value, indicating whether to standardize the HHI
   x = x[!is.na(x)]
