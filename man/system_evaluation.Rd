@@ -8,7 +8,7 @@
 \usage{
 coupling_degree(data, w = NULL, id_cols = NULL)
 
-obstacle_degree(data, w = NULL, id_cols = NULL)
+obstacle_degree(data, w = NULL, id_cols = NULL, scaled = FALSE)
 }
 \arguments{
 \item{data}{A data frame with normalized scores (usually in \link{0,1}) as columns, .}

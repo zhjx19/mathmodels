@@ -75,11 +75,12 @@ coupling_degree = function(data, w = NULL, id_cols = NULL) {
 
 #' @rdname system_evaluation
 #' @export
-obstacle_degree = function(data, w = NULL, id_cols = NULL) {
+obstacle_degree = function(data, w = NULL, id_cols = NULL, scaled = FALSE) {
   # Compute obstacle degree for each indicator
-  # data: normalized data matrix or data frame
+  # data: normalized data frame
   # w: weights for indicators, default is equal weights
   # id_cols: Non-subsystem columns to preserve (not used in calculation)
+  # scaled: Whether to perform row normalization on the obstacle degree
   # Return: Secondary indicator obstacle degrees
 
   ID = NULL
@@ -92,7 +93,7 @@ obstacle_degree = function(data, w = NULL, id_cols = NULL) {
   m = ncol(data)
   if (is.null(w)) w = rep(1/m, m)
   diff_mat = 1 - as.matrix(data)     # Compute deviation (1 - X_ij)
-  O = sweep(diff_mat, 2, w, "*") |>  # Compute (1 - X_ij) * w_ij
-    as.data.frame()
-  tibble::tibble(ID, O)
+  O = sweep(diff_mat, 2, w, "*")     # Compute (1 - X_ij) * w_ij
+  if(scaled) O = O / rowSums(O)
+  tibble::tibble(ID, as.data.frame(O))
 }

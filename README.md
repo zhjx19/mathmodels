@@ -63,7 +63,7 @@ AHP(A)
 
 For detailed documentation, tutorials, and in-depth examples on using the `mathmodels` package, please refer to the comprehensive online manual:
 
-📘 **[mathmodels Package Manual - Simplifying Mathematical Modeling (Online Book)](https://zhjx19.github.io/mathmodels-book/)**
+📘 **[mathmodels Package Manual - Simplifying Mathematical Modeling (Online Book, In Chinese)](https://zhjx19.github.io/mathmodels-book/)**
 
 This online book is the definitive guide to the package's functionalities. Currently, only evaluation algorithms are fully implemented, including:
 
