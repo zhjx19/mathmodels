@@ -77,11 +77,10 @@ This online book is the definitive guide to the package's functionalities. Curre
 - Grey Relational Analysis (GRA)
 - Rank Sum Ratio (RSR) method
 - Fuzzy Comprehensive Evaluation (FCE)
-- Data Envelopment Analysis (DEA)
-- Gini coefficient and Theil index
+- Data Envelopment Analysis (CCR/BCC/SBM, Malmquist)
+- Inequality Measures (Gini, Theil Index)
+- Regional Economics (LQ/HHI/EG Index)
 - Coupling coordination degree and obstacle degree
-- Regional Economics(LQ/HHI/EG)
-
 
 
 
