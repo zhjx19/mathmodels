@@ -57,10 +57,10 @@ df = data.frame(
 )
 # Coupling Degree Analysis
 coupling_degree(df, id_cols = "ID")        # Equal weights
-coupling_degree(df, c(0.4, 0.3, 0.3), id_cols = ID,
+coupling_degree(df, c(0.4, 0.3, 0.3), id_cols = "ID",
                 type = "adjusted")         # "adjusted" coupling degree
 # Obstacle Degree Analysis
 obstacle_degree(df, id_cols = "ID")        # Equal weights
-obstacle_degree(df, c(0.4, 0.3, 0.3), id_cols = ID)
+obstacle_degree(df, c(0.4, 0.3, 0.3), id_cols = "ID")
 
 }
