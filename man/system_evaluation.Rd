@@ -6,7 +6,7 @@
 \alias{obstacle_degree}
 \title{System Evaluation Functions for Coupling and Obstacle Analysis}
 \usage{
-coupling_degree(data, w = NULL, id_cols = NULL)
+coupling_degree(data, w = NULL, id_cols = NULL, type = "standard")
 
 obstacle_degree(data, w = NULL, id_cols = NULL, scaled = FALSE)
 }
@@ -16,6 +16,8 @@ obstacle_degree(data, w = NULL, id_cols = NULL, scaled = FALSE)
 \item{w}{Optional vector of weights for indicators or subsystems; defaults to equal weights if NULL.}
 
 \item{id_cols}{Optional character vector of column names in \code{data} to preserve as identifiers (not used in calculations).}
+
+\item{type}{Either "standard" for the standard coupling formula (results concentrated near 1) or "adjusted" for the revised formula (results more uniformly distributed in \link{0,1}), as proposed by Wang Shujia, Kong Wei, et al. in "Misconceptions and Corrections of Domestic Coupling Coordination Degree Models, Journal of Natural Resources, 2021, 36(3): 793–810 (In Chinese)"}
 }
 \value{
 A tibble depending on the function:
@@ -48,14 +50,17 @@ These functions provide tools for system-level evaluation in multi-indicator sys
 \examples{
 # Sample normalized subsystem scores
 df = data.frame(
+  ID = LETTERS[1:6],
   s1 = c(0.0162, 0.1782, 0.5490, 0.6730, 0.0207, 0.9875),
-  s2 = c(0.2720, 0.6824, 0.0593, 0.4812, 0.8891, 0.5573)
+  s2 = c(0.2720, 0.6824, 0.0593, 0.4812, 0.8891, 0.5573),
+  s3 = c(0.2655, 0.3721, 0.5729, 0.9082, 0.2017, 0.8984)
 )
 # Coupling Degree Analysis
-coupling_degree(df)        # Equal weights
-coupling_degree(df, c(0.6, 0.4))
+coupling_degree(df, id_cols = ID)        # Equal weights
+coupling_degree(df, c(0.4, 0.3, 0.3), id_cols = ID,
+                type = "adjusted")
 # Obstacle Degree Analysis
-obstacle_degree(df)        # Equal weights
-obstacle_degree(df, c(0.6, 0.4))
+obstacle_degree(df, id_cols = ID)        # Equal weights
+obstacle_degree(df, c(0.4, 0.3, 0.3), id_cols = ID)
 
 }
