@@ -122,14 +122,30 @@ obstacle_degree(): Computes obstacle degrees for secondary indicators to identif
 <span class="r-in"><span>  s3 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.2655</span>, <span class="fl">0.3721</span>, <span class="fl">0.5729</span>, <span class="fl">0.9082</span>, <span class="fl">0.2017</span>, <span class="fl">0.8984</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="co"># Coupling Degree Analysis</span></span></span>
-<span class="r-in"><span><span class="fu">coupling_degree</span><span class="op">(</span><span class="va">df</span>, id_cols <span class="op">=</span> <span class="va">ID</span><span class="op">)</span>        <span class="co"># Equal weights</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'ID' not found</span>
+<span class="r-in"><span><span class="fu">coupling_degree</span><span class="op">(</span><span class="va">df</span>, id_cols <span class="op">=</span> <span class="st">"ID"</span><span class="op">)</span>        <span class="co"># Equal weights</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 6 × 4</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   ID    coupling coord coupling_coord</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> A        0.571 0.185          0.325</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> B        0.867 0.411          0.597</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> C        0.674 0.394          0.515</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> D        0.967 0.687          0.815</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> E        0.418 0.370          0.393</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span> F        0.971 0.814          0.889</span>
 <span class="r-in"><span><span class="fu">coupling_degree</span><span class="op">(</span><span class="va">df</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.4</span>, <span class="fl">0.3</span>, <span class="fl">0.3</span><span class="op">)</span>, id_cols <span class="op">=</span> <span class="va">ID</span>,</span></span>
-<span class="r-in"><span>                type <span class="op">=</span> <span class="st">"adjusted"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>                type <span class="op">=</span> <span class="st">"adjusted"</span><span class="op">)</span>         <span class="co"># "adjusted" coupling degree</span></span></span>
 <span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'ID' not found</span>
 <span class="r-in"><span><span class="co"># Obstacle Degree Analysis</span></span></span>
-<span class="r-in"><span><span class="fu">obstacle_degree</span><span class="op">(</span><span class="va">df</span>, id_cols <span class="op">=</span> <span class="va">ID</span><span class="op">)</span>        <span class="co"># Equal weights</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'ID' not found</span>
+<span class="r-in"><span><span class="fu">obstacle_degree</span><span class="op">(</span><span class="va">df</span>, id_cols <span class="op">=</span> <span class="st">"ID"</span><span class="op">)</span>        <span class="co"># Equal weights</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 6 × 4</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   ID         s1     s2     s3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> A     0.328   0.243  0.245 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> B     0.274   0.106  0.209 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> C     0.150   0.314  0.142 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> D     0.109   0.173  0.030<span style="text-decoration: underline;">6</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> E     0.326   0.037<span style="text-decoration: underline;">0</span> 0.266 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span> F     0.004<span style="text-decoration: underline;">17</span> 0.148  0.033<span style="text-decoration: underline;">9</span></span>
 <span class="r-in"><span><span class="fu">obstacle_degree</span><span class="op">(</span><span class="va">df</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.4</span>, <span class="fl">0.3</span>, <span class="fl">0.3</span><span class="op">)</span>, id_cols <span class="op">=</span> <span class="va">ID</span><span class="op">)</span></span></span>
 <span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'ID' not found</span>
 <span class="r-in"><span></span></span>
