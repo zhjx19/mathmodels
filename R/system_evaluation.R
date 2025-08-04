@@ -80,7 +80,7 @@ coupling_degree = function(data, w = NULL, id_cols = NULL,
        apply(data, 1, function(x) {
          idx = combn(p, 2)
          C1 = 1 - mean(abs(x[idx[2,]] - x[idx[1,]]))
-         C2 = prod(x / max(x))
+         C2 = prod(x / max(x)) ^ (1/(p-1))
          sqrt(C1 * C2)
        })
      })
