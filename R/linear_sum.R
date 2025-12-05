@@ -5,6 +5,8 @@
 #'
 #' @return Vector of comprehensive scores
 #'
+#' @export
+#'
 #' @examples
 #' data = data.frame(
 #'   GDP = c(0.85, 0.72, 0.91, NA),
