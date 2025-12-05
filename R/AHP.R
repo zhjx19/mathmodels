@@ -41,6 +41,6 @@ AHP = function(A) {
   # Consistency ratio
   # Saaty's random Consistency indexes
   RI = c(0,0,0.58,0.90,1.12,1.24,1.32,1.41,1.45,1.49,1.51)
-  CR = CI / RI[n]
+  CR = ifelse(n == 2, 0, CI / RI[n])
   list(w = w, CR = CR, Lmax = Lmax, CI = CI)
 }
