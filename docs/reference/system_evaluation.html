@@ -80,7 +80,7 @@ obstacle_degree(): Computes obstacle degrees for secondary indicators to identif
 
 
 <dl><dt id="arg-data">data<a class="anchor" aria-label="anchor" href="#arg-data"></a></dt>
-<dd><p>A data frame with normalized scores (usually in 0,1) as columns, .</p></dd>
+<dd><p>A data frame with normalized scores (usually in \([0, 1]\)) as columns, .</p></dd>
 
 
 <dt id="arg-w">w<a class="anchor" aria-label="anchor" href="#arg-w"></a></dt>
@@ -92,7 +92,7 @@ obstacle_degree(): Computes obstacle degrees for secondary indicators to identif
 
 
 <dt id="arg-type">type<a class="anchor" aria-label="anchor" href="#arg-type"></a></dt>
-<dd><p>Either "standard" for the standard coupling formula (results concentrated near 1) or "adjusted" for the revised formula (results more uniformly distributed in 0,1), as proposed by Wang Shujia, Kong Wei, et al. in "Misconceptions and Corrections of Domestic Coupling Coordination Degree Models, Journal of Natural Resources, 2021, 36(3): 793–810 (In Chinese)"</p></dd>
+<dd><p>Either "standard" for the standard coupling formula (results concentrated near 1) or "adjusted" for the revised formula (results more uniformly distributed in \([0, 1]\)), as proposed by Wang Shujia, Kong Wei, et al. in "Misconceptions and Corrections of Domestic Coupling Coordination Degree Models, Journal of Natural Resources, 2021, 36(3): 793–810 (In Chinese)"</p></dd>
 
 </dl></div>
     <div id="value">
@@ -137,12 +137,12 @@ obstacle_degree(): Computes obstacle degrees for secondary indicators to identif
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 6 × 4</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   ID    coupling coord coupling_coord</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> A       0.220  0.168          0.192</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> B       0.307  0.388          0.345</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> C       0.255  0.409          0.323</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> D       0.530  0.686          0.603</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> E       0.047<span style="text-decoration: underline;">2</span> 0.336          0.126</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span> F       0.605  0.832          0.709</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> A        0.447 0.168          0.274</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> B        0.501 0.388          0.440</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> C        0.455 0.409          0.432</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> D        0.669 0.686          0.678</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> E        0.175 0.336          0.242</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span> F        0.715 0.832          0.771</span>
 <span class="r-in"><span><span class="co"># Obstacle Degree Analysis</span></span></span>
 <span class="r-in"><span><span class="fu">obstacle_degree</span><span class="op">(</span><span class="va">df</span>, id_cols <span class="op">=</span> <span class="st">"ID"</span><span class="op">)</span>        <span class="co"># Equal weights</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 6 × 4</span></span>
@@ -179,7 +179,7 @@ obstacle_degree(): Computes obstacle degrees for secondary indicators to identif
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
       </footer></div>

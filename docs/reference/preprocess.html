@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">mathmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.5</span>
       </span>
     </div>
 
@@ -32,7 +32,7 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/Grey-Relational-Analysis.html">Grey-Relational-Analysis</a>
+      <a href="../articles/welcome.html">mathmodels - A Powerful Toolkit for Mathematical Modeling</a>
     </li>
   </ul></li>
 <li>
@@ -131,9 +131,9 @@
     <h2>Value</h2>
     <p>A numeric vector of the same length as <code>x</code>, transformed as follows:</p><ul><li><p><code>standardize</code>: Standardized values (mean = 0, sd = 1).</p></li>
 <li><p><code>normalize</code>: L2 norm normalized values (Euclidean norm, unit length).</p></li>
-<li><p><code>rescale</code>: Min-Max scaled values in <code>[a, b]</code> (default 0, 1).</p></li>
-<li><p><code>rescale_middle</code>: Centered-type normalized values in 0, 1, where 1 indicates <code>x = m</code>.</p></li>
-<li><p><code>rescale_interval</code>: Interval-type normalized values in 0, 1, where 1 indicates <code>x</code> in <code>[a, b]</code>.</p></li>
+<li><p><code>rescale</code>: Min-Max scaled values in <code>[a, b]</code> (default \([0, 1]\)).</p></li>
+<li><p><code>rescale_middle</code>: Centered-type normalized values in \([0, 1]\), where 1 indicates <code>x = m</code>.</p></li>
+<li><p><code>rescale_interval</code>: Interval-type normalized values in \([0, 1]\), where 1 indicates <code>x</code> in <code>[a, b]</code>.</p></li>
 <li><p><code>rescale_extreme</code>: Extreme-based normalized values using <code>min(x)/x</code> (positive) or <code>x/max(x)</code> (negative).</p></li>
 <li><p><code>rescale_initial</code>: Initial-based normalized values using <code>x/x[1]</code> or <code>x[1]/x</code>.</p></li>
 <li><p><code>rescale_mean</code>: Mean-based normalized values using <code>x/mean(x)</code>.</p></li>
@@ -143,9 +143,9 @@
     <h2>Details</h2>
     <p>These functions support various preprocessing needs in data analysis:</p><ul><li><p><code>standardize</code>: Applies Z-score standardization (mean = 0, sd = 1), ideal for equalizing variances or normally distributed data.</p></li>
 <li><p><code>normalize</code>: Scales the vector to unit length by dividing by its L2 (Euclidean) norm, useful for machine learning or similarity calculations.</p></li>
-<li><p><code>rescale</code>: Performs Min-Max scaling to a specified range (default 0, 1), supporting positive or negative indicators.</p></li>
-<li><p><code>rescale_middle</code>: Normalizes centered-type indicators, where values closer to an optimal value <code>m</code> are better, mapping to 0, 1.</p></li>
-<li><p><code>rescale_interval</code>: Normalizes interval-type indicators, where values within <code>[a, b]</code> are optimal, mapping to 0, 1.</p></li>
+<li><p><code>rescale</code>: Performs Min-Max scaling to a specified range (default \([0, 1]\)), supporting positive or negative indicators.</p></li>
+<li><p><code>rescale_middle</code>: Normalizes centered-type indicators, where values closer to an optimal value <code>m</code> are better, mapping to \([0, 1]\).</p></li>
+<li><p><code>rescale_interval</code>: Normalizes interval-type indicators, where values within <code>[a, b]</code> are optimal, mapping to \([0, 1]\).</p></li>
 <li><p><code>rescale_extreme</code>: Normalizes using extreme values: <code>min(x)/x</code> for positive indicators or <code>x/max(x)</code> for negative indicators, often used in grey relational analysis.</p></li>
 <li><p><code>rescale_initial</code>: Normalizes by dividing by the first value (<code>x/x[1]</code> or <code>x[1]/x</code>), commonly used in grey relational analysis.</p></li>
 <li><p><code>rescale_mean</code>: Normalizes by dividing by the mean (<code>x/mean(x)</code>), commonly used in grey relational analysis.</p></li>
@@ -165,7 +165,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.38851434 0.09712859         NA 0.48564293 0.77702869</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Min-Max normalization (positive direction)</span></span></span>
-<span class="r-in"><span><span class="fu">rescale</span><span class="op">(</span><span class="va">x</span><span class="op">)</span>                <span class="co"># Scale to [0, 1]</span></span></span>
+<span class="r-in"><span><span class="fu">rescale</span><span class="op">(</span><span class="va">x</span><span class="op">)</span>                <span class="co"># Scale to \eqn{[0, 1]}</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.4285714 0.0000000        NA 0.5714286 1.0000000</span>
 <span class="r-in"><span><span class="fu">rescale</span><span class="op">(</span><span class="va">x</span>, type <span class="op">=</span> <span class="st">"-"</span>, a <span class="op">=</span> <span class="fl">0.002</span>, b <span class="op">=</span> <span class="fl">0.996</span><span class="op">)</span>  <span class="co"># Reverse scaling</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.570 0.996    NA 0.428 0.002</span>
@@ -188,9 +188,9 @@
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Extreme-based normalization</span></span></span>
 <span class="r-in"><span><span class="fu">rescale_extreme</span><span class="op">(</span><span class="va">x</span><span class="op">)</span>         <span class="co"># min(x)/x</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.250 1.000    NA 0.200 0.125</span>
-<span class="r-in"><span><span class="fu">rescale_extreme</span><span class="op">(</span><span class="va">x</span>, <span class="st">"-"</span><span class="op">)</span>    <span class="co"># x/max(x)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.500 0.125    NA 0.625 1.000</span>
+<span class="r-in"><span><span class="fu">rescale_extreme</span><span class="op">(</span><span class="va">x</span>, <span class="st">"-"</span><span class="op">)</span>    <span class="co"># x/max(x)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.250 1.000    NA 0.200 0.125</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Initial-based normalization</span></span></span>
 <span class="r-in"><span><span class="fu">rescale_initial</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span></span>
@@ -214,7 +214,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
       </footer></div>
