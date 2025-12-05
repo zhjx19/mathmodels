@@ -8,10 +8,10 @@
 #'   \item \code{obstacle_degree()}: Computes obstacle degrees for secondary indicators to identify key constraints in the system, enabling batch processing with tidyverse for grouping and summarization.
 #' }
 #'
-#' @param data A data frame with normalized scores (usually in [0,1]) as columns, .
+#' @param data A data frame with normalized scores (usually in \eqn{[0, 1]}) as columns, .
 #' @param w Optional vector of weights for indicators or subsystems; defaults to equal weights if NULL.
 #' @param id_cols Optional character vector of column names in \code{data} to preserve as identifiers (not used in calculations).
-#' @param type Either "standard" for the standard coupling formula (results concentrated near 1) or "adjusted" for the revised formula (results more uniformly distributed in [0,1]), as proposed by Wang Shujia, Kong Wei, et al. in "Misconceptions and Corrections of Domestic Coupling Coordination Degree Models, Journal of Natural Resources, 2021, 36(3): 793–810 (In Chinese)"
+#' @param type Either "standard" for the standard coupling formula (results concentrated near 1) or "adjusted" for the revised formula (results more uniformly distributed in \eqn{[0, 1]}), as proposed by Wang Shujia, Kong Wei, et al. in "Misconceptions and Corrections of Domestic Coupling Coordination Degree Models, Journal of Natural Resources, 2021, 36(3): 793–810 (In Chinese)"
 #'
 #' @return
 #' A tibble depending on the function:

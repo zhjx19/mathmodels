@@ -7,7 +7,7 @@
 #'
 #' @param w Numeric vector, factor weights (e.g., from \code{combine_weights_linear}).
 #' @param R Numeric matrix, fuzzy evaluation matrix with columns as factors and rows
-#' as evaluation grades. Values should be in [0, 1].
+#' as evaluation grades. Values should be in \eqn{[0, 1]}.
 #' @param type Integer or character (1-5), specifying the fuzzy composition operator:
 #' \itemize{
 #'   \item 1: Min-max (main factor decisive).

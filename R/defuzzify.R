@@ -2,7 +2,7 @@
 #'
 #' @description Implements defuzzification methods for fuzzy evaluation vectors, including weighted average and maximum membership methods.
 #'
-#' @param mu Numeric vector, membership degrees for evaluation levels, in [0, 1].
+#' @param mu Numeric vector, membership degrees for evaluation levels, in \eqn{[0, 1]}.
 #' @param scores Numeric vector, scores corresponding to each evaluation level (e.g., c(100, 80, 60, 40) for "Excellent", "Good", "Fair", "Poor").
 #' @param method Character, defuzzification method: "weighted_average", "max_membership", "centroid".
 #' @return Numeric, defuzzified output value.

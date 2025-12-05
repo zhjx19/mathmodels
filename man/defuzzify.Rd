@@ -7,7 +7,7 @@
 defuzzify(mu, scores, method = "weighted_average")
 }
 \arguments{
-\item{mu}{Numeric vector, membership degrees for evaluation levels, in \link{0, 1}.}
+\item{mu}{Numeric vector, membership degrees for evaluation levels, in \eqn{[0, 1]}.}
 
 \item{scores}{Numeric vector, scores corresponding to each evaluation level (e.g., c(100, 80, 60, 40) for "Excellent", "Good", "Fair", "Poor").}
 

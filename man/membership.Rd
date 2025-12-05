@@ -66,7 +66,7 @@ plot_mf(mf, xlim = c(0, 10), main = NULL)
 }
 \value{
 \itemize{
-\item For membership functions (\code{tri_mf}, \code{trap_mf}, \code{gauss_mf}, \code{gbell_mf}, \code{gauss2mf}, \code{sigmoid_mf}, \code{dsigmoid_mf}, \code{psigmoid_mf}, \code{z_mf}, \code{pi_mf}, \code{s_mf}): A numeric vector of membership values in \link{0, 1}, same length as \code{x}.
+\item For membership functions (\code{tri_mf}, \code{trap_mf}, \code{gauss_mf}, \code{gbell_mf}, \code{gauss2mf}, \code{sigmoid_mf}, \code{dsigmoid_mf}, \code{psigmoid_mf}, \code{z_mf}, \code{pi_mf}, \code{s_mf}): A numeric vector of membership values in \eqn{[0, 1]}, same length as \code{x}.
 \item For \code{plot_mf}: A ggplot2 object, plotting the membership function.
 }
 }

@@ -13,7 +13,7 @@
 #'              `"-"` for negative indicators (lower is better).
 #'              If `index = NULL` (default), all indicators are treated as `"+"`.
 #'
-#' @return A named numeric vector of relative closeness scores (in [0, 1]) for each alternative.
+#' @return A named numeric vector of relative closeness scores (in \eqn{[0, 1]}) for each alternative.
 #'         Higher values indicate better alternatives.
 #'         Names are taken from \code{rownames(X)} or default to "Sample1", "Sample2", etc.
 #'

@@ -13,7 +13,7 @@ for identifying evaluation objects.}
 \item{w}{Numeric vector, weights for indicators (default = equal weights).}
 
 \item{method}{Character scalar, ranking method: "int" for integer ranks or
-"non-int" for scaled ranks in \link{1, n} (default = "int").}
+"non-int" for scaled ranks in \eqn{[1, n]} (default = "int").}
 }
 \value{
 A list containing:

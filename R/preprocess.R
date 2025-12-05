@@ -21,9 +21,9 @@
 #' \itemize{
 #'   \item \code{standardize}: Standardized values (mean = 0, sd = 1).
 #'   \item \code{normalize}: L2 norm normalized values (Euclidean norm, unit length).
-#'   \item \code{rescale}: Min-Max scaled values in \code{[a, b]} (default [0, 1]).
-#'   \item \code{rescale_middle}: Centered-type normalized values in [0, 1], where 1 indicates \code{x = m}.
-#'   \item \code{rescale_interval}: Interval-type normalized values in [0, 1], where 1 indicates \code{x} in \code{[a, b]}.
+#'   \item \code{rescale}: Min-Max scaled values in \code{[a, b]} (default \eqn{[0, 1]}).
+#'   \item \code{rescale_middle}: Centered-type normalized values in \eqn{[0, 1]}, where 1 indicates \code{x = m}.
+#'   \item \code{rescale_interval}: Interval-type normalized values in \eqn{[0, 1]}, where 1 indicates \code{x} in \code{[a, b]}.
 #'   \item \code{rescale_extreme}: Extreme-based normalized values using \code{min(x)/x} (positive) or \code{x/max(x)} (negative).
 #'   \item \code{rescale_initial}: Initial-based normalized values using \code{x/x[1]} or \code{x[1]/x}.
 #'   \item \code{rescale_mean}: Mean-based normalized values using \code{x/mean(x)}.
@@ -35,9 +35,9 @@
 #' \itemize{
 #'   \item \code{standardize}: Applies Z-score standardization (mean = 0, sd = 1), ideal for equalizing variances or normally distributed data.
 #'   \item \code{normalize}: Scales the vector to unit length by dividing by its L2 (Euclidean) norm, useful for machine learning or similarity calculations.
-#'   \item \code{rescale}: Performs Min-Max scaling to a specified range (default [0, 1]), supporting positive or negative indicators.
-#'   \item \code{rescale_middle}: Normalizes centered-type indicators, where values closer to an optimal value \code{m} are better, mapping to [0, 1].
-#'   \item \code{rescale_interval}: Normalizes interval-type indicators, where values within \code{[a, b]} are optimal, mapping to [0, 1].
+#'   \item \code{rescale}: Performs Min-Max scaling to a specified range (default \eqn{[0, 1]}), supporting positive or negative indicators.
+#'   \item \code{rescale_middle}: Normalizes centered-type indicators, where values closer to an optimal value \code{m} are better, mapping to \eqn{[0, 1]}.
+#'   \item \code{rescale_interval}: Normalizes interval-type indicators, where values within \code{[a, b]} are optimal, mapping to \eqn{[0, 1]}.
 #'   \item \code{rescale_extreme}: Normalizes using extreme values: \code{min(x)/x} for positive indicators or \code{x/max(x)} for negative indicators, often used in grey relational analysis.
 #'   \item \code{rescale_initial}: Normalizes by dividing by the first value (\code{x/x[1]} or \code{x[1]/x}), commonly used in grey relational analysis.
 #'   \item \code{rescale_mean}: Normalizes by dividing by the mean (\code{x/mean(x)}), commonly used in grey relational analysis.
@@ -55,7 +55,7 @@
 #' normalize(x)
 #'
 #' # Min-Max normalization (positive direction)
-#' rescale(x)                # Scale to [0, 1]
+#' rescale(x)                # Scale to \eqn{[0, 1]}
 #' rescale(x, type = "-", a = 0.002, b = 0.996)  # Reverse scaling
 #'
 #' # Negative-to-positive transformation

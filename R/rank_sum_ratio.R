@@ -12,7 +12,7 @@
 #' for identifying evaluation objects.
 #' @param w Numeric vector, weights for indicators (default = equal weights).
 #' @param method Character scalar, ranking method: "int" for integer ranks or
-#' "non-int" for scaled ranks in [1, n] (default = "int").
+#' "non-int" for scaled ranks in \eqn{[1, n]} (default = "int").
 #'
 #' @return A list containing:
 #' \itemize{

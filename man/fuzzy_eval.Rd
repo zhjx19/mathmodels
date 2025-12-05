@@ -10,7 +10,7 @@ fuzzy_eval(w, R, type)
 \item{w}{Numeric vector, factor weights (e.g., from \code{combine_weights_linear}).}
 
 \item{R}{Numeric matrix, fuzzy evaluation matrix with columns as factors and rows
-as evaluation grades. Values should be in \link{0, 1}.}
+as evaluation grades. Values should be in \eqn{[0, 1]}.}
 
 \item{type}{Integer or character (1-5), specifying the fuzzy composition operator:
 \itemize{
