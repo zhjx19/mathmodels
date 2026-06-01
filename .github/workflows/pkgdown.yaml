@@ -31,18 +31,21 @@ jobs:
       - name: Install system dependencies
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y libcurl4-openssl-dev
+          sudo apt-get install -y libcurl4-openssl-dev libharfbuzz-dev libfribidi-dev
 
       - name: Install R packages
         run: |
           # Install pak for fast package installation
           install.packages("pak", repos = "https://cloud.r-project.org")
-
-          # Install only hard dependencies (Depends + Imports) from DESCRIPTION
+          
+          # Install all hard dependencies first  
           pak::local_install_deps(dependencies = "hard", upgrade = FALSE)
-
-          # Install vignette builders and pkgdown (needed for building the site)
+          
+          # Install vignette builders and pkgdown
           pak::pkg_install(c("knitr", "rmarkdown", "quarto", "pkgdown"), upgrade = FALSE)
+          
+          # Now install the package itself (without running tests)
+          pak::local_install(upgrade = FALSE)
         shell: Rscript {0}
 
       - name: Build site
