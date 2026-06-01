@@ -6,3 +6,8 @@
 ^vignettes/.*_files$
 ^vignettes/.*_cache$
 ^vignettes/*_files$
+^\.positai$
+^\.claude$
+^docs$^vignettes/welcome\.html$
+^vignettes/welcome\.md$
+^_pkgdown\.yml$

@@ -1,0 +1,144 @@
+url: https://zhjx19.github.io/mathmodels/
+template:
+  bootstrap: 5
+
+navbar:
+  structure:
+    left:  [intro, reference, articles, news]
+    right: [search, github]
+  components:
+    reference:
+      text: Reference
+      href: reference/index.html
+    articles:
+      text: Articles
+      menu:
+      - text: "Getting Started with mathmodels"
+        href: articles/welcome.html
+      - text: "📖 使用手册 (Online Book)"
+        href: https://zhjx19.github.io/mathmodels-book/
+    news:
+      text: News
+      href: news/index.html
+    github:
+      icon: fab fa-github fa-lg
+      href: https://github.com/zhjx19/mathmodels
+      aria-label: GitHub
+
+reference:
+- title: "Data Preprocessing"
+  desc: "Functions for scaling, normalizing, and standardizing indicator data."
+  contents:
+  - normalize
+  - rescale
+  - rescale_extreme
+  - rescale_initial
+  - rescale_interval
+  - rescale_mean
+  - rescale_middle
+  - standardize
+  - to_positive
+
+- title: "Subjective Weighting"
+  desc: "Analytic Hierarchy Process (AHP)."
+  contents:
+  - AHP
+
+- title: "Objective Weighting"
+  desc: "Data-driven methods for determining indicator weights."
+  contents:
+  - entropy_weight
+  - critic_weight
+  - pca_weight
+  - cv_weight
+
+- title: "Weight Combination"
+  desc: "Methods for combining subjective and objective weights."
+  contents:
+  - combine_weights
+
+- title: "Comprehensive Evaluation"
+  desc: "Multi-criteria decision making and evaluation methods."
+  contents:
+  - topsis
+  - linear_sum
+  - fuzzy_eval
+  - rank_sum_ratio
+
+- title: "Grey Relational Analysis"
+  desc: "Grey system theory for relational analysis and TOPSIS."
+  contents:
+  - grey_corr
+  - grey_corr_topsis
+
+- title: "Fuzzy Sets &amp; Membership Functions"
+  desc: "Fuzzy set membership functions, computation, and defuzzification."
+  contents:
+  - compute_mf
+  - compute_mf_funs
+  - defuzzify
+  - dsigmoid_mf
+  - gauss2mf
+  - gauss_mf
+  - gbell_mf
+  - pi_mf
+  - plot_mf
+  - psigmoid_mf
+  - s_mf
+  - sigmoid_mf
+  - trap_mf
+  - tri_mf
+  - z_mf
+
+- title: "Data Envelopment Analysis (DEA)"
+  desc: "CCR, BCC, SBM, and Malmquist productivity index."
+  contents:
+  - basic_DEA
+  - basic_SBM
+  - super_DEA
+  - super_SBM
+  - malmquist
+
+- title: "Inequality Measures"
+  desc: "Gini coefficient, Theil index, and their decompositions."
+  contents:
+  - gini
+  - gini0
+  - theil
+  - theil0
+  - theil0_g
+  - theil_g
+  - theil_g2_cross
+  - theil_g2_nest
+
+- title: "Regional Economics"
+  desc: "Location Quotient, Herfindahl-Hirschman Index, and Ellison-Glaeser Index."
+  contents:
+  - LQ
+  - HHI
+  - EG
+
+- title: "Grey Prediction Models"
+  desc: "GM(1,1), GM(1,N), DGM(2,1), and Verhulst models."
+  contents:
+  - GM11
+  - GM1N
+  - DGM21
+  - verhulst
+
+- title: "System Evaluation"
+  desc: "Coupling coordination degree and obstacle degree models."
+  contents:
+  - coupling_degree
+  - obstacle_degree
+
+- title: "Datasets"
+  desc: "Built-in example datasets for demonstration and testing."
+  contents:
+  - water_quality
+
+- title: "Utilities"
+  desc: "Helper functions for predictions, data I/O, and other tasks."
+  contents:
+  - combine_preds
+  - read_nbs

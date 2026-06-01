@@ -21,9 +21,9 @@ and \code{NA} for already standardized indicators (no standardization will be ap
 
 \item{nfs}{Number of principal components to use; by default, all are used.}
 
-\item{method}{Weighting Method, "abs" (default, |a_{ji}|) or "squared" (a_{ji}^2)}
+\item{varimax}{Whether to perform Varimax rotation, default is TRUE.}
 
-\item{varvarimax}{Whether to perform Varimax rotation, default is TRUE.}
+\item{method}{Weighting Method, "abs" (default, |a_{ji}|) or "squared" (a_{ji}^2)}
 }
 \value{
 A list containing:

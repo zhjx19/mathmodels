@@ -4,32 +4,32 @@
 #' These functions provide tools for system-level evaluation in multi-indicator systems:
 #'
 #' \itemize{
-#'   \item \code{coupling_degree()}: Computes coupling degree, coordination index, and coupling coordination degree for subsystems.
-#'   \item \code{obstacle_degree()}: Computes obstacle degrees for secondary indicators to identify key constraints in the system, enabling batch processing with tidyverse for grouping and summarization.
+#'   \item `coupling_degree()`: Computes coupling degree, coordination index, and coupling coordination degree for subsystems.
+#'   \item `obstacle_degree()`: Computes obstacle degrees for secondary indicators to identify key constraints in the system, enabling batch processing with tidyverse for grouping and summarization.
 #' }
 #'
-#' @param data A data frame with normalized scores (usually in \eqn{[0, 1]}) as columns, .
+#' @param data A data frame with normalized scores (usually in [0, 1]) as columns.
 #' @param w Optional vector of weights for indicators or subsystems; defaults to equal weights if NULL.
-#' @param id_cols Optional character vector of column names in \code{data} to preserve as identifiers (not used in calculations).
-#' @param type Either "standard" for the standard coupling formula (results concentrated near 1) or "adjusted" for the revised formula (results more uniformly distributed in \eqn{[0, 1]}), as proposed by Wang Shujia, Kong Wei, et al. in "Misconceptions and Corrections of Domestic Coupling Coordination Degree Models, Journal of Natural Resources, 2021, 36(3): 793–810 (In Chinese)"
+#' @param id_cols Optional character vector of column names in `data` to preserve as identifiers (not used in calculations).
+#' @param type Either "standard" for the standard coupling formula (results concentrated near 1) or "adjusted" for the revised formula (results more uniformly distributed in [0, 1]), as proposed by Wang Shujia, Kong Wei, et al. in "Misconceptions and Corrections of Domestic Coupling Coordination Degree Models, Journal of Natural Resources, 2021, 36(3): 793–810 (In Chinese)"
 #'
 #' @return
 #' A tibble depending on the function:
 #' \describe{
 #'   \item{coupling_degree}{A tibble with columns:
 #'     \itemize{
-#'       \item \code{ID}: Identifier columns specified by \code{id_cols} (if provided).
-#'       \item \code{coupling}: Coupling Degree (range 0-1).
-#'       \item \code{coord}: Coordination Index (range 0-1).
-#'       \item \code{coupling_coord}: Coupling Coordination Degree (range 0-1).
+#'       \item `ID`: Identifier columns specified by `id_cols` (if provided).
+#'       \item `coupling`: Coupling Degree (range 0-1).
+#'       \item `coord`: Coordination Index (range 0-1).
+#'       \item `coupling_coord`: Coupling Coordination Degree (range 0-1).
 #'     }
 #'   }
 #'   \item{obstacle_degree}{A tibble with:
 #'     \itemize{
-#'       \item \code{ID}: Identifier columns specified by \code{id_cols} (if provided).
-#'       \item Columns for secondary indicator obstacle degrees (\eqn{O_{ij} = (1 - X_{ij}) \cdot w_{ij}}).
+#'       \item `ID`: Identifier columns specified by `id_cols` (if provided).
+#'       \item Columns for secondary indicator obstacle degrees (`O_{ij} = (1 - X_{ij}) * w_{ij}`).
 #'     }
-#'     Suitable for grouping and summarizing (e.g., with tidyverse) to compute primary indicator obstacle degrees (\( U_i \)).
+#'     Suitable for grouping and summarizing (e.g., with tidyverse) to compute primary indicator obstacle degrees (\\( U_i \\)).
 #'   }
 #' }
 #'
@@ -62,6 +62,9 @@ coupling_degree = function(data, w = NULL, id_cols = NULL,
   # id_cols: Non-subsystem columns to preserve (not used in calculation)
   # Returns: coupling (Coupling Degree), coord (Coordination Index), coupling_coord (Coupling Coordination Degree)
 
+  if(!is.data.frame(data))
+    stop("data must be a data frame.")
+
   ID = NULL
   if(!is.null(id_cols)) {
     ID = data[id_cols]
@@ -69,7 +72,10 @@ coupling_degree = function(data, w = NULL, id_cols = NULL,
   }
 
   p = ncol(data)
+  if(p < 2) stop("data must have at least 2 subsystem columns.")
   if(is.null(w)) w = rep(1/p,p)
+  if(length(w) != p)
+    stop("w must have length equal to the number of subsystem columns.")
   C = switch(type,
     "standard" = {
        row_prod = apply(data, 1, function(x) prod(pmax(x, 1e-10)))
@@ -99,6 +105,9 @@ obstacle_degree = function(data, w = NULL, id_cols = NULL, scaled = FALSE) {
   # scaled: Whether to perform row normalization on the obstacle degree
   # Return: Secondary indicator obstacle degrees
 
+  if(!is.data.frame(data))
+    stop("data must be a data frame.")
+
   ID = NULL
   if(!is.null(id_cols)) {
     ID = data[id_cols]
@@ -107,7 +116,10 @@ obstacle_degree = function(data, w = NULL, id_cols = NULL, scaled = FALSE) {
 
   n = nrow(data)
   m = ncol(data)
+  if(m < 1) stop("data must have at least 1 indicator column.")
   if (is.null(w)) w = rep(1/m, m)
+  if(length(w) != m)
+    stop("w must have length equal to the number of indicator columns.")
   diff_mat = 1 - as.matrix(data)     # Compute deviation (1 - X_ij)
   O = sweep(diff_mat, 2, w, "*")     # Compute (1 - X_ij) * w_ij
   if(scaled) O = O / rowSums(O)

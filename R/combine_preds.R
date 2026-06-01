@@ -6,12 +6,12 @@
 #'
 #' @return A list with two elements:
 #' \itemize{
-#'   \item \code{a}: Numeric, the combined prediction value.
-#'   \item \code{w}: Numeric vector, weights for each prediction in \code{x}, summing to 1.
+#'   \item `a`: Numeric, the combined prediction value.
+#'   \item `w`: Numeric vector, weights for each prediction in `x`, summing to 1.
 #' }
 #' @details
 #' The function combines prediction results by constructing a similarity matrix based on cosine transformation of pairwise differences. Weights are derived from the principal eigenvector of the similarity matrix, ensuring predictions closer to each other have higher influence. For two predictions, equal weights (0.5, 0.5) are used. If all predictions are identical, equal weights are assigned.
-#' Compatible with the \code{mathmodels} package for enhancing prediction models, including grey prediction, time series, or ensemble machine learning.
+#' Compatible with the `mathmodels` package for enhancing prediction models, including grey prediction, time series, or ensemble machine learning.
 #' @examples
 #' # Example: Combine three prediction results
 #' preds = c(100, 102, 98)  # E.g., from grey prediction, ARIMA, or ML models
@@ -20,6 +20,8 @@
 #' @export
 combine_preds = function(x) {
   # Combine multiple prediction results
+  if(!is.numeric(x) || is.matrix(x))
+    stop("x must be a numeric vector.")
   Lx = length(x)
   if (Lx < 2) stop("Input x must have length >= 2.")
   if(Lx == 2) {    # For two predictions, use equal weights

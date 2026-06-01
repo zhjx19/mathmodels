@@ -18,19 +18,19 @@ Use \code{"+"} for positive indicators (higher is better),
 If \code{index = NULL} (default), all indicators are treated as \code{"+"}.}
 }
 \value{
-A named numeric vector of relative closeness scores (in \eqn{[0, 1]}) for each alternative.
+A named numeric vector of relative closeness scores (in \link{0, 1}) for each alternative.
 Higher values indicate better alternatives.
 Names are taken from \code{rownames(X)} or default to "Sample1", "Sample2", etc.
 }
 \description{
 Implements the Technique for Order of Preference by Similarity to Ideal Solution (TOPSIS)
-to rank alternatives based on multiple criteria. The function normalizes the decision matrix using Min-Max method,
+to rank alternatives based on multiple criteria. The function normalizes the decision matrix using L2 norm,
 applies weights, and computes relative closeness to the ideal solution.
 }
 \details{
 The TOPSIS method ranks alternatives by:
 \enumerate{
-\item Normalizing the decision matrix using Min-Max normalization.
+\item Normalizing the decision matrix using L2 norm normalization.
 \item Applying weights to form a weighted normalized matrix.
 \item Identifying positive and negative ideal solutions based on indicator directions.
 \item Computing Euclidean distances to ideal solutions.

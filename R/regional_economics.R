@@ -11,27 +11,27 @@
 #' @importFrom tibble enframe
 #' @importFrom purrr map2_dbl
 #'
-#' @param data A data frame containing the necessary data for calculations. For \code{LQ},
+#' @param data A data frame containing the necessary data for calculations. For `LQ`,
 #' the first row is assumed to be the national total, with the first two columns specifying
-#' the region and total, optionally including a grouping column. For \code{EG}, it contains
+#' the region and total, optionally including a grouping column. For `EG`, it contains
 #' region, industry, and indicator columns (e.g., employment or output).
-#' @param region The name of the column in \code{data} specifying the region (used in \code{LQ} and \code{EG}).
-#' @param total The name of the column in \code{data} specifying the total (used in \code{LQ}).
-#' @param .cols The columns in \code{data} for which to calculate the location quotient (used in \code{LQ}).
-#' @param .by Optional grouping column for \code{LQ}, defaults to \code{NULL} (no grouping).
-#' @param x A numeric vector for calculating the HHI (used in \code{HHI}).
-#' @param scaled Logical; if \code{TRUE}, the HHI is scaled to account for the number of firms. Defaults to \code{FALSE}.
-#' @param industry The name of the column in \code{data} specifying the industry (used in \code{EG}).
-#' @param y The name of the column in \code{data} specifying the indicator (e.g., employment or output, used in \code{EG}).
+#' @param region The name of the column in `data` specifying the region (used in `LQ` and `EG`).
+#' @param total The name of the column in `data` specifying the total (used in `LQ`).
+#' @param .cols The columns in `data` for which to calculate the location quotient (used in `LQ`).
+#' @param .by Optional grouping column for `LQ`, defaults to `NULL` (no grouping).
+#' @param x A numeric vector for calculating the HHI (used in `HHI`).
+#' @param scaled Logical; if `TRUE`, the HHI is scaled to account for the number of firms. Defaults to `FALSE`.
+#' @param industry The name of the column in `data` specifying the industry (used in `EG`).
+#' @param y The name of the column in `data` specifying the indicator (e.g., employment or output, used in `EG`).
 #'
 #' @details
 #' \describe{
 #'   \item{LQ}{Calculates the Location Quotient for multiple columns with optional grouping.
 #'     The LQ measures the relative concentration of an industry in a region compared to a national benchmark.
-#'     The function assumes the first row of \code{data} contains national totals, with the first two columns
+#'     The function assumes the first row of `data` contains national totals, with the first two columns
 #'     specifying the region and total, and the remaining columns used for LQ calculation.}
 #'   \item{HHI}{Calculates the Herfindahl-Hirschman Index, a measure of market concentration based on
-#'     the squared sum of market shares. If \code{scaled = TRUE}, the HHI is normalized to account for the number of firms.}
+#'     the squared sum of market shares. If `scaled = TRUE`, the HHI is normalized to account for the number of firms.}
 #'   \item{EG}{Calculates the Ellison-Glaeser Index, which measures the geographic concentration of an industry
 #'     while controlling for firm size distribution and random distribution effects. It requires data on regions,
 #'     industries, and an indicator (e.g., employment or output).}
@@ -40,7 +40,7 @@
 #' @return
 #' \describe{
 #'   \item{LQ}{A data frame with the region column and calculated location quotients for the specified columns,
-#'     optionally grouped by \code{.by}.}
+#'     optionally grouped by `.by`.}
 #'   \item{HHI}{A numeric value representing the HHI, either scaled or unscaled.}
 #'   \item{EG}{A tibble with two columns: the industry name and the corresponding EG index value.}
 #' }
@@ -84,6 +84,8 @@ LQ = function(data, region, total, .cols, .by = NULL) {
   # region, total: specify the region and total columns, respectively
   # .cols: specifies the columns for which to calculate the location quotient
   # .by: specifies the grouping column, defaults to `NULL` (no grouping)
+  if(!is.data.frame(data))
+    stop("data must be a data frame.")
   quotient = function(x) x[-1] / x[1]
   data |>
     dplyr::reframe({{region}} := {{region}}[-1],
@@ -96,6 +98,8 @@ LQ = function(data, region, total, .cols, .by = NULL) {
 HHI = function(x, scaled = FALSE) {
   # x: a numeric vector
   # scaled: a logical value, indicating whether to standardize the HHI
+  if(!is.numeric(x) || is.matrix(x))
+    stop("x must be a numeric vector.")
   x = x[!is.na(x)]
   hhi = sum((x / sum(x)) ^ 2)
   if(scaled) {
@@ -110,6 +114,8 @@ HHI = function(x, scaled = FALSE) {
 EG = function(data, region, industry, y) {
   # data: a data frame containing region, industry, and indicator columns (e.g., employment or output)
   # region, industry, y: specify the region, industry, and indicator columns, respectively
+  if(!is.data.frame(data))
+    stop("data must be a data frame.")
   cal_eg = function(s, x, h) {
     if(h == 1) 0
     else (sum((s-x)^2) / (1 - sum(x^2)) - h) / (1 - h)

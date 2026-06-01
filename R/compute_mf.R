@@ -1,8 +1,8 @@
 #' Compute fuzzy membership vector and return corresponding membership functions.
 #'
-#' \code{compute_mf} transforms a single indicator value into a fuzzy membership vector,
+#' `compute_mf` transforms a single indicator value into a fuzzy membership vector,
 #' where each element represents the degree of membership to a specific evaluation level.
-#' \code{compute_mf_funs} returns the list of membership functions for visualization purposes.
+#' `compute_mf_funs` returns the list of membership functions for visualization purposes.
 #'
 #' @param x A numeric scalar representing the value of an indicator.
 #' @param thresholds A numeric vector containing at least two threshold values that define
@@ -38,6 +38,8 @@ compute_mf_funs = function(thresholds) {
   # Output:
   #   mfs: list of membership functions for all levels
 
+  if(!is.numeric(thresholds) || is.matrix(thresholds))
+    stop("thresholds must be a numeric vector.")
   n = length(thresholds)
   if(n < 2) stop("thresholds must contain at least two values")
 
@@ -70,6 +72,10 @@ compute_mf = function(x, thresholds) {
   # Output:
   #   mv: membership vector
 
+  if(!is.numeric(x) || length(x) != 1)
+    stop("x must be a numeric scalar.")
+  if(!is.numeric(thresholds) || is.matrix(thresholds))
+    stop("thresholds must be a numeric vector.")
   n = length(thresholds)
   if(n < 2) stop("thresholds must contain at least two values")
 

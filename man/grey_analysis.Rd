@@ -54,13 +54,18 @@ Direction of indicators can be specified via \code{index}.}
 }
 \examples{
 # Grey correlation degree
-ref = 1:3
-cmp = data.frame(x1 = c(1, 2, 4), x2 = c(2, 3, 5))
+ref = c(0.9, 0.8, 0.7)
+cmp = data.frame(
+  x1 = c(0.9, 0.7, 0.8),
+  x2 = c(0.8, 0.9, 0.7),
+  x3 = c(0.7, 0.8, 0.9)
+)
 grey_corr(ref, cmp, rho = 0.5)
 
-# Grey correlation evaluation#'
-w = c(0.4, 0.6)
-idx = c("+", "-")
-grey_corr_topsis(cmp, w, idx, rho = 0.5)
+# Grey correlation evaluation
+X = data.frame(x1 = c(8, 7, 6), x2 = c(150, 180, 200), x3 = c(60, 80, 100))
+w = c(0.3, 0.4, 0.3)
+idx = c("+", "+", "+")
+grey_corr_topsis(X, w, idx, rho = 0.5)
 
 }

@@ -7,7 +7,7 @@
 cv_weight(X)
 }
 \arguments{
-\item{data}{Numeric matrix or data frame with positive indicator data.}
+\item{X}{Numeric matrix or data frame with positive indicator data.}
 }
 \value{
 Numeric vector of weights for the indicators, summing to 1.

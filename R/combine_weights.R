@@ -21,6 +21,12 @@
 #'
 #' @export
 combine_weights = function(w_subj, w_obj, type = "linear", alpha = 0.5) {
+  if(!is.numeric(w_subj) || is.matrix(w_subj))
+    stop("w_subj must be a numeric vector.")
+  if(!is.numeric(w_obj) || is.matrix(w_obj))
+    stop("w_obj must be a numeric vector.")
+  if(length(w_subj) != length(w_obj))
+    stop("w_subj and w_obj must have the same length.")
   if (any(w_subj < 0) || any(w_obj < 0)) stop("Weights must be non-negative.")
 
   # Combine weights based on type
@@ -38,9 +44,9 @@ combine_weights = function(w_subj, w_obj, type = "linear", alpha = 0.5) {
                # Solve linear system for game theory-based weights
                w_mat = cbind(w_subj, w_obj)
                S = crossprod(w_mat)
-               alpha = solve(S, diag(S))
-               alpha = alpha / sum(alpha)
-               as.vector(w_mat %*% alpha)
+               alpha_vec = solve(S, diag(S))
+               alpha_vec = alpha_vec / sum(alpha_vec)
+               as.vector(w_mat %*% alpha_vec)
              }
   )
   # If needed, perform normalization

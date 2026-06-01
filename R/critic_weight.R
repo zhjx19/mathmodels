@@ -14,11 +14,11 @@
 #'
 #'              If `index = NULL` (default), all indicators are treated as `NA`, meaning no normalization is performed.
 #' @param method Character scalar; specifies the method used to compute contrast intensity.
-#'               Options: \code{"std"} (standard deviation, default), or \code{"entropy"} (based on information redundancy).
+#'               Options: `"std"` (standard deviation, default), or `"entropy"` (based on information redundancy).
 #' @param cor_method Character scalar; specifies the method for computing correlations.
-#'                   Options: \code{"pearson"} (default), \code{"spearman"}, or \code{"kendall"}.
+#'                   Options: `"pearson"` (default), `"spearman"`, or `"kendall"`.
 #' @param epsilon A small constant used to replace exact 0s and 1s in the data to prevent log(0) errors.
-#'                Default is 0.002. Only used when \code{method = "entropy"}.
+#'                Default is 0.002. Only used when `method = "entropy"`.
 
 #' @return A list containing:
 #' \item{w}{Numeric vector of weights for each indicator.}
@@ -44,6 +44,15 @@ critic_weight = function(X, index = NULL, method = "std",
   # cor_method: which correlation coefficient, "pearson"(default), "kendall" or "spearman"
   # epsilon: A small constant used to replace exact 0s and 1s in the data to prevent log(0) errors, default is 0.002.
   # w: returned weights of indicators, s: returned scores of samples
+
+  if(!is.data.frame(X) && !is.matrix(X))
+    stop("X must be a data frame or matrix.")
+  if(ncol(X) < 2)
+    stop("X must have at least 2 columns.")
+  if(nrow(X) < 2)
+    stop("X must have at least 2 rows.")
+  if(!is.null(index) && length(index) != ncol(X))
+    stop("index must have length equal to ncol(X), or be NULL.")
 
   if(is.null(index)) index = rep(NA, ncol(X))
   pos = which(index == "+")

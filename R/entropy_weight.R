@@ -39,6 +39,16 @@ entropy_weight = function(X, index = NULL, epsilon = 0.002) {
   # X: original data matrix, rows are samples and columns are indicators
   # index: direction of each indicator, "+" for positive, "-" for negative, NA means no rescaling.
   # w: returned weights of indicators, s: returned scores of samples
+
+  if(!is.data.frame(X) && !is.matrix(X))
+    stop("X must be a data frame or matrix.")
+  if(ncol(X) < 2)
+    stop("X must have at least 2 columns.")
+  if(nrow(X) < 2)
+    stop("X must have at least 2 rows.")
+  if(!is.null(index) && length(index) != ncol(X))
+    stop("index must have length equal to ncol(X), or be NULL.")
+
   if(is.null(index)) index = rep(NA, ncol(X))
   if(any(is.na(index))) {
     X_na = X[is.na(index)]
@@ -50,9 +60,9 @@ entropy_weight = function(X, index = NULL, epsilon = 0.002) {
   neg = which(index == "-")
   # Normalize the data
   X[,pos] = lapply(X[,pos, drop = FALSE],
-                   function(x) rescale(x, a = epsilon, b = 1-epsilon))
+                    function(x) rescale(x, a = epsilon, b = 1-epsilon))
   X[,neg] = lapply(X[,neg, drop = FALSE],
-                   function(x) rescale(x, type = "-", a = epsilon, b = 1-epsilon))
+                    function(x) rescale(x, type = "-", a = epsilon, b = 1-epsilon))
   # Compute proportion p(i,j) of sample i in indicator j
   P = data.frame(lapply(X, function(x) x / sum(x)))
   # Compute entropy e(j) for each indicator j

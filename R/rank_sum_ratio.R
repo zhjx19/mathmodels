@@ -12,23 +12,23 @@
 #' for identifying evaluation objects.
 #' @param w Numeric vector, weights for indicators (default = equal weights).
 #' @param method Character scalar, ranking method: "int" for integer ranks or
-#' "non-int" for scaled ranks in \eqn{[1, n]} (default = "int").
+#' "non-int" for scaled ranks in [1, n] (default = "int").
 #'
 #' @return A list containing:
 #' \itemize{
-#'   \item \code{resultTable}: Data frame with RSR values, ranks, cumulative frequencies,
+#'   \item `resultTable`: Data frame with RSR values, ranks, cumulative frequencies,
 #'   probit values, and fitted RSR values.
-#'   \item \code{reg}: Linear model object fitting RSR against probit values.
-#'   \item \code{rankTable}: Data frame with ranked indicator values.
+#'   \item `reg`: Linear model object fitting RSR against probit values.
+#'   \item `rankTable`: Data frame with ranked indicator values.
 #' }
 #'
 #' @details
-#' The \code{rank_sum_ratio} function implements the RSR method for evaluating
+#' The `rank_sum_ratio` function implements the RSR method for evaluating
 #' objects based on positive indicators. It ranks the indicators (using integer or
 #' non-integer methods), computes weighted RSR values, adjusts ranks with probit
 #' transformation, and fits a linear regression model to relate RSR to probit values.
-#' The function assumes the first column of \code{data} is an ID column, and weights
-#' (\code{w}) can be provided or set to equal weights by default.
+#' The function assumes the first column of `data` is an ID column, and weights
+#' (`w`) can be provided or set to equal weights by default.
 #'
 #' @examples
 #' # Example data
@@ -44,16 +44,26 @@ rank_sum_ratio = function(data, w = NULL, method = "int") {
   # w: weights for indicators
   # method: "int" for integer ranks, "non-int" for scaled ranks
   # Returns: result table, linear regression, rank table
+
+  if(!is.data.frame(data))
+    stop("data must be a data frame.")
+  if(ncol(data) < 2)
+    stop("data must have at least 2 columns (ID + at least 1 indicator).")
+
   n = nrow(data)
   m = ncol(data) - 1
+  if(m < 1) stop("data must have at least 1 indicator column.")
   if(is.null(w)) w = rep(1, m)
+  if(length(w) != m)
+    stop("w must have length equal to the number of indicator columns (ncol(data)-1).")
+
   # Select ranking method
   switch(method,
          "int" = {
-           rankTable = dplyr::mutate(data, dplyr::across(-ID, rank))
+           rankTable = dplyr::mutate(data, dplyr::across(-1, rank))
          },
          "non-int" = {
-           rankTable = dplyr::mutate(data, dplyr::across(-ID, \(x) rescale(x, a = 1, b = n)))
+           rankTable = dplyr::mutate(data, dplyr::across(-1, \(x) rescale(x, a = 1, b = n)))
          }
   )
   # Main computation

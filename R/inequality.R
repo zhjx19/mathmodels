@@ -2,31 +2,31 @@
 #'
 #' @description
 #' Computes inequality indices for individual or grouped data:
-#' \code{gini0} calculates the Gini coefficient for individual sample data.
-#' \code{gini} calculates the Gini coefficient for grouped data using income and population shares.
-#' \code{theil0} calculates the Theil index for individual sample data.
-#' \code{theil} calculates the Theil index for grouped average data.
-#' \code{theil0_g} calculates the Theil index and decomposition for grouped sample data.
-#' \code{theil_g} calculates the Theil index and decomposition for grouped average data.
-#' \code{theil_g2_cross} calculates the Theil index and decomposition for two-level cross-grouped average data.
-#' \code{theil_g2_nest} calculates the Theil index and decomposition for two-level nested grouped average data.
+#' `gini0` calculates the Gini coefficient for individual sample data.
+#' `gini` calculates the Gini coefficient for grouped data using income and population shares.
+#' `theil0` calculates the Theil index for individual sample data.
+#' `theil` calculates the Theil index for grouped average data.
+#' `theil0_g` calculates the Theil index and decomposition for grouped sample data.
+#' `theil_g` calculates the Theil index and decomposition for grouped average data.
+#' `theil_g2_cross` calculates the Theil index and decomposition for two-level cross-grouped average data.
+#' `theil_g2_nest` calculates the Theil index and decomposition for two-level nested grouped average data.
 #'
-#' For \code{theil}, \code{theil_g}, \code{theil_g2_cross}, \code{theil_g2_nest}: Name of population variable (character).
-#' @param y For \code{gini0}, \code{gini}, \code{theil0}: Numeric vector of individual incomes.
-#' @param pop For \code{gini}: Numeric vector of group populations or population shares.
-#' For \code{theil}, \code{theil0_g}, \code{theil_g}, \code{theil_g2_cross}, \code{theil_g2_nest}: Name of income variable (character).
-#' @param data For \code{theil0_g}, \code{theil_g}, \code{theil_g2_cross}, \code{theil_g2_nest}: Data frame containing variables.
-#' @param group For \code{theil0_g}, \code{theil_g}: Name of grouping variable (e.g., province).
-#' @param group1 For \code{theil_g2_cross}, \code{theil_g2_nest}: Name of first grouping variable (e.g., region or province).
-#' @param group2 For \code{theil_g2_cross}, \code{theil_g2_nest}: Name of second grouping variable (e.g., type or city).
+#' For `theil`, `theil_g`, `theil_g2_cross`, `theil_g2_nest`: Name of population variable (character).
+#' @param y For `gini0`, `gini`, `theil0`: Numeric vector of individual incomes.
+#' @param pop For `gini`: Numeric vector of group populations or population shares.
+#' For `theil`, `theil0_g`, `theil_g`, `theil_g2_cross`, `theil_g2_nest`: Name of income variable (character).
+#' @param data For `theil0_g`, `theil_g`, `theil_g2_cross`, `theil_g2_nest`: Data frame containing variables.
+#' @param group For `theil0_g`, `theil_g`: Name of grouping variable (e.g., province).
+#' @param group1 For `theil_g2_cross`, `theil_g2_nest`: Name of first grouping variable (e.g., region or province).
+#' @param group2 For `theil_g2_cross`, `theil_g2_nest`: Name of second grouping variable (e.g., type or city).
 #'
 #' @return
-#' For \code{gini0}, \code{gini}: Numeric Gini coefficient (0 to 1).
-#' For \code{theil0}, \code{theil}: Numeric Theil index.
-#' For \code{theil0_g}, \code{theil_g}, \code{theil_g2_cross}, \code{theil_g2_nest}: List with two vectors:
+#' For `gini0`, `gini`: Numeric Gini coefficient (0 to 1).
+#' For `theil0`, `theil`: Numeric Theil index.
+#' For `theil0_g`, `theil_g`, `theil_g2_cross`, `theil_g2_nest`: List with two vectors:
 #' \itemize{
-#'   \item \code{theil}: theil (Theil index and its decomposition),
-#'   \item \code{ratio}: ratio (contribution rates of each component).
+#'   \item `theil`: theil (Theil index and its decomposition),
+#'   \item `ratio`: ratio (contribution rates of each component).
 #' }
 #'
 #' @examples
@@ -92,6 +92,10 @@ trapz = function(x, y) {
 gini0 = function(y) {
   # Computes Gini coefficient for inequality
   # y: numeric vector of non-negative values
+  if(!is.numeric(y) || is.matrix(y))
+    stop("y must be a numeric vector.")
+  if(any(y < 0, na.rm = TRUE))
+    stop("y must be non-negative.")
   n = length(y)
   d = outer(y, y, FUN = function(a, b) abs(a - b))
   sum(d) / (2 * n^2 * mean(y))
@@ -103,6 +107,14 @@ gini = function(y, pop) {
   # Computes Gini coefficient for grouped data
   # y: numeric vector of group incomes or income shares
   # pop: numeric vector of group populations or population shares
+  if(!is.numeric(y) || is.matrix(y))
+    stop("y must be a numeric vector.")
+  if(!is.numeric(pop) || is.matrix(pop))
+    stop("pop must be a numeric vector.")
+  if(length(y) != length(pop))
+    stop("y and pop must have the same length.")
+  if(any(y < 0, na.rm = TRUE) || any(pop < 0, na.rm = TRUE))
+    stop("y and pop must be non-negative.")
   ord = order(y / pop)
   y = y[ord]
   pop = pop[ord]
@@ -116,6 +128,10 @@ gini = function(y, pop) {
 theil0 = function(y) {
   # Computes Theil index for individual sample data
   # y: numeric vector of incomes
+  if(!is.numeric(y) || is.matrix(y))
+    stop("y must be a numeric vector.")
+  if(any(y < 0, na.rm = TRUE))
+    stop("y must be non-negative.")
   Yr = y / mean(y)
   sum(y / sum(y) * ifelse(Yr>0, log(Yr), 0))
 }
@@ -126,6 +142,14 @@ theil = function(y, pop) {
   # Computes Theil index for grouped average data
   # y: vector of group average incomes
   # pop: vector of group population sizes
+  if(!is.numeric(y) || is.matrix(y))
+    stop("y must be a numeric vector.")
+  if(!is.numeric(pop) || is.matrix(pop))
+    stop("pop must be a numeric vector.")
+  if(length(y) != length(pop))
+    stop("y and pop must have the same length.")
+  if(any(y < 0, na.rm = TRUE) || any(pop < 0, na.rm = TRUE))
+    stop("y and pop must be non-negative.")
   Yb = sum(y * pop) / sum(pop)
   Yr = y / Yb
   sum(pop / sum(pop) * Yr * ifelse(Yr > 0, log(Yr), 0))
@@ -141,6 +165,13 @@ theil0_g = function(data, group, y) {
   # Returns a list of two elements:
   #   - theil: Total Theil index (T), between-group (Tb), within-group (Tw), and per-group1 within-group Theil indices
   #   - ratio: corresponding contribution rates
+
+  if(!is.data.frame(data))
+    stop("data must be a data frame.")
+  if(!is.character(group) || length(group) != 1)
+    stop("group must be a character scalar (column name).")
+  if(!is.character(y) || length(y) != 1)
+    stop("y must be a character scalar (column name).")
 
   # Rename columns for consistency
   vars = c(group, y)
@@ -180,6 +211,15 @@ theil_g = function(data, group, y, pop) {
   #   - theil: Total Theil index (T), between-group (Tb), within-group (Tw), and per-group within-group Theil indices
   #   - ratio: Corresponding contribution rates
 
+  if(!is.data.frame(data))
+    stop("data must be a data frame.")
+  if(!is.character(group) || length(group) != 1)
+    stop("group must be a character scalar (column name).")
+  if(!is.character(y) || length(y) != 1)
+    stop("y must be a character scalar (column name).")
+  if(!is.character(pop) || length(pop) != 1)
+    stop("pop must be a character scalar (column name).")
+
   # Rename columns for consistency
   vars = c(group, y, pop)
   data = data |>
@@ -218,6 +258,17 @@ theil_g2_cross = function(data, group1, group2, y, pop) {
   #   - theil: Total Theil index (T), between-group1 (Tb), within-group1 (Tw),
   #            between-group2 (Tw_b), within-group2 (Tw_w), and per-group1 within-group Theil indices
   #   - ratio: corresponding contribution rates
+
+  if(!is.data.frame(data))
+    stop("data must be a data frame.")
+  if(!is.character(group1) || length(group1) != 1)
+    stop("group1 must be a character scalar (column name).")
+  if(!is.character(group2) || length(group2) != 1)
+    stop("group2 must be a character scalar (column name).")
+  if(!is.character(y) || length(y) != 1)
+    stop("y must be a character scalar (column name).")
+  if(!is.character(pop) || length(pop) != 1)
+    stop("pop must be a character scalar (column name).")
 
   # Standardize column names
   vars = c(group1, group2, y, pop)
@@ -280,6 +331,17 @@ theil_g2_nest = function(data, group1, group2, y, pop) {
   #   - theil: Total Theil index (T), between-group1 (Tb_g1), between-group2 (Tb_g2),
   #            within-group2 (Tw), and per-group1/group2 Theil indices
   #   - ratio: corresponding contribution rates
+
+  if(!is.data.frame(data))
+    stop("data must be a data frame.")
+  if(!is.character(group1) || length(group1) != 1)
+    stop("group1 must be a character scalar (column name).")
+  if(!is.character(group2) || length(group2) != 1)
+    stop("group2 must be a character scalar (column name).")
+  if(!is.character(y) || length(y) != 1)
+    stop("y must be a character scalar (column name).")
+  if(!is.character(pop) || length(pop) != 1)
+    stop("pop must be a character scalar (column name).")
 
   # Standardize column names
   vars = c(group1, group2, y, pop)

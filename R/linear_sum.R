@@ -17,5 +17,11 @@
 #' linear_sum(data, w)
 
 linear_sum = function(data, w) {
+  if(!is.data.frame(data) && !is.matrix(data))
+    stop("data must be a data frame or matrix.")
+  if(!is.numeric(w) || is.matrix(w))
+    stop("w must be a numeric vector.")
+  if(length(w) != ncol(data))
+    stop("Length of w must equal ncol(data).")
   as.matrix(data) %*% w |> as.vector()
 }

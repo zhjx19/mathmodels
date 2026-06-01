@@ -2,18 +2,19 @@
 #'
 #' @description
 #' Implements grey prediction models for time series forecasting:
-#' \code{GM11} applies the GM(1,1) model with level ratio test.
-#' \code{GM1N} applies the GM(1,N) model with multiple related factors.
-#' \code{DGM21} applies the DGM(2,1) model for second-order dynamics.
-#' \code{verhulst} applies the Verhulst model for logistic growth.
+#' `GM11` applies the GM(1,1) model with level ratio test.
+#' `GM1N` applies the GM(1,N) model with multiple related factors.
+#' `DGM21` applies the DGM(2,1) model for second-order dynamics.
+#' `verhulst` applies the Verhulst model for logistic growth.
 #'
-#' @param X For \code{GM11}, \code{DGM21}, \code{verhulst}: Numeric vector of original time series data.
-#' @param dat For \code{GM1N}: Data frame or matrix, last column is characteristic series, others are related factors.
+#' @param X For `GM11`, `DGM21`, `verhulst`: Numeric vector of original time series data.
+#' @param dat For `GM1N`: Data frame or matrix, last column is characteristic series, others are related factors.
+#' @param new_data For `GM1N`: Optional future values of related factors (1 row, m-1 columns).
 #'
 #' @return
-#' For \code{GM11}: List with fitted values (\code{fitted}), next prediction (\code{pnext}), prediction function (\code{f}), matrix (\code{mat}), parameters (\code{u}), level ratios (\code{lambda}), and range (\code{rng}).
-#' For \code{GM1N}: List with fitted values (\code{fitted}), posterior variance ratio (\code{C}), small error probability (\code{P}), and prediction function (\code{f}).
-#' For \code{DGM21}, \code{verhulst}: List with fitted values (\code{fitted}), next prediction (\code{pnext}), prediction function (\code{f}), matrix (\code{mat}), and parameters (\code{u}).
+#' For `GM11`: List with fitted values (`fitted`), next prediction (`pnext`), prediction function (`f`), matrix (`mat`), parameters (`u`), level ratios (`lambda`), and range (`rng`).
+#' For `GM1N`: List with fitted values (`fitted`), posterior variance ratio (`C`), small error probability (`P`), and prediction function (`f`).
+#' For `DGM21`, `verhulst`: List with fitted values (`fitted`), next prediction (`pnext`), prediction function (`f`), matrix (`mat`), and parameters (`u`).
 #'
 #' @examples
 #' # Sample time series for GM11, DGM21, Verhulst
@@ -57,6 +58,12 @@ GM11 = function(X) {
   # Implements GM(1,1) algorithm, input time series data
   # Returns fitted values (fitted), next prediction (pnext), prediction function (f)
   # Level ratios (lambda), acceptable range (rng)
+
+  if(!is.numeric(X) || is.matrix(X))
+    stop("X must be a numeric vector.")
+  if(length(X) < 4)
+    stop("X must have length >= 4.")
+
   # Level ratio test
   n = length(X)
   lam = X[1:n-1] / X[2:n]                 # Compute level ratios
@@ -92,10 +99,16 @@ GM1N = function(dat, new_data = NULL) {
   # Outputs:
   #   list containing fitted values (fitted), prediction (pred), variance ratio (vr), small error probability (err), and prediction function (f)
 
+  if(!is.data.frame(dat) && !is.matrix(dat))
+    stop("dat must be a data frame or matrix.")
+
   # Convert to matrix
   X0 = as.matrix(dat)
   n = nrow(X0)
   m = ncol(X0)
+  if(m < 2) stop("dat must have at least 2 columns.")
+  if(n < 4) stop("dat must have at least 4 rows.")
+
   X = X0[, m]           # Characteristic series
 
   # Smoothness check
@@ -158,28 +171,40 @@ GM1N = function(dat, new_data = NULL) {
 #' @export
 DGM21 = function(X) {
   # Implements DGM(2,1) algorithm, input time series data
-  # Returns fitted values (pred), next prediction (pnext), prediction function (f), matrix (mat), parameters (u)
+  # Returns fitted values (fitted), next prediction (pnext), prediction function (f), matrix (mat), parameters (u)
+
+  if(!is.numeric(X) || is.matrix(X))
+    stop("X must be a numeric vector.")
+  if(length(X) < 4)
+    stop("X must have length >= 4.")
+
   n = length(X)
   X1 = cumsum(X)
   AX1 = diff(X)
   B = cbind(-X[-1], rep(1, n-1))
   u = MASS::ginv(B) %*% AX1
   a = u[1]; b = u[2]
-  x0 = 2.874
+  x0 = X[1]
   f = \(k) (b/a^2 - x0/a) * exp(-a * (k-1)) + b/a * (k-1) +
     (1+a)/a * x0 - b/a^2
   X1h = f(1:(n+1))           # Predict including next period
   p = c(X1h[1], diff(X1h))
-  pred = p[-n]
-  pnext = p[n]
-  list(pred = fitted, pnext = pnext, f = f, mat = B, u = u)
+  pred = p[1:n]               # Fitted values (first n)
+  pnext = p[n+1]              # Next prediction
+  list(fitted = pred, pnext = pnext, f = f, mat = B, u = u)
 }
 
 #' @rdname grey_models
 #' @export
 verhulst = function(X) {
   # Implements Verhulst model, input time series data
-  # Returns fitted values (pred), next prediction (pnext), prediction function (f), matrix (mat), parameters (u)
+  # Returns fitted values (fitted), next prediction (pnext), prediction function (f), matrix (mat), parameters (u)
+
+  if(!is.numeric(X) || is.matrix(X))
+    stop("X must be a numeric vector.")
+  if(length(X) < 4)
+    stop("X must have length >= 4.")
+
   n = length(X)
   X1 = cumsum(X)
   Z = (X1[1:n-1] + X1[2:n]) / 2
@@ -188,7 +213,7 @@ verhulst = function(X) {
   f = \(k) u[1] * X[1] / (u[2] * X[1] + (u[1]-u[2]*X[1])*exp(u[1]*(k-1)))
   X1h = f(1:(n+1))
   p = c(X1h[1], diff(X1h))
-  pred = p[-n]
-  pnext = p[n]
+  pred = p[1:n]
+  pnext = p[n+1]
   list(fitted = pred, pnext = pnext, f = f, mat = B, u = u)
 }

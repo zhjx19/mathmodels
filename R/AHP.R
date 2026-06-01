@@ -21,7 +21,11 @@
 
 AHP = function(A) {
 
+  if(!is.matrix(A)) stop("A must be a matrix.")
   n = nrow(A)
+  if(n != ncol(A)) stop("A must be a square matrix.")
+  if(n > 15) stop("A must have at most 15 rows/columns.")
+
   for(i in 1:n) {
     for(j in i:n) {
       if(abs(A[i,j] * A[j,i] - 1) > 1.5e-8)
@@ -39,8 +43,9 @@ AHP = function(A) {
   CI = (Lmax - n) / (n - 1)
 
   # Consistency ratio
-  # Saaty's random Consistency indexes
-  RI = c(0,0,0.58,0.90,1.12,1.24,1.32,1.41,1.45,1.49,1.51)
+  # Saaty's random Consistency indexes (extended to n=15)
+  RI = c(0, 0, 0.58, 0.90, 1.12, 1.24, 1.32, 1.41, 1.45, 1.49,
+         1.51, 1.48, 1.56, 1.57, 1.59)
   CR = ifelse(n == 2, 0, CI / RI[n])
   list(w = w, CR = CR, Lmax = Lmax, CI = CI)
 }

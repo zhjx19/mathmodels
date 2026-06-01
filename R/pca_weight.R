@@ -18,7 +18,7 @@
 #'
 #' @param nfs Number of principal components to use; by default, all are used.
 #'
-#' @param varvarimax Whether to perform Varimax rotation, default is TRUE.
+#' @param varimax Whether to perform Varimax rotation, default is TRUE.
 #'
 #' @param method Weighting Method, "abs" (default, |a_{ji}|) or "squared" (a_{ji}^2)
 #'
@@ -47,6 +47,15 @@ pca_weight = function(X, index = NULL, nfs = NULL, varimax = TRUE,
   # method: Weighting Method, "abs" (default, |a_{ji}|) or "squared" (a_{ji}^2)
   # w: returned normalized weights, lambda: eigenvalues
   # s: scores for each sample
+
+  if(!is.data.frame(X) && !is.matrix(X))
+    stop("X must be a data frame or matrix.")
+  if(ncol(X) < 2)
+    stop("X must have at least 2 columns.")
+  if(nrow(X) < 2)
+    stop("X must have at least 2 rows.")
+  if(!is.null(index) && length(index) != ncol(X))
+    stop("index must have length equal to ncol(X), or be NULL.")
 
   if(is.null(index)) index = rep(NA, ncol(X))
   pos = which(index == "+")

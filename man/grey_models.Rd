@@ -20,6 +20,8 @@ verhulst(X)
 \item{X}{For \code{GM11}, \code{DGM21}, \code{verhulst}: Numeric vector of original time series data.}
 
 \item{dat}{For \code{GM1N}: Data frame or matrix, last column is characteristic series, others are related factors.}
+
+\item{new_data}{For \code{GM1N}: Optional future values of related factors (1 row, m-1 columns).}
 }
 \value{
 For \code{GM11}: List with fitted values (\code{fitted}), next prediction (\code{pnext}), prediction function (\code{f}), matrix (\code{mat}), parameters (\code{u}), level ratios (\code{lambda}), and range (\code{rng}).

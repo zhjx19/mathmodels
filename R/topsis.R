@@ -2,7 +2,7 @@
 #'
 #' @description
 #' Implements the Technique for Order of Preference by Similarity to Ideal Solution (TOPSIS)
-#' to rank alternatives based on multiple criteria. The function normalizes the decision matrix using Min-Max method,
+#' to rank alternatives based on multiple criteria. The function normalizes the decision matrix using L2 norm,
 #' applies weights, and computes relative closeness to the ideal solution.
 #'
 #' @param X A numeric matrix or data frame where rows represent alternatives and columns represent criteria.
@@ -13,21 +13,21 @@
 #'              `"-"` for negative indicators (lower is better).
 #'              If `index = NULL` (default), all indicators are treated as `"+"`.
 #'
-#' @return A named numeric vector of relative closeness scores (in \eqn{[0, 1]}) for each alternative.
+#' @return A named numeric vector of relative closeness scores (in [0, 1]) for each alternative.
 #'         Higher values indicate better alternatives.
-#'         Names are taken from \code{rownames(X)} or default to "Sample1", "Sample2", etc.
+#'         Names are taken from `rownames(X)` or default to "Sample1", "Sample2", etc.
 #'
 #' @details
 #' The TOPSIS method ranks alternatives by:
 #' \enumerate{
-#'   \item Normalizing the decision matrix using Min-Max normalization.
+#'   \item Normalizing the decision matrix using L2 norm normalization.
 #'   \item Applying weights to form a weighted normalized matrix.
 #'   \item Identifying positive and negative ideal solutions based on indicator directions.
 #'   \item Computing Euclidean distances to ideal solutions.
-#'   \item Calculating relative closeness as \code{S0 / (S0 + Sstar)}, where \code{S0}
-#'   is the distance to the negative ideal and \code{Sstar} is the distance to the positive ideal.
+#'   \item Calculating relative closeness as `S0 / (S0 + Sstar)`, where `S0`
+#'   is the distance to the negative ideal and `Sstar` is the distance to the positive ideal.
 #' }
-#' This implementation supports both positive and negative indicators via the \code{index} parameter.
+#' This implementation supports both positive and negative indicators via the `index` parameter.
 #'
 #' @export
 #' @examples
@@ -44,11 +44,23 @@ topsis = function(X, w = NULL, index = NULL) {
   # X: decision matrix
   # w: weight vector
   # index: direction of each indicator, "+" for positive, "-" for negative
+
+  if(!is.data.frame(X) && !is.matrix(X))
+    stop("X must be a data frame or matrix.")
   m = ncol(X)
+  if(m < 2) stop("X must have at least 2 columns.")
+  if(nrow(X) < 2) stop("X must have at least 2 rows.")
   if(is.null(index)) index = rep("+", m)
+  if(length(index) != m)
+    stop("index must have length equal to ncol(X).")
   if(is.null(w)) w = rep(1/m, m)
-  B = apply(X, 2, normalize)         # Normalize the decision matrix
-  C = B %*% diag(w)                  # Weighted normalized matrix, or
+  if(length(w) != m)
+    stop("w must have length equal to ncol(X).")
+  if(any(w < 0) || sum(w) == 0)
+    stop("w must be non-negative and sum to a positive value.")
+
+  B = apply(X, 2, normalize)         # Normalize the decision matrix using L2 norm
+  C = B %*% diag(w)                  # Weighted normalized matrix
   # C = t(t(B) * w)
   # C = B * matrix(rep(w, each = n), nrow = n)
   # sweep(B, 2, w, "*")

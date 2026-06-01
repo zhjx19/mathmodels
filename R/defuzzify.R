@@ -2,7 +2,7 @@
 #'
 #' @description Implements defuzzification methods for fuzzy evaluation vectors, including weighted average and maximum membership methods.
 #'
-#' @param mu Numeric vector, membership degrees for evaluation levels, in \eqn{[0, 1]}.
+#' @param mu Numeric vector, membership degrees for evaluation levels, in [0, 1].
 #' @param scores Numeric vector, scores corresponding to each evaluation level (e.g., c(100, 80, 60, 40) for "Excellent", "Good", "Fair", "Poor").
 #' @param method Character, defuzzification method: "weighted_average", "max_membership", "centroid".
 #' @return Numeric, defuzzified output value.
@@ -17,6 +17,12 @@
 
 #' @export
 defuzzify = function(mu, scores, method = "weighted_average") {
+  if(!is.numeric(mu) || is.matrix(mu))
+    stop("mu must be a numeric vector.")
+  if(!is.numeric(scores) || is.matrix(scores))
+    stop("scores must be a numeric vector.")
+  if(length(mu) != length(scores))
+    stop("mu and scores must have the same length.")
   switch(method,
          weighted_average = sum(mu * scores),
          max_membership = scores[mu == max(mu)],

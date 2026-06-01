@@ -11,13 +11,13 @@ coupling_degree(data, w = NULL, id_cols = NULL, type = "standard")
 obstacle_degree(data, w = NULL, id_cols = NULL, scaled = FALSE)
 }
 \arguments{
-\item{data}{A data frame with normalized scores (usually in \eqn{[0, 1]}) as columns, .}
+\item{data}{A data frame with normalized scores (usually in \link{0, 1}) as columns.}
 
 \item{w}{Optional vector of weights for indicators or subsystems; defaults to equal weights if NULL.}
 
 \item{id_cols}{Optional character vector of column names in \code{data} to preserve as identifiers (not used in calculations).}
 
-\item{type}{Either "standard" for the standard coupling formula (results concentrated near 1) or "adjusted" for the revised formula (results more uniformly distributed in \eqn{[0, 1]}), as proposed by Wang Shujia, Kong Wei, et al. in "Misconceptions and Corrections of Domestic Coupling Coordination Degree Models, Journal of Natural Resources, 2021, 36(3): 793–810 (In Chinese)"}
+\item{type}{Either "standard" for the standard coupling formula (results concentrated near 1) or "adjusted" for the revised formula (results more uniformly distributed in \link{0, 1}), as proposed by Wang Shujia, Kong Wei, et al. in "Misconceptions and Corrections of Domestic Coupling Coordination Degree Models, Journal of Natural Resources, 2021, 36(3): 793–810 (In Chinese)"}
 }
 \value{
 A tibble depending on the function:
@@ -33,9 +33,9 @@ A tibble depending on the function:
 \item{obstacle_degree}{A tibble with:
 \itemize{
 \item \code{ID}: Identifier columns specified by \code{id_cols} (if provided).
-\item Columns for secondary indicator obstacle degrees (\eqn{O_{ij} = (1 - X_{ij}) \cdot w_{ij}}).
+\item Columns for secondary indicator obstacle degrees (\verb{O_\{ij\} = (1 - X_\{ij\}) * w_\{ij\}}).
 }
-Suitable for grouping and summarizing (e.g., with tidyverse) to compute primary indicator obstacle degrees (\( U_i \)).
+Suitable for grouping and summarizing (e.g., with tidyverse) to compute primary indicator obstacle degrees (\\( U_i \\)).
 }
 }
 }

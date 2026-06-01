@@ -14,7 +14,7 @@ knitr:
 
 Welcome to the `mathmodels` package! This is a comprehensive and user-friendly R toolkit designed for practitioners and researchers in the field of mathematical modeling. At its core, `mathmodels` embodies the philosophy of "simplifying the complex," encapsulating sophisticated mathematical algorithms into intuitive functions. This allows you to focus on model construction and interpretation, rather than getting bogged down in implementation details.
 
-The `mathmodels` package is developed as a companion to the book "[Mathematical Modeling: Algorithms and Programming Implementation](https://item.jd.com/13272295.html)" (China Machine Press). The current version (0.0.5) focuses on **evaluation algorithms**, offering a complete suite of solutions from data preprocessing to comprehensive evaluation.
+The `mathmodels` package is developed as a companion to the book "[Mathematical Modeling: Algorithms and Programming Implementation](https://item.jd.com/13272295.html)" (China Machine Press). The current version (0.0.6) focuses on **evaluation algorithms**, offering a complete suite of solutions from data preprocessing to comprehensive evaluation.
 
 ### Key Features
 

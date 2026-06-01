@@ -193,7 +193,7 @@ or \code{malmquist}.
 \itemize{
 \item \code{type1}: Defines the reference technology for the Malmquist index:
 \itemize{
-\item \code{"cont"}: Contemporary technology, using each period’s frontier.
+\item \code{"cont"}: Contemporary technology, using each period's frontier.
 \item \code{"seq"}: Sequential technology, incorporating all prior periods.
 \item \code{"glob"}: Global technology, using a single frontier across all
 periods.
