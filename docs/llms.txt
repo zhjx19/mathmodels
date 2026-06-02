@@ -83,6 +83,7 @@ implemented, including:
 - CRITIC weighting
 - PCA weighting
 - Combination of subjective and objective weighting
+- Composite Indicator Calculation
 - TOPSIS
 - Grey Relational Analysis (GRA)
 - Rank Sum Ratio (RSR) method

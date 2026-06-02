@@ -73,6 +73,7 @@ This online book is the definitive guide to the package's functionalities. Curre
 - CRITIC weighting
 - PCA weighting
 - Combination of subjective and objective weighting
+- Composite Indicator Calculation
 - TOPSIS
 - Grey Relational Analysis (GRA)
 - Rank Sum Ratio (RSR) method
