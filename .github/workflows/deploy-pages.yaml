@@ -3,10 +3,8 @@ name: Deploy Pages
 on:
   push:
     branches: [main]
-    paths:
-      - 'docs/**'
+  workflow_dispatch:
 
-# 允许一个并发部署
 permissions:
   contents: read
   pages: write
