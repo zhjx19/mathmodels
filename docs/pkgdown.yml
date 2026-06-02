@@ -1,8 +1,9 @@
 pandoc: 3.8.3
 pkgdown: 2.2.0
 pkgdown_sha: ~
-articles: {}
-last_built: 2026-06-01T16:41Z
+articles:
+  welcome: welcome.html
+last_built: 2026-06-02T13:22Z
 urls:
   reference: https://zhjx19.github.io/mathmodels/reference
   article: https://zhjx19.github.io/mathmodels/articles

@@ -1,7 +1,5 @@
 # mathmodels - A Powerful Toolkit for Mathematical Modeling
 
-# mathmodels - A Powerful Toolkit for Mathematical Modeling
-
 ### Introduction
 
 Welcome to the `mathmodels` package! This is a comprehensive and
@@ -46,6 +44,7 @@ preprocessing to comprehensive evaluation.
 To start using `mathmodels`, first ensure it’s installed and loaded:
 
 ``` r
+
 # Install from GitHub (recommended)
 remotes::install_github("zhjx19/mathmodels")
 
@@ -54,6 +53,7 @@ install.packages("mathmodels.tar.gz", repos = NULL, type = "source")
 ```
 
 ``` r
+
 library(tidyverse)
 library(mathmodels)
 ```
@@ -63,31 +63,36 @@ a quick entropy weighting TOPSIS analysis using the built-in
 `water_quality` dataset:
 
 ``` r
+
 # View example data
 water_quality
-#> # A tibble: 20 × 5
-#>       ID    O2    PH  germ nutrient
-#>    <dbl> <dbl> <dbl> <dbl>    <dbl>
-#>  1     1  4.69  6.59    51    11.9 
-#>  2     2  2.03  7.86    19     6.46
-#>  3     3  9.11  6.31    46     8.91
-#>  4     4  8.61  7.05    46    26.4 
-#>  5     5  7.13  6.5     50    23.6 
-#>  6     6  2.39  6.77    38    24.6 
-#>  7     7  7.69  6.79    38     6.01
-#>  8     8  9.3   6.81    27    31.6 
-#>  9     9  5.45  7.62     5    18.5 
-#> 10    10  6.19  7.27    17     7.51
-#> 11    11  7.93  7.53     9     6.52
-#> 12    12  4.4   7.28    17    25.3 
-#> 13    13  7.46  8.24    23    14.4 
-#> 14    14  2.01  5.55    47    26.3 
-#> 15    15  2.04  6.4     23    17.9 
-#> 16    16  7.73  6.14    52    15.7 
-#> 17    17  6.35  7.58    25    29.5 
-#> 18    18  8.29  8.41    39    12.0 
-#> 19    19  3.54  7.27    54     3.16
-#> 20    20  7.44  6.26     8    28.4
+```
+
+    ## # A tibble: 20 × 5
+    ##       ID    O2    PH  germ nutrient
+    ##    <dbl> <dbl> <dbl> <dbl>    <dbl>
+    ##  1     1  4.69  6.59    51    11.9 
+    ##  2     2  2.03  7.86    19     6.46
+    ##  3     3  9.11  6.31    46     8.91
+    ##  4     4  8.61  7.05    46    26.4 
+    ##  5     5  7.13  6.5     50    23.6 
+    ##  6     6  2.39  6.77    38    24.6 
+    ##  7     7  7.69  6.79    38     6.01
+    ##  8     8  9.3   6.81    27    31.6 
+    ##  9     9  5.45  7.62     5    18.5 
+    ## 10    10  6.19  7.27    17     7.51
+    ## 11    11  7.93  7.53     9     6.52
+    ## 12    12  4.4   7.28    17    25.3 
+    ## 13    13  7.46  8.24    23    14.4 
+    ## 14    14  2.01  5.55    47    26.3 
+    ## 15    15  2.04  6.4     23    17.9 
+    ## 16    16  7.73  6.14    52    15.7 
+    ## 17    17  6.35  7.58    25    29.5 
+    ## 18    18  8.29  8.41    39    12.0 
+    ## 19    19  3.54  7.27    54     3.16
+    ## 20    20  7.44  6.26     8    28.4
+
+``` r
 
 # Preprocess data: handle centered and interval-type indicators
 df = water_quality |>
@@ -105,24 +110,28 @@ indicator columns PH and nutrient have been pre-normalized, their
 directions are set to `NA` to avoid repeating the normalization process.
 
 ``` r
+
 idx = c("+", NA, "-", NA)     # 
 res = entropy_weight(df[-1], idx) 
 res$w                         # View calculated weights
-#>        O2        PH      germ  nutrient 
-#> 0.3153202 0.1813149 0.3506929 0.1526721
 ```
+
+    ##        O2        PH      germ  nutrient 
+    ## 0.3153202 0.1813149 0.3506929 0.1526721
 
 When performing TOPSIS (which has built-in normalization), you need to
 specify the indicator directions in order to correctly determine the
 positive and negative ideal solutions.
 
 ``` r
+
 idx = c("+","+","-","+")
 topsis(df[2:5], res$w, idx)
-#>  [1] 0.3841556 0.4852199 0.5021310 0.5084128 0.4226200 0.3945085 0.5502261
-#>  [8] 0.6258551 0.7260529 0.7138447 0.8091923 0.6159619 0.6007565 0.1593096
-#> [15] 0.4974685 0.4250799 0.5565555 0.4815844 0.3070290 0.7098355
 ```
+
+    ##  [1] 0.3841556 0.4852199 0.5021310 0.5084128 0.4226200 0.3945085 0.5502261
+    ##  [8] 0.6258551 0.7260529 0.7138447 0.8091923 0.6159619 0.6007565 0.1593096
+    ## [15] 0.4974685 0.4250799 0.5565555 0.4815844 0.3070290 0.7098355
 
 The obtained result is the relative closeness score.
 
