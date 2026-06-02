@@ -1,4 +1,6 @@
-# Workflow for building pkgdown site
+# Workflow derived from https://github.com/r-lib/actions/tree/v2/examples
+# Need help debugging build failures? Start at https://github.com/r-lib/actions#
+name: pkgdown
 on:
   push:
     branches: [main, master]
@@ -7,8 +9,6 @@ on:
   release:
     types: [published]
   workflow_dispatch:
-
-name: pkgdown
 
 jobs:
   pkgdown:
@@ -22,43 +22,29 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: r-lib/actions/setup-pandoc@v2
+
       - uses: r-lib/actions/setup-r@v2
         with:
           use-public-rspm: true
 
-      - uses: quarto-dev/quarto-actions/setup@v2
-
       - name: Install system dependencies
         run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y libcurl4-openssl-dev libharfbuzz-dev libfribidi-dev
+          sudo apt-get update -y
+          sudo apt-get install -y libharfbuzz-dev libfribidi-dev libcurl4-openssl-dev
 
-      - name: Install R packages
+      - name: Install pkgdown only
         run: |
-          # Install pak for fast package installation
-          install.packages("pak", repos = "https://cloud.r-project.org")
-          
-          # Install all hard dependencies first  
-          pak::local_install_deps(dependencies = "hard", upgrade = FALSE)
-          
-          # Install vignette builders and pkgdown
-          pak::pkg_install(c("knitr", "rmarkdown", "quarto", "pkgdown"), upgrade = FALSE)
-          
-          # Now install the package itself (without running tests)
-          pak::local_install(upgrade = FALSE)
+          install.packages("pkgdown", repos = "https://cloud.r-project.org")
         shell: Rscript {0}
 
       - name: Build site
-        run: |
-          pkgdown::build_site_github_pages(
-            new_process = FALSE,
-            install = FALSE
-          )
+        run: pkgdown::build_site_github_pages(new_process = FALSE, install = FALSE)
         shell: Rscript {0}
 
-      - name: Deploy to GitHub Pages
+      - name: Deploy to GitHub pages 🚀
         if: github.event_name != 'pull_request'
-        uses: JamesIves/github-pages-deploy-action@v4
+        uses: JamesIves/github-pages-deploy-action@v4.5.0
         with:
           clean: false
           branch: gh-pages
