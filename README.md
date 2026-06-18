@@ -31,7 +31,6 @@ remotes::install_github("zhjx19/mathmodels")
 Or download to current path, unzip and use:
 
 ```r
-# install.packages("deaR")    # Install the dependency packages first
 install.packages("mathmodels-main", repos=NULL, type="source")
 ```
 
