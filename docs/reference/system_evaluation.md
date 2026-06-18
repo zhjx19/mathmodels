@@ -22,7 +22,7 @@ obstacle_degree(data, w = NULL, id_cols = NULL, scaled = FALSE)
 
 - data:
 
-  A data frame with normalized scores (usually in 0, 1) as columns.
+  A data frame with normalized scores (usually in `[0, 1]`) as columns.
 
 - w:
 
@@ -38,10 +38,15 @@ obstacle_degree(data, w = NULL, id_cols = NULL, scaled = FALSE)
 
   Either "standard" for the standard coupling formula (results
   concentrated near 1) or "adjusted" for the revised formula (results
-  more uniformly distributed in 0, 1), as proposed by Wang Shujia, Kong
-  Wei, et al. in "Misconceptions and Corrections of Domestic Coupling
-  Coordination Degree Models, Journal of Natural Resources, 2021, 36(3):
-  793–810 (In Chinese)"
+  more uniformly distributed in `[0, 1]`), as proposed by Wang Shujia,
+  Kong Wei, et al. in "Misconceptions and Corrections of Domestic
+  Coupling Coordination Degree Models, Journal of Natural Resources,
+  2021, 36(3): 793–810 (In Chinese)"
+
+- scaled:
+
+  Logical. Whether to perform row normalization on obstacle degrees
+  (default FALSE).
 
 ## Value
 

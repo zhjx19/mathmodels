@@ -96,7 +96,7 @@ CCR, BCC, SBM, and Malmquist productivity index.
   [`basic_SBM()`](https://zhjx19.github.io/mathmodels/reference/DEA.md)
   [`super_SBM()`](https://zhjx19.github.io/mathmodels/reference/DEA.md)
   [`malmquist()`](https://zhjx19.github.io/mathmodels/reference/DEA.md)
-  : Data Envelopment Analysis and Malmquist Productivity Index
+  : DEA efficiency analysis
 
 ## Inequality Measures
 

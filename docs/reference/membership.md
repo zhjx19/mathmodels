@@ -94,8 +94,8 @@ plot_mf(mf, xlim = c(0, 10), main = NULL)
 
 - For membership functions (`tri_mf`, `trap_mf`, `gauss_mf`, `gbell_mf`,
   `gauss2mf`, `sigmoid_mf`, `dsigmoid_mf`, `psigmoid_mf`, `z_mf`,
-  `pi_mf`, `s_mf`): A numeric vector of membership values in 0, 1, same
-  length as `x`.
+  `pi_mf`, `s_mf`): A numeric vector of membership values in `[0, 1]`,
+  same length as `x`.
 
 - For `plot_mf`: A ggplot2 object, plotting the membership function.
 

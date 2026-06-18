@@ -32,9 +32,9 @@ topsis(X, w = NULL, index = NULL)
 
 ## Value
 
-A named numeric vector of relative closeness scores (in 0, 1) for each
-alternative. Higher values indicate better alternatives. Names are taken
-from `rownames(X)` or default to "Sample1", "Sample2", etc.
+A named numeric vector of relative closeness scores (in `[0, 1]`) for
+each alternative. Higher values indicate better alternatives. Names are
+taken from `rownames(X)` or default to "Sample1", "Sample2", etc.
 
 ## Details
 

@@ -1,2 +1,4 @@
-*.aa.bak.*\ndocs/deps/\n
+*.aa.bak.*.Rhistory
+R/.Rhistory
+mathmodels.pdf\ndocs/deps/\n
 .Rproj.user

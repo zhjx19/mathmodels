@@ -25,7 +25,7 @@ rank_sum_ratio(data, w = NULL, method = "int")
 - method:
 
   Character scalar, ranking method: "int" for integer ranks or "non-int"
-  for scaled ranks in 1, n (default = "int").
+  for scaled ranks in `[1, n]` (default = "int").
 
 ## Value
 

@@ -1,5 +1,58 @@
 # Changelog
 
+## mathmodels 0.0.7
+
+### New features
+
+- **DEA models**: New `DEA.R` module implementing Data Envelopment
+  Analysis with:
+  - [`basic_DEA()`](https://zhjx19.github.io/mathmodels/reference/DEA.md):
+    Radial models (CCR/BCC) with input/output orientation support,
+    returning both Shephard distances and Farrell efficiencies, plus
+    slacks, targets, and lambda weights.
+  - [`super_DEA()`](https://zhjx19.github.io/mathmodels/reference/DEA.md):
+    Super-efficiency radial models, fully compatible with CRS/VRS
+    settings.
+  - [`basic_SBM()`](https://zhjx19.github.io/mathmodels/reference/DEA.md):
+    Slacks-Based Measure (non-radial) with CRS/VRS support.
+  - [`super_SBM()`](https://zhjx19.github.io/mathmodels/reference/DEA.md):
+    Super-efficiency SBM for distinguishing efficient DMUs.
+  - [`malmquist()`](https://zhjx19.github.io/mathmodels/reference/DEA.md):
+    Malmquist productivity index supporting contemporaneous, sequential,
+    and global references with FGNZ and Ray-Desli decompositions.
+- All DEA models use **lpSolveAPI** as the sole LP solver, with zero
+  external DEA package dependency.
+
+### Dependencies
+
+- **Imports** (new): Added `lpSolveAPI` for linear programming in DEA
+  models.
+- **Suggests** (removed): Removed `deaR` from Suggests; all DEA
+  functionality is now provided natively.
+
+### Parameter validation
+
+- Added input validation for all DEA functions, including checks for NA
+  values, correct column types, and valid orientation/rts/type
+  parameters.
+
+### Testing
+
+- Added **30 new test cases** in `test-DEA.R`, covering:
+  - Basic DEA model validation (CCR, BCC, SBM)
+  - Super-efficiency models
+  - Malmquist index with all 6 type1 × type2 combinations
+  - Undesirable outputs handling
+  - Input validation (NA detection, minimum column requirements)
+- All 208 tests pass with zero errors.
+
+### Documentation
+
+- Added `@examples` sections to all five DEA functions with
+  self-contained inline data.
+- Regenerated `man/DEA.Rd` with
+  [`devtools::document()`](https://devtools.r-lib.org/reference/document.html).
+
 ## mathmodels 0.0.6
 
 ### Bug fixes

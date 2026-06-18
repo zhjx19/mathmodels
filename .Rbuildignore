@@ -1,7 +1,7 @@
 ^mathmodels\.Rproj$
 ^\.Rproj\.user$
 ^\.Rhistory$
-^R/\.Rhistory$
+^R/\.Rhistory$^mathmodels\.pdf$
 ^\.git$
 ^\.github$
 ^\.gitignore$

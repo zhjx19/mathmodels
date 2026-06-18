@@ -39,7 +39,8 @@ pca_weight(X, index = NULL, nfs = NULL, varimax = TRUE, method = "abs")
 
 - method:
 
-  Weighting Method, "abs" (default, \|a_ji\|) or "squared" (a_ji^2)
+  Weighting Method. "abs" uses absolute loading values `|a_{ji}|`
+  (default), "squared" uses `a_{ji}^2`.
 
 ## Value
 

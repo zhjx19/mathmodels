@@ -20,7 +20,7 @@ fuzzy_eval(w, R, type)
 - R:
 
   Numeric matrix, fuzzy evaluation matrix with columns as factors and
-  rows as evaluation grades. Values should be in 0, 1.
+  rows as evaluation grades. Values should be in `[0, 1]`.
 
 - type:
 

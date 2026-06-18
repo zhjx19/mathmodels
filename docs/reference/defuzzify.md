@@ -13,7 +13,7 @@ defuzzify(mu, scores, method = "weighted_average")
 
 - mu:
 
-  Numeric vector, membership degrees for evaluation levels, in 0, 1.
+  Numeric vector, membership degrees for evaluation levels, in `[0, 1]`.
 
 - scores:
 
