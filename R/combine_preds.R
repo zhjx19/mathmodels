@@ -18,6 +18,7 @@
 #' combine_preds(preds)
 
 #' @export
+#' @importFrom utils combn
 combine_preds = function(x) {
   # Combine multiple prediction results
   if(!is.numeric(x) || is.matrix(x))

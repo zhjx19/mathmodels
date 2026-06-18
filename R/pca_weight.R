@@ -20,7 +20,7 @@
 #'
 #' @param varimax Whether to perform Varimax rotation, default is TRUE.
 #'
-#' @param method Weighting Method, "abs" (default, |a_{ji}|) or "squared" (a_{ji}^2)
+#' @param method Weighting Method. "abs" uses absolute loading values \code{|a_{ji}|} (default), "squared" uses \code{a_{ji}^2}.
 #'
 #' @return A list containing:
 #' \item{w}{Numeric vector of normalized weights for each indicator.}
@@ -31,6 +31,7 @@
 #'
 #' \item{varP}{Proportion of variance explained by selected PCs.}
 #'
+#' @importFrom stats prcomp
 #' @export
 #' @examples
 #' # Example: Using PCA to compute indicator weights
@@ -101,4 +102,3 @@ pca_weight = function(X, index = NULL, nfs = NULL, varimax = TRUE,
   list(w = as.vector(w), s = s, cum_contrib = sum(varP), loading = A,
        lambda = lambda, varP = varP)
 }
-#' @title PCA Weighting Method

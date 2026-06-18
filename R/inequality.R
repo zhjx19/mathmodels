@@ -321,6 +321,7 @@ theil_g2_cross = function(data, group1, group2, y, pop) {
 
 #' @rdname inequality
 #' @export
+#' @importFrom stats setNames
 theil_g2_nest = function(data, group1, group2, y, pop) {
   # Computes Theil index and decomposition for two-level nested grouped data
   # group1: name of first grouping variable (e.g., province)

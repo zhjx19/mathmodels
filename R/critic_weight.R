@@ -24,6 +24,7 @@
 #' \item{w}{Numeric vector of weights for each indicator.}
 #' \item{s}{Numeric vector of scores for each sample (row), scaled by 100.}
 #'
+#' @importFrom stats cor
 #' @export
 #' @examples
 #' # Example: Using CRITIC method on a simple dataset
@@ -85,4 +86,3 @@ critic_weight = function(X, index = NULL, method = "std",
 
   list(w = w, s = s)
 }
-#' @title CRITIC Method

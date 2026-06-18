@@ -196,6 +196,7 @@ DGM21 = function(X) {
 
 #' @rdname grey_models
 #' @export
+#' @importFrom stats sd
 verhulst = function(X) {
   # Implements Verhulst model, input time series data
   # Returns fitted values (fitted), next prediction (pnext), prediction function (f), matrix (mat), parameters (u)

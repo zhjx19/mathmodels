@@ -23,7 +23,7 @@ and \code{NA} for already standardized indicators (no standardization will be ap
 
 \item{varimax}{Whether to perform Varimax rotation, default is TRUE.}
 
-\item{method}{Weighting Method, "abs" (default, |a_{ji}|) or "squared" (a_{ji}^2)}
+\item{method}{Weighting Method. "abs" uses absolute loading values \code{|a_{ji}|} (default), "squared" uses \code{a_{ji}^2}.}
 }
 \value{
 A list containing:

@@ -11,7 +11,7 @@
 
 An R package providing a versatile toolkit for mathematical modeling, developed as a companion to the book *Mathematical Modeling: Algorithms and Programming Implementation* (China Machine Press). It focuses on implementing rigorous algorithms in a user-friendly manner.
 
-**Current Version (0.0.6) Focus**: Evaluation algorithms, including data preprocessing, subjective (AHP) and objective (Entropy, CRITIC, PCA) weighting methods, weight combination techniques, comprehensive evaluation (TOPSIS, Fuzzy, RSR, DEA), inequality measures (Gini, Theil), and grey prediction models (GM(1,1), GM(1,N), Verhulst).
+**Current Version (0.0.7) Focus**: Evaluation algorithms, including data preprocessing, subjective (AHP) and objective (Entropy, CRITIC, PCA) weighting methods, weight combination techniques, comprehensive evaluation (TOPSIS, Fuzzy, RSR, DEA), inequality measures (Gini, Theil), and grey prediction models (GM(1,1), GM(1,N), Verhulst).
 
 ## Key Features
 

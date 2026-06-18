@@ -1,5 +1,11 @@
 ^mathmodels\.Rproj$
 ^\.Rproj\.user$
+^\.Rhistory$
+^R/\.Rhistory$
+^\.git$
+^\.github$
+^\.gitignore$
+^vignettes/\.gitignore$
 ^LICENSE\.md$
 ^README\.Rmd$
 ^vignettes/\.quarto$
@@ -8,6 +14,7 @@
 ^vignettes/*_files$
 ^\.positai$
 ^\.claude$
-^docs$^vignettes/welcome\.html$
+^docs$
+^vignettes/welcome\.html$
 ^vignettes/welcome\.md$
 ^_pkgdown\.yml$

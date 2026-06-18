@@ -2,7 +2,7 @@
 title: "mathmodels - A Powerful Toolkit for Mathematical Modeling"
 vignette: >
   %\VignetteIndexEntry{mathmodels - A Powerful Toolkit for Mathematical Modeling}
-  %\VignetteEngine{quarto::html}
+  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 knitr:
   opts_chunk:

@@ -12,7 +12,7 @@
 #' for identifying evaluation objects.
 #' @param w Numeric vector, weights for indicators (default = equal weights).
 #' @param method Character scalar, ranking method: "int" for integer ranks or
-#' "non-int" for scaled ranks in [1, n] (default = "int").
+#' "non-int" for scaled ranks in \code{[1, n]} (default = "int").
 #'
 #' @return A list containing:
 #' \itemize{
@@ -38,6 +38,7 @@
 #'
 #' @name rank_sum_ratio
 #' @export
+#' @importFrom stats qnorm lm predict
 rank_sum_ratio = function(data, w = NULL, method = "int") {
   # Compute Rank Sum Ratio (RSR)
   # data: positive indicator data, first column is ID
