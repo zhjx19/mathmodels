@@ -247,7 +247,7 @@ build_result = function(dd, theta_vec, lambda_mat, s_in_mat, s_out_mat, rts) {
 #' @param ud_outputs Column indices (within `outputs`) of undesirable outputs, or NULL.
 #' @param orientation `"io"` (input-oriented, default) or `"oo"` (output-oriented).
 #'   All DEA functions return Farrell efficiency (0~1), where 1 = efficient.
-#'   For output orientation: value = 1/φ, where φ ≥ 1 is the Shephard distance.
+#'   For output orientation: value = 1/\eqn{\phi}, where \eqn{\phi \ge 1} is the Shephard distance.
 #' @param rts `"vrs"` (variable returns to scale, default) or `"crs"` (constant).
 #' @param x0,y0 Used by Malmquist cross-period evaluation (not for direct calls).
 #' @return A list with components: `efficiencies`, `lambdas`, `slacks`,
@@ -628,8 +628,8 @@ malmquist = function(data, period, inputs, outputs,
 
 #' Shephard distance function (raw distance, NOT Farrell efficiency).
 #'
-#' Output orientation: returns φ ≥ 1 (the Shephard output distance).
-#' Input orientation:  returns θ ∈ (0,1] (the Shephard input distance).
+#' Output orientation: returns \eqn{\phi \ge 1} (the Shephard output distance).
+#' Input orientation:  returns \eqn{\theta \in (0,1]} (the Shephard input distance).
 #' @noRd
 dist_shephard = function(x0, y0, X_ref, Y_ref, orientation, rts) {
   res = solve_radial_lp(X = X_ref, Y = Y_ref,

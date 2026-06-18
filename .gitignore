@@ -1,1 +1,2 @@
 *.aa.bak.*\ndocs/deps/\n
+.Rproj.user

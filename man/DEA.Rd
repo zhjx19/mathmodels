@@ -53,7 +53,7 @@ malmquist(
 
 \item{orientation}{\code{"io"} (input-oriented, default) or \code{"oo"} (output-oriented).
 All DEA functions return Farrell efficiency (0~1), where 1 = efficient.
-For output orientation: value = 1/φ, where φ ≥ 1 is the Shephard distance.}
+For output orientation: value = 1/\eqn{\phi}, where \eqn{\phi \ge 1} is the Shephard distance.}
 
 \item{rts}{\code{"vrs"} (variable returns to scale, default) or \code{"crs"} (constant).}
 
