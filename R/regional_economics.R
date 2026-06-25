@@ -86,6 +86,7 @@ LQ = function(data, region, total, .cols, .by = NULL) {
   # .by: specifies the grouping column, defaults to `NULL` (no grouping)
   if(!is.data.frame(data))
     stop("data must be a data frame.")
+   `:=` = NULL
   quotient = function(x) x[-1] / x[1]
   data |>
     dplyr::reframe({{region}} := {{region}}[-1],
@@ -116,6 +117,7 @@ EG = function(data, region, industry, y) {
   # region, industry, y: specify the region, industry, and indicator columns, respectively
   if(!is.data.frame(data))
     stop("data must be a data frame.")
+  x = s = NULL
   cal_eg = function(s, x, h) {
     if(h == 1) 0
     else (sum((s-x)^2) / (1 - sum(x^2)) - h) / (1 - h)

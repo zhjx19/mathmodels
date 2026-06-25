@@ -68,9 +68,18 @@ malmquist(
 
   `"vrs"` (variable returns to scale, default) or `"crs"` (constant).
 
-- x0, y0:
+- period:
 
-  Used by Malmquist cross-period evaluation (not for direct calls).
+  Column name or index identifying the time period variable.
+
+- type1:
+
+  `"cont"` (contemporaneous), `"seq"` (sequential), or `"glob"` (global,
+  default).
+
+- type2:
+
+  `"fgnz"` (Färe-Grosskopf-Norris-Zhang) or `"rd"` (Ray-Desli, default).
 
 ## Value
 

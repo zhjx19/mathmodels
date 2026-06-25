@@ -1,7 +1,9 @@
 ^mathmodels\.Rproj$
 ^\.Rproj\.user$
 ^\.Rhistory$
-^R/\.Rhistory$^mathmodels\.pdf$
+^R/\.Rhistory$
+^mathmodels\.pdf$
+^welcome\.html$
 ^\.git$
 ^\.github$
 ^\.gitignore$

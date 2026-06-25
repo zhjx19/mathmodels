@@ -249,7 +249,6 @@ build_result = function(dd, theta_vec, lambda_mat, s_in_mat, s_out_mat, rts) {
 #'   All DEA functions return Farrell efficiency (0~1), where 1 = efficient.
 #'   For output orientation: value = 1/\eqn{\phi}, where \eqn{\phi \ge 1} is the Shephard distance.
 #' @param rts `"vrs"` (variable returns to scale, default) or `"crs"` (constant).
-#' @param x0,y0 Used by Malmquist cross-period evaluation (not for direct calls).
 #' @return A list with components: `efficiencies`, `lambdas`, `slacks`,
 #'   `targets`, `returns`, `model`, `orientation`, `dmu`.
 NULL
@@ -444,6 +443,9 @@ super_SBM = function(data, inputs, outputs,
 
 
 #' @describeIn DEA Malmquist productivity index
+#' @param period Column name or index identifying the time period variable.
+#' @param type1 `"cont"` (contemporaneous), `"seq"` (sequential), or `"glob"` (global, default).
+#' @param type2 `"fgnz"` (Färe-Grosskopf-Norris-Zhang) or `"rd"` (Ray-Desli, default).
 #' @examples
 #' panel = data.frame(
 #'   DMU    = rep(paste0("DMU", 1:5), 3),

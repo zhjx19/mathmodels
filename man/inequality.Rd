@@ -94,7 +94,8 @@ theil_g(data2, "g", "y", "pop")
 data3 = data.frame(
   industry = c("A", "A", "A", "A", "B", "B", "B", "B"),
   area = c("East", "East", "West", "West", "East", "East", "West", "West"),
-  province = c("Shanghai", "Beijing", "Sichuan", "Yunnan", "Shanghai", "Beijing", "Sichuan", "Yunnan"),
+  province = c("Shanghai", "Beijing", "Sichuan", "Yunnan",
+               "Shanghai", "Beijing", "Sichuan", "Yunnan"),
   avg_wage = c(500, 400, 80, 60, 300, 250, 50, 40),
   emp_num = c(100, 80, 90, 70, 120, 100, 80, 60)
 )

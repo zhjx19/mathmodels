@@ -59,7 +59,8 @@
 #' data3 = data.frame(
 #'   industry = c("A", "A", "A", "A", "B", "B", "B", "B"),
 #'   area = c("East", "East", "West", "West", "East", "East", "West", "West"),
-#'   province = c("Shanghai", "Beijing", "Sichuan", "Yunnan", "Shanghai", "Beijing", "Sichuan", "Yunnan"),
+#'   province = c("Shanghai", "Beijing", "Sichuan", "Yunnan",
+#'                "Shanghai", "Beijing", "Sichuan", "Yunnan"),
 #'   avg_wage = c(500, 400, 80, 60, 300, 250, 50, 40),
 #'   emp_num = c(100, 80, 90, 70, 120, 100, 80, 60)
 #' )
@@ -172,7 +173,7 @@ theil0_g = function(data, group, y) {
     stop("group must be a character scalar (column name).")
   if(!is.character(y) || length(y) != 1)
     stop("y must be a character scalar (column name).")
-
+  p = yp = NULL
   # Rename columns for consistency
   vars = c(group, y)
   data = data |>
@@ -219,7 +220,7 @@ theil_g = function(data, group, y, pop) {
     stop("y must be a character scalar (column name).")
   if(!is.character(pop) || length(pop) != 1)
     stop("pop must be a character scalar (column name).")
-
+  yp = NULL
   # Rename columns for consistency
   vars = c(group, y, pop)
   data = data |>
@@ -269,7 +270,7 @@ theil_g2_cross = function(data, group1, group2, y, pop) {
     stop("y must be a character scalar (column name).")
   if(!is.character(pop) || length(pop) != 1)
     stop("pop must be a character scalar (column name).")
-
+  p = yp = NULL
   # Standardize column names
   vars = c(group1, group2, y, pop)
   data = stats::setNames(dplyr::select(data, dplyr::all_of(vars)), c("group1", "group2", "y", "pop"))
@@ -343,7 +344,7 @@ theil_g2_nest = function(data, group1, group2, y, pop) {
     stop("y must be a character scalar (column name).")
   if(!is.character(pop) || length(pop) != 1)
     stop("pop must be a character scalar (column name).")
-
+  p = yp = NULL
   # Standardize column names
   vars = c(group1, group2, y, pop)
   data = stats::setNames(dplyr::select(data, dplyr::all_of(vars)), c("group1", "group2", "y", "pop"))

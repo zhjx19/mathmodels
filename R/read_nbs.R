@@ -23,6 +23,7 @@
 
 #' @export
 read_nbs = function(paths) {
+  region = NULL
   vars = purrr::map_chr(paths, \(path) {
     readxl::read_excel(path, range = "A1:A2") |>
       dplyr::pull(1) |> stringr::str_remove("\\u6307\\u6807\\uff1a")

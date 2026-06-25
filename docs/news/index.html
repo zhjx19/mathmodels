@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">mathmodels</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.7</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.8</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -37,6 +37,71 @@
       <small>Source: <a href="https://github.com/zhjx19/mathmodels/blob/HEAD/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.8" id="mathmodels-008">mathmodels 0.0.8<a class="anchor" aria-label="anchor" href="#mathmodels-008"></a></h2>
+<div class="section level3">
+<h3 id="new-features-0-0-8">New features<a class="anchor" aria-label="anchor" href="#new-features-0-0-8"></a></h3>
+<ul><li>
+<strong>Differential equation models</strong> (<code>diffEq_models.R</code>):
+<ul><li>
+<code><a href="../reference/ode_solver.html">ode_solver()</a></code>: General-purpose string-formula ODE solver powered by <strong>deSolve</strong>.</li>
+<li>
+<code><a href="../reference/model_malthus.html">model_malthus()</a></code>: Malthusian exponential growth.</li>
+<li>
+<code><a href="../reference/model_logistic.html">model_logistic()</a></code>: Logistic population growth.</li>
+<li>
+<code><a href="../reference/model_si.html">model_si()</a></code>: SI epidemic model (Susceptible–Infected).</li>
+<li>
+<code><a href="../reference/model_sis.html">model_sis()</a></code>: SIS epidemic model.</li>
+<li>
+<code><a href="../reference/model_sir.html">model_sir()</a></code>: SIR epidemic model.</li>
+<li>
+<code><a href="../reference/model_seir.html">model_seir()</a></code>: SEIR epidemic model.</li>
+<li>
+<code><a href="../reference/model_lv.html">model_lv()</a></code>: Lotka–Volterra predator–prey model. All model functions use a unified <code>init</code> + <code>params</code> interface with physics-meaningful named parameters (e.g., <code>beta</code>, <code>gamma</code>, <code>sigma</code>).</li>
+</ul></li>
+<li>
+<strong>Epidemic visualization</strong> (<code>epidemic_plot.R</code>):
+<ul><li>
+<code><a href="../reference/plot_compartments.html">plot_compartments()</a></code>: Faceted or overlaid line plot of selected compartments.</li>
+<li>
+<code><a href="../reference/compute_incidence.html">compute_incidence()</a></code>: Compute daily incidence from S or I differences.</li>
+<li>
+<code><a href="../reference/plot_incidence.html">plot_incidence()</a></code>: Daily new infection curve.</li>
+<li>
+<code><a href="../reference/plot_infectious_curve.html">plot_infectious_curve()</a></code>: Infectious population over time.</li>
+<li>
+<code><a href="../reference/plot_cumulative_infection.html">plot_cumulative_infection()</a></code>: Cumulative infection curve.</li>
+<li>
+<code><a href="../reference/plot_phase_si.html">plot_phase_si()</a></code>: S–I phase portrait.</li>
+<li>
+<code><a href="../reference/plot_Rt_estimate.html">plot_Rt_estimate()</a></code>: Effective reproduction number (Rt) trajectory.</li>
+</ul></li>
+<li>
+<strong>Epidemic metrics</strong> (<code>epidemic_metrics.R</code>):
+<ul><li>
+<code><a href="../reference/epidemic_metrics.html">epidemic_metrics()</a></code>: Comprehensive epidemic summary returning R0, peak infection/time, attack rate, control time steps, time above threshold, and an augmented trajectory data frame with Rt and growth rate columns.</li>
+</ul></li>
+<li>
+<strong>Markov chain prediction</strong> (<code>markov.R</code>):
+<ul><li>
+<code><a href="../reference/markov.html">markov_chain()</a></code>: Transition probability matrix construction, multi-step state prediction, and stationary distribution.</li>
+<li>
+<code><a href="../reference/markov.html">GM11_markov()</a></code>: Grey–Markov combined prediction with GM(1,1) and Markov chain correction on relative error states.</li>
+</ul></li>
+</ul></div>
+<div class="section level3">
+<h3 id="dependencies-0-0-8">Dependencies<a class="anchor" aria-label="anchor" href="#dependencies-0-0-8"></a></h3>
+<ul><li>
+<strong>Imports</strong> (new): Added <code>deSolve</code> for ODE solving.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="documentation-and-testing-0-0-8">Documentation and testing<a class="anchor" aria-label="anchor" href="#documentation-and-testing-0-0-8"></a></h3>
+<ul><li>Added full <code>@examples</code> sections for all new and renamed functions.</li>
+<li>68 tests for <code>diffEq_solver</code>, 23 for <code>epidemic_plot</code>, 21 for <code>epidemic_metrics</code>, 14 for Markov chain models. All pass with zero errors.</li>
+<li>Regenerated all <code>.Rd</code> files with <code><a href="https://devtools.r-lib.org/reference/document.html" class="external-link">devtools::document()</a></code>.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.7" id="mathmodels-007">mathmodels 0.0.7<a class="anchor" aria-label="anchor" href="#mathmodels-007"></a></h2>
 <div class="section level3">

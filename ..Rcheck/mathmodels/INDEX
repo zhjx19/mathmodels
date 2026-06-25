@@ -1,0 +1,44 @@
+AHP                     AHP: Analytic Hierarchy Process
+DEA                     DEA efficiency analysis
+combine_preds           Combine Multiple Prediction Results
+combine_weights         Combine Subjective and Objective Weights
+compute_mf              Compute fuzzy membership vector and return
+                        corresponding membership functions.
+critic_weight           CRITIC Weight Method
+cv_weight               Coefficient of Variation Weighting
+defuzzify               Defuzzification Methods for Fuzzy Comprehensive
+                        Evaluation
+entropy_weight          Entropy Weight Method
+fuzzy_eval              Fuzzy Comprehensive Evaluation
+grey_analysis           Grey Relational Analysis Functions
+grey_models             Grey Prediction Models
+inequality              Inequality Indices
+linear_sum              Linear weighted synthesis
+markov                  Markov Chain and Grey-Markov Prediction Models
+membership              Membership Functions for Fuzzy Logic
+model_logistic          Logistic Population Growth Model
+model_lv                Lotka-Volterra Predator-Prey Model
+model_malthus           Malthusian Growth Model
+model_seir              SEIR Epidemic Model
+model_si                SI Epidemic Model
+model_sir               SIR Epidemic Model
+model_sis               SIS Epidemic Model
+ode_solver              General ODE Solver
+pca_weight              PCA-Based Weighting Method
+plot_infection_rate     Plot Infection/Evolution Rate Over Time with
+                        Peak Annotation
+plot_infection_rate_rt
+                        Plot Infection Rate with Effective Reproduction
+                        Number (Rt)
+plot_time_series        Plot Time Series for Specific Variables
+preprocess              Preprocessing Functions for Data Normalization
+                        and Standardization
+rank_sum_ratio          Rank Sum Ratio (RSR) Evaluation
+read_nbs                Read and Combine National Bureau of Statistics
+                        XLS Files
+regional_economics      Regional Economics Functions
+system_evaluation       System Evaluation Functions for Coupling and
+                        Obstacle Analysis
+topsis                  TOPSIS Method for Multi-Criteria Decision
+                        Making
+water_quality           Water Quality Dataset

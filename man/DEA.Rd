@@ -57,7 +57,11 @@ For output orientation: value = 1/\eqn{\phi}, where \eqn{\phi \ge 1} is the Shep
 
 \item{rts}{\code{"vrs"} (variable returns to scale, default) or \code{"crs"} (constant).}
 
-\item{x0, y0}{Used by Malmquist cross-period evaluation (not for direct calls).}
+\item{period}{Column name or index identifying the time period variable.}
+
+\item{type1}{\code{"cont"} (contemporaneous), \code{"seq"} (sequential), or \code{"glob"} (global, default).}
+
+\item{type2}{\code{"fgnz"} (Färe-Grosskopf-Norris-Zhang) or \code{"rd"} (Ray-Desli, default).}
 }
 \value{
 A list with components: \code{efficiencies}, \code{lambdas}, \code{slacks},

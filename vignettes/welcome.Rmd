@@ -8,6 +8,7 @@ knitr:
   opts_chunk:
     collapse: true
     comment: '#>'
+    purl: false
 ---
 
 ### Introduction
@@ -35,7 +36,7 @@ install.packages("mathmodels.tar.gz", repos = NULL, type = "source")
 ```
 
 ```{r message=FALSE}
-library(tidyverse)
+library(dplyr)
 library(mathmodels)
 ```
 

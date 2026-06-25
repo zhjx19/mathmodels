@@ -125,6 +125,9 @@ reference:
   - GM1N
   - DGM21
   - verhulst
+  - GM11_markov
+  - markov_chain
+  - markov_chain
 
 - title: "System Evaluation"
   desc: "Coupling coordination degree and obstacle degree models."
@@ -136,6 +139,31 @@ reference:
   desc: "Built-in example datasets for demonstration and testing."
   contents:
   - water_quality
+
+
+- title: "Differential Equations &amp; Epidemic Models"
+  desc: "ODE solvers and classic compartmental epidemic models (SIR, SEIR, SEIRS, SIDP, etc.)."
+  contents:
+  - model_malthus
+  - model_logistic
+  - model_lv
+  - model_si
+  - model_sir
+  - model_sis
+  - model_seir
+  - ode_solver
+
+- title: "Epidemic Visualization &amp; Metrics"
+  desc: "Visualize compartments, incidence, Rt; compute epidemic summary metrics."
+  contents:
+  - compute_incidence
+  - epidemic_metrics
+  - plot_compartments
+  - plot_cumulative_infection
+  - plot_incidence
+  - plot_infectious_curve
+  - plot_phase_si
+  - plot_Rt_estimate
 
 - title: "Utilities"
   desc: "Helper functions for predictions, data I/O, and other tasks."

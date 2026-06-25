@@ -1,5 +1,69 @@
 # Changelog
 
+## mathmodels 0.0.8
+
+### New features
+
+- **Differential equation models** (`diffEq_models.R`):
+  - [`ode_solver()`](https://zhjx19.github.io/mathmodels/reference/ode_solver.md):
+    General-purpose string-formula ODE solver powered by **deSolve**.
+  - [`model_malthus()`](https://zhjx19.github.io/mathmodels/reference/model_malthus.md):
+    Malthusian exponential growth.
+  - [`model_logistic()`](https://zhjx19.github.io/mathmodels/reference/model_logistic.md):
+    Logistic population growth.
+  - [`model_si()`](https://zhjx19.github.io/mathmodels/reference/model_si.md):
+    SI epidemic model (Susceptible–Infected).
+  - [`model_sis()`](https://zhjx19.github.io/mathmodels/reference/model_sis.md):
+    SIS epidemic model.
+  - [`model_sir()`](https://zhjx19.github.io/mathmodels/reference/model_sir.md):
+    SIR epidemic model.
+  - [`model_seir()`](https://zhjx19.github.io/mathmodels/reference/model_seir.md):
+    SEIR epidemic model.
+  - [`model_lv()`](https://zhjx19.github.io/mathmodels/reference/model_lv.md):
+    Lotka–Volterra predator–prey model. All model functions use a
+    unified `init` + `params` interface with physics-meaningful named
+    parameters (e.g., `beta`, `gamma`, `sigma`).
+- **Epidemic visualization** (`epidemic_plot.R`):
+  - [`plot_compartments()`](https://zhjx19.github.io/mathmodels/reference/plot_compartments.md):
+    Faceted or overlaid line plot of selected compartments.
+  - [`compute_incidence()`](https://zhjx19.github.io/mathmodels/reference/compute_incidence.md):
+    Compute daily incidence from S or I differences.
+  - [`plot_incidence()`](https://zhjx19.github.io/mathmodels/reference/plot_incidence.md):
+    Daily new infection curve.
+  - [`plot_infectious_curve()`](https://zhjx19.github.io/mathmodels/reference/plot_infectious_curve.md):
+    Infectious population over time.
+  - [`plot_cumulative_infection()`](https://zhjx19.github.io/mathmodels/reference/plot_cumulative_infection.md):
+    Cumulative infection curve.
+  - [`plot_phase_si()`](https://zhjx19.github.io/mathmodels/reference/plot_phase_si.md):
+    S–I phase portrait.
+  - [`plot_Rt_estimate()`](https://zhjx19.github.io/mathmodels/reference/plot_Rt_estimate.md):
+    Effective reproduction number (Rt) trajectory.
+- **Epidemic metrics** (`epidemic_metrics.R`):
+  - [`epidemic_metrics()`](https://zhjx19.github.io/mathmodels/reference/epidemic_metrics.md):
+    Comprehensive epidemic summary returning R0, peak infection/time,
+    attack rate, control time steps, time above threshold, and an
+    augmented trajectory data frame with Rt and growth rate columns.
+- **Markov chain prediction** (`markov.R`):
+  - [`markov_chain()`](https://zhjx19.github.io/mathmodels/reference/markov.md):
+    Transition probability matrix construction, multi-step state
+    prediction, and stationary distribution.
+  - [`GM11_markov()`](https://zhjx19.github.io/mathmodels/reference/markov.md):
+    Grey–Markov combined prediction with GM(1,1) and Markov chain
+    correction on relative error states.
+
+### Dependencies
+
+- **Imports** (new): Added `deSolve` for ODE solving.
+
+### Documentation and testing
+
+- Added full `@examples` sections for all new and renamed functions.
+- 68 tests for `diffEq_solver`, 23 for `epidemic_plot`, 21 for
+  `epidemic_metrics`, 14 for Markov chain models. All pass with zero
+  errors.
+- Regenerated all `.Rd` files with
+  [`devtools::document()`](https://devtools.r-lib.org/reference/document.html).
+
 ## mathmodels 0.0.7
 
 ### New features

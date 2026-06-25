@@ -50,7 +50,7 @@ rank_sum_ratio = function(data, w = NULL, method = "int") {
     stop("data must be a data frame.")
   if(ncol(data) < 2)
     stop("data must have at least 2 columns (ID + at least 1 indicator).")
-
+  RSR = ID = barR = f = barRn = NULL
   n = nrow(data)
   m = ncol(data) - 1
   if(m < 1) stop("data must have at least 1 indicator column.")

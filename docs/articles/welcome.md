@@ -54,7 +54,7 @@ install.packages("mathmodels.tar.gz", repos = NULL, type = "source")
 
 ``` r
 
-library(tidyverse)
+library(dplyr)
 library(mathmodels)
 ```
 

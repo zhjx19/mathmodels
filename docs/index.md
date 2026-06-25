@@ -5,19 +5,25 @@ developed as a companion to the book *Mathematical Modeling: Algorithms
 and Programming Implementation* (China Machine Press). It focuses on
 implementing rigorous algorithms in a user-friendly manner.
 
-**Current Version (0.0.7) Focus**: Evaluation algorithms, including data
-preprocessing, subjective (AHP) and objective (Entropy, CRITIC, PCA)
-weighting methods, weight combination techniques, comprehensive
-evaluation (TOPSIS, Fuzzy, RSR, DEA), inequality measures (Gini, Theil),
-and grey prediction models (GM(1,1), GM(1,N), Verhulst).
+**Current Version (0.0.8)** adds ODE-based differential equation
+modeling, epidemic compartment models (SI/SIS/SIR/SEIR), Lotka–Volterra
+predator–prey dynamics, comprehensive epidemic visualization and
+metrics, and Markov chain prediction — on top of the established
+evaluation algorithms (AHP, Entropy, CRITIC, PCA, TOPSIS, Fuzzy, RSR,
+DEA), inequality measures (Gini, Theil), and grey prediction models
+(GM(1,1), GM(1,N), Verhulst).
 
 ## Key Features
 
-- **Rigorous & Comprehensive**: Implements core algorithms for
-  evaluation and analysis with attention to detail.
-- **User-Friendly Interface**: Simplifies complex workflows with
-  intuitive function design and intelligent handling of data
-  preprocessing (standardization, normalization, directionality).
+- **Comprehensive Modeling**: Covers evaluation methods (AHP, CRITIC,
+  Entropy, TOPSIS, Fuzzy, RSR, DEA), differential equation models
+  (SI/SIS/SIR/SEIR, Lotka–Volterra, Malthus, Logistic), Markov chain
+  prediction, grey prediction (GM(1,1), GM(1,N), Verhulst), and
+  inequality measures (Gini, Theil).
+- **ODE Solver & Epidemic Toolkit**: String-formula based
+  [`ode_solver()`](https://zhjx19.github.io/mathmodels/reference/ode_solver.md)
+  for arbitrary ODE systems, ready-to-use epidemic compartment models,
+  plus dedicated visualization and metrics functions.
 - **Tidyverse Integration**: Seamlessly works with `|>` and `tidyverse`
   tools for smooth data manipulation and batch processing.
 
@@ -44,24 +50,31 @@ install.packages("mathmodels-main", repos=NULL, type="source")
 ``` r
 
 library(mathmodels)
+
+# --- Epidemic compartment modeling ---
+library(ggplot2)
+
+result = model_sir(
+  init   = c(S = 990, I = 10, R = 0),
+  params = c(beta = 0.3, gamma = 0.1),
+  times  = seq(0, 100, by = 0.5)
+)
+
+# Visualize
+plot_compartments(result, compartments = c("S", "I", "R"))
+
+# Compute epidemic metrics
+metrics = epidemic_metrics(result, params = c(beta = 0.3, gamma = 0.1), N = 1000)
+metrics$summary$R0         # basic reproduction number
+metrics$summary$peak_time  # time of peak infection
+
+# --- AHP (Analytic Hierarchy Process) ---
 A = matrix(c(1,   1/2, 4, 3,   3,
              2,   1,   7, 5,   5,
              1/4, 1/7, 1, 1/2, 1/3,
              1/3, 1/5, 2, 1,   1,
              1/3, 1/5, 3, 1,   1), byrow = TRUE, nrow = 5)
-# Analytic Hierarchy Process
 AHP(A)
-## $w
-## [1] 0.26360349 0.47583538 0.05381460 0.09806829 0.10867824
-## 
-## $CR
-## [1] 0.01609027
-## 
-## $Lmax
-## [1] 5.072084
-## 
-## $CI
-## [1] 0.0180211
 ```
 
 ## Learning More
@@ -74,20 +87,29 @@ manual:
 (Online Book, In Chinese)](https://zhjx19.github.io/mathmodels-book/)**
 
 This online book is the definitive guide to the package’s
-functionalities. Currently, only evaluation algorithms are fully
-implemented, including:
+functionalities. Currently implemented modules include:
 
+- **Differential equation models**: Malthus, Logistic, SI, SIS, SIR,
+  SEIR, Lotka–Volterra with
+  [`ode_solver()`](https://zhjx19.github.io/mathmodels/reference/ode_solver.md)
+  and `model_*()` functions
+- **Epidemic visualization**:
+  [`plot_compartments()`](https://zhjx19.github.io/mathmodels/reference/plot_compartments.md),
+  [`plot_incidence()`](https://zhjx19.github.io/mathmodels/reference/plot_incidence.md),
+  [`plot_Rt_estimate()`](https://zhjx19.github.io/mathmodels/reference/plot_Rt_estimate.md),
+  etc.
+- **Epidemic metrics**:
+  [`epidemic_metrics()`](https://zhjx19.github.io/mathmodels/reference/epidemic_metrics.md)
+  for R0, peak, attack rate, and trajectory analysis
+- **Markov chain prediction**:
+  [`markov_chain()`](https://zhjx19.github.io/mathmodels/reference/markov.md)
+  and
+  [`GM11_markov()`](https://zhjx19.github.io/mathmodels/reference/markov.md)
 - Indicator data preprocessing
-- AHP
-- Entropy weighting
-- CRITIC weighting
-- PCA weighting
-- Combination of subjective and objective weighting
-- Composite Indicator Calculation
-- TOPSIS
-- Grey Relational Analysis (GRA)
-- Rank Sum Ratio (RSR) method
-- Fuzzy Comprehensive Evaluation (FCE)
+- AHP, Entropy weighting, CRITIC, PCA weighting
+- Weight combination techniques
+- TOPSIS, Grey Relational Analysis (GRA)
+- Rank Sum Ratio (RSR), Fuzzy Comprehensive Evaluation (FCE)
 - Data Envelopment Analysis (CCR/BCC/SBM, Malmquist)
 - Inequality Measures (Gini, Theil Index)
 - Regional Economics (LQ/HHI/EG Index)

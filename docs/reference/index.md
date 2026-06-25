@@ -131,6 +131,9 @@ GM(1,1), GM(1,N), DGM(2,1), and Verhulst models.
   [`DGM21()`](https://zhjx19.github.io/mathmodels/reference/grey_models.md)
   [`verhulst()`](https://zhjx19.github.io/mathmodels/reference/grey_models.md)
   : Grey Prediction Models
+- [`markov_chain()`](https://zhjx19.github.io/mathmodels/reference/markov.md)
+  [`GM11_markov()`](https://zhjx19.github.io/mathmodels/reference/markov.md)
+  : Markov Chain and Grey-Markov Prediction Models
 
 ## System Evaluation
 
@@ -146,6 +149,49 @@ Built-in example datasets for demonstration and testing.
 
 - [`water_quality`](https://zhjx19.github.io/mathmodels/reference/water_quality.md)
   : Water Quality Dataset
+
+## Differential Equations & Epidemic Models
+
+ODE solvers and classic compartmental epidemic models (SIR, SEIR, SEIRS,
+SIDP, etc.).
+
+- [`model_malthus()`](https://zhjx19.github.io/mathmodels/reference/model_malthus.md)
+  : Malthusian (Exponential) Growth Model
+- [`model_logistic()`](https://zhjx19.github.io/mathmodels/reference/model_logistic.md)
+  : Logistic Population Growth Model
+- [`model_lv()`](https://zhjx19.github.io/mathmodels/reference/model_lv.md)
+  : Lotka-Volterra Predator-Prey Model
+- [`model_si()`](https://zhjx19.github.io/mathmodels/reference/model_si.md)
+  : SI Epidemic Model
+- [`model_sir()`](https://zhjx19.github.io/mathmodels/reference/model_sir.md)
+  : SIR Epidemic Model
+- [`model_sis()`](https://zhjx19.github.io/mathmodels/reference/model_sis.md)
+  : SIS Epidemic Model
+- [`model_seir()`](https://zhjx19.github.io/mathmodels/reference/model_seir.md)
+  : SEIR Epidemic Model
+- [`ode_solver()`](https://zhjx19.github.io/mathmodels/reference/ode_solver.md)
+  : General ODE Solver
+
+## Epidemic Visualization & Metrics
+
+Visualize compartments, incidence, Rt; compute epidemic summary metrics.
+
+- [`compute_incidence()`](https://zhjx19.github.io/mathmodels/reference/compute_incidence.md)
+  : Compute incidence from ODE output
+- [`epidemic_metrics()`](https://zhjx19.github.io/mathmodels/reference/epidemic_metrics.md)
+  : Compute epidemiological decision metrics
+- [`plot_compartments()`](https://zhjx19.github.io/mathmodels/reference/plot_compartments.md)
+  : Plot compartment trajectories
+- [`plot_cumulative_infection()`](https://zhjx19.github.io/mathmodels/reference/plot_cumulative_infection.md)
+  : Plot cumulative infections
+- [`plot_incidence()`](https://zhjx19.github.io/mathmodels/reference/plot_incidence.md)
+  : Plot incidence curves
+- [`plot_infectious_curve()`](https://zhjx19.github.io/mathmodels/reference/plot_infectious_curve.md)
+  : Plot infectious population
+- [`plot_phase_si()`](https://zhjx19.github.io/mathmodels/reference/plot_phase_si.md)
+  : Phase plot S vs I
+- [`plot_Rt_estimate()`](https://zhjx19.github.io/mathmodels/reference/plot_Rt_estimate.md)
+  : Plot effective reproduction number R_t
 
 ## Utilities
 

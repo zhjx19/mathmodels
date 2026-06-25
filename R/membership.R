@@ -305,6 +305,7 @@ s_mf = function(x, params) {
 #' @export
 plot_mf = function(mf, xlim = c(0, 10), main = NULL) {
   if(!is.function(mf)) stop("mf must be a function.")
+  x = y = NULL
   data = data.frame(x = seq(xlim[1], xlim[2], length.out = 200),
                      y = mf(seq(xlim[1], xlim[2], length.out = 200)))
   p = ggplot2::ggplot(data, ggplot2::aes(x = x, y = y)) +

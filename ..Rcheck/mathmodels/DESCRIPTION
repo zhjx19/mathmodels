@@ -1,0 +1,23 @@
+Package: mathmodels
+Type: Package
+Title: Comprehensive Mathematical Modeling Algorithms in R
+Version: 0.0.7
+Author: Jingxin Zhang
+Maintainer: Jingxin zhang <zhjx_19@163.com>
+Description: A versatile R package for mathematical modeling, developed as a companion to ``Mathematical Modeling: Algorithms and Programming Implementation" (China Machine Press). The package implements algorithms across differential and difference equations, statistical analysis, optimization, evaluation, and prediction. Currently, it focuses on evaluation algorithms, including indicator data preprocessing (e.g., standardization, rescaling), subjective and objective weighting methods (e.g., AHP, entropy weighting, CRITIC, PCA weighting) and weight combination, TOPSIS, fuzzy comprehensive evaluation, grey relational analysis, rank sum ratio, DEA (CCR, BCC, SBM, Malmquist, powered by lpSolveAPI), regional economics (LQ, HHI and EG index), inequality measures (e.g., Gini and Theil indices), grey prediction models (e.g., GM(1,1), GM(1,N), Verhulst), Markov chain prediction, and Grey-Markov combined prediction. Designed for researchers and practitioners in mathematical modeling. 
+License: AGPL (>= 3)
+URL: https://github.com/zhjx19/mathmodels,
+        https://zhjx19.github.io/mathmodels/
+BugReports: https://github.com/zhjx19/mathmodels/issues
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+Imports: lpSolveAPI, dplyr (>= 1.0.0), ggplot2 (>= 3.5.0), MASS, purrr,
+        readxl, rlang, stats, stringr, tibble, tidyr (>= 1.1.0),
+        deSolve
+Depends: R (>= 4.1)
+Suggests: knitr, quarto, rmarkdown, testthat (>= 3.0.0)
+VignetteBuilder: knitr
+Config/testthat/edition: 3
+Config/roxygen2/version: 8.0.0
+Built: R 4.6.0; ; 2026-06-24 20:11:41 UTC; windows

@@ -1,3 +1,50 @@
+# mathmodels 0.0.8
+
+## New features
+
+- **Differential equation models** (`diffEq_models.R`):
+  - `ode_solver()`: General-purpose string-formula ODE solver powered by **deSolve**.
+  - `model_malthus()`: Malthusian exponential growth.
+  - `model_logistic()`: Logistic population growth.
+  - `model_si()`: SI epidemic model (Susceptible–Infected).
+  - `model_sis()`: SIS epidemic model.
+  - `model_sir()`: SIR epidemic model.
+  - `model_seir()`: SEIR epidemic model.
+  - `model_lv()`: Lotka–Volterra predator–prey model.
+  All model functions use a unified `init` + `params` interface with
+  physics-meaningful named parameters (e.g., `beta`, `gamma`, `sigma`).
+
+- **Epidemic visualization** (`epidemic_plot.R`):
+  - `plot_compartments()`: Faceted or overlaid line plot of selected compartments.
+  - `compute_incidence()`: Compute daily incidence from S or I differences.
+  - `plot_incidence()`: Daily new infection curve.
+  - `plot_infectious_curve()`: Infectious population over time.
+  - `plot_cumulative_infection()`: Cumulative infection curve.
+  - `plot_phase_si()`: S–I phase portrait.
+  - `plot_Rt_estimate()`: Effective reproduction number (Rt) trajectory.
+
+- **Epidemic metrics** (`epidemic_metrics.R`):
+  - `epidemic_metrics()`: Comprehensive epidemic summary returning R0, peak
+    infection/time, attack rate, control time steps, time above threshold, and
+    an augmented trajectory data frame with Rt and growth rate columns.
+
+- **Markov chain prediction** (`markov.R`):
+  - `markov_chain()`: Transition probability matrix construction, multi-step
+    state prediction, and stationary distribution.
+  - `GM11_markov()`: Grey–Markov combined prediction with GM(1,1) and Markov
+    chain correction on relative error states.
+
+## Dependencies
+
+- **Imports** (new): Added `deSolve` for ODE solving.
+
+## Documentation and testing
+
+- Added full `@examples` sections for all new and renamed functions.
+- 68 tests for `diffEq_solver`, 23 for `epidemic_plot`, 21 for `epidemic_metrics`,
+  14 for Markov chain models. All pass with zero errors.
+- Regenerated all `.Rd` files with `devtools::document()`.
+
 # mathmodels 0.0.7
 
 ## New features
