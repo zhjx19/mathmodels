@@ -127,7 +127,6 @@ reference:
   - verhulst
   - GM11_markov
   - markov_chain
-  - markov_chain
 
 - title: "System Evaluation"
   desc: "Coupling coordination degree and obstacle degree models."
@@ -156,14 +155,36 @@ reference:
 - title: "Epidemic Visualization &amp; Metrics"
   desc: "Visualize compartments, incidence, Rt; compute epidemic summary metrics."
   contents:
-  - compute_incidence
-  - epidemic_metrics
+  - epi_metrics
   - plot_compartments
-  - plot_cumulative_infection
   - plot_incidence
-  - plot_infectious_curve
   - plot_phase_si
   - plot_Rt_estimate
+
+- title: "Time Series Models"
+  desc: "Stationarity tests, decomposition, exponential smoothing, SARIMA, and GARCH."
+  contents:
+  - ts_test
+  - ts_transform
+  - ts_back_transform
+  - ts_stl
+  - ts_ets
+  - ts_sarima
+  - ts_garch
+  - ts_sarima_garch
+  - ts_forecast
+
+- title: "Time Series Plots"
+  desc: "Plotting functions for stationarity, decomposition, forecasting, and residual diagnostics."
+  contents:
+  - plot_ts
+  - plot_ts_acf
+  - plot_ts_pacf
+  - plot_ts_stl
+  - plot_ts_forecast
+  - plot_ts_garch
+  - plot_ts_sarima_garch
+  - plot_ts_residuals
 
 - title: "Utilities"
   desc: "Helper functions for predictions, data I/O, and other tasks."

@@ -15,7 +15,7 @@ fuzzy_eval(w, R, type)
 
 - w:
 
-  Numeric vector, factor weights (e.g., from `combine_weights_linear`).
+  Numeric vector, factor weights (e.g., from `combine_weights`).
 
 - R:
 

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">mathmodels</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.8</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -384,17 +384,10 @@
 
       <dl><dt>
 
-          <code><a href="compute_incidence.html">compute_incidence()</a></code>
+          <code><a href="epi_metrics.html">epi_metrics()</a></code>
 
         </dt>
-        <dd>Compute incidence from ODE output</dd>
-
-        <dt>
-
-          <code><a href="epidemic_metrics.html">epidemic_metrics()</a></code>
-
-        </dt>
-        <dd>Compute epidemiological decision metrics</dd>
+        <dd>Extract key epidemic metrics</dd>
 
         <dt>
 
@@ -405,24 +398,10 @@
 
         <dt>
 
-          <code><a href="plot_cumulative_infection.html">plot_cumulative_infection()</a></code>
-
-        </dt>
-        <dd>Plot cumulative infections</dd>
-
-        <dt>
-
           <code><a href="plot_incidence.html">plot_incidence()</a></code>
 
         </dt>
-        <dd>Plot incidence curves</dd>
-
-        <dt>
-
-          <code><a href="plot_infectious_curve.html">plot_infectious_curve()</a></code>
-
-        </dt>
-        <dd>Plot infectious population</dd>
+        <dd>Plot daily new infections (dI)</dd>
 
         <dt>
 
@@ -437,6 +416,143 @@
 
         </dt>
         <dd>Plot effective reproduction number R_t</dd>
+      </dl></div><div class="section level2">
+      <h2 id="time-series-models">Time Series Models<a class="anchor" aria-label="anchor" href="#time-series-models"></a></h2>
+
+      <div class="section-desc"><p>Stationarity tests, decomposition, exponential smoothing, SARIMA, and GARCH.</p></div>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="ts_test.html">ts_test()</a></code>
+
+        </dt>
+        <dd>Stationarity Tests for a Time Series</dd>
+
+        <dt>
+
+          <code><a href="ts_transform.html">ts_transform()</a></code>
+
+        </dt>
+        <dd>Transform a Time Series for Stationarity</dd>
+
+        <dt>
+
+          <code><a href="ts_back_transform.html">ts_back_transform()</a></code>
+
+        </dt>
+        <dd>Back-Transform Forecasts to the Original Scale</dd>
+
+        <dt>
+
+          <code><a href="ts_stl.html">ts_stl()</a></code>
+
+        </dt>
+        <dd>STL (Seasonal + Trend + Loess) Decomposition</dd>
+
+        <dt>
+
+          <code><a href="ts_ets.html">ts_ets()</a></code>
+
+        </dt>
+        <dd>ETS (Error, Trend, Seasonality) Exponential Smoothing</dd>
+
+        <dt>
+
+          <code><a href="ts_sarima.html">ts_sarima()</a></code>
+
+        </dt>
+        <dd>SARIMA Model Fitting</dd>
+
+        <dt>
+
+          <code><a href="ts_garch.html">ts_garch()</a></code>
+
+        </dt>
+        <dd>GARCH Variance Modeling</dd>
+
+        <dt>
+
+          <code><a href="ts_sarima_garch.html">ts_sarima_garch()</a></code>
+
+        </dt>
+        <dd>Two-Stage SARIMA-GARCH Joint Model</dd>
+
+        <dt>
+
+          <code><a href="ts_forecast.html">ts_forecast()</a></code>
+
+        </dt>
+        <dd>Generate Forecasts from a Fitted Time Series Model</dd>
+      </dl></div><div class="section level2">
+      <h2 id="time-series-plots">Time Series Plots<a class="anchor" aria-label="anchor" href="#time-series-plots"></a></h2>
+
+      <div class="section-desc"><p>Plotting functions for stationarity, decomposition, forecasting, and residual diagnostics.</p></div>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="plot_ts.html">plot_ts()</a></code>
+
+        </dt>
+        <dd>Plot a Time Series</dd>
+
+        <dt>
+
+          <code><a href="plot_ts_acf.html">plot_ts_acf()</a></code>
+
+        </dt>
+        <dd>ACF and PACF Plots</dd>
+
+        <dt>
+
+          <code><a href="plot_ts_pacf.html">plot_ts_pacf()</a></code>
+
+        </dt>
+        <dd>PACF Plot (convenience alias)</dd>
+
+        <dt>
+
+          <code><a href="plot_ts_stl.html">plot_ts_stl()</a></code>
+
+        </dt>
+        <dd>Plot STL Decomposition Components</dd>
+
+        <dt>
+
+          <code><a href="plot_ts_forecast.html">plot_ts_forecast()</a></code>
+
+        </dt>
+        <dd>Plot Historical Series + Forecast with Confidence Bands</dd>
+
+        <dt>
+
+          <code><a href="plot_ts_garch.html">plot_ts_garch()</a></code>
+
+        </dt>
+        <dd>GARCH Volatility Plot</dd>
+
+        <dt>
+
+          <code><a href="plot_ts_sarima_garch.html">plot_ts_sarima_garch()</a></code>
+
+        </dt>
+        <dd>Dual-Axis Plot for SARIMA-GARCH: Mean + Conditional Volatility</dd>
+
+        <dt>
+
+          <code><a href="plot_ts_residuals.html">plot_ts_residuals()</a></code>
+
+        </dt>
+        <dd>Residual Diagnostic Plots</dd>
       </dl></div><div class="section level2">
       <h2 id="utilities">Utilities<a class="anchor" aria-label="anchor" href="#utilities"></a></h2>
 

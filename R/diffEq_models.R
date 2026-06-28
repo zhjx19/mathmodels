@@ -468,3 +468,315 @@ model_lv = function(init, params, times, ...) {
              ),
              params = params, ...)
 }
+
+
+# =============================================================================
+# Epidemic Visualization Toolkit for mathmodels
+# =============================================================================
+#
+# A collection of ggplot2-based visualizations and key metrics for compartmental
+# epidemic models.  All functions accept a data frame returned by any modelling
+# function (model_sir, model_seir, or a custom ode_solver call).
+#
+# Functions:
+#   plot_compartments()      Compartment trajectories
+#   plot_incidence()         Daily new infections (dI) with peak marker
+#   plot_phase_si()          S–I phase portrait
+#   plot_Rt_estimate()       Effective reproduction number R_t
+#   epi_metrics()            Key scalar metrics (R0, peak, attack rate)
+#
+# All functions require ggplot2; some also require tidyr (for pivot_longer).
+
+# =============================================================================
+# Internal helper: convert wide ODE output to long format
+
+#' @importFrom tidyr pivot_longer
+
+.to_long_states = function(df) {
+  tidyr::pivot_longer(
+    df,
+    cols = !"time",
+    names_to = "compartment",
+    values_to = "value"
+  )
+}
+
+# =============================================================================
+# 1. Compartment trajectories over time
+# =============================================================================
+#' Plot compartment trajectories
+#'
+#' Draws one line per compartment over time.  Use \code{compartments} to
+#' select a subset of the state variables; the default is to plot all
+#' columns except \code{time}.
+#'
+#' @param df           A data frame returned by \code{ode_solver()} or any
+#'   built-in model function.
+#' @param compartments Character vector of compartment names to plot.  When
+#'   \code{NULL} (the default) every column except \code{time} is plotted.
+#'
+#' @return A \link[ggplot2:ggplot]{ggplot} object.
+#'
+#' @importFrom ggplot2 ggplot aes geom_line labs theme_minimal
+#'
+#' @examples
+#' sir = model_sir(
+#'   init   = c(S = 990, I = 10),
+#'   params = c(beta = 0.002, gamma = 0.1),
+#'   times  = seq(0, 50, by = 0.1)
+#' )
+#' plot_compartments(sir)
+#' plot_compartments(sir, compartments = c("S", "I"))
+#'
+#' @export
+plot_compartments = function(df, compartments = NULL) {
+
+  if (is.null(compartments)) {
+    compartments = setdiff(names(df), "time")
+  }
+
+  df_long = df[, c("time", compartments)]
+  df_long = .to_long_states(df_long)
+
+  ggplot2::ggplot(df_long,
+                  ggplot2::aes(x = .data$time, y = .data$value, color = .data$compartment)) +
+    ggplot2::geom_line(linewidth = 1) +
+    ggplot2::labs(
+      title = "Compartment trajectories",
+      x = "Time",
+      y = "Population"
+    ) +
+    ggplot2::theme_minimal()
+}
+
+# =============================================================================
+# 2. Daily new infections (dI) with peak marker
+
+#' Plot daily new infections (dI)
+#'
+#' Computes the daily change in the infectious compartment \eqn{\Delta I}
+#' directly via \code{diff()} and plots it as a line chart.  The peak is
+#' highlighted with a point marker.
+#'
+#' @param df  A data frame returned by \code{ode_solver()} or any
+#'   built-in model function.  Must contain columns \code{time} and
+#'   \code{I}.
+#'
+#' @return A \link[ggplot2:ggplot]{ggplot} object.
+#'
+#' @importFrom ggplot2 ggplot aes geom_line geom_point labs theme_minimal
+#'
+#' @examples
+#' sir = model_sir(
+#'   init   = c(S = 990, I = 10),
+#'   params = c(beta = 0.002, gamma = 0.1),
+#'   times  = seq(0, 50, by = 0.1)
+#' )
+#' plot_incidence(sir)
+#'
+#' @export
+plot_incidence = function(df) {
+
+  if (!"I" %in% names(df)) stop("Requires column I.", call. = FALSE)
+
+  df = df[order(df$time), , drop = FALSE]
+
+  # dI = diff(I), drop first row (NA from differencing)
+  dI = diff(df$I)
+  inc = data.frame(
+    time = df$time[-1],
+    dI   = dI
+  )
+
+  # Find peak
+  peak = inc[which.max(inc$dI), ]
+
+  ggplot2::ggplot(inc, ggplot2::aes(x = .data$time, y = .data$dI)) +
+    ggplot2::geom_line(linewidth = 1, color = "#d62728") +
+    ggplot2::geom_point(data = peak,
+                        ggplot2::aes(x = .data$time, y = .data$dI),
+                        size = 4, color = "blue") +
+    ggplot2::labs(
+      title = "Daily new infections",
+      x = "Time",
+      y = expression(Delta * I)
+    ) +
+    ggplot2::theme_minimal()
+}
+
+
+
+# =============================================================================
+# 3. Phase plot (S vs I)
+# =============================================================================
+#' Phase plot S vs I
+#'
+#' Draws a trajectory in the \eqn{(S, I)} plane.  Useful for
+#' visualising the epidemic orbit and threshold behaviour.
+#'
+#' @param df  A data frame with columns \code{time}, \code{S}, and
+#'   \code{I}.
+#'
+#' @return A \link[ggplot2:ggplot]{ggplot} object.
+#'
+#' @importFrom ggplot2 ggplot aes geom_path labs theme_minimal
+#'
+#' @examples
+#' sir = model_sir(
+#'   init   = c(S = 990, I = 10),
+#'   params = c(beta = 0.002, gamma = 0.1),
+#'   times  = seq(0, 50, by = 0.1)
+#' )
+#' plot_phase_si(sir)
+#'
+#' @export
+plot_phase_si = function(df) {
+
+  if (!all(c("S", "I") %in% names(df))) {
+    stop("Requires columns S and I.", call. = FALSE)
+  }
+
+  ggplot2::ggplot(df, ggplot2::aes(x = .data$S, y = .data$I)) +
+    ggplot2::geom_path(linewidth = 1, color = "#2ca02c") +
+    ggplot2::labs(
+      title = "Phase plot: S vs I",
+      x = "Susceptible",
+      y = "Infectious"
+    ) +
+    ggplot2::theme_minimal()
+}
+
+# =============================================================================
+# 4. Effective reproduction number R_t
+# =============================================================================
+#' Plot effective reproduction number R_t
+#'
+#' Estimates the time-varying effective reproduction number
+#' \eqn{R_t} directly from compartment data.  Two methods are
+#' available:
+#' \describe{
+#'   \item{\code{"mechanistic"}}{Uses \eqn{R_t = \beta S(t) / \gamma}.
+#'     This is the standard formula for an SIR-type model and is
+#'     recommended when the model dynamics match the SIR structure.}
+#'   \item{\code{"normalized"}}{Uses \eqn{R_t = R_0 \, S(t) / N} with
+#'     \eqn{R_0 = \beta N / \gamma}.  Suitable when different
+#'     normalisations are desired.}
+#' }
+#'
+#' @param df     A data frame with columns \code{time} and \code{S}.
+#' @param params A named numeric vector or list containing at least
+#'   \code{beta} and \code{gamma}.
+#' @param N      Total population size.  If \code{NULL} (the default),
+#'   it is estimated from the sum of all state columns at the first
+#'   time step.
+#' @param method Estimation method: \code{"mechanistic"} (default) or
+#'   \code{"normalized"}.
+#'
+#' @return A \link[ggplot2:ggplot]{ggplot} object with a dashed
+#'   horizontal line at \eqn{R_t = 1}.
+#'
+#' @importFrom ggplot2 ggplot aes geom_line geom_hline labs theme_minimal
+#' @importFrom rlang .data
+#'
+#' @examples
+#' sir = model_sir(
+#'   init   = c(S = 990, I = 10),
+#'   params = c(beta = 0.002, gamma = 0.1),
+#'   times  = seq(0, 50, by = 0.1)
+#' )
+#' plot_Rt_estimate(sir, params = c(beta = 0.002, gamma = 0.1))
+#'
+#' @export
+plot_Rt_estimate = function(df,
+                             params,
+                             N = NULL,
+                             method = c("mechanistic", "normalized")) {
+
+  method = match.arg(method)
+
+  if (!"S" %in% names(df)) stop("Column 'S' required.", call. = FALSE)
+  params = as.list(params)
+  if (is.null(params[["beta"]]) || is.null(params[["gamma"]])) {
+    stop("params must contain beta and gamma.", call. = FALSE)
+  }
+
+  df = df[order(df$time), , drop = FALSE]
+
+  if (is.null(N)) {
+    state_cols = setdiff(names(df), "time")
+    N = rowSums(df[, state_cols, drop = FALSE])[1]
+  }
+
+  beta  = params[["beta"]]
+  gamma = params[["gamma"]]
+
+  if (method == "mechanistic") {
+    df$Rt = beta * df$S / gamma
+  } else {
+    R0 = beta * N / gamma
+    df$Rt = R0 * df$S / N
+  }
+
+  ggplot2::ggplot(df, ggplot2::aes(x = .data$time, y = .data$Rt)) +
+    ggplot2::geom_line(linewidth = 1, color = "#d62728") +
+    ggplot2::geom_hline(yintercept = 1, linetype = "dashed") +
+    ggplot2::labs(
+      title = "Effective reproduction number (R_t)",
+      x = "Time",
+      y = "R_t"
+    ) +
+    ggplot2::theme_minimal()
+}
+
+# =============================================================================
+# 5. Key epidemic metrics
+# =============================================================================
+#' Extract key epidemic metrics
+#'
+#' Returns a named list of 4 core scalar metrics derived from ODE output.
+#'
+#' @param df    A data frame with columns \code{time}, \code{S}, \code{I}.
+#' @param beta  Transmission rate (numeric).
+#' @param gamma Recovery / removal rate (numeric).
+#' @param N     Total population (numeric). If \code{NULL} (default), computed
+#'   as the sum of compartment values at the first time point.
+#' @return A named list with components: \code{R0} (basic reproduction number),
+#'   \code{peak_infection} (maximum number of infectious individuals),
+#'   \code{peak_time} (time at which peak occurs),
+#'   \code{attack_rate} (proportion of susceptible that became infected).
+#' @param gamma Recovery / removal rate (numeric).#' @param N     Total population (numeric). If \code{NULL} (default), computed
+#'   as the sum of compartment values at the first time point.
+#' @param gamma Recovery / removal rate (numeric).
+#' @param N     Total population (numeric). If \code{NULL} (default), computed
+#'   as the sum of compartment values at the first time point.
+#'   \code{attack_rate}.
+#'
+#' @examples
+#' sir = model_sir(
+#'   init   = c(S = 990, I = 10),
+#'   params = c(beta = 0.002, gamma = 0.1),
+#'   times  = seq(0, 50, by = 0.1)
+#' )
+#' epi_metrics(sir, beta = 0.002, gamma = 0.1)
+#'
+#' @export
+epi_metrics = function(df, beta, gamma, N = NULL) {
+
+  if (!"time" %in% names(df)) stop("Column 'time' required.", call. = FALSE)
+  if (!"S"    %in% names(df)) stop("Column 'S' required.",    call. = FALSE)
+  if (!"I"    %in% names(df)) stop("Column 'I' required.",    call. = FALSE)
+  if (missing(beta)  || is.null(beta))  stop("Must provide beta.",  call. = FALSE)
+  if (missing(gamma) || is.null(gamma)) stop("Must provide gamma.", call. = FALSE)
+
+  if (is.null(N)) {
+    state_cols = setdiff(names(df), "time")
+    N = rowSums(df[, state_cols, drop = FALSE])[1]
+  }
+
+  list(
+    R0             = beta * N / gamma,
+    peak_infection = max(df$I, na.rm = TRUE),
+    peak_time      = df$time[which.max(df$I)],
+    attack_rate    = (df$S[1] - df$S[nrow(df)]) / N
+  )
+}

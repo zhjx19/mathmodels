@@ -49,5 +49,4 @@ mfs = compute_mf_funs(th)
 plots = lapply(mfs, \(x) plot_mf(x, xlim = c(0, 0.6)))
 gridExtra::grid.arrange(grobs = plots, nrow = 2)
 } # }
-
 ```

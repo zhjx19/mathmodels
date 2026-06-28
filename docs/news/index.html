@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">mathmodels</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.8</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -38,6 +38,63 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.9" id="mathmodels-009">mathmodels 0.0.9<a class="anchor" aria-label="anchor" href="#mathmodels-009"></a></h2>
+<div class="section level3">
+<h3 id="time-series-toolkit-new-0-0-9">Time series toolkit (new)<a class="anchor" aria-label="anchor" href="#time-series-toolkit-new-0-0-9"></a></h3>
+<ul><li>
+<strong>Modeling</strong> (<code>ts_models.R</code>):
+<ul><li>
+<code><a href="../reference/ts_test.html">ts_test()</a></code>: Stationarity &amp; white-noise diagnostics (ADF, KPSS, PP, Ljung-Box).</li>
+<li>
+<code><a href="../reference/ts_stl.html">ts_stl()</a></code>: Seasonal-trend decomposition (STL).</li>
+<li>
+<code><a href="../reference/ts_ets.html">ts_ets()</a></code>: Exponential smoothing (auto / user-specified).</li>
+<li>
+<code><a href="../reference/ts_sarima.html">ts_sarima()</a></code>: SARIMA with auto-selection or user-specified orders.</li>
+<li>
+<code><a href="../reference/ts_garch.html">ts_garch()</a></code>: GARCH / GJR-GARCH with Student-t support and ARCH-LM diagnostics.</li>
+<li>
+<code><a href="../reference/ts_sarima_garch.html">ts_sarima_garch()</a></code>: Combined SARIMA-GARCH modeling.</li>
+<li>
+<code><a href="../reference/ts_forecast.html">ts_forecast()</a></code>: Unified forecasting for ETS, SARIMA, GARCH, SARIMA-GARCH.</li>
+</ul></li>
+<li>
+<strong>Transformation</strong> (<code>ts_models.R</code>):
+<ul><li>
+<code><a href="../reference/ts_transform.html">ts_transform()</a></code>: Box-Cox / log / identity with optional differencing and seasonal differencing.</li>
+<li>
+<code><a href="../reference/ts_back_transform.html">ts_back_transform()</a></code>: Inverse transform for forecasts back to original scale.</li>
+</ul></li>
+<li>
+<strong>Visualization</strong> (<code>ts_plots.R</code>):
+<ul><li>
+<code>plot_ts_decomposition()</code>: Faceted STL decomposition plot.</li>
+<li>
+<code><a href="../reference/plot_ts_residuals.html">plot_ts_residuals()</a></code>: Residual diagnostics (ACF, histogram, Q-Q, Ljung-Box).</li>
+<li>
+<code><a href="../reference/plot_ts_forecast.html">plot_ts_forecast()</a></code>: Forecast plot with historical data, prediction intervals, and optional back-transformed labels.</li>
+</ul></li>
+<li>
+<strong>Dependencies</strong> (new): forecast (ETS, ARIMA), tseries (ADF/KPSS/PP tests), rugarch (GARCH/GJR-GARCH).</li>
+</ul></div>
+<div class="section level3">
+<h3 id="epidemic-visualization--metrics-overhaul-0-0-9">Epidemic visualization &amp; metrics overhaul<a class="anchor" aria-label="anchor" href="#epidemic-visualization--metrics-overhaul-0-0-9"></a></h3>
+<ul><li>
+<strong>Renamed</strong> <code>epidemic_plot.R</code> → <code>epi_plots.R</code>. Consolidated from 3 files into 1.</li>
+<li>
+<strong>Removed</strong> <code>compute_incidence()</code>, <code>plot_infectious_curve()</code>, <code>plot_cumulative_infection()</code>.</li>
+<li>
+<strong>Merged</strong> <code>epidemic_metrics()</code> → <code><a href="../reference/epi_metrics.html">epi_metrics()</a></code>: simplified to 4 core scalars (R0, peak_infection, peak_time, attack_rate).</li>
+<li>
+<strong>Refined</strong> <code><a href="../reference/plot_incidence.html">plot_incidence()</a></code>: now shows ΔI (daily new infections) with peak time annotation.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="testing-0-0-9">Testing<a class="anchor" aria-label="anchor" href="#testing-0-0-9"></a></h3>
+<ul><li>New: <code>test-ts.R</code> (52 tests), <code>test-epi_plots.R</code> (19 tests).</li>
+<li>Full suite: <strong>539 tests, 0 failures</strong>.</li>
+</ul></div>
+</div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.8" id="mathmodels-008">mathmodels 0.0.8<a class="anchor" aria-label="anchor" href="#mathmodels-008"></a></h2>
 <div class="section level3">
 <h3 id="new-features-0-0-8">New features<a class="anchor" aria-label="anchor" href="#new-features-0-0-8"></a></h3>
@@ -46,48 +103,32 @@
 <ul><li>
 <code><a href="../reference/ode_solver.html">ode_solver()</a></code>: General-purpose string-formula ODE solver powered by <strong>deSolve</strong>.</li>
 <li>
-<code><a href="../reference/model_malthus.html">model_malthus()</a></code>: Malthusian exponential growth.</li>
-<li>
-<code><a href="../reference/model_logistic.html">model_logistic()</a></code>: Logistic population growth.</li>
-<li>
-<code><a href="../reference/model_si.html">model_si()</a></code>: SI epidemic model (Susceptible–Infected).</li>
-<li>
-<code><a href="../reference/model_sis.html">model_sis()</a></code>: SIS epidemic model.</li>
-<li>
-<code><a href="../reference/model_sir.html">model_sir()</a></code>: SIR epidemic model.</li>
-<li>
-<code><a href="../reference/model_seir.html">model_seir()</a></code>: SEIR epidemic model.</li>
-<li>
-<code><a href="../reference/model_lv.html">model_lv()</a></code>: Lotka–Volterra predator–prey model. All model functions use a unified <code>init</code> + <code>params</code> interface with physics-meaningful named parameters (e.g., <code>beta</code>, <code>gamma</code>, <code>sigma</code>).</li>
+<code><a href="../reference/model_malthus.html">model_malthus()</a></code>, <code><a href="../reference/model_logistic.html">model_logistic()</a></code>, <code><a href="../reference/model_si.html">model_si()</a></code>, <code><a href="../reference/model_sis.html">model_sis()</a></code>, <code><a href="../reference/model_sir.html">model_sir()</a></code>, <code><a href="../reference/model_seir.html">model_seir()</a></code>, <code><a href="../reference/model_lv.html">model_lv()</a></code> — all using a unified <code>init</code> + <code>params</code> interface with physics-meaningful named parameters (e.g., <code>beta</code>, <code>gamma</code>, <code>sigma</code>).</li>
 </ul></li>
 <li>
 <strong>Epidemic visualization</strong> (<code>epidemic_plot.R</code>):
 <ul><li>
-<code><a href="../reference/plot_compartments.html">plot_compartments()</a></code>: Faceted or overlaid line plot of selected compartments.</li>
+<code><a href="../reference/plot_compartments.html">plot_compartments()</a></code>: Faceted/overlaid line plot of selected compartments.</li>
 <li>
-<code><a href="../reference/compute_incidence.html">compute_incidence()</a></code>: Compute daily incidence from S or I differences.</li>
+<code>compute_incidence()</code>: Daily incidence from S or I differences.</li>
 <li>
-<code><a href="../reference/plot_incidence.html">plot_incidence()</a></code>: Daily new infection curve.</li>
-<li>
-<code><a href="../reference/plot_infectious_curve.html">plot_infectious_curve()</a></code>: Infectious population over time.</li>
-<li>
-<code><a href="../reference/plot_cumulative_infection.html">plot_cumulative_infection()</a></code>: Cumulative infection curve.</li>
+<code><a href="../reference/plot_incidence.html">plot_incidence()</a></code>, <code>plot_infectious_curve()</code>, <code>plot_cumulative_infection()</code>: Infection curve visualizations.</li>
 <li>
 <code><a href="../reference/plot_phase_si.html">plot_phase_si()</a></code>: S–I phase portrait.</li>
 <li>
-<code><a href="../reference/plot_Rt_estimate.html">plot_Rt_estimate()</a></code>: Effective reproduction number (Rt) trajectory.</li>
+<code><a href="../reference/plot_Rt_estimate.html">plot_Rt_estimate()</a></code>: Effective reproduction number trajectory.</li>
 </ul></li>
 <li>
 <strong>Epidemic metrics</strong> (<code>epidemic_metrics.R</code>):
 <ul><li>
-<code><a href="../reference/epidemic_metrics.html">epidemic_metrics()</a></code>: Comprehensive epidemic summary returning R0, peak infection/time, attack rate, control time steps, time above threshold, and an augmented trajectory data frame with Rt and growth rate columns.</li>
+<code>epidemic_metrics()</code>: Comprehensive epidemic summary (R0, peak, attack rate, trajectory with Rt and growth rate).</li>
 </ul></li>
 <li>
 <strong>Markov chain prediction</strong> (<code>markov.R</code>):
 <ul><li>
-<code><a href="../reference/markov.html">markov_chain()</a></code>: Transition probability matrix construction, multi-step state prediction, and stationary distribution.</li>
+<code><a href="../reference/markov.html">markov_chain()</a></code>: Transition probability matrix, multi-step prediction, stationary distribution.</li>
 <li>
-<code><a href="../reference/markov.html">GM11_markov()</a></code>: Grey–Markov combined prediction with GM(1,1) and Markov chain correction on relative error states.</li>
+<code><a href="../reference/markov.html">GM11_markov()</a></code>: Grey–Markov combined prediction with GM(1,1) and Markov correction.</li>
 </ul></li>
 </ul></div>
 <div class="section level3">
@@ -96,10 +137,8 @@
 <strong>Imports</strong> (new): Added <code>deSolve</code> for ODE solving.</li>
 </ul></div>
 <div class="section level3">
-<h3 id="documentation-and-testing-0-0-8">Documentation and testing<a class="anchor" aria-label="anchor" href="#documentation-and-testing-0-0-8"></a></h3>
-<ul><li>Added full <code>@examples</code> sections for all new and renamed functions.</li>
-<li>68 tests for <code>diffEq_solver</code>, 23 for <code>epidemic_plot</code>, 21 for <code>epidemic_metrics</code>, 14 for Markov chain models. All pass with zero errors.</li>
-<li>Regenerated all <code>.Rd</code> files with <code><a href="https://devtools.r-lib.org/reference/document.html" class="external-link">devtools::document()</a></code>.</li>
+<h3 id="testing-0-0-8">Testing<a class="anchor" aria-label="anchor" href="#testing-0-0-8"></a></h3>
+<ul><li>68 tests for diffEq, 23 for epidemic plots, 21 for epidemic metrics, 14 for Markov chain models. Zero errors.</li>
 </ul></div>
 </div>
     <div class="section level2">

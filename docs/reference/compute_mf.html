@@ -11,7 +11,7 @@ compute_mf_funs returns the list of membership functions for visualization purpo
 
     <a class="navbar-brand me-2" href="../index.html">mathmodels</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.8</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -38,7 +38,7 @@ compute_mf_funs returns the list of membership functions for visualization purpo
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Compute fuzzy membership vector and return corresponding membership functions.</h1>
-      <small class="dont-index">Source: <a href="https://github.com/zhjx19/mathmodels/blob/HEAD/R/compute_mf.R" class="external-link"><code>R/compute_mf.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/zhjx19/mathmodels/blob/HEAD/R/eval_fuzzy.R" class="external-link"><code>R/eval_fuzzy.R</code></a></small>
       <div class="d-none name"><code>compute_mf.Rd</code></div>
     </div>
 
@@ -91,7 +91,6 @@ the boundaries between evaluation levels.</p></dd>
 <span class="r-in"><span><span class="va">plots</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">mfs</span>, \<span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="membership.html">plot_mf</a></span><span class="op">(</span><span class="va">x</span>, xlim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.6</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">gridExtra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/gridExtra/man/arrangeGrob.html" class="external-link">grid.arrange</a></span><span class="op">(</span>grobs <span class="op">=</span> <span class="va">plots</span>, nrow <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
-<span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

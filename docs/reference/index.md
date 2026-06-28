@@ -176,22 +176,62 @@ SIDP, etc.).
 
 Visualize compartments, incidence, Rt; compute epidemic summary metrics.
 
-- [`compute_incidence()`](https://zhjx19.github.io/mathmodels/reference/compute_incidence.md)
-  : Compute incidence from ODE output
-- [`epidemic_metrics()`](https://zhjx19.github.io/mathmodels/reference/epidemic_metrics.md)
-  : Compute epidemiological decision metrics
+- [`epi_metrics()`](https://zhjx19.github.io/mathmodels/reference/epi_metrics.md)
+  : Extract key epidemic metrics
 - [`plot_compartments()`](https://zhjx19.github.io/mathmodels/reference/plot_compartments.md)
   : Plot compartment trajectories
-- [`plot_cumulative_infection()`](https://zhjx19.github.io/mathmodels/reference/plot_cumulative_infection.md)
-  : Plot cumulative infections
 - [`plot_incidence()`](https://zhjx19.github.io/mathmodels/reference/plot_incidence.md)
-  : Plot incidence curves
-- [`plot_infectious_curve()`](https://zhjx19.github.io/mathmodels/reference/plot_infectious_curve.md)
-  : Plot infectious population
+  : Plot daily new infections (dI)
 - [`plot_phase_si()`](https://zhjx19.github.io/mathmodels/reference/plot_phase_si.md)
   : Phase plot S vs I
 - [`plot_Rt_estimate()`](https://zhjx19.github.io/mathmodels/reference/plot_Rt_estimate.md)
   : Plot effective reproduction number R_t
+
+## Time Series Models
+
+Stationarity tests, decomposition, exponential smoothing, SARIMA, and
+GARCH.
+
+- [`ts_test()`](https://zhjx19.github.io/mathmodels/reference/ts_test.md)
+  : Stationarity Tests for a Time Series
+- [`ts_transform()`](https://zhjx19.github.io/mathmodels/reference/ts_transform.md)
+  : Transform a Time Series for Stationarity
+- [`ts_back_transform()`](https://zhjx19.github.io/mathmodels/reference/ts_back_transform.md)
+  : Back-Transform Forecasts to the Original Scale
+- [`ts_stl()`](https://zhjx19.github.io/mathmodels/reference/ts_stl.md)
+  : STL (Seasonal + Trend + Loess) Decomposition
+- [`ts_ets()`](https://zhjx19.github.io/mathmodels/reference/ts_ets.md)
+  : ETS (Error, Trend, Seasonality) Exponential Smoothing
+- [`ts_sarima()`](https://zhjx19.github.io/mathmodels/reference/ts_sarima.md)
+  : SARIMA Model Fitting
+- [`ts_garch()`](https://zhjx19.github.io/mathmodels/reference/ts_garch.md)
+  : GARCH Variance Modeling
+- [`ts_sarima_garch()`](https://zhjx19.github.io/mathmodels/reference/ts_sarima_garch.md)
+  : Two-Stage SARIMA-GARCH Joint Model
+- [`ts_forecast()`](https://zhjx19.github.io/mathmodels/reference/ts_forecast.md)
+  : Generate Forecasts from a Fitted Time Series Model
+
+## Time Series Plots
+
+Plotting functions for stationarity, decomposition, forecasting, and
+residual diagnostics.
+
+- [`plot_ts()`](https://zhjx19.github.io/mathmodels/reference/plot_ts.md)
+  : Plot a Time Series
+- [`plot_ts_acf()`](https://zhjx19.github.io/mathmodels/reference/plot_ts_acf.md)
+  : ACF and PACF Plots
+- [`plot_ts_pacf()`](https://zhjx19.github.io/mathmodels/reference/plot_ts_pacf.md)
+  : PACF Plot (convenience alias)
+- [`plot_ts_stl()`](https://zhjx19.github.io/mathmodels/reference/plot_ts_stl.md)
+  : Plot STL Decomposition Components
+- [`plot_ts_forecast()`](https://zhjx19.github.io/mathmodels/reference/plot_ts_forecast.md)
+  : Plot Historical Series + Forecast with Confidence Bands
+- [`plot_ts_garch()`](https://zhjx19.github.io/mathmodels/reference/plot_ts_garch.md)
+  : GARCH Volatility Plot
+- [`plot_ts_sarima_garch()`](https://zhjx19.github.io/mathmodels/reference/plot_ts_sarima_garch.md)
+  : Dual-Axis Plot for SARIMA-GARCH: Mean + Conditional Volatility
+- [`plot_ts_residuals()`](https://zhjx19.github.io/mathmodels/reference/plot_ts_residuals.md)
+  : Residual Diagnostic Plots
 
 ## Utilities
 

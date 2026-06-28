@@ -1,0 +1,279 @@
+# 评价模型 — 评价算法
+#
+# 包含: topsis, rank_sum_ratio, grey_corr, grey_corr_topsis
+#
+
+# 消除 dplyr NSE 的 R CMD check NOTE
+utils::globalVariables(c("RSR", "ID", "barR", "f", "barRn", "Probit",
+                          "RSRfit", "sumf"))
+
+
+# ============================================================================
+# topsis — TOPSIS 综合评价
+# ============================================================================
+
+#' TOPSIS Method for Multi-Criteria Decision Making
+#'
+#' @description
+#' Implements the Technique for Order of Preference by Similarity to Ideal Solution (TOPSIS)
+#' to rank alternatives based on multiple criteria. The function normalizes the decision matrix using L2 norm,
+#' applies weights, and computes relative closeness to the ideal solution.
+#'
+#' @param X A numeric matrix or data frame where rows represent alternatives and columns represent criteria.
+#' @param w A numeric vector of weights for each criterion. Must be non-negative and sum to 1.
+#'          If not provided, equal weights are used.
+#' @param index A character vector indicating the direction of each indicator:
+#'              Use `"+"` for positive indicators (higher is better),
+#'              `"-"` for negative indicators (lower is better).
+#'              If `index = NULL` (default), all indicators are treated as `"+"`.
+#'
+#' @return A named numeric vector of relative closeness scores (in \code{[0, 1]}) for each alternative.
+#'         Higher values indicate better alternatives.
+#'         Names are taken from `rownames(X)` or default to "Sample1", "Sample2", etc.
+#'
+#' @details
+#' The TOPSIS method ranks alternatives by:
+#' \enumerate{
+#'   \item Normalizing the decision matrix using L2 norm normalization.
+#'   \item Applying weights to form a weighted normalized matrix.
+#'   \item Identifying positive and negative ideal solutions based on indicator directions.
+#'   \item Computing Euclidean distances to ideal solutions.
+#'   \item Calculating relative closeness as `S0 / (S0 + Sstar)`, where `S0`
+#'   is the distance to the negative ideal and `Sstar` is the distance to the positive ideal.
+#' }
+#' This implementation supports both positive and negative indicators via the `index` parameter.
+#'
+#' @export
+#' @examples
+#' A = data.frame(
+#'   X1 = c(2, 5, 3),  # "+"
+#'   X2 = c(8, 1, 6)   # "-"
+#' )
+#' w = c(0.6, 0.4)
+#' idx = c("+","-")
+#' topsis(A, w, idx)
+
+topsis = function(X, w = NULL, index = NULL) {
+  if(!is.data.frame(X) && !is.matrix(X))
+    stop("X must be a data frame or matrix.")
+  m = ncol(X)
+  if(m < 2) stop("X must have at least 2 columns.")
+  if(nrow(X) < 2) stop("X must have at least 2 rows.")
+  if(is.null(index)) index = rep("+", m)
+  if(length(index) != m)
+    stop("index must have length equal to ncol(X).")
+  if(is.null(w)) w = rep(1/m, m)
+  if(length(w) != m)
+    stop("w must have length equal to ncol(X).")
+  if(any(w < 0) || sum(w) == 0)
+    stop("w must be non-negative and sum to a positive value.")
+
+  B = apply(X, 2, normalize)         # L2 norm normalization
+  C = B %*% diag(w)                  # Weighted normalized matrix
+
+  # Positive and negative ideal solutions
+  max_vals = apply(C, 2, max)
+  min_vals = apply(C, 2, min)
+  Cstar = ifelse(index == "+", max_vals, min_vals)
+  C0 = ifelse(index == "+", min_vals, max_vals)
+
+  Sstar = apply(C, 1, \(x) norm(x - Cstar, "2"))
+  S0    = apply(C, 1, \(x) norm(x - C0, "2"))
+  S0 / (S0 + Sstar)                  # Relative closeness
+}
+
+
+# ============================================================================
+# rank_sum_ratio — 秩和比 (RSR) 评价
+# ============================================================================
+
+#' Rank Sum Ratio (RSR) Evaluation
+#'
+#' @description
+#' Performs Rank Sum Ratio (RSR) evaluation on a dataset of positive indicators,
+#' computing ranks, weighted RSR values, and a linear regression model to fit RSR
+#' against probit-transformed ranks. Supports integer or non-integer ranking methods.
+#'
+#' @importFrom dplyr mutate across arrange summarise n
+#' @importFrom tidyr unnest_longer
+#'
+#' @param data Data frame with positive indicator data; first column is an ID column
+#' for identifying evaluation objects.
+#' @param w Numeric vector, weights for indicators (default = equal weights).
+#' @param method Character scalar, ranking method: "int" for integer ranks or
+#' "non-int" for scaled ranks in \code{[1, n]} (default = "int").
+#'
+#' @return A list containing:
+#' \itemize{
+#'   \item `resultTable`: Data frame with RSR values, ranks, cumulative frequencies,
+#'   probit values, and fitted RSR values.
+#'   \item `reg`: Linear model object fitting RSR against probit values.
+#'   \item `rankTable`: Data frame with ranked indicator values.
+#' }
+#'
+#' @details
+#' The `rank_sum_ratio` function implements the RSR method for evaluating
+#' objects based on positive indicators. It ranks the indicators (using integer or
+#' non-integer methods), computes weighted RSR values, adjusts ranks with probit
+#' transformation, and fits a linear regression model to relate RSR to probit values.
+#' The function assumes the first column of `data` is an ID column, and weights
+#' (`w`) can be provided or set to equal weights by default.
+#'
+#' @examples
+#' # Example data
+#' data = data.frame(ID = c("A", "B", "C"), X1 = c(10, 20, 15), X2 = c(5, 10, 8))
+#' w = c(0.4, 0.6)
+#' rank_sum_ratio(data, w, method = "int")
+#'
+#' @name rank_sum_ratio
+#' @export
+#' @importFrom stats qnorm lm predict
+rank_sum_ratio = function(data, w = NULL, method = "int") {
+  if(!is.data.frame(data))
+    stop("data must be a data frame.")
+  if(ncol(data) < 2)
+    stop("data must have at least 2 columns (ID + at least 1 indicator).")
+  n = nrow(data)
+  m = ncol(data) - 1
+  if(m < 1) stop("data must have at least 1 indicator column.")
+  if(is.null(w)) w = rep(1, m)
+  if(length(w) != m)
+    stop("w must have length equal to the number of indicator columns (ncol(data)-1).")
+
+  # Select ranking method
+  switch(method,
+         "int" = {
+           rankTable = dplyr::mutate(data, dplyr::across(-1, rank))
+         },
+         "non-int" = {
+           rankTable = dplyr::mutate(data, dplyr::across(-1, \(x) rescale(x, a = 1, b = n)))
+         }
+  )
+  # Main computation
+  rltTable = rankTable |>
+    dplyr::mutate(RSR = apply(rankTable[-1], 1, \(x) sum(x * w) / (sum(w) * n)),
+                  barR = rank(RSR)) |>
+    dplyr::arrange(RSR) |>
+    dplyr::summarise(ID = list(ID), f = dplyr::n(), .by = c(RSR, barR)) |>
+    dplyr::mutate(sumf = cumsum(f), barRn = barR / n,
+                  barRn = ifelse(barRn == 1, 1-1/(4*n), barRn),
+                  Probit = 5 + qnorm(barRn))
+  reg = lm(RSR ~ Probit, rltTable)
+  resultTable = rltTable |>
+    dplyr::mutate(RSRfit = predict(reg, rltTable)) |>
+    tidyr::unnest_longer(ID) |>
+    dplyr::relocate(ID, .before = 1)
+  list(resultTable = resultTable, reg = reg, rankTable = rankTable)
+}
+
+
+# ============================================================================
+# grey_corr / grey_corr_topsis — 灰色关联分析
+# ============================================================================
+
+#' Grey Relational Analysis Functions
+#'
+#' @description
+#' A collection of functions for performing grey relational analysis, including
+#' calculation of grey correlation degree and evaluation based on grey correlation.
+#' These functions are designed for decision-making and data analysis by measuring
+#' the relational degree between sequences.
+#'
+#' @param ref Numeric vector, the reference sequence for `grey_corr`.
+#' @param cmp Numeric matrix or data frame, the comparison sequences for `grey_corr`.
+#' @param rho Numeric scalar, the distinguishing coefficient (default = 0.5).
+#' @param w Numeric vector, weights for weighted correlation (default = equal weights).
+#' @param X Numeric matrix or data frame, the decision matrix for `grey_corr_topsis`.
+#' @param index Character vector indicating indicator direction:
+#'   Use `"+"` for positive indicators (higher is better),
+#'   `"-"` for negative indicators (lower is better),
+#'   and `NA` for already rescaled indicators (no rescaling will be applied).
+#'   If `index = NULL` (default), all indicators are treated as `NA`,
+#'              meaning no rescaling is performed.
+#'
+#' @return
+#' \describe{
+#'   \item{grey_corr}{Returns a numeric vector of grey correlation degrees for each comparison sequence.}
+#'   \item{grey_corr_topsis}{Returns a numeric vector of relative closeness (grey correlation degrees).}
+#' }
+#'
+#' @details
+#' These functions implement grey relational analysis for evaluating relationships
+#' between sequences or decision alternatives:
+#' \describe{
+#'   \item{grey_corr}{Computes the grey correlation degree between a reference sequence (`ref`)
+#'                    and comparison sequences (`cmp`) using the distinguishing coefficient (`rho`)
+#'                    and optional weights (`w`).}
+#'   \item{grey_corr_topsis}{Evaluates a decision matrix (`X`) by normalizing it,
+#'                           applying weights (`w`), computing grey correlation with the ideal sequence.
+#'                           Direction of indicators can be specified via `index`.}
+#' }
+#'
+#' @examples
+#' # Grey correlation degree
+#' ref = c(0.9, 0.8, 0.7)
+#' cmp = data.frame(
+#'   x1 = c(0.9, 0.7, 0.8),
+#'   x2 = c(0.8, 0.9, 0.7),
+#'   x3 = c(0.7, 0.8, 0.9)
+#' )
+#' grey_corr(ref, cmp, rho = 0.5)
+#'
+#' # Grey correlation evaluation
+#' X = data.frame(x1 = c(8, 7, 6), x2 = c(150, 180, 200), x3 = c(60, 80, 100))
+#' w = c(0.3, 0.4, 0.3)
+#' idx = c("+", "+", "+")
+#' grey_corr_topsis(X, w, idx, rho = 0.5)
+#'
+#' @name grey_analysis
+NULL
+
+#' @rdname grey_analysis
+#' @export
+grey_corr = function(ref, cmp, rho = 0.5, w = NULL) {
+  if(!is.numeric(ref)) stop("ref must be a numeric vector.")
+  if(!is.matrix(cmp) && !is.data.frame(cmp))
+    stop("cmp must be a matrix or data frame.")
+  if(length(ref) != nrow(cmp))
+    stop("Length of ref must equal number of rows in cmp.")
+  if(!is.null(w) && length(w) != nrow(cmp))
+    stop("w must have length equal to nrow(cmp).")
+
+  p = nrow(cmp)
+  if(is.null(w)) w = rep(1/p, p)
+  t = apply(cmp, 2, \(x) x - ref)
+  min2 = min(apply(abs(t), 2, min))              # Minimum difference
+  max2 = max(apply(abs(t), 2, max))              # Maximum difference
+  eta = (min2 + rho*max2) / (abs(t) + rho*max2)  # Correlation coefficient
+  r = w %*% eta
+  r[1,]
+}
+
+#' @rdname grey_analysis
+#' @export
+grey_corr_topsis = function(X, w, index = NULL, rho = 0.5) {
+  if(!is.matrix(X) && !is.data.frame(X))
+    stop("X must be a matrix or data frame.")
+  m = ncol(X)
+  if(is.null(index)) index = rep(NA, m)
+  if(length(index) != m)
+    stop("index must have length equal to ncol(X).")
+  if(is.null(w)) w = rep(1/m, m)
+  if(length(w) != m)
+    stop("w must have length equal to ncol(X).")
+  if(any(w < 0) || sum(w) == 0)
+    stop("w must be non-negative and sum to a positive value.")
+
+  pos = which(index == "+")
+  neg = which(index == "-")
+  # Normalize the data
+  X[,pos] = lapply(X[,pos, drop = FALSE], rescale)
+  X[,neg] = lapply(X[,neg, drop = FALSE], function(x) rescale(x, type = "-"))
+  # Weighted normalized matrix
+  C = as.matrix(X) %*% diag(w)
+  Cstar = apply(C, 2, max)
+  C0 = apply(C, 2, min)
+  Sstar = grey_corr(Cstar, C, rho)
+  S0 = grey_corr(C0, C, rho)
+  Sstar / (S0 + Sstar)
+}
