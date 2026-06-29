@@ -1,6 +1,6 @@
-# 评价模型 — 评价算法
+# Evaluation Algorithms — Evaluation Models
 #
-# 包含: topsis, rank_sum_ratio, grey_corr, grey_corr_topsis
+# Includes: topsis, rank_sum_ratio, grey_corr, and grey_corr_topsis
 #
 
 # 消除 dplyr NSE 的 R CMD check NOTE

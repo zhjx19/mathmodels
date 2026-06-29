@@ -86,10 +86,10 @@
   - `epidemic_metrics()`: Comprehensive epidemic summary (R0, peak,
     attack rate, trajectory with Rt and growth rate).
 - **Markov chain prediction** (`markov.R`):
-  - [`markov_chain()`](https://zhjx19.github.io/mathmodels/reference/markov.md):
+  - [`markov_chain()`](https://zhjx19.github.io/mathmodels/reference/markov_chain.md):
     Transition probability matrix, multi-step prediction, stationary
     distribution.
-  - [`GM11_markov()`](https://zhjx19.github.io/mathmodels/reference/markov.md):
+  - [`GM11_markov()`](https://zhjx19.github.io/mathmodels/reference/GM11_markov.md):
     Grey–Markov combined prediction with GM(1,1) and Markov correction.
 
 ### Dependencies

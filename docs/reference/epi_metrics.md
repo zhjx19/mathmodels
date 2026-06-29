@@ -1,18 +1,21 @@
-# Extract key epidemic metrics
+# Extract key epidemic metrics from ODE simulation output
 
-Returns a named list of 4 core scalar metrics derived from ODE output.
+This function computes core epidemiological summary statistics from
+deterministic compartmental epidemic models (e.g., SIR, SIS, SEIR).
 
 ## Usage
 
 ``` r
-epi_metrics(df, beta, gamma, N = NULL)
+epi_metrics(data, beta, gamma, N = NULL)
 ```
 
 ## Arguments
 
-- df:
+- data:
 
-  A data frame with columns `time`, `S`, `I`.
+  A data frame returned by `model_*()` functions. Must contain a column
+  `time`, and at least `S` and `I`. Additional compartments such as `E`
+  or `R` are allowed.
 
 - beta:
 
@@ -24,15 +27,37 @@ epi_metrics(df, beta, gamma, N = NULL)
 
 - N:
 
-  Total population (numeric). If `NULL` (default), computed as the sum
-  of compartment values at the first time point. `attack_rate`.
+  Total population (numeric). If `NULL` (default), it is computed as the
+  sum of all compartment values at the first time point.
 
 ## Value
 
-A named list with components: `R0` (basic reproduction number),
-`peak_infection` (maximum number of infectious individuals), `peak_time`
-(time at which peak occurs), `attack_rate` (proportion of susceptible
-that became infected).
+A named list with:
+
+- R0:
+
+  Basic reproduction number.
+
+- peak_infection:
+
+  Maximum number of infectious individuals.
+
+- peak_time:
+
+  Time at which infectious peak occurs.
+
+- attack_rate:
+
+  Proportion of population that transitioned out of S; defined only for
+  models containing an R compartment (e.g., SIR/SEIR).
+
+## Details
+
+The input data frame is expected to be the output of `model_*()`
+functions, containing a time column and one or more compartment columns
+(e.g., S, I, R, E). All compartment values are assumed to be in absolute
+population counts, and the total population is assumed to be conserved
+unless otherwise specified.
 
 ## Examples
 

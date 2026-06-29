@@ -21,8 +21,8 @@ prediction, Markov chain models, and a rich suite of evaluation methods
   Index), coupling coordination degree, and obstacle degree models.
 - **Prediction Models** — Grey prediction (GM(1,1), GM(1,N), Verhulst),
   Markov chain prediction
-  ([`markov_chain()`](https://zhjx19.github.io/mathmodels/reference/markov.md),
-  [`GM11_markov()`](https://zhjx19.github.io/mathmodels/reference/markov.md)),
+  ([`markov_chain()`](https://zhjx19.github.io/mathmodels/reference/markov_chain.md),
+  [`GM11_markov()`](https://zhjx19.github.io/mathmodels/reference/GM11_markov.md)),
   and a full **time series toolkit**:
   [`ts_transform()`](https://zhjx19.github.io/mathmodels/reference/ts_transform.md)
   /
@@ -140,9 +140,9 @@ functionalities. Currently implemented modules include:
   [`ts_forecast()`](https://zhjx19.github.io/mathmodels/reference/ts_forecast.md),
   `plot_ts_*()`
 - **Markov chain prediction**:
-  [`markov_chain()`](https://zhjx19.github.io/mathmodels/reference/markov.md)
+  [`markov_chain()`](https://zhjx19.github.io/mathmodels/reference/markov_chain.md)
   and
-  [`GM11_markov()`](https://zhjx19.github.io/mathmodels/reference/markov.md)
+  [`GM11_markov()`](https://zhjx19.github.io/mathmodels/reference/GM11_markov.md)
 - Indicator data preprocessing
 - AHP, Entropy weighting, CRITIC, PCA weighting
 - Weight combination techniques

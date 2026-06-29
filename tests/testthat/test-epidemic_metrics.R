@@ -20,6 +20,12 @@ test_that("epi_metrics returns list with 4 fields", {
   expect_named(r, c("R0", "peak_infection", "peak_time", "attack_rate"))
 })
 
+test_that("epi_metrics accepts named data argument", {
+  r = epi_metrics(data = sir, beta = 0.002, gamma = 0.1)
+  expect_type(r, "list")
+  expect_named(r, c("R0", "peak_infection", "peak_time", "attack_rate"))
+})
+
 test_that("epi_metrics R0 = beta * N / gamma", {
   r = epi_metrics(sir, beta = 0.002, gamma = 0.1)
   N = 990 + 10

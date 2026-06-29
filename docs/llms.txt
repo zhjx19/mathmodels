@@ -21,8 +21,8 @@ prediction, Markov chain models, and a rich suite of evaluation methods
   Index), coupling coordination degree, and obstacle degree models.
 - **Prediction Models** — Grey prediction (GM(1,1), GM(1,N), Verhulst),
   Markov chain prediction
-  ([`markov_chain()`](https://zhjx19.github.io/mathmodels/reference/markov.md),
-  [`GM11_markov()`](https://zhjx19.github.io/mathmodels/reference/markov.md)),
+  ([`markov_chain()`](https://zhjx19.github.io/mathmodels/reference/markov_chain.md),
+  [`GM11_markov()`](https://zhjx19.github.io/mathmodels/reference/GM11_markov.md)),
   and a full **time series toolkit**:
   [`ts_transform()`](https://zhjx19.github.io/mathmodels/reference/ts_transform.md)
   /
@@ -140,9 +140,9 @@ functionalities. Currently implemented modules include:
   [`ts_forecast()`](https://zhjx19.github.io/mathmodels/reference/ts_forecast.md),
   `plot_ts_*()`
 - **Markov chain prediction**:
-  [`markov_chain()`](https://zhjx19.github.io/mathmodels/reference/markov.md)
+  [`markov_chain()`](https://zhjx19.github.io/mathmodels/reference/markov_chain.md)
   and
-  [`GM11_markov()`](https://zhjx19.github.io/mathmodels/reference/markov.md)
+  [`GM11_markov()`](https://zhjx19.github.io/mathmodels/reference/GM11_markov.md)
 - Indicator data preprocessing
 - AHP, Entropy weighting, CRITIC, PCA weighting
 - Weight combination techniques
@@ -155,9 +155,14 @@ functionalities. Currently implemented modules include:
 
 # Package index
 
+## Evaluation Algorithms
+
+Evaluation, weighting, fuzzy evaluation, DEA, inequality, regional
+economics, and system evaluation methods.
+
 ## Data Preprocessing
 
-Functions for scaling, normalizing, and standardizing indicator data.
+Scaling, normalization, and indicator transformation utilities.
 
 - [`standardize()`](https://zhjx19.github.io/mathmodels/reference/preprocess.md)
   [`normalize()`](https://zhjx19.github.io/mathmodels/reference/preprocess.md)
@@ -170,64 +175,43 @@ Functions for scaling, normalizing, and standardizing indicator data.
   [`to_positive()`](https://zhjx19.github.io/mathmodels/reference/preprocess.md)
   : Preprocessing Functions for Data Normalization and Standardization
 
-## Subjective Weighting
+## Weighting Methods
 
-Analytic Hierarchy Process (AHP).
+Subjective, objective, and combined weighting methods for
+multi-indicator evaluation.
 
 - [`AHP()`](https://zhjx19.github.io/mathmodels/reference/AHP.md) : AHP:
   Analytic Hierarchy Process
-
-## Objective Weighting
-
-Data-driven methods for determining indicator weights.
-
-- [`entropy_weight()`](https://zhjx19.github.io/mathmodels/reference/entropy_weight.md)
-  : Entropy Weight Method
-- [`critic_weight()`](https://zhjx19.github.io/mathmodels/reference/critic_weight.md)
-  : CRITIC Weight Method
-- [`pca_weight()`](https://zhjx19.github.io/mathmodels/reference/pca_weight.md)
-  : PCA-Based Weighting Method
-- [`cv_weight()`](https://zhjx19.github.io/mathmodels/reference/cv_weight.md)
-  : Coefficient of Variation Weighting
-
-## Weight Combination
-
-Methods for combining subjective and objective weights.
-
 - [`combine_weights()`](https://zhjx19.github.io/mathmodels/reference/combine_weights.md)
   : Combine Subjective and Objective Weights
+- [`critic_weight()`](https://zhjx19.github.io/mathmodels/reference/critic_weight.md)
+  : CRITIC Weight Method
+- [`cv_weight()`](https://zhjx19.github.io/mathmodels/reference/cv_weight.md)
+  : Coefficient of Variation Weighting
+- [`entropy_weight()`](https://zhjx19.github.io/mathmodels/reference/entropy_weight.md)
+  : Entropy Weight Method
+- [`linear_sum()`](https://zhjx19.github.io/mathmodels/reference/linear_sum.md)
+  : Linear weighted synthesis
+- [`pca_weight()`](https://zhjx19.github.io/mathmodels/reference/pca_weight.md)
+  : PCA-Based Weighting Method
 
-## Comprehensive Evaluation
+## Evaluation Models
 
-Multi-criteria decision making and evaluation methods.
+Multi-criteria ranking and grey relational evaluation methods.
 
 - [`topsis()`](https://zhjx19.github.io/mathmodels/reference/topsis.md)
   : TOPSIS Method for Multi-Criteria Decision Making
-- [`linear_sum()`](https://zhjx19.github.io/mathmodels/reference/linear_sum.md)
-  : Linear weighted synthesis
-- [`fuzzy_eval()`](https://zhjx19.github.io/mathmodels/reference/fuzzy_eval.md)
-  : Fuzzy Comprehensive Evaluation
 - [`rank_sum_ratio()`](https://zhjx19.github.io/mathmodels/reference/rank_sum_ratio.md)
   : Rank Sum Ratio (RSR) Evaluation
-
-## Grey Relational Analysis
-
-Grey system theory for relational analysis and TOPSIS.
-
 - [`grey_corr()`](https://zhjx19.github.io/mathmodels/reference/grey_analysis.md)
   [`grey_corr_topsis()`](https://zhjx19.github.io/mathmodels/reference/grey_analysis.md)
   : Grey Relational Analysis Functions
 
-## Fuzzy Sets & Membership Functions
+## Fuzzy Evaluation
 
-Fuzzy set membership functions, computation, and defuzzification.
+Membership functions, fuzzy comprehensive evaluation, and
+defuzzification.
 
-- [`compute_mf_funs()`](https://zhjx19.github.io/mathmodels/reference/compute_mf.md)
-  [`compute_mf()`](https://zhjx19.github.io/mathmodels/reference/compute_mf.md)
-  : Compute fuzzy membership vector and return corresponding membership
-  functions.
-- [`defuzzify()`](https://zhjx19.github.io/mathmodels/reference/defuzzify.md)
-  : Defuzzification Methods for Fuzzy Comprehensive Evaluation
 - [`tri_mf()`](https://zhjx19.github.io/mathmodels/reference/membership.md)
   [`trap_mf()`](https://zhjx19.github.io/mathmodels/reference/membership.md)
   [`gauss_mf()`](https://zhjx19.github.io/mathmodels/reference/membership.md)
@@ -241,10 +225,18 @@ Fuzzy set membership functions, computation, and defuzzification.
   [`s_mf()`](https://zhjx19.github.io/mathmodels/reference/membership.md)
   [`plot_mf()`](https://zhjx19.github.io/mathmodels/reference/membership.md)
   : Membership Functions for Fuzzy Logic
+- [`compute_mf_funs()`](https://zhjx19.github.io/mathmodels/reference/compute_mf.md)
+  [`compute_mf()`](https://zhjx19.github.io/mathmodels/reference/compute_mf.md)
+  : Compute fuzzy membership vector and return corresponding membership
+  functions.
+- [`fuzzy_eval()`](https://zhjx19.github.io/mathmodels/reference/fuzzy_eval.md)
+  : Fuzzy Comprehensive Evaluation
+- [`defuzzify()`](https://zhjx19.github.io/mathmodels/reference/defuzzify.md)
+  : Defuzzification Methods for Fuzzy Comprehensive Evaluation
 
-## Data Envelopment Analysis (DEA)
+## Data Envelopment Analysis
 
-CCR, BCC, SBM, and Malmquist productivity index.
+DEA, SBM, super-efficiency, and Malmquist productivity models.
 
 - [`basic_DEA()`](https://zhjx19.github.io/mathmodels/reference/DEA.md)
   [`super_DEA()`](https://zhjx19.github.io/mathmodels/reference/DEA.md)
@@ -255,7 +247,7 @@ CCR, BCC, SBM, and Malmquist productivity index.
 
 ## Inequality Measures
 
-Gini coefficient, Theil index, and their decompositions.
+Gini and Theil indices for individual, grouped, and nested data.
 
 - [`gini0()`](https://zhjx19.github.io/mathmodels/reference/inequality.md)
   [`gini()`](https://zhjx19.github.io/mathmodels/reference/inequality.md)
@@ -269,90 +261,58 @@ Gini coefficient, Theil index, and their decompositions.
 
 ## Regional Economics
 
-Location Quotient, Herfindahl-Hirschman Index, and Ellison-Glaeser
-Index.
+Regional and industrial concentration indices.
 
 - [`LQ()`](https://zhjx19.github.io/mathmodels/reference/regional_economics.md)
   [`HHI()`](https://zhjx19.github.io/mathmodels/reference/regional_economics.md)
   [`EG()`](https://zhjx19.github.io/mathmodels/reference/regional_economics.md)
   : Regional Economics Functions
 
+## System Evaluation
+
+Coupling coordination and obstacle degree analysis for multi-indicator
+systems.
+
+- [`coupling_degree()`](https://zhjx19.github.io/mathmodels/reference/system_evaluation.md)
+  [`obstacle_degree()`](https://zhjx19.github.io/mathmodels/reference/system_evaluation.md)
+  : System Evaluation Functions for Coupling and Obstacle Analysis
+
+## Prediction Algorithms
+
+Grey prediction, Markov prediction, and time series models.
+
 ## Grey Prediction Models
 
-GM(1,1), GM(1,N), DGM(2,1), and Verhulst models.
+Grey forecasting models and utilities for combining predictions.
 
 - [`GM11()`](https://zhjx19.github.io/mathmodels/reference/grey_models.md)
   [`GM1N()`](https://zhjx19.github.io/mathmodels/reference/grey_models.md)
   [`DGM21()`](https://zhjx19.github.io/mathmodels/reference/grey_models.md)
   [`verhulst()`](https://zhjx19.github.io/mathmodels/reference/grey_models.md)
   : Grey Prediction Models
-- [`markov_chain()`](https://zhjx19.github.io/mathmodels/reference/markov.md)
-  [`GM11_markov()`](https://zhjx19.github.io/mathmodels/reference/markov.md)
-  : Markov Chain and Grey-Markov Prediction Models
+- [`combine_preds()`](https://zhjx19.github.io/mathmodels/reference/combine_preds.md)
+  : Combine Multiple Prediction Results
 
-## System Evaluation
+## Markov Prediction Models
 
-Coupling coordination degree and obstacle degree models.
+Markov chain prediction and Grey-Markov forecasting models.
 
-- [`coupling_degree()`](https://zhjx19.github.io/mathmodels/reference/system_evaluation.md)
-  [`obstacle_degree()`](https://zhjx19.github.io/mathmodels/reference/system_evaluation.md)
-  : System Evaluation Functions for Coupling and Obstacle Analysis
-
-## Datasets
-
-Built-in example datasets for demonstration and testing.
-
-- [`water_quality`](https://zhjx19.github.io/mathmodels/reference/water_quality.md)
-  : Water Quality Dataset
-
-## Differential Equations & Epidemic Models
-
-ODE solvers and classic compartmental epidemic models (SIR, SEIR, SEIRS,
-SIDP, etc.).
-
-- [`model_malthus()`](https://zhjx19.github.io/mathmodels/reference/model_malthus.md)
-  : Malthusian (Exponential) Growth Model
-- [`model_logistic()`](https://zhjx19.github.io/mathmodels/reference/model_logistic.md)
-  : Logistic Population Growth Model
-- [`model_lv()`](https://zhjx19.github.io/mathmodels/reference/model_lv.md)
-  : Lotka-Volterra Predator-Prey Model
-- [`model_si()`](https://zhjx19.github.io/mathmodels/reference/model_si.md)
-  : SI Epidemic Model
-- [`model_sir()`](https://zhjx19.github.io/mathmodels/reference/model_sir.md)
-  : SIR Epidemic Model
-- [`model_sis()`](https://zhjx19.github.io/mathmodels/reference/model_sis.md)
-  : SIS Epidemic Model
-- [`model_seir()`](https://zhjx19.github.io/mathmodels/reference/model_seir.md)
-  : SEIR Epidemic Model
-- [`ode_solver()`](https://zhjx19.github.io/mathmodels/reference/ode_solver.md)
-  : General ODE Solver
-
-## Epidemic Visualization & Metrics
-
-Visualize compartments, incidence, Rt; compute epidemic summary metrics.
-
-- [`epi_metrics()`](https://zhjx19.github.io/mathmodels/reference/epi_metrics.md)
-  : Extract key epidemic metrics
-- [`plot_compartments()`](https://zhjx19.github.io/mathmodels/reference/plot_compartments.md)
-  : Plot compartment trajectories
-- [`plot_incidence()`](https://zhjx19.github.io/mathmodels/reference/plot_incidence.md)
-  : Plot daily new infections (dI)
-- [`plot_phase_si()`](https://zhjx19.github.io/mathmodels/reference/plot_phase_si.md)
-  : Phase plot S vs I
-- [`plot_Rt_estimate()`](https://zhjx19.github.io/mathmodels/reference/plot_Rt_estimate.md)
-  : Plot effective reproduction number R_t
+- [`markov_chain()`](https://zhjx19.github.io/mathmodels/reference/markov_chain.md)
+  : Markov Chain Prediction
+- [`GM11_markov()`](https://zhjx19.github.io/mathmodels/reference/GM11_markov.md)
+  : Grey-Markov Prediction Model
 
 ## Time Series Models
 
-Stationarity tests, decomposition, exponential smoothing, SARIMA, and
-GARCH.
+Time series transformation, diagnostics, modeling, forecasting, and
+visualization.
 
-- [`ts_test()`](https://zhjx19.github.io/mathmodels/reference/ts_test.md)
-  : Stationarity Tests for a Time Series
 - [`ts_transform()`](https://zhjx19.github.io/mathmodels/reference/ts_transform.md)
   : Transform a Time Series for Stationarity
 - [`ts_back_transform()`](https://zhjx19.github.io/mathmodels/reference/ts_back_transform.md)
   : Back-Transform Forecasts to the Original Scale
+- [`ts_test()`](https://zhjx19.github.io/mathmodels/reference/ts_test.md)
+  : Stationarity Tests for a Time Series
 - [`ts_stl()`](https://zhjx19.github.io/mathmodels/reference/ts_stl.md)
   : STL (Seasonal + Trend + Loess) Decomposition
 - [`ts_ets()`](https://zhjx19.github.io/mathmodels/reference/ts_ets.md)
@@ -365,35 +325,71 @@ GARCH.
   : Two-Stage SARIMA-GARCH Joint Model
 - [`ts_forecast()`](https://zhjx19.github.io/mathmodels/reference/ts_forecast.md)
   : Generate Forecasts from a Fitted Time Series Model
-
-## Time Series Plots
-
-Plotting functions for stationarity, decomposition, forecasting, and
-residual diagnostics.
-
 - [`plot_ts()`](https://zhjx19.github.io/mathmodels/reference/plot_ts.md)
   : Plot a Time Series
+- [`plot_ts_forecast()`](https://zhjx19.github.io/mathmodels/reference/plot_ts_forecast.md)
+  : Plot Historical Series + Forecast with Confidence Bands
+- [`plot_ts_sarima_garch()`](https://zhjx19.github.io/mathmodels/reference/plot_ts_sarima_garch.md)
+  : Dual-Axis Plot for SARIMA-GARCH: Mean + Conditional Volatility
+- [`plot_ts_garch()`](https://zhjx19.github.io/mathmodels/reference/plot_ts_garch.md)
+  : GARCH Volatility Plot
+- [`plot_ts_residuals()`](https://zhjx19.github.io/mathmodels/reference/plot_ts_residuals.md)
+  : Residual Diagnostic Plots
+- [`plot_ts_stl()`](https://zhjx19.github.io/mathmodels/reference/plot_ts_stl.md)
+  : Plot STL Decomposition Components
 - [`plot_ts_acf()`](https://zhjx19.github.io/mathmodels/reference/plot_ts_acf.md)
   : ACF and PACF Plots
 - [`plot_ts_pacf()`](https://zhjx19.github.io/mathmodels/reference/plot_ts_pacf.md)
   : PACF Plot (convenience alias)
-- [`plot_ts_stl()`](https://zhjx19.github.io/mathmodels/reference/plot_ts_stl.md)
-  : Plot STL Decomposition Components
-- [`plot_ts_forecast()`](https://zhjx19.github.io/mathmodels/reference/plot_ts_forecast.md)
-  : Plot Historical Series + Forecast with Confidence Bands
-- [`plot_ts_garch()`](https://zhjx19.github.io/mathmodels/reference/plot_ts_garch.md)
-  : GARCH Volatility Plot
-- [`plot_ts_sarima_garch()`](https://zhjx19.github.io/mathmodels/reference/plot_ts_sarima_garch.md)
-  : Dual-Axis Plot for SARIMA-GARCH: Mean + Conditional Volatility
-- [`plot_ts_residuals()`](https://zhjx19.github.io/mathmodels/reference/plot_ts_residuals.md)
-  : Residual Diagnostic Plots
 
-## Utilities
+## Differential Equation Algorithms
 
-Helper functions for predictions, data I/O, and other tasks.
+ODE solvers, dynamic models, epidemic models, metrics, and
+visualizations.
 
-- [`combine_preds()`](https://zhjx19.github.io/mathmodels/reference/combine_preds.md)
-  : Combine Multiple Prediction Results
+## Differential Equation Models
+
+ODE solving, population dynamics, epidemic models, metrics, and
+visualizations.
+
+- [`ode_solver()`](https://zhjx19.github.io/mathmodels/reference/ode_solver.md)
+  : General ODE Solver
+- [`model_malthus()`](https://zhjx19.github.io/mathmodels/reference/model_malthus.md)
+  : Malthusian (Exponential) Growth Model
+- [`model_logistic()`](https://zhjx19.github.io/mathmodels/reference/model_logistic.md)
+  : Logistic Population Growth Model
+- [`model_si()`](https://zhjx19.github.io/mathmodels/reference/model_si.md)
+  : SI Epidemic Model
+- [`model_sis()`](https://zhjx19.github.io/mathmodels/reference/model_sis.md)
+  : SIS Epidemic Model
+- [`model_sir()`](https://zhjx19.github.io/mathmodels/reference/model_sir.md)
+  : SIR Epidemic Model
+- [`model_seir()`](https://zhjx19.github.io/mathmodels/reference/model_seir.md)
+  : SEIR Epidemic Model
+- [`model_lv()`](https://zhjx19.github.io/mathmodels/reference/model_lv.md)
+  : Lotka-Volterra Predator-Prey Model
+- [`epi_metrics()`](https://zhjx19.github.io/mathmodels/reference/epi_metrics.md)
+  : Extract key epidemic metrics from ODE simulation output
+- [`plot_compartments()`](https://zhjx19.github.io/mathmodels/reference/plot_compartments.md)
+  : Plot compartment trajectories
+- [`plot_incidence()`](https://zhjx19.github.io/mathmodels/reference/plot_incidence.md)
+  : Plot daily new infections (dI)
+- [`plot_phase_si()`](https://zhjx19.github.io/mathmodels/reference/plot_phase_si.md)
+  : Phase plot S vs I
+- [`plot_Rt_estimate()`](https://zhjx19.github.io/mathmodels/reference/plot_Rt_estimate.md)
+  : Plot effective reproduction number R_t
+
+## Data and Utilities
+
+Built-in datasets and data import utilities.
+
+## Datasets
+
+- [`water_quality`](https://zhjx19.github.io/mathmodels/reference/water_quality.md)
+  : Water Quality Dataset
+
+## Data I/O Utilities
+
 - [`read_nbs()`](https://zhjx19.github.io/mathmodels/reference/read_nbs.md)
   : Read and Combine National Bureau of Statistics XLS Files
 

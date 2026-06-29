@@ -2,29 +2,41 @@
 % Please edit documentation in R/diffEq_models.R
 \name{epi_metrics}
 \alias{epi_metrics}
-\title{Extract key epidemic metrics}
+\title{Extract key epidemic metrics from ODE simulation output}
 \usage{
-epi_metrics(df, beta, gamma, N = NULL)
+epi_metrics(data, beta, gamma, N = NULL)
 }
 \arguments{
-\item{df}{A data frame with columns \code{time}, \code{S}, \code{I}.}
+\item{data}{A data frame returned by \verb{model_*()} functions. Must contain a column
+\code{time}, and at least \code{S} and \code{I}. Additional compartments
+such as \code{E} or \code{R} are allowed.}
 
 \item{beta}{Transmission rate (numeric).}
 
 \item{gamma}{Recovery / removal rate (numeric).}
 
-\item{N}{Total population (numeric). If \code{NULL} (default), computed
-as the sum of compartment values at the first time point.
-\code{attack_rate}.}
+\item{N}{Total population (numeric). If \code{NULL} (default), it is computed as
+the sum of all compartment values at the first time point.}
 }
 \value{
-A named list with components: \code{R0} (basic reproduction number),
-\code{peak_infection} (maximum number of infectious individuals),
-\code{peak_time} (time at which peak occurs),
-\code{attack_rate} (proportion of susceptible that became infected).
+A named list with:
+\describe{
+\item{R0}{Basic reproduction number.}
+\item{peak_infection}{Maximum number of infectious individuals.}
+\item{peak_time}{Time at which infectious peak occurs.}
+\item{attack_rate}{Proportion of population that transitioned out of S;
+defined only for models containing an R compartment (e.g., SIR/SEIR).}
+}
 }
 \description{
-Returns a named list of 4 core scalar metrics derived from ODE output.
+This function computes core epidemiological summary statistics from
+deterministic compartmental epidemic models (e.g., SIR, SIS, SEIR).
+}
+\details{
+The input data frame is expected to be the output of \verb{model_*()} functions,
+containing a time column and one or more compartment columns (e.g., S, I, R, E).
+All compartment values are assumed to be in absolute population counts,
+and the total population is assumed to be conserved unless otherwise specified.
 }
 \examples{
 sir = model_sir(

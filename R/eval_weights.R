@@ -1,7 +1,7 @@
-# 评价模型 — 权重计算方法
-# 
-# 包含: AHP, combine_weights, critic_weight, cv_weight, 
-#       entropy_weight, linear_sum, pca_weight
+# Evaluation Algorithms — Weighting Methods
+#
+# Includes: AHP, combine_weights, critic_weight, cv_weight,
+# entropy_weight, linear_sum, and pca_weight
 #
 
 

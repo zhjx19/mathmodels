@@ -1,56 +1,27 @@
-#' Markov Chain and Grey-Markov Prediction Models
+#' Markov Chain Prediction
 #'
 #' @description
-#' Implements Markov chain prediction for state sequences and the Grey-Markov 
-#' combined prediction model that integrates GM(1,1) with Markov chain 
-#' correction.
+#' Constructs a transition probability matrix from a state sequence and performs
+#' multi-step Markov chain prediction.
 #'
-#' @param S For `markov_chain`: State sequence (vector or factor).
-#' @param s0 For `markov_chain`: Initial state, must be one of the levels in `S`.
-#' @param n_steps For `markov_chain`: Number of prediction steps (positive integer, default 5).
-#' @param X For `GM11_markov`: Numeric vector of original time series data.
-#' @param n_ahead For `GM11_markov`: Number of future periods to predict (default 3).
-#' @param breaks For `GM11_markov`: Numeric vector of boundaries for state 
-#'   classification based on relative error. Note: `-Inf` and `Inf` are 
-#'   automatically prepended/appended internally.
+#' @param S State sequence, supplied as a vector or factor.
+#' @param s0 Initial state, must be one of the state levels in `S`.
+#' @param n_steps Number of prediction steps. Must be a positive integer.
 #'
-#' @return
+#' @return A list with components:
 #' \describe{
-#'   \item{markov_chain}{Returns a list with:
-#'     \itemize{
-#'       \item \code{trans_mat}: Transition probability matrix.
-#'       \item \code{pred_probs}: Matrix of state probabilities for each step.
-#'       \item \code{pred_states}: Predicted states (most likely) for each step.
-#'       \item \code{pi_final}: Ultimate stationary distribution.
-#'     }
-#'   }
-#'   \item{GM11_markov}{Returns a data frame with columns:
-#'     \itemize{
-#'       \item \code{Period}: Time period labels (T1, T2, ..., T+n).
-#'       \item \code{Raw}: Original values (NA for future periods).
-#'       \item \code{GM11_fitted}: GM(1,1) fitted/predicted values.
-#'       \item \code{err_state}: Relative error state (for historical) or 
-#'              predicted state (for future).
-#'       \item \code{adj_eff}: Adjustment effect (midpoint of state interval).
-#'       \item \code{Markov_adj}: Markov chain adjusted values.
-#'     }
-#'   }
+#'   \item{trans_mat}{Transition probability matrix.}
+#'   \item{pred_probs}{Matrix of state probabilities for each prediction step.}
+#'   \item{pred_states}{Predicted states, taking the most likely state at each step.}
+#'   \item{pi_final}{Ultimate stationary distribution.}
 #' }
 #'
 #' @details
-#' \code{markov_chain} constructs a transition probability matrix from a state 
-#' sequence and performs multi-step prediction. For states that never appear 
-#' as a starting state, equal transition probabilities are assigned to maintain 
-#' row sums of 1. The ultimate stationary distribution is computed via 
-#' eigenvalue decomposition.
-#'
-#' \code{GM11_markov} first fits a GM(1,1) model to the original series,
-#' then classifies relative errors into states using the specified boundaries,
-#' builds a Markov chain model on the error states, and corrects both historical
-#' fitted values and future predictions.
+#' For states that never appear as a starting state, equal transition
+#' probabilities are assigned to keep each row sum equal to 1. The ultimate
+#' stationary distribution is computed using eigenvalue decomposition.
 #'
 #' @examples
-#' # --- Markov chain prediction ---
 #' # Weather states: Rainy, Cloudy, Sunny
 #' S = factor(c("Sunny", "Sunny", "Cloudy", "Rainy", "Sunny",
 #'              "Cloudy", "Sunny", "Sunny", "Rainy", "Cloudy",
@@ -58,16 +29,7 @@
 #'              "Cloudy", "Sunny", "Rainy", "Cloudy", "Sunny"),
 #'             levels = c("Rainy", "Cloudy", "Sunny"))
 #' markov_chain(S, s0 = "Cloudy", n_steps = 3)
-
 #'
-#' # --- Grey-Markov prediction ---
-#' X = c(174, 179, 183, 189, 207, 234, 220.5, 256, 270, 285)
-#' GM11_markov(X, n_ahead = 3)
-#'
-#' @name markov
-NULL
-
-#' @rdname markov
 #' @export
 markov_chain = function(S, s0, n_steps = 5) {
   # Input validation
@@ -125,9 +87,41 @@ markov_chain = function(S, s0, n_steps = 5) {
 }
 
 
-#' @rdname markov
+#' Grey-Markov Prediction Model
+#'
+#' @description
+#' Fits a GM(1,1) model and then uses a Markov chain on relative error states
+#' to correct both historical fitted values and future predictions.
+#'
+#' @param X Numeric vector of original time series data.
+#' @param n_ahead Number of future periods to predict. Must be a positive
+#'   integer.
+#' @param breaks Numeric vector of boundaries for classifying relative errors
+#'   into states. `-Inf` and `Inf` are prepended/appended internally.
+#'
+#' @return A data frame with columns:
+#' \describe{
+#'   \item{Period}{Time period labels, such as `T1`, `T2`, ..., `T+n`.}
+#'   \item{Raw}{Original values; future periods are `NA`.}
+#'   \item{GM11_fitted}{GM(1,1) fitted or predicted values.}
+#'   \item{err_state}{Relative error state for historical periods, and predicted
+#'     state for future periods.}
+#'   \item{adj_eff}{Adjustment effect, defined as the midpoint of the state
+#'     interval.}
+#'   \item{Markov_adj}{Markov-chain-adjusted fitted or predicted values.}
+#' }
+#'
+#' @details
+#' The function first fits a GM(1,1) model to the original series, classifies
+#' relative errors into states using `breaks`, builds a Markov chain on these
+#' error states, and finally adjusts the GM(1,1) fitted and predicted values.
+#'
+#' @examples
+#' X = c(174, 179, 183, 189, 207, 234, 220.5, 256, 270, 285)
+#' GM11_markov(X, n_ahead = 3)
+#'
 #' @export
-GM11_markov = function(X, n_ahead = 3, 
+GM11_markov = function(X, n_ahead = 3,
                        breaks = c(-0.10, -0.05, -0.02, 0, 0.02, 0.05, 0.10)) {
   # Input validation
   if(!is.numeric(X) || is.matrix(X))

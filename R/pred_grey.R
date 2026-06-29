@@ -1,6 +1,6 @@
-# 评价模型 — 灰色预测
+# Prediction Models — Grey Prediction
 #
-# 包含: GM11, GM1N, DGM21, verhulst, combine_preds
+# Includes: GM11, GM1N, DGM21, verhulst, combine_preds
 #
 
 #' Grey Prediction Models

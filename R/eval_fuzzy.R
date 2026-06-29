@@ -1,6 +1,6 @@
-# 评价模型 — 模糊综合评价
+# Evaluation Algorithms — Fuzzy Evaluation
 #
-# 包含: 隶属函数 (membership), fuzzy_eval, compute_mf, defuzzify
+# Includes: membership functions, fuzzy_eval, compute_mf, and defuzzify
 #
 
 

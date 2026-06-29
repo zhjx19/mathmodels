@@ -4,7 +4,7 @@
 
 test_that("ode_solver returns data.frame with correct structure", {
   res = ode_solver(
-    y0 = c(N = 100),
+    init = c(N = 100),
     times = seq(0, 5, by = 0.5),
     equations = c(N = "0.5 * N"),
     params = c(r = 0.5)
@@ -18,7 +18,7 @@ test_that("ode_solver returns data.frame with correct structure", {
 
 test_that("ode_solver works without params", {
   res = ode_solver(
-    y0 = c(N = 1),
+    init = c(N = 1),
     times = seq(0, 2, by = 1),
     equations = c(N = "-0.5 * N")
   )
@@ -28,7 +28,7 @@ test_that("ode_solver works without params", {
 
 test_that("ode_solver handles multi-variable systems", {
   res = ode_solver(
-    y0 = c(S = 900, I = 100),
+    init = c(S = 900, I = 100),
     times = seq(0, 10, by = 1),
     equations = c(
       S = "-0.002 * S * I",
@@ -42,7 +42,7 @@ test_that("ode_solver handles multi-variable systems", {
 
 test_that("ode_solver preserves total population in SIR system", {
   res = ode_solver(
-    y0 = c(S = 999, I = 1, R = 0),
+    init = c(S = 999, I = 1, R = 0),
     times = seq(0, 20, by = 0.5),
     equations = c(
       S = "-0.003 * S * I",
@@ -58,7 +58,7 @@ test_that("ode_solver preserves total population in SIR system", {
 test_that("ode_solver reports error on invalid equation", {
   expect_error(
     ode_solver(
-      y0 = c(N = 10),
+      init = c(N = 10),
       times = seq(0, 5, by = 1),
       equations = c(N = "undefined_var * N")
     ),

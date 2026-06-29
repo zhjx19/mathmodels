@@ -10,12 +10,12 @@ function.
 ## Usage
 
 ``` r
-ode_solver(y0, times, equations, params = NULL, method = "lsoda", ...)
+ode_solver(init, times, equations, params = NULL, method = "lsoda", ...)
 ```
 
 ## Arguments
 
-- y0:
+- init:
 
   A named numeric vector of initial values for all state variables.
 
@@ -77,7 +77,7 @@ head(sir)
 
 # Custom SEIR model with demography
 seir_demo = ode_solver(
-  y0    = c(S = 1000, E = 1, I = 0, R = 0),
+  init  = c(S = 1000, E = 1, I = 0, R = 0),
   times = seq(0, 200, by = 1),
   equations = c(
     S = "mu*N - beta*S*I - mu*S",

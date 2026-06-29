@@ -15,7 +15,7 @@ navbar:
       menu:
       - text: "Getting Started with mathmodels"
         href: articles/welcome.html
-      - text: "📖 使用手册 (Online Book)"
+      - text: "📖 User Guide (Online Book)"
         href: https://zhjx19.github.io/mathmodels-book/
     news:
       text: News
@@ -26,168 +26,161 @@ navbar:
       aria-label: GitHub
 
 reference:
+- title: "Evaluation Algorithms"
+  desc: "Evaluation, weighting, fuzzy evaluation, DEA, inequality, regional economics, and system evaluation methods."
+
 - title: "Data Preprocessing"
-  desc: "Functions for scaling, normalizing, and standardizing indicator data."
+  desc: "Scaling, normalization, and indicator transformation utilities."
   contents:
+  - standardize
   - normalize
   - rescale
+  - rescale_middle
+  - rescale_interval
   - rescale_extreme
   - rescale_initial
-  - rescale_interval
   - rescale_mean
-  - rescale_middle
-  - standardize
   - to_positive
 
-- title: "Subjective Weighting"
-  desc: "Analytic Hierarchy Process (AHP)."
+- title: "Weighting Methods"
+  desc: "Subjective, objective, and combined weighting methods for multi-indicator evaluation."
   contents:
   - AHP
-
-- title: "Objective Weighting"
-  desc: "Data-driven methods for determining indicator weights."
-  contents:
-  - entropy_weight
-  - critic_weight
-  - pca_weight
-  - cv_weight
-
-- title: "Weight Combination"
-  desc: "Methods for combining subjective and objective weights."
-  contents:
   - combine_weights
+  - critic_weight
+  - cv_weight
+  - entropy_weight
+  - linear_sum
+  - pca_weight
 
-- title: "Comprehensive Evaluation"
-  desc: "Multi-criteria decision making and evaluation methods."
+- title: "Evaluation Models"
+  desc: "Multi-criteria ranking and grey relational evaluation methods."
   contents:
   - topsis
-  - linear_sum
-  - fuzzy_eval
   - rank_sum_ratio
-
-- title: "Grey Relational Analysis"
-  desc: "Grey system theory for relational analysis and TOPSIS."
-  contents:
   - grey_corr
   - grey_corr_topsis
 
-- title: "Fuzzy Sets &amp; Membership Functions"
-  desc: "Fuzzy set membership functions, computation, and defuzzification."
+- title: "Fuzzy Evaluation"
+  desc: "Membership functions, fuzzy comprehensive evaluation, and defuzzification."
   contents:
-  - compute_mf
-  - compute_mf_funs
-  - defuzzify
-  - dsigmoid_mf
-  - gauss2mf
+  - tri_mf
+  - trap_mf
   - gauss_mf
   - gbell_mf
-  - pi_mf
-  - plot_mf
-  - psigmoid_mf
-  - s_mf
+  - gauss2mf
   - sigmoid_mf
-  - trap_mf
-  - tri_mf
+  - dsigmoid_mf
+  - psigmoid_mf
   - z_mf
+  - pi_mf
+  - s_mf
+  - plot_mf
+  - compute_mf_funs
+  - compute_mf
+  - fuzzy_eval
+  - defuzzify
 
-- title: "Data Envelopment Analysis (DEA)"
-  desc: "CCR, BCC, SBM, and Malmquist productivity index."
+- title: "Data Envelopment Analysis"
+  desc: "DEA, SBM, super-efficiency, and Malmquist productivity models."
   contents:
   - basic_DEA
-  - basic_SBM
   - super_DEA
+  - basic_SBM
   - super_SBM
   - malmquist
 
 - title: "Inequality Measures"
-  desc: "Gini coefficient, Theil index, and their decompositions."
+  desc: "Gini and Theil indices for individual, grouped, and nested data."
   contents:
-  - gini
   - gini0
-  - theil
+  - gini
   - theil0
+  - theil
   - theil0_g
   - theil_g
   - theil_g2_cross
   - theil_g2_nest
 
 - title: "Regional Economics"
-  desc: "Location Quotient, Herfindahl-Hirschman Index, and Ellison-Glaeser Index."
+  desc: "Regional and industrial concentration indices."
   contents:
   - LQ
   - HHI
   - EG
 
+- title: "System Evaluation"
+  desc: "Coupling coordination and obstacle degree analysis for multi-indicator systems."
+  contents:
+  - coupling_degree
+  - obstacle_degree
+
+- title: "Prediction Algorithms"
+  desc: "Grey prediction, Markov prediction, and time series models."
+
 - title: "Grey Prediction Models"
-  desc: "GM(1,1), GM(1,N), DGM(2,1), and Verhulst models."
+  desc: "Grey forecasting models and utilities for combining predictions."
   contents:
   - GM11
   - GM1N
   - DGM21
   - verhulst
-  - GM11_markov
+  - combine_preds
+
+- title: "Markov Prediction Models"
+  desc: "Markov chain prediction and Grey-Markov forecasting models."
+  contents:
   - markov_chain
-
-- title: "System Evaluation"
-  desc: "Coupling coordination degree and obstacle degree models."
-  contents:
-  - coupling_degree
-  - obstacle_degree
-
-- title: "Datasets"
-  desc: "Built-in example datasets for demonstration and testing."
-  contents:
-  - water_quality
-
-
-- title: "Differential Equations &amp; Epidemic Models"
-  desc: "ODE solvers and classic compartmental epidemic models (SIR, SEIR, SEIRS, SIDP, etc.)."
-  contents:
-  - model_malthus
-  - model_logistic
-  - model_lv
-  - model_si
-  - model_sir
-  - model_sis
-  - model_seir
-  - ode_solver
-
-- title: "Epidemic Visualization &amp; Metrics"
-  desc: "Visualize compartments, incidence, Rt; compute epidemic summary metrics."
-  contents:
-  - epi_metrics
-  - plot_compartments
-  - plot_incidence
-  - plot_phase_si
-  - plot_Rt_estimate
+  - GM11_markov
 
 - title: "Time Series Models"
-  desc: "Stationarity tests, decomposition, exponential smoothing, SARIMA, and GARCH."
+  desc: "Time series transformation, diagnostics, modeling, forecasting, and visualization."
   contents:
-  - ts_test
   - ts_transform
   - ts_back_transform
+  - ts_test
   - ts_stl
   - ts_ets
   - ts_sarima
   - ts_garch
   - ts_sarima_garch
   - ts_forecast
-
-- title: "Time Series Plots"
-  desc: "Plotting functions for stationarity, decomposition, forecasting, and residual diagnostics."
-  contents:
   - plot_ts
+  - plot_ts_forecast
+  - plot_ts_sarima_garch
+  - plot_ts_garch
+  - plot_ts_residuals
+  - plot_ts_stl
   - plot_ts_acf
   - plot_ts_pacf
-  - plot_ts_stl
-  - plot_ts_forecast
-  - plot_ts_garch
-  - plot_ts_sarima_garch
-  - plot_ts_residuals
 
-- title: "Utilities"
-  desc: "Helper functions for predictions, data I/O, and other tasks."
+- title: "Differential Equation Algorithms"
+  desc: "ODE solvers, dynamic models, epidemic models, metrics, and visualizations."
+
+- title: "Differential Equation Models"
+  desc: "ODE solving, population dynamics, epidemic models, metrics, and visualizations."
   contents:
-  - combine_preds
+  - ode_solver
+  - model_malthus
+  - model_logistic
+  - model_si
+  - model_sis
+  - model_sir
+  - model_seir
+  - model_lv
+  - epi_metrics
+  - plot_compartments
+  - plot_incidence
+  - plot_phase_si
+  - plot_Rt_estimate
+
+- title: "Data and Utilities"
+  desc: "Built-in datasets and data import utilities."
+
+- title: "Datasets"
+  contents:
+  - water_quality
+
+- title: "Data I/O Utilities"
+  contents:
   - read_nbs

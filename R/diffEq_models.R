@@ -62,7 +62,7 @@
 #' faster than approaches that call \code{parse()} inside the derivative
 #' function.
 #'
-#' @param y0        A named numeric vector of initial values for all state
+#' @param init      A named numeric vector of initial values for all state
 #'   variables.
 #' @param times     A numeric vector of output times.
 #' @param equations A named character vector; names are variable names, values
@@ -93,7 +93,7 @@
 #'
 #' # Custom SEIR model with demography
 #' seir_demo = ode_solver(
-#'   y0    = c(S = 1000, E = 1, I = 0, R = 0),
+#'   init  = c(S = 1000, E = 1, I = 0, R = 0),
 #'   times = seq(0, 200, by = 1),
 #'   equations = c(
 #'     S = "mu*N - beta*S*I - mu*S",
@@ -107,22 +107,22 @@
 #'
 #' @export
 #' @importFrom deSolve ode
-ode_solver = function(y0, times, equations, params = NULL,
+ode_solver = function(init, times, equations, params = NULL,
                        method = "lsoda", ...) {
 
   # ------------------------------------------------------------------
   # 1. Input validation
   # ------------------------------------------------------------------
-  if (is.null(names(y0)))
-    stop("'y0' must be a named numeric vector.", call. = FALSE)
+  if (is.null(names(init)))
+    stop("'init' must be a named numeric vector.", call. = FALSE)
   if (is.null(names(equations)))
     stop("'equations' must be a named character vector.", call. = FALSE)
-  if (length(equations) != length(y0))
-    stop("'equations' must have the same length as 'y0'.", call. = FALSE)
+  if (length(equations) != length(init))
+    stop("'equations' must have the same length as 'init'.", call. = FALSE)
 
-  extra_vars = setdiff(names(equations), names(y0))
+  extra_vars = setdiff(names(equations), names(init))
   if (length(extra_vars) > 0)
-    stop("'equations' contains variable(s) not found in 'y0': ",
+    stop("'equations' contains variable(s) not found in 'init': ",
          paste(extra_vars, collapse = ", "), ".", call. = FALSE)
 
   # ------------------------------------------------------------------
@@ -139,7 +139,7 @@ ode_solver = function(y0, times, equations, params = NULL,
   # ------------------------------------------------------------------
   # 3. Pre-parse all equation strings (done once, not per ODE call)
   # ------------------------------------------------------------------
-  vars       = names(y0)
+  vars       = names(init)
   parsed_eqs = lapply(equations, function(eq) parse(text = eq)[[1]])
 
   # ------------------------------------------------------------------
@@ -151,7 +151,7 @@ ode_solver = function(y0, times, equations, params = NULL,
   # 5. Integrate
   # ------------------------------------------------------------------
   res = deSolve::ode(
-    y      = y0,
+    y      = init,
     times  = times,
     func   = model_func,
     parms  = params,
@@ -731,25 +731,39 @@ plot_Rt_estimate = function(df,
 # =============================================================================
 # 5. Key epidemic metrics
 # =============================================================================
-#' Extract key epidemic metrics
+#' Extract key epidemic metrics from ODE simulation output
 #'
-#' Returns a named list of 4 core scalar metrics derived from ODE output.
+#' This function computes core epidemiological summary statistics from
+#' deterministic compartmental epidemic models (e.g., SIR, SIS, SEIR).
 #'
-#' @param df    A data frame with columns \code{time}, \code{S}, \code{I}.
-#' @param beta  Transmission rate (numeric).
-#' @param gamma Recovery / removal rate (numeric).
-#' @param N     Total population (numeric). If \code{NULL} (default), computed
-#'   as the sum of compartment values at the first time point.
-#' @return A named list with components: \code{R0} (basic reproduction number),
-#'   \code{peak_infection} (maximum number of infectious individuals),
-#'   \code{peak_time} (time at which peak occurs),
-#'   \code{attack_rate} (proportion of susceptible that became infected).
-#' @param gamma Recovery / removal rate (numeric).#' @param N     Total population (numeric). If \code{NULL} (default), computed
-#'   as the sum of compartment values at the first time point.
-#' @param gamma Recovery / removal rate (numeric).
-#' @param N     Total population (numeric). If \code{NULL} (default), computed
-#'   as the sum of compartment values at the first time point.
-#'   \code{attack_rate}.
+#' The input data frame is expected to be the output of `model_*()` functions,
+#' containing a time column and one or more compartment columns (e.g., S, I, R, E).
+#' All compartment values are assumed to be in absolute population counts,
+#' and the total population is assumed to be conserved unless otherwise specified.
+#'
+#' @param data
+#'   A data frame returned by `model_*()` functions. Must contain a column
+#'   \code{time}, and at least \code{S} and \code{I}. Additional compartments
+#'   such as \code{E} or \code{R} are allowed.
+#'
+#' @param beta
+#'   Transmission rate (numeric).
+#'
+#' @param gamma
+#'   Recovery / removal rate (numeric).
+#'
+#' @param N
+#'   Total population (numeric). If \code{NULL} (default), it is computed as
+#'   the sum of all compartment values at the first time point.
+#'
+#' @return A named list with:
+#' \describe{
+#'   \item{R0}{Basic reproduction number.}
+#'   \item{peak_infection}{Maximum number of infectious individuals.}
+#'   \item{peak_time}{Time at which infectious peak occurs.}
+#'   \item{attack_rate}{Proportion of population that transitioned out of S;
+#'     defined only for models containing an R compartment (e.g., SIR/SEIR).}
+#' }
 #'
 #' @examples
 #' sir = model_sir(
@@ -760,23 +774,41 @@ plot_Rt_estimate = function(df,
 #' epi_metrics(sir, beta = 0.002, gamma = 0.1)
 #'
 #' @export
-epi_metrics = function(df, beta, gamma, N = NULL) {
+epi_metrics = function(data, beta, gamma, N = NULL) {
 
-  if (!"time" %in% names(df)) stop("Column 'time' required.", call. = FALSE)
-  if (!"S"    %in% names(df)) stop("Column 'S' required.",    call. = FALSE)
-  if (!"I"    %in% names(df)) stop("Column 'I' required.",    call. = FALSE)
+  # ---- basic checks ----
+  if (!"time" %in% names(data)) stop("Column 'time' required.", call. = FALSE)
+  if (!"S"    %in% names(data)) stop("Column 'S' required.",    call. = FALSE)
+  if (!"I"    %in% names(data)) stop("Column 'I' required.",    call. = FALSE)
+
   if (missing(beta)  || is.null(beta))  stop("Must provide beta.",  call. = FALSE)
   if (missing(gamma) || is.null(gamma)) stop("Must provide gamma.", call. = FALSE)
 
+  # ---- total population ----
   if (is.null(N)) {
-    state_cols = setdiff(names(df), "time")
-    N = rowSums(df[, state_cols, drop = FALSE])[1]
+    state_cols = setdiff(names(data), "time")
+    N = rowSums(data[, state_cols, drop = FALSE])[1]
   }
 
+  # ---- R0 ----
+  R0 = if (gamma == 0) Inf else beta * N / gamma
+
+  # ---- peak infection ----
+  peak_infection = max(data$I, na.rm = TRUE)
+  peak_time = data$time[which.max(data$I)]
+
+  # ---- attack rate (model-dependent) ----
+  attack_rate = if (any("R" %in% names(data))) {
+    (data$S[1] - utils::tail(data$S, 1)) / N
+  } else {
+    NA_real_
+  }
+
+  # ---- output ----
   list(
-    R0             = beta * N / gamma,
-    peak_infection = max(df$I, na.rm = TRUE),
-    peak_time      = df$time[which.max(df$I)],
-    attack_rate    = (df$S[1] - df$S[nrow(df)]) / N
+    R0             = R0,
+    peak_infection = peak_infection,
+    peak_time      = peak_time,
+    attack_rate    = attack_rate
   )
 }
