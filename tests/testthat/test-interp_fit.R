@@ -290,3 +290,70 @@ test_that("curve_fit() basic validation for power type", {
 test_that("curve_fit() rejects invalid type", {
   expect_error(curve_fit(1:5, 1:5, type = "unknown"), "should be one of")
 })
+
+# --- growth_fit ---
+
+test_that("growth_fit() returns expected list structure", {
+  set.seed(42)
+  x = seq(0, 10, length.out = 30)
+  y = 100 / (1 + exp(-1.5 * (x - 5))) + rnorm(30, sd = 2)
+  res = growth_fit(x, y, type = "logistic")
+  expect_type(res, "list")
+  expect_setequal(names(res), c("model", "coefficient", "model_info", "residuals", "formula", "type", "input"))
+  expect_equal(res$type, "logistic")
+  expect_equal(nrow(res$residuals), 30)
+})
+
+test_that("growth_fit(type='logistic') recovers parameters", {
+  set.seed(42)
+  x = seq(0, 10, length.out = 50)
+  L_true = 100; k_true = 1.5; x0_true = 5
+  y = L_true / (1 + exp(-k_true * (x - x0_true))) + rnorm(50, sd = 2)
+  res = growth_fit(x, y, type = "logistic")
+  est = res$coefficient$estimate
+  expect_true(abs(est[1] - L_true) < 10)
+  expect_true(abs(est[2] - k_true) < 0.5)
+  expect_true(abs(est[3] - x0_true) < 1)
+})
+
+test_that("growth_fit(type='gompertz') recovers parameters", {
+  set.seed(42)
+  x = seq(0, 10, length.out = 50)
+  L_true = 100; k_true = 0.5; x0_true = 4
+  y = L_true * exp(-exp(-k_true * (x - x0_true))) + rnorm(50, sd = 2)
+  res = growth_fit(x, y, type = "gompertz")
+  est = res$coefficient$estimate
+  expect_true(abs(est[1] - L_true) < 10)
+  expect_true(abs(est[2] - k_true) < 0.3)
+  expect_true(abs(est[3] - x0_true) < 1.5)
+})
+
+test_that("growth_fit(type='saturation') recovers parameters", {
+  set.seed(42)
+  x = seq(0, 10, length.out = 50)
+  a_true = 50; b_true = 0.5
+  y = a_true * (1 - exp(-b_true * x)) + rnorm(50, sd = 1)
+  res = growth_fit(x, y, type = "saturation")
+  est = res$coefficient$estimate
+  expect_true(abs(est[1] - a_true) < 5)
+  expect_true(abs(est[2] - b_true) < 0.2)
+})
+
+test_that("growth_fit(type='mm') recovers parameters", {
+  set.seed(42)
+  x = seq(0.5, 20, length.out = 50)
+  a_true = 30; b_true = 3
+  y = a_true * x / (b_true + x) + rnorm(50, sd = 0.5)
+  res = growth_fit(x, y, type = "mm")
+  est = res$coefficient$estimate
+  expect_true(abs(est[1] - a_true) < 5)
+  expect_true(abs(est[2] - b_true) < 2)
+})
+
+test_that("growth_fit() rejects invalid type", {
+  expect_error(growth_fit(1:10, 1:10, type = "unknown"), "should be one of")
+})
+
+test_that("growth_fit() validates input", {
+  expect_error(growth_fit(c(1,2), c(1,2), type = "logistic"), "length >= 3")
+})

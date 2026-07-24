@@ -302,3 +302,122 @@ curve_fit = function(x, y, type = c("exp", "power", "log", "hyperbolic")) {
 
   ._assemble_return(fit, y, fitted_vals, formula_str, type, x, y)
 }
+
+#' Nonlinear Growth Curve Fit
+#'
+#' Fits nonlinear growth, saturation, and sigmoid curves via
+#' `minpack.lm::nlsLM()` with automatic starting value generation.
+#'
+#' @param x Numeric vector of observed predictor values.
+#' @param y Numeric vector of observed response values.
+#' @param type Character, one of `"logistic"`, `"gompertz"`, `"saturation"`,
+#'   or `"mm"`.
+#'
+#' @details
+#' Models and starting value strategies:
+#'
+#' **Logistic**: `y = L / (1 + exp(-k * (x - x0)))`
+#' - `L0 = max(y) * 1.05`
+#' - `lm(log((L0 - y) / y) ~ x)` for `k, x0` initials
+#'
+#' **Gompertz**: `y = L * exp(-exp(-k * (x - x0)))`
+#' - `L0 = max(y) * 1.05`
+#' - `lm(log(-log(y / L0)) ~ x)` for `k, x0` initials
+#'
+#' **Saturation** (exponential approach): `y = a * (1 - exp(-b * x))`
+#' - `a0 = max(y) * 1.1`
+#' - `lm(log(a0 - y) ~ x)` for `b` initial
+#'
+#' **Michaelis-Menten**: `y = a * x / (b + x)`
+#' - `a0 = max(y) * 1.1`
+#' - Lineweaver-Burk `lm(1/y ~ 1/x)` for `a, b` initials
+#'
+#' Falls back to heuristic defaults if linearized estimation fails.
+#'
+#' @return A named list, see [poly_fit()] for details. `model` contains
+#'   the `nls` object.
+#'
+#' @examples
+#' \dontrun{
+#' set.seed(42)
+#' x = seq(0, 10, length.out = 30)
+#' y = 100 / (1 + exp(-1.5 * (x - 5))) + rnorm(30, sd = 2)
+#' growth_fit(x, y, type = "logistic")
+#' }
+#'
+#' @export
+growth_fit = function(x, y, type = c("logistic", "gompertz", "saturation", "mm")) {
+  type = match.arg(type)
+  ._validate_xy(x, y, min_len = 3)
+
+  if (!requireNamespace("minpack.lm", quietly = TRUE)) {
+    stop("Package 'minpack.lm' is required for growth_fit().", call. = FALSE)
+  }
+
+  nlsLM = minpack.lm::nlsLM
+
+  if (type == "logistic") {
+    L0  = max(y) * 1.05
+    start_vals = tryCatch({
+      y_adj = pmax(y, 1e-8)
+      y_adj = pmin(y_adj, L0 - 1e-8)
+      ratio = log((L0 - y_adj) / y_adj)
+      lin = stats::lm(ratio ~ x)
+      co = stats::coef(lin) |> unname()
+      c(L = L0, k = -co[2], x0 = co[1] / (-co[2]))
+    }, error = function(e) c(L = L0, k = 1/diff(range(x)), x0 = mean(x)))
+    fit = nlsLM(y ~ L / (1 + exp(-k * (x - x0))),
+                start = list(L = start_vals[["L"]], k = start_vals[["k"]], x0 = start_vals[["x0"]]))
+    fitted_vals = stats::fitted(fit)
+    formula_str = sprintf("y = %.4g / (1 + exp(-%.4g * (x - %.4g)))",
+                          stats::coef(fit)[["L"]], stats::coef(fit)[["k"]],
+                          stats::coef(fit)[["x0"]])
+
+  } else if (type == "gompertz") {
+    L0  = max(y) * 1.05
+    start_vals = tryCatch({
+      y_adj = pmax(y / L0, 1e-8)
+      y_adj = pmin(y_adj, 1 - 1e-8)
+      dublog = log(-log(y_adj))
+      lin = stats::lm(dublog ~ x)
+      co = stats::coef(lin) |> unname()
+      c(L = L0, k = -co[2], x0 = co[1] / (-co[2]))
+    }, error = function(e) c(L = L0, k = 1/diff(range(x)), x0 = mean(x)))
+    fit = nlsLM(y ~ L * exp(-exp(-k * (x - x0))),
+                start = list(L = start_vals[["L"]], k = start_vals[["k"]], x0 = start_vals[["x0"]]))
+    fitted_vals = stats::fitted(fit)
+    formula_str = sprintf("y = %.4g * exp(-exp(-%.4g * (x - %.4g)))",
+                          stats::coef(fit)[["L"]], stats::coef(fit)[["k"]],
+                          stats::coef(fit)[["x0"]])
+
+  } else if (type == "saturation") {
+    a0  = max(y) * 1.1
+    start_vals = tryCatch({
+      diff_y = pmax(a0 - y, 1e-8)
+      lin = stats::lm(log(diff_y) ~ x)
+      co = stats::coef(lin) |> unname()
+      c(a = a0, b = -co[2])
+    }, error = function(e) c(a = a0, b = 1/diff(range(x))))
+    fit = nlsLM(y ~ a * (1 - exp(-b * x)),
+                start = list(a = start_vals[["a"]], b = start_vals[["b"]]))
+    fitted_vals = stats::fitted(fit)
+    formula_str = sprintf("y = %.4g * (1 - exp(-%.4g * x))",
+                          stats::coef(fit)[["a"]], stats::coef(fit)[["b"]])
+
+  } else if (type == "mm") {
+    a0  = max(y) * 1.1
+    start_vals = tryCatch({
+      pos = x > 0 & y > 0
+      lin = stats::lm(I(1/y[pos]) ~ I(1/x[pos]))
+      co = stats::coef(lin) |> unname()
+      c(a = 1/co[1], b = co[2]/co[1])
+    }, error = function(e) c(a = a0, b = stats::median(x)))
+    fit = nlsLM(y ~ a * x / (b + x),
+                start = list(a = start_vals[["a"]], b = start_vals[["b"]]))
+    fitted_vals = stats::fitted(fit)
+    formula_str = sprintf("y = %.4g * x / (%.4g + x)",
+                          stats::coef(fit)[["a"]], stats::coef(fit)[["b"]])
+  }
+
+  ._assemble_return(fit, y, fitted_vals, formula_str, type, x, y)
+}
