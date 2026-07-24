@@ -12,6 +12,7 @@ LazyData: true
 Roxygen: list(markdown = TRUE)
 Imports: 
     lpSolveAPI,
+    minpack.lm,
     dplyr (>= 1.0.0),
     forecast,
     ggplot2 (>= 3.5.0),
