@@ -2,6 +2,12 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Environment
+
+- R 4.6.1: `D:\R-4.6.1\bin\Rscript.exe`
+- Pandoc: `D:\Program Files\RStudio\resources\app\bin\quarto\bin\tools\pandoc.exe`
+- Quarto: `D:\Program Files\RStudio\resources\app\bin\quarto\bin\quarto.exe`
+
 ## What this project is
 
 `mathmodels` is an R package of mathematical modeling algorithms. The package is organized by modeling family:
