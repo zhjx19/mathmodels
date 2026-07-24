@@ -29,6 +29,85 @@
 }
 
 # -----------------------------------------------------------------------------
+# Fitting helpers
+# -----------------------------------------------------------------------------
+
+# Compute fit stats on the original scale
+._compute_fit_stats = function(observed, fitted, df_residual) {
+  ss_res = sum((observed - fitted)^2)
+  ss_tot = sum((observed - mean(observed))^2)
+  r_sq   = if (ss_tot > 0) 1 - ss_res / ss_tot else NA_real_
+  n      = length(observed)
+  p      = n - df_residual
+  adj_r_sq = if (ss_tot > 0 && df_residual > 0) {
+    1 - (1 - r_sq) * (n - 1) / df_residual
+  } else NA_real_
+  sigma = if (df_residual > 0) sqrt(ss_res / df_residual) else 0
+  nll   = -sum(stats::dnorm(observed, mean = fitted, sd = sigma, log = TRUE))
+  aic   = 2 * p + 2 * nll
+  bic   = log(n) * p + 2 * nll
+  tibble::tibble(
+    r.squared     = round(r_sq, 4),
+    adj.r.squared = round(adj_r_sq, 4),
+    aic           = round(aic, 4),
+    bic           = round(bic, 4),
+    sigma         = round(sigma, 4)
+  )
+}
+
+# Build tidy coefficient tibble from lm or nls model
+._tidy_fit_coefs = function(model, level = 0.95) {
+  coefs = stats::coef(model)
+  se    = sqrt(diag(stats::vcov(model)))
+  df_residual = if (inherits(model, "lm")) {
+    model$df.residual
+  } else {
+    length(stats::residuals(model)) - length(coefs)
+  }
+  t_crit = stats::qt((1 - level) / 2, df_residual, lower.tail = FALSE)
+  tibble::tibble(
+    term      = names(coefs),
+    estimate  = as.numeric(coefs),
+    std.error = as.numeric(se),
+    statistic = as.numeric(coefs) / as.numeric(se),
+    p.value   = 2 * stats::pt(abs(as.numeric(coefs) / as.numeric(se)),
+                               df_residual, lower.tail = FALSE),
+    conf.low  = as.numeric(coefs) - t_crit * as.numeric(se),
+    conf.high = as.numeric(coefs) + t_crit * as.numeric(se)
+  )
+}
+
+# Build residuals tibble
+._build_fit_residuals = function(observed, fitted) {
+  tibble::tibble(
+    .observed = observed,
+    .fitted   = fitted,
+    .residual = observed - fitted
+  )
+}
+
+# Assemble unified return value
+._assemble_return = function(model, observed, fitted, formula, type, x, y) {
+  coefs  = ._tidy_fit_coefs(model)
+  df_residual = if (inherits(model, "lm")) {
+    model$df.residual
+  } else {
+    length(fitted) - length(stats::coef(model))
+  }
+  info   = ._compute_fit_stats(observed, fitted, df_residual)
+  resid  = ._build_fit_residuals(observed, fitted)
+  list(
+    model       = model,
+    coefficient = coefs,
+    model_info  = info,
+    residuals   = resid,
+    formula     = formula,
+    type        = type,
+    input       = tibble::tibble(x = x, y = y)
+  )
+}
+
+# -----------------------------------------------------------------------------
 # Interpolation
 # -----------------------------------------------------------------------------
 

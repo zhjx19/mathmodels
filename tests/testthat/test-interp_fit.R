@@ -157,3 +157,38 @@ test_that("interp_hermite() preserves monotonicity", {
 test_that("interp_hermite() validates input", {
   expect_error(interp_hermite(c(1,1,3), c(1,2,3), xout = c(1,2)), "duplicate")
 })
+
+# --- fitting helpers ---
+
+test_that("._compute_fit_stats() returns expected columns", {
+  obs = c(1, 2, 3)
+  fitted = c(1.1, 2.2, 2.9)
+  info = mathmodels:::._compute_fit_stats(obs, fitted, df_residual = 1)
+  expect_s3_class(info, "tbl_df")
+  expect_named(info, c("r.squared", "adj.r.squared", "aic", "bic", "sigma"))
+  expect_true(info$r.squared >= 0 && info$r.squared <= 1)
+})
+
+test_that("._compute_fit_stats() gives r.squared=1 for perfect fit", {
+  obs = c(1, 2, 3)
+  fitted = c(1, 2, 3)
+  info = mathmodels:::._compute_fit_stats(obs, fitted, df_residual = 0)
+  expect_equal(info$r.squared, 1)
+  expect_equal(info$sigma, 0)
+})
+
+test_that("._tidy_fit_coefs() tidy from lm model", {
+  fit = lm(y ~ x, data = data.frame(x = 1:10, y = 2 * (1:10) + rnorm(10, sd = 0.1)))
+  coefs = mathmodels:::._tidy_fit_coefs(fit)
+  expect_s3_class(coefs, "tbl_df")
+  expect_named(coefs, c("term", "estimate", "std.error", "statistic", "p.value", "conf.low", "conf.high"))
+  expect_equal(coefs$term[1], "(Intercept)")
+})
+
+test_that("._build_fit_residuals() returns expected structure", {
+  resid_tbl = mathmodels:::._build_fit_residuals(c(1, 2, 3), c(1.1, 2.2, 2.9))
+  expect_s3_class(resid_tbl, "tbl_df")
+  expect_named(resid_tbl, c(".observed", ".fitted", ".residual"))
+  expect_equal(resid_tbl$.observed, c(1, 2, 3))
+  expect_equal(resid_tbl$.residual[1], 1 - 1.1)
+})
