@@ -93,3 +93,58 @@ interp_spline = function(x, y, xout, spar = NULL) {
   attr(res, "method") = method
   res
 }
+
+#' Polynomial Interpolation
+#'
+#' Fits a polynomial of specified degree via `lm()` and evaluates it at
+#' `xout`.
+#'
+#' @param x Numeric vector of observed x-values (no duplicates).
+#' @param y Numeric vector of observed y-values.
+#' @param xout Numeric vector of x-values where interpolation is desired.
+#' @param degree Integer, degree of the polynomial. Minimum 1.
+#'
+#' @return A tibble with columns `x` and `y`. The attribute `method` is set
+#'   to `"poly"`.
+#'
+#' @examples
+#' x = c(1, 2, 3, 4, 5)
+#' y = c(2, 4, 1, 5, 3)
+#' interp_poly(x, y, xout = c(1.5, 2.5, 3.5), degree = 3)
+#'
+#' @export
+interp_poly = function(x, y, xout, degree = 3) {
+  ._validate_xy(x, y, min_len = degree + 1)
+  fit = lm(y ~ poly(x, degree, raw = TRUE))
+  yout = predict(fit, newdata = data.frame(x = xout))
+  res = tibble::tibble(x = xout, y = as.numeric(yout))
+  attr(res, "method") = "poly"
+  res
+}
+
+#' Piecewise Cubic Hermite Interpolation
+#'
+#' Shape-preserving (monotone) piecewise cubic Hermite interpolation using
+#' the Fritsch-Carlson method via `splinefun(method = "monoH.FC")`.
+#'
+#' @param x Numeric vector of observed x-values (no duplicates, length >= 2).
+#' @param y Numeric vector of observed y-values.
+#' @param xout Numeric vector of x-values where interpolation is desired.
+#'
+#' @return A tibble with columns `x` and `y`. The attribute `method` is set
+#'   to `"hermite"`.
+#'
+#' @examples
+#' x = c(1, 2, 3, 4, 5)
+#' y = c(1, 2, 4, 7, 11)
+#' interp_hermite(x, y, xout = c(1.5, 2.5, 3.5))
+#'
+#' @export
+interp_hermite = function(x, y, xout) {
+  ._validate_xy(x, y, min_len = 2)
+  sf = stats::splinefun(x, y, method = "monoH.FC")
+  yout = sf(xout)
+  res = tibble::tibble(x = xout, y = yout)
+  attr(res, "method") = "hermite"
+  res
+}
