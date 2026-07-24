@@ -232,6 +232,35 @@ interp_hermite = function(x, y, xout) {
 # Curve Fitting
 # -----------------------------------------------------------------------------
 
+#' Polynomial Fit
+#'
+#' Fits a polynomial regression model via `lm()`.
+#'
+#' @param x Numeric vector of observed predictor values.
+#' @param y Numeric vector of observed response values.
+#' @param degree Integer, degree of the polynomial. Default is 1 (linear).
+#'
+#' @return A named list with elements: `model` (lm object), `coefficient`
+#'   (tibble with estimates, SE, t-value, p-value, 95% CI), `model_info`
+#'   (tibble with r.squared, adj.r.squared, AIC, BIC, sigma), `residuals`
+#'   (tibble of .observed, .fitted, .residual), `formula` (character),
+#'   `type` (character), and `input` (tibble of x, y).
+#'
+#' @examples
+#' x = 1:20
+#' y = 3 + 2*x + rnorm(20, sd = 2)
+#' poly_fit(x, y, degree = 1)
+#' poly_fit(x, y, degree = 2)
+#'
+#' @export
+poly_fit = function(x, y, degree = 1) {
+  ._validate_xy(x, y, min_len = degree + 1)
+  fit = lm(y ~ poly(x, degree, raw = TRUE))
+  fitted_vals = as.numeric(stats::fitted(fit))
+  formula_str = paste0("y ~ poly(x, ", degree, ", raw = TRUE)")
+  ._assemble_return(fit, y, fitted_vals, formula_str, "poly", x, y)
+}
+
 #' Linearizable Curve Fit
 #'
 #' Fits common empirical curves via variable transformation and `lm()`.
