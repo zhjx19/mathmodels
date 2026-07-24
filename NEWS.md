@@ -1,3 +1,37 @@
+# mathmodels 0.0.10
+
+## Regression prediction toolkit (new)
+
+- **Model fitting** (`pred_reg.R`):
+  - `reg_lm()`: OLS multiple linear regression with optional stepwise selection
+    (forward / backward / both), returning coefficients with CIs and fit statistics.
+  - `reg_logistic()`: Binary logistic regression (`glm(binomial)`) with stepwise
+    selection, odds ratios, and Hosmer-Lemeshow goodness-of-fit test.
+  - `reg_poisson()`: Poisson regression for count data, with dispersion check.
+  - `reg_negbin()`: Negative binomial regression via `MASS::glm.nb()` for
+    over-dispersed counts.
+
+- **Diagnostics and prediction** (`pred_reg.R`):
+  - `reg_diagnostics()`: Unified diagnostics — Breusch-Pagan, Durbin-Watson,
+    Shapiro-Wilk (LM); Hosmer-Lemeshow, dispersion/deviance (GLM).
+  - `reg_predict()`: Draw new predictor data from the empirical distribution and
+    generate fitted or predicted values with 95% confidence intervals.
+
+- **Visualization** (`pred_reg.R`):
+  - `reg_plot_residuals()`: Residual diagnostic plots (residuals vs. fitted,
+    normal Q-Q, density).
+  - `reg_plot_predict()`: Prediction plots with confidence bands — supports both
+    fitted (training data) and predicted (new data) modes.
+
+## Bug fixes
+
+- Fixed `reg_plot_predict()` and `reg_plot_residuals()` errors for GLM models
+  (logistic, Poisson, negative binomial) caused by `inherits(x, "lm")` matching
+  `glm` objects before the `glm` branch, and by inconsistent residual column
+  names across model types.
+- Fixed `reg_plot_predict()` for negative binomial models where `m$formula`
+  was `NULL`; now falls back to `model_result$formula`.
+
 # mathmodels 0.0.9
 
 ## Time series toolkit (new)

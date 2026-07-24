@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">mathmodels</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.10</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -159,7 +159,7 @@ perform a quick entropy weighting TOPSIS analysis using the built-in
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Preprocess data: handle centered and interval-type indicators</span></span>
 <span><span class="va">df</span> <span class="op">=</span> <span class="va">water_quality</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
 <span>    <span class="co"># Optimal PH is 7 -&gt; Centered-type positive</span></span>
 <span>    PH <span class="op">=</span> <span class="fu"><a href="../reference/preprocess.html">rescale_middle</a></span><span class="op">(</span><span class="va">PH</span>, <span class="fl">7</span><span class="op">)</span>,   </span>
 <span>    <span class="co"># Optimal nutrient is 10-20 -&gt; Interval-type positive</span></span>

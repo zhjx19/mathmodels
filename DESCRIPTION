@@ -1,7 +1,7 @@
 Package: mathmodels
 Type: Package
 Title: Mathematical Modeling Algorithms
-Version: 0.0.9
+Version: 0.0.10
 Authors@R: person("Jingxin", "Zhang", email = "zhjx_19@163.com", role = c("aut", "cre", "cph"))
 Description: Implements algorithms for mathematical modeling across evaluation, prediction, and differential equation systems. It supports indicator preprocessing, weighting, TOPSIS, fuzzy comprehensive evaluation, grey relational analysis, rank sum ratio, data envelopment analysis (DEA), regional economics, inequality measures, grey prediction, Markov prediction, and time series modeling. It also provides ordinary differential equation solvers for compartmental epidemic models together with visualization and summary metrics.
 License: AGPL (>= 3)

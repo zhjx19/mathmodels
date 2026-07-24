@@ -791,7 +791,7 @@ epi_metrics = function(data, beta, gamma, N = NULL) {
   }
 
   # ---- R0 ----
-  R0 = if (gamma == 0) Inf else beta * N / gamma
+  R0 = if (gamma == 0) Inf else beta / gamma
 
   # ---- peak infection ----
   peak_infection = max(data$I, na.rm = TRUE)

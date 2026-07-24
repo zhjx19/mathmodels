@@ -98,17 +98,17 @@ reg_lm(y ~ x1 + x2, data = data.frame(y, x1, x2))
 #> 
 #> $coefficient
 #> # A tibble: 3 × 7
-#>   term        estimate std.error statistic p.value conf.low conf.high
-#>   <chr>          <dbl>     <dbl>     <dbl>   <dbl>    <dbl>     <dbl>
-#> 1 (Intercept)     1.00      1.00     0.204    4.92    0.599      1.41
-#> 2 x1              1.71      1.71     0.196    8.75    1.32       2.10
-#> 3 x2             -2.83     -2.83     0.225  -12.5    -3.28      -2.38
+#>   term        estimate std.error statistic  p.value conf.low conf.high
+#>   <chr>          <dbl>     <dbl>     <dbl>    <dbl>    <dbl>     <dbl>
+#> 1 (Intercept)     1.00     0.204      4.92 3.48e- 6    0.599      1.41
+#> 2 x1              1.71     0.196      8.75 6.72e-14    1.32       2.10
+#> 3 x2             -2.83     0.225    -12.5  4.91e-22   -3.28      -2.38
 #> 
 #> $model_info
 #> # A tibble: 1 × 4
 #>   r.squared adj.r.squared   aic   bic
 #>       <dbl>         <dbl> <dbl> <dbl>
-#> 1     0.701         0.692  430.  440.
+#> 1     0.701         0.695  430.  440.
 #> 
 #> $residuals
 #> # A tibble: 100 × 3
@@ -135,7 +135,7 @@ reg_lm(y ~ x1 + x2, data = data.frame(y, x1, x2))
 #> 
 #> $formula
 #> y ~ x1 + x2
-#> <environment: 0x0000018fad10b6c8>
+#> <environment: 0x0000023d0caab380>
 #> 
 #> $input
 #>               y          x1            x2

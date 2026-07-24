@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">mathmodels</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.10</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -37,6 +37,42 @@
       <small>Source: <a href="https://github.com/zhjx19/mathmodels/blob/HEAD/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.10" id="mathmodels-0010">mathmodels 0.0.10<a class="anchor" aria-label="anchor" href="#mathmodels-0010"></a></h2>
+<div class="section level3">
+<h3 id="regression-prediction-toolkit-new-0-0-10">Regression prediction toolkit (new)<a class="anchor" aria-label="anchor" href="#regression-prediction-toolkit-new-0-0-10"></a></h3>
+<ul><li>
+<strong>Model fitting</strong> (<code>pred_reg.R</code>):
+<ul><li>
+<code><a href="../reference/reg_lm.html">reg_lm()</a></code>: OLS multiple linear regression with optional stepwise selection (forward / backward / both), returning coefficients with CIs and fit statistics.</li>
+<li>
+<code><a href="../reference/reg_logistic.html">reg_logistic()</a></code>: Binary logistic regression (<code>glm(binomial)</code>) with stepwise selection, odds ratios, and Hosmer-Lemeshow goodness-of-fit test.</li>
+<li>
+<code><a href="../reference/reg_poisson.html">reg_poisson()</a></code>: Poisson regression for count data, with dispersion check.</li>
+<li>
+<code><a href="../reference/reg_negbin.html">reg_negbin()</a></code>: Negative binomial regression via <code><a href="https://rdrr.io/pkg/MASS/man/glm.nb.html" class="external-link">MASS::glm.nb()</a></code> for over-dispersed counts.</li>
+</ul></li>
+<li>
+<strong>Diagnostics and prediction</strong> (<code>pred_reg.R</code>):
+<ul><li>
+<code><a href="../reference/reg_diagnostics.html">reg_diagnostics()</a></code>: Unified diagnostics — Breusch-Pagan, Durbin-Watson, Shapiro-Wilk (LM); Hosmer-Lemeshow, dispersion/deviance (GLM).</li>
+<li>
+<code><a href="../reference/reg_predict.html">reg_predict()</a></code>: Draw new predictor data from the empirical distribution and generate fitted or predicted values with 95% confidence intervals.</li>
+</ul></li>
+<li>
+<strong>Visualization</strong> (<code>pred_reg.R</code>):
+<ul><li>
+<code><a href="../reference/reg_plot_residuals.html">reg_plot_residuals()</a></code>: Residual diagnostic plots (residuals vs. fitted, normal Q-Q, density).</li>
+<li>
+<code><a href="../reference/reg_plot_predict.html">reg_plot_predict()</a></code>: Prediction plots with confidence bands — supports both fitted (training data) and predicted (new data) modes.</li>
+</ul></li>
+</ul></div>
+<div class="section level3">
+<h3 id="bug-fixes-0-0-10">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-0-10"></a></h3>
+<ul><li>Fixed <code><a href="../reference/reg_plot_predict.html">reg_plot_predict()</a></code> and <code><a href="../reference/reg_plot_residuals.html">reg_plot_residuals()</a></code> errors for GLM models (logistic, Poisson, negative binomial) caused by <code>inherits(x, "lm")</code> matching <code>glm</code> objects before the <code>glm</code> branch, and by inconsistent residual column names across model types.</li>
+<li>Fixed <code><a href="../reference/reg_plot_predict.html">reg_plot_predict()</a></code> for negative binomial models where <code>m$formula</code> was <code>NULL</code>; now falls back to <code>model_result$formula</code>.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.9" id="mathmodels-009">mathmodels 0.0.9<a class="anchor" aria-label="anchor" href="#mathmodels-009"></a></h2>
 <div class="section level3">

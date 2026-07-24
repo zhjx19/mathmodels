@@ -5,11 +5,10 @@ developed as a companion to the book *Mathematical Modeling: Algorithms
 and Programming Implementation* (China Machine Press). It focuses on
 implementing rigorous algorithms in a user-friendly manner.
 
-**Current Version (0.0.9)** adds a lightweight time-series workflow
-built around `ts_df` (conversion, gap completion / interpolation, STL
-decomposition, ETS / SARIMA modeling, forecasting, and visualization)
-and overhauls epidemic modeling with streamlined visualization
-(`epi_plots.R`) — on top of differential equation models, grey
+**Current Version (0.0.10)** introduces a regression prediction toolkit
+(`reg_lm`, `reg_logistic`, `reg_poisson`, `reg_negbin`) with stepwise
+selection, diagnostics, and visualization — on top of the time-series
+workflow, epidemic modeling, differential equation models, grey
 prediction, Markov chain models, and a rich suite of evaluation methods
 (AHP, Entropy, CRITIC, PCA, TOPSIS, Fuzzy, RSR, DEA).
 

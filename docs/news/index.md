@@ -1,5 +1,52 @@
 # Changelog
 
+## mathmodels 0.0.10
+
+### Regression prediction toolkit (new)
+
+- **Model fitting** (`pred_reg.R`):
+  - [`reg_lm()`](https://zhjx19.github.io/mathmodels/reference/reg_lm.md):
+    OLS multiple linear regression with optional stepwise selection
+    (forward / backward / both), returning coefficients with CIs and fit
+    statistics.
+  - [`reg_logistic()`](https://zhjx19.github.io/mathmodels/reference/reg_logistic.md):
+    Binary logistic regression (`glm(binomial)`) with stepwise
+    selection, odds ratios, and Hosmer-Lemeshow goodness-of-fit test.
+  - [`reg_poisson()`](https://zhjx19.github.io/mathmodels/reference/reg_poisson.md):
+    Poisson regression for count data, with dispersion check.
+  - [`reg_negbin()`](https://zhjx19.github.io/mathmodels/reference/reg_negbin.md):
+    Negative binomial regression via
+    [`MASS::glm.nb()`](https://rdrr.io/pkg/MASS/man/glm.nb.html) for
+    over-dispersed counts.
+- **Diagnostics and prediction** (`pred_reg.R`):
+  - [`reg_diagnostics()`](https://zhjx19.github.io/mathmodels/reference/reg_diagnostics.md):
+    Unified diagnostics — Breusch-Pagan, Durbin-Watson, Shapiro-Wilk
+    (LM); Hosmer-Lemeshow, dispersion/deviance (GLM).
+  - [`reg_predict()`](https://zhjx19.github.io/mathmodels/reference/reg_predict.md):
+    Draw new predictor data from the empirical distribution and generate
+    fitted or predicted values with 95% confidence intervals.
+- **Visualization** (`pred_reg.R`):
+  - [`reg_plot_residuals()`](https://zhjx19.github.io/mathmodels/reference/reg_plot_residuals.md):
+    Residual diagnostic plots (residuals vs. fitted, normal Q-Q,
+    density).
+  - [`reg_plot_predict()`](https://zhjx19.github.io/mathmodels/reference/reg_plot_predict.md):
+    Prediction plots with confidence bands — supports both fitted
+    (training data) and predicted (new data) modes.
+
+### Bug fixes
+
+- Fixed
+  [`reg_plot_predict()`](https://zhjx19.github.io/mathmodels/reference/reg_plot_predict.md)
+  and
+  [`reg_plot_residuals()`](https://zhjx19.github.io/mathmodels/reference/reg_plot_residuals.md)
+  errors for GLM models (logistic, Poisson, negative binomial) caused by
+  `inherits(x, "lm")` matching `glm` objects before the `glm` branch,
+  and by inconsistent residual column names across model types.
+- Fixed
+  [`reg_plot_predict()`](https://zhjx19.github.io/mathmodels/reference/reg_plot_predict.md)
+  for negative binomial models where `m$formula` was `NULL`; now falls
+  back to `model_result$formula`.
+
 ## mathmodels 0.0.9
 
 ### Time series toolkit (new)

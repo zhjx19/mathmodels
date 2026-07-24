@@ -73,10 +73,10 @@ reg_negbin(y ~ x1, data = data.frame(y, x1))
 #> 
 #> $coefficient
 #> # A tibble: 2 × 7
-#>   term        estimate std.error statistic p.value conf.low conf.high
-#>   <chr>          <dbl>     <dbl>     <dbl>   <dbl>    <dbl>     <dbl>
-#> 1 (Intercept)    0.907     0.907     0.117    7.74   0.674      1.14 
-#> 2 x1             0.322     0.322     0.116    2.78   0.0918     0.553
+#>   term        estimate std.error statistic  p.value conf.low conf.high
+#>   <chr>          <dbl>     <dbl>     <dbl>    <dbl>    <dbl>     <dbl>
+#> 1 (Intercept)    0.907     0.117      7.74 1.01e-14   0.674      1.14 
+#> 2 x1             0.322     0.116      2.78 5.52e- 3   0.0918     0.553
 #> 
 #> $theta
 #> [1] 1.065
@@ -200,7 +200,7 @@ reg_negbin(y ~ x1, data = data.frame(y, x1))
 #> 
 #> $formula
 #> y ~ x1
-#> <environment: 0x0000018fb1f15150>
+#> <environment: 0x0000023d27717930>
 #> 
 #> $input
 #>      y          x1

@@ -47,13 +47,14 @@ globalVariables(c(".data", "x"))
   coefs = coef(model)
   ci = ._ci95(model, level = level)
   s = summary(model)$coefficients
+  # s columns: Estimate, Std. Error, t value, Pr(>|t|)
   tibble::tibble(
     term = names(coefs),
     estimate = as.numeric(coefs),
-    std.error = s[, 1],
-    statistic = s[, 2],
-    p.value = s[, 3],
-    conf.low = ci$low,
+    std.error = s[, 2],
+    statistic = s[, 3],
+    p.value   = s[, 4],
+    conf.low  = ci$low,
     conf.high = ci$high
   )
 }
@@ -62,7 +63,7 @@ globalVariables(c(".data", "x"))
 ._tidy_diag = function(metrics) {
   tibble::tibble(
     metric = names(metrics),
-    value = round(unname(metrics), 4)
+    value  = round(unname(metrics), 4)
   )
 }
 
@@ -72,6 +73,46 @@ globalVariables(c(".data", "x"))
   if (nm == ".fitted") nm = names(fit$model)[1]
   nm
 }
+
+# Stepwise selection helper.
+# family: NULL for lm, "binomial" for logistic, "poisson" for Poisson.
+.reg_step = function(formula, data, family = NULL, direction, ...) {
+  fam = if (is.null(family)) NULL else match.fun(family)()
+  if (direction == "backward") {
+    if (is.null(fam)) {
+      model = lm(formula, data = data, ...)
+    } else {
+      model = glm(formula, data = data, family = fam, ...)
+    }
+  } else {
+    f_null = update(formula, . ~ 1)
+    if (is.null(fam)) {
+      model = lm(f_null, data = data, ...)
+    } else {
+      model = glm(f_null, data = data, family = fam, ...)
+    }
+  }
+  # Ensure data is visible inside step()'s update() calls
+  model$call$data = data
+  if (!is.null(fam)) model$call$family = fam
+  scope = list(lower = as.formula(". ~ 1"), upper = formula)
+  step(model, scope = scope, direction = direction, trace = 0)
+}
+
+# Generate new predictor data for prediction (draw from empirical distribution)
+.make_newdata = function(model, model_result, n_new) {
+  resp_name = attr(terms(model), "variables")[[2]]
+  pred_names = setdiff(colnames(model_result$input), as.character(resp_name))
+  pred_cols = model_result$input[, pred_names, drop = FALSE]
+  mean_x = colMeans(pred_cols)
+  sd_x = apply(pred_cols, 2, sd)
+  newx = lapply(seq_along(sd_x), function(i)
+    rnorm(n_new, mean = mean_x[i], sd = max(sd_x[i], 1e-8)))
+  newdf = data.frame(newx)
+  names(newdf) = names(mean_x)
+  newdf
+}
+
 
 # -----------------------------------------------------------------------------
 # OLS — Multivariable Linear Regression with Stepwise
@@ -120,54 +161,22 @@ reg_lm = function(formula, data,
   direction = match.arg(direction)
 
   if (step) {
-    # 1. Build starting formula: y ~ 1
-    f_start = update(formula, . ~ 1)
-    mod_null = lm(f_start, data = data, ...)
-
-    # 2. Full formula as scope
-    scope_form = formula
-    form_str = deparse(scope_form)
-
-    # 3. Forward or backward search
-    switch(direction,
-      "backward" = {
-        full = update(formula, . ~ 1)
-        scope_full = as.formula(paste(full, "+ 1"))
-        scope_back = list(lower = as.formula(". ~ 1"), upper = scope_full)
-        mod_step = step(mod_null, scope = scope_back, direction = "backward", trace = 0, ...)
-      },
-      "forward" = {
-        scope_fwd = list(lower = as.formula(". ~ 1"), upper = scope_form)
-        mod_step = step(mod_null, scope = scope_fwd, direction = "forward", trace = 0, ...)
-      },
-      {
-        scope_both = list(lower = as.formula(". ~ 1"), upper = scope_form)
-        mod_step = step(mod_null, scope = scope_both, direction = "both", trace = 0, ...)
-      }
-    )
-    model = mod_step
+    model = .reg_step(formula, data, family = NULL, direction, ...)
   } else {
     model = lm(formula, data = data, ...)
   }
 
+  s = summary(model)
   n = nrow(data)
   p = length(coef(model))
-  ss_res = sum(residuals(model)^2)
-  ss_tot = sum((model$model[[1]] - mean(model$model[[1]]))^2)
-  r_sq = 1 - ss_res / ss_tot
-  adj_r_sq = 1 - (1 - r_sq) * (n - 1) / (n - p - 1)
 
   # Breusch-Pagan test
-  bp_test = tryCatch({
-    lmtest::bptest(model)
-  }, error = function(e) NULL)
-  bp_stat = if (!is.null(bp_test)) bp_test$p.value else NA_real_
+  bp_test = tryCatch(lmtest::bptest(model), error = function(e) NULL)
+  bp_stat = if (!is.null(bp_test)) unname(bp_test$p.value) else NA_real_
 
   # Durbin-Watson test
-  dw_test = tryCatch({
-    lmtest::dwtest(model)
-  }, error = function(e) NULL)
-  dw_stat = if (!is.null(dw_test)) dw_test$p.value else NA_real_
+  dw_test = tryCatch(lmtest::dwtest(model), error = function(e) NULL)
+  dw_stat = if (!is.null(dw_test)) unname(dw_test$p.value) else NA_real_
 
   # Coefficients with CIs
   coefs_tidy = ._tidy_coefs(model)
@@ -176,7 +185,7 @@ reg_lm = function(formula, data,
   resp_col = ._resp_col(model)
   resid_tbl = tibble::tibble(
     .observed = data[[resp_col]],
-    .fitted = as.numeric(fitted(model)),
+    .fitted   = as.numeric(fitted(model)),
     .residual = as.numeric(residuals(model))
   )
 
@@ -184,18 +193,16 @@ reg_lm = function(formula, data,
     model       = model,
     coefficient = coefs_tidy,
     model_info  = tibble::tibble(
-      r.squared     = round(r_sq, 4),
-      adj.r.squared = round(adj_r_sq, 4),
+      r.squared     = round(s$r.squared, 4),
+      adj.r.squared = round(s$adj.r.squared, 4),
       aic           = round(AIC(model), 4),
       bic           = round(BIC(model), 4)
     ),
     residuals   = resid_tbl,
-    diagnostics = tibble::tibble(
-      metric = c("BP_test_pvalue", "DW_test_pvalue"),
-      value  = c(bp_stat, dw_stat)
-    ),
+    diagnostics = ._tidy_diag(c(BP_test_pvalue = bp_stat,
+                                DW_test_pvalue = dw_stat)),
     formula = formula,
-    input = data
+    input   = data
   )
 }
 
@@ -238,25 +245,7 @@ reg_logistic = function(formula, data,
   direction = match.arg(direction)
 
   if (step) {
-    f_null = update(formula, . ~ 1)
-    mod_null = glm(f_null, data = data, family = binomial(), ...)
-    scope_form = formula
-
-    switch(direction,
-      "backward" = {
-        scope_fwd = list(lower = as.formula(". ~ 1"), upper = scope_form)
-        mod_step = step(mod_null, scope = scope_fwd, direction = "backward", trace = 0, ...)
-      },
-      "forward" = {
-        scope_fwd = list(lower = as.formula(". ~ 1"), upper = scope_form)
-        mod_step = step(mod_null, scope = scope_fwd, direction = "forward", trace = 0, ...)
-      },
-      {
-        scope_both = list(lower = as.formula(". ~ 1"), upper = scope_form)
-        mod_step = step(mod_null, scope = scope_both, direction = "both", trace = 0, ...)
-      }
-    )
-    model = mod_step
+    model = .reg_step(formula, data, family = "binomial", direction, ...)
   } else {
     model = glm(formula, data = data, family = binomial(), ...)
   }
@@ -266,44 +255,56 @@ reg_logistic = function(formula, data,
   or_vals = exp(coefs_tidy$estimate)
   ci_95 = ._ci95(model)
   or_tbl = tibble::tibble(
-    term = coefs_tidy$term,
+    term       = coefs_tidy$term,
     odds_ratio = round(or_vals, 4),
-    conf.low = round(exp(ci_95$low), 4),
-    conf.high = round(exp(ci_95$high), 4)
+    conf.low   = round(exp(ci_95$low), 4),
+    conf.high  = round(exp(ci_95$high), 4)
   )
 
   resp_col = .reg_formula(formula)$response
   resp_raw = data[[resp_col]]
   # If factor: convert to numeric (0/1)
   if (is.factor(resp_raw)) resp_raw = as.numeric(as.character(resp_raw)) - 1L
+  fitted_probs = fitted(model)
   resid_df = data.frame(
-    observed = resp_raw,
-    fitted_prob = fitted(model),
-    residual = resp_raw - fitted(model)
+    observed         = resp_raw,
+    fitted_val       = fitted_probs,
+    pearson_residual = residuals(model, type = "pearson")
   )
 
-  # Hosmer-Lemeshow (simplified version)
-  g = min(10, length(resid_df$fitted_prob))
-  groups = cut(resid_df$fitted_prob, quantile(resid_df$fitted_prob, seq(0, 1, length.out = g)), include.lowest = TRUE)
+  # Hosmer-Lemeshow (robust to duplicate quantile breaks)
+  g = min(10, nrow(resid_df))
+  groups = tryCatch(
+    cut(fitted_probs,
+        breaks = quantile(fitted_probs, seq(0, 1, length.out = g), na.rm = TRUE),
+        include.lowest = TRUE),
+    error = function(e) cut(fitted_probs, g, include.lowest = TRUE)
+  )
   hlr = lapply(levels(groups), function(glv) {
     grp = resid_df[groups == glv, ]
-    list(n = nrow(grp), obs_su = sum(grp$observed == 1), pred_su = sum(grp$fitted_prob))
+    list(n = nrow(grp), obs_su = sum(grp$observed == 1),
+         pred_su = sum(grp$fitted_prob))
   })
   Obs = sapply(hlr, `[[`, "obs_su")
   Exp = sapply(hlr, `[[`, "pred_su")
-  HLR_stat = sum((Obs - Exp)^2 / (Exp + 1e-8) + (sum(resid_df$observed) - Exp)^2 / (sum(resid_df$fitted_prob) + 1e-8))
+  HLR_stat = sum((Obs - Exp)^2 / (Exp + 1e-8) +
+                 (sum(resid_df$observed) - Exp)^2 /
+                 (sum(fitted_probs) + 1e-8))
   HLR_df = g - 2
   HLR_pval = pchisq(HLR_stat, HLR_df, lower.tail = FALSE)
 
   list(
-    model          = model,
-    coefficient    = coefs_tidy,
-    odds_ratio     = or_tbl,
-    residuals      = resid_df,
-    diagnostics    = ._tidy_diag(c(HLR_chisq = HLR_stat, HLR_df = HLR_df, HLR_pvalue = HLR_pval)),
-    model_info     = tibble::tibble(aic = round(AIC(model), 4), bic = round(BIC(model), 4)),
-    formula        = formula,
-    input          = data
+    model       = model,
+    coefficient = coefs_tidy,
+    odds_ratio  = or_tbl,
+    residuals   = resid_df,
+    diagnostics = ._tidy_diag(c(HLR_chisq = HLR_stat,
+                                HLR_df = HLR_df,
+                                HLR_pvalue = HLR_pval)),
+    model_info  = tibble::tibble(aic = round(AIC(model), 4),
+                                  bic = round(BIC(model), 4)),
+    formula     = formula,
+    input       = data
   )
 }
 
@@ -344,25 +345,7 @@ reg_poisson = function(formula, data,
   direction = match.arg(direction)
 
   if (step) {
-    f_null = update(formula, . ~ 1)
-    mod_null = glm(f_null, data = data, family = poisson(), ...)
-    scope_form = formula
-
-    switch(direction,
-      "backward" = {
-        scope_fwd = list(lower = as.formula(". ~ 1"), upper = scope_form)
-        mod_step = step(mod_null, scope = scope_fwd, direction = "backward", trace = 0, ...)
-      },
-      "forward" = {
-        scope_fwd = list(lower = as.formula(". ~ 1"), upper = scope_form)
-        mod_step = step(mod_null, scope = scope_fwd, direction = "forward", trace = 0, ...)
-      },
-      {
-        scope_both = list(lower = as.formula(". ~ 1"), upper = scope_form)
-        mod_step = step(mod_null, scope = scope_both, direction = "both", trace = 0, ...)
-      }
-    )
-    model = mod_step
+    model = .reg_step(formula, data, family = "poisson", direction, ...)
   } else {
     model = glm(formula, data = data, family = poisson(), ...)
   }
@@ -375,8 +358,8 @@ reg_poisson = function(formula, data,
 
   resp_col = .reg_formula(formula)$response
   resid_df = data.frame(
-    observed = data[[resp_col]],
-    fitted_val = fitted(model),
+    observed         = data[[resp_col]],
+    fitted_val       = fitted(model),
     pearson_residual = pearson_resid
   )
 
@@ -385,8 +368,10 @@ reg_poisson = function(formula, data,
     coefficient = coefs_tidy,
     dispersion  = round(dispersion, 4),
     residuals   = resid_df,
-    diagnostics = ._tidy_diag(c(dispersion = dispersion, aic = AIC(model), bic = BIC(model))),
-    model_info  = tibble::tibble(aic = round(AIC(model), 4), bic = round(BIC(model), 4)),
+    diagnostics = ._tidy_diag(c(dispersion = dispersion,
+                                aic = AIC(model), bic = BIC(model))),
+    model_info  = tibble::tibble(aic = round(AIC(model), 4),
+                                  bic = round(BIC(model), 4)),
     formula     = formula,
     input       = data
   )
@@ -443,8 +428,8 @@ reg_negbin = function(formula, data,
 
   resp_col = .reg_formula(formula)$response
   resid_df = data.frame(
-    observed = data[[resp_col]],
-    fitted_val = fitted(model),
+    observed         = data[[resp_col]],
+    fitted_val       = fitted(model),
     pearson_residual = residuals(model, type = "pearson")
   )
 
@@ -453,8 +438,10 @@ reg_negbin = function(formula, data,
     coefficient = coefs_tidy,
     theta       = round(theta, 4),
     residuals   = resid_df,
-    diagnostics = ._tidy_diag(c(aic = AIC(model), bic = BIC(model), theta = theta)),
-    model_info  = tibble::tibble(aic = round(AIC(model), 4), bic = round(BIC(model), 4)),
+    diagnostics = ._tidy_diag(c(aic = AIC(model), bic = BIC(model),
+                                theta = theta)),
+    model_info  = tibble::tibble(aic = round(AIC(model), 4),
+                                  bic = round(BIC(model), 4)),
     formula     = formula,
     input       = data
   )
@@ -477,27 +464,29 @@ reg_negbin = function(formula, data,
 #' @export
 reg_diagnostics = function(model_result) {
   m = model_result$model
-  mtype = model_result$coefficients$term[1]
-
   res = list()
 
   if (inherits(m, "glm")) {
     # GLM diagnostics
-    # Get GLM family type safely
-    if (!is.null(m$family$family)) {
-      family_type = tolower(as.character(m$family$family))
+    family_type = if (!is.null(m$family$family)) {
+      tolower(as.character(m$family$family))
     } else {
-      family_type = "unknown"
+      "unknown"
     }
 
     if (family_type == "binomial") {
       hlr_pval = tryCatch(
-        model_result$diagnostics$value[model_result$diagnostics$metric == "HLR_pvalue"],
+        model_result$diagnostics$value[
+          model_result$diagnostics$metric == "HLR_pvalue"],
         error = function(e) NA_real_
       )
-      res$hosmer_lemeshow = tibble::tibble(chi_sq = NA_real_, df = NA_integer_, p.value = round(hlr_pval, 6))
+      res$hosmer_lemeshow = tibble::tibble(
+        chi_sq = NA_real_, df = NA_integer_,
+        p.value = round(hlr_pval, 6))
     } else {
-      dispersion = tryCatch(sum(residuals(m, type = "pearson")^2) / m$df.residual, error = function(e) NA_real_)
+      dispersion = tryCatch(
+        sum(residuals(m, type = "pearson")^2) / m$df.residual,
+        error = function(e) NA_real_)
       res$dispersion = tibble::tibble(value = round(dispersion, 4))
     }
 
@@ -513,11 +502,9 @@ reg_diagnostics = function(model_result) {
 
   } else if (inherits(m, "lm")) {
     # VIF
-    car = tryCatch({
-      car::vif(m)
-    }, error = function(e) NULL)
-    if (!is.null(car)) {
-      res$vif = tibble::tibble(term = names(car), vif = round(car, 4))
+    car_vif = tryCatch(car::vif(m), error = function(e) NULL)
+    if (!is.null(car_vif)) {
+      res$vif = tibble::tibble(term = names(car_vif), vif = round(car_vif, 4))
     } else {
       res$vif = tibble::tibble(term = character(0), vif = numeric(0))
     }
@@ -525,25 +512,32 @@ reg_diagnostics = function(model_result) {
     # Shapiro-Wilk
     resid_vec = as.numeric(residuals(m))
     sw = shapiro.test(resid_vec)
-    res$shapiro_wilk = tibble::tibble(statistic = round(sw$statistic, 4), p.value = round(sw$p.value, 6))
+    res$shapiro_wilk = tibble::tibble(
+      statistic = round(sw$statistic, 4),
+      p.value   = round(sw$p.value, 6))
 
     # Residual stats
     res$residual_stats = tibble::tibble(
       statistic = c("mean", "sd", "min", "max"),
-      value = round(c(mean(resid_vec), sd(resid_vec), min(resid_vec), max(resid_vec)), 4)
+      value = round(c(mean(resid_vec), sd(resid_vec),
+                      min(resid_vec), max(resid_vec)), 4)
     )
 
     # Breusch-Pagan
     res$breusch_pagan = tryCatch({
       tbl = lmtest::bptest(m)
-      tibble::tibble(statistic = round(tbl$statistic, 4), df = tbl$df, p.value = round(tbl$p.value, 6))
-    }, error = function(e) tibble::tibble(statistic = NA_real_, df = NA_integer_, p.value = NA_real_))
+      tibble::tibble(statistic = round(tbl$statistic, 4),
+                     df = tbl$df, p.value = round(tbl$p.value, 6))
+    }, error = function(e) tibble::tibble(
+      statistic = NA_real_, df = NA_integer_, p.value = NA_real_))
 
     # Durbin-Watson
     res$dw_test = tryCatch({
       tbl = lmtest::dwtest(m)
-      tibble::tibble(statistic = round(tbl$statistic, 4), p.value = round(tbl$p.value, 6))
-    }, error = function(e) tibble::tibble(statistic = NA_real_, p.value = NA_real_))
+      tibble::tibble(statistic = round(tbl$statistic, 4),
+                     p.value = round(tbl$p.value, 6))
+    }, error = function(e) tibble::tibble(
+      statistic = NA_real_, p.value = NA_real_))
   }
 
   res
@@ -594,91 +588,53 @@ reg_predict = function(model_result, n_new = 10, level = 0.95) {
 
 #' @importFrom purrr map map_dbl map_dfr
 .predict_lm = function(model, model_result, n_new, level) {
-  # Extract predictor column names from original data
-  resp_name = attr(terms(model), "variables")[[2]]
-  pred_names = setdiff(colnames(model_result$input), as.character(resp_name))
-  pred_cols = model_result$input[, pred_names, drop = FALSE]
-  mean_x = colMeans(pred_cols)
-  sd_x = apply(pred_cols, 2, sd)
-  newx = lapply(seq_along(sd_x), function(i) rnorm(n_new, mean = mean_x[i], sd = max(sd_x[i], 1e-8)))
-  newdf = data.frame(newx)
-  names(newdf) = names(mean_x)
-
+  newdf = .make_newdata(model, model_result, n_new)
   pred = predict(model, newdata = newdf, interval = "prediction", level = level)
-  ci_lower = pred[, "lwr"]
-  ci_upper = pred[, "upr"]
 
-  pred_tibble = tibble::tibble(
-    .new_id = seq_len(n_new),
-    .predict = pred[, "fit"]
+  list(
+    predictions = tibble::tibble(
+      .new_id  = seq_len(n_new),
+      .predict = pred[, "fit"]),
+    confidence_interval = tibble::tibble(
+      lower = round(as.numeric(pred[, "lwr"]), 4),
+      upper = round(as.numeric(pred[, "upr"]), 4))
   )
-
-  ci_tbl = tibble::tibble(
-    lower = round(as.numeric(ci_lower), 4),
-    upper = round(as.numeric(ci_upper), 4)
-  )
-
-  list(predictions = pred_tibble, confidence_interval = ci_tbl)
 }
 
 #' @importFrom purrr map map_dbl map_dfr
 .predict_logistic = function(model, model_result, n_new, level) {
-  resp_name = attr(terms(model), "variables")[[2]]
-  pred_names = setdiff(colnames(model_result$input), as.character(resp_name))
-  pred_cols = model_result$input[, pred_names, drop = FALSE]
-  mean_x = colMeans(pred_cols)
-  sd_x = apply(pred_cols, 2, sd)
-  newx = lapply(seq_along(sd_x), function(i) rnorm(n_new, mean = mean_x[i], sd = max(sd_x[i], 1e-8)))
-  newdf = data.frame(newx)
-  names(newdf) = names(mean_x)
-
+  newdf = .make_newdata(model, model_result, n_new)
   pred = predict(model, newdata = newdf, type = "response", se.fit = TRUE)
   z = qnorm(1 - (1 - level) / 2)
+  ci_lower = plogis(log(pred$fit / (1 - pred$fit + 1e-8)) - z * pred$se.fit)
+  ci_upper = plogis(log(pred$fit / (1 - pred$fit + 1e-8)) + z * pred$se.fit)
 
-  ci_lower = plogis(log(pred$fit / (1 - pred$fit + 1e-8) - z * pred$se.fit))
-  ci_upper = plogis(log(pred$fit / (1 - pred$fit + 1e-8) + z * pred$se.fit))
-
-  pred_tibble = tibble::tibble(
-    .new_id = seq_len(n_new),
-    .predict = round(pred$fit, 4)
+  list(
+    predictions = tibble::tibble(
+      .new_id  = seq_len(n_new),
+      .predict = round(pred$fit, 4)),
+    confidence_interval = tibble::tibble(
+      lower = round(ci_lower, 4),
+      upper = round(ci_upper, 4))
   )
-
-  ci_tbl = tibble::tibble(
-    lower = round(ci_lower, 4),
-    upper = round(ci_upper, 4)
-  )
-
-  list(predictions = pred_tibble, confidence_interval = ci_tbl)
 }
 
 #' @importFrom purrr map map_dbl map_dfr
 .predict_count = function(model, model_result, n_new, level) {
-  resp_name = attr(terms(model), "variables")[[2]]
-  pred_names = setdiff(colnames(model_result$input), as.character(resp_name))
-  pred_cols = model_result$input[, pred_names, drop = FALSE]
-  mean_x = colMeans(pred_cols)
-  sd_x = apply(pred_cols, 2, sd)
-  newx = lapply(seq_along(sd_x), function(i) rnorm(n_new, mean = mean_x[i], sd = max(sd_x[i], 1e-8)))
-  newdf = data.frame(newx)
-  names(newdf) = names(mean_x)
-
+  newdf = .make_newdata(model, model_result, n_new)
   pred = predict(model, newdata = newdf, type = "response", se.fit = TRUE)
   z = qnorm(1 - (1 - level) / 2)
-
   ci_lower = pmax(pred$fit - z * pred$se.fit, 0)
   ci_upper = pred$fit + z * pred$se.fit
 
-  pred_tibble = tibble::tibble(
-    .new_id = seq_len(n_new),
-    .predict = round(pred$fit, 4)
+  list(
+    predictions = tibble::tibble(
+      .new_id  = seq_len(n_new),
+      .predict = round(pred$fit, 4)),
+    confidence_interval = tibble::tibble(
+      lower = round(as.numeric(ci_lower), 4),
+      upper = round(as.numeric(ci_upper), 4))
   )
-
-  ci_tbl = tibble::tibble(
-    lower = round(as.numeric(ci_lower), 4),
-    upper = round(as.numeric(ci_upper), 4)
-  )
-
-  list(predictions = pred_tibble, confidence_interval = ci_tbl)
 }
 
 
@@ -693,7 +649,8 @@ reg_predict = function(model_result, n_new = 10, level = 0.95) {
   p1 = ggplot2::ggplot(resid, ggplot2::aes(x = .data$.fitted, y = .data$.residual)) +
     ggplot2::geom_point(size = 2, alpha = 0.6, colour = "#2C3E50") +
     ggplot2::geom_hline(yintercept = 0, linetype = "dashed", colour = "#BDC3C7") +
-    ggplot2::labs(title = "Residuals vs Fitted", x = "Fitted Values", y = "Residuals")
+    ggplot2::labs(title = "Residuals vs Fitted",
+                  x = "Fitted Values", y = "Residuals")
 
   # Q-Q
   qq_data = tibble::tibble(
@@ -712,19 +669,18 @@ reg_predict = function(model_result, n_new = 10, level = 0.95) {
     ggplot2::geom_density(colour = "#E74C3C") +
     ggplot2::labs(title = "Residual Histogram", x = "Residuals", y = "Density")
 
-  # ACF (skip if not enough data)
+  # ACF
   resid_clean = resid$.residual[!is.na(resid$.residual)]
-  if (length(resid_clean) > 2) {
-    acf_obj = stats::acf(resid_clean, plot = FALSE)
+  acf_obj = if (length(resid_clean) > 2) {
+    stats::acf(resid_clean, plot = FALSE)
   } else {
-    acf_obj = NULL
+    NULL
   }
-  n_lag = length(acf_obj$lag)
   ci = stats::qnorm(0.975) / sqrt(n_rows)
   acf_data = tibble::tibble(
     lag = as.numeric(acf_obj$lag),
     acf = as.numeric(acf_obj$acf),
-    ci = ci
+    ci  = ci
   )
   p4 = ggplot2::ggplot(acf_data, ggplot2::aes(x = .data$lag, y = .data$acf)) +
     ggplot2::geom_hline(yintercept = c(-ci, ci), linetype = "dashed", colour = "#95A5A6") +
@@ -733,10 +689,11 @@ reg_predict = function(model_result, n_new = 10, level = 0.95) {
     ggplot2::geom_point(colour = "#2C3E50") +
     ggplot2::labs(title = "ACF of Residuals", x = "Lag", y = "ACF")
 
-  patchwork::wrap_plots(p1, p2, p3, p4, ncol = 2) + patchwork::plot_annotation(
-    title = "Linear Model Diagnostics",
-    theme = ggplot2::theme(plot.title = ggplot2::element_text(face = "bold", size = 14))
-  )
+  patchwork::wrap_plots(p1, p2, p3, p4, ncol = 2) +
+    patchwork::plot_annotation(
+      title = "Linear Model Diagnostics",
+      theme = ggplot2::theme(plot.title = ggplot2::element_text(face = "bold", size = 14))
+    )
 }
 
 .resid_plot_glm = function(model_result) {
@@ -746,7 +703,8 @@ reg_predict = function(model_result, n_new = 10, level = 0.95) {
   p1 = ggplot2::ggplot(resid, ggplot2::aes(x = .data$fitted_val, y = .data$pearson_residual)) +
     ggplot2::geom_point(size = 2, alpha = 0.6, colour = "#2C3E50") +
     ggplot2::geom_hline(yintercept = c(-2, 0, 2), linetype = "dashed", colour = "#BDC3C7") +
-    ggplot2::labs(title = "Pearson Residuals vs Fitted", x = "Fitted", y = "Pearson Resid.")
+    ggplot2::labs(title = "Pearson Residuals vs Fitted",
+                  x = "Fitted", y = "Pearson Resid.")
 
   # QQ for GLM
   norm_resid = sort(stats::rstandard(model_result$model))
@@ -760,10 +718,11 @@ reg_predict = function(model_result, n_new = 10, level = 0.95) {
     ggplot2::geom_abline(slope = 1, intercept = 0, linetype = "dashed", colour = "#E74C3C") +
     ggplot2::labs(title = "QQ Plot", x = "Theoretical", y = "Sample Quantiles")
 
-  patchwork::wrap_plots(p1, p2, ncol = 2) + patchwork::plot_annotation(
-    title = paste(model_result$coefficients$term[1], "Model Diagnostics"),
-    theme = ggplot2::theme(plot.title = ggplot2::element_text(face = "bold", size = 14))
-  )
+  patchwork::wrap_plots(p1, p2, ncol = 2) +
+    patchwork::plot_annotation(
+      title = paste(model_result$coefficients$term[1], "Model Diagnostics"),
+      theme = ggplot2::theme(plot.title = ggplot2::element_text(face = "bold", size = 14))
+    )
 }
 
 #' Residual Diagnostics
@@ -775,10 +734,10 @@ reg_predict = function(model_result, n_new = 10, level = 0.95) {
 #' @return A ggplot-based composite.
 #' @export
 reg_plot_residuals = function(model_result) {
-  if (inherits(model_result$model, "lm")) {
-    return(.resid_plot_lm(model_result))
-  } else if (inherits(model_result$model, "glm")) {
+  if (inherits(model_result$model, "glm")) {
     return(.resid_plot_glm(model_result))
+  } else if (inherits(model_result$model, "lm")) {
+    return(.resid_plot_lm(model_result))
   } else {
     stop("Unsupported model for residual plot.")
   }
@@ -791,62 +750,54 @@ reg_plot_residuals = function(model_result) {
 
 #' @importFrom stats predict
 #' @keywords internal
-.prediction_plot_generic = function(model_result, type = c("fitted", "predicted"), show_ci = TRUE) {
+.prediction_plot_generic = function(model_result, type = c("fitted", "predicted"),
+                                    show_ci = TRUE) {
   type = match.arg(type)
   m = model_result$model
 
-  if (inherits(m, "lm")) {
+  if (inherits(m, "glm")) {
+    fam = m$family
+    form = if (is.null(m$formula)) model_result$formula else m$formula
+    pred_names = setdiff(colnames(m$model), .reg_formula(form)$response)
+    x_var = pred_names[1]
+    x_data = m$model[[x_var]]
+    fitted_vals = fitted(m)
+
+    if (fam$link == "logit") {
+      p = ggplot2::ggplot(
+        data.frame(x = x_data, fitted = fitted_vals),
+        ggplot2::aes(x = x, y = fitted)) +
+        ggplot2::geom_line(colour = "#2C3E50", linewidth = 1) +
+        ggplot2::labs(title = "Predicted Probabilities", x = x_var, y = "P(y=1)")
+    } else {
+      p = ggplot2::ggplot(
+        data.frame(x = x_data, fitted = fitted_vals),
+        ggplot2::aes(x = x, y = fitted)) +
+        ggplot2::geom_line(colour = "#2C3E50", linewidth = 1) +
+        ggplot2::labs(title = "Fitted Count Values", x = x_var, y = "Count")
+    }
+  } else if (inherits(m, "lm")) {
     x_var = colnames(m$model)[2]
     x_data = m$model[, x_var]
     fitted_vals = fitted(m)
 
     if (show_ci) {
       ci = predict(m, interval = "confidence")
-      p = ggplot2::ggplot(data.frame(x = x_data, fitted = fitted_vals, ci_lo = ci[, "lwr"], ci_hi = ci[, "upr"]),
-                           ggplot2::aes(x = x, y = fitted)) +
-        ggplot2::geom_ribbon(ggplot2::aes(ymin = .data$ci_lo, ymax = .data$ci_hi), alpha = 0.15, fill = "#2980B9") +
+      p = ggplot2::ggplot(
+        data.frame(x = x_data, fitted = fitted_vals,
+                   ci_lo = ci[, "lwr"], ci_hi = ci[, "upr"]),
+        ggplot2::aes(x = x, y = fitted)) +
+        ggplot2::geom_ribbon(ggplot2::aes(ymin = .data$ci_lo, ymax = .data$ci_hi),
+                             alpha = 0.15, fill = "#2980B9") +
         ggplot2::geom_line(colour = "#2C3E50", linewidth = 1) +
-        ggplot2::labs(title = "Fitted Values with 95% CI", x = x_var, y = "Response")
+        ggplot2::labs(title = "Fitted Values with 95% CI",
+                      x = x_var, y = "Response")
     } else {
-      p = ggplot2::ggplot(data.frame(x = x_data, fitted = fitted_vals),
-                           ggplot2::aes(x = x, y = fitted)) +
+      p = ggplot2::ggplot(
+        data.frame(x = x_data, fitted = fitted_vals),
+        ggplot2::aes(x = x, y = fitted)) +
         ggplot2::geom_line(colour = "#2C3E50", linewidth = 1) +
         ggplot2::labs(title = "Fitted Values", x = x_var, y = "Response")
-    }
-
-  } else if (inherits(m, "glm")) {
-    fam = m$family
-    if (fam$link == "logit") {
-      # Logistic plot — use first numeric predictor
-      pred_names = setdiff(colnames(m$model), .reg_formula(m$formula)$response)
-      x_var = pred_names[1]
-      x_data = m$model[[x_var]]
-      fitted_probs = fitted(m)
-
-      if (show_ci) {
-        se_fit = se_fit_glm = predict(m, type = "response", se.fit = TRUE)
-        p = ggplot2::ggplot(data.frame(x = x_data, fitted = fitted_probs),
-                             ggplot2::aes(x = x, y = fitted)) +
-          ggplot2::geom_line(colour = "#2C3E50", linewidth = 1) +
-          ggplot2::labs(title = "Predicted Probabilities", x = x_var, y = "P(y=1)")
-      } else {
-        p = ggplot2::ggplot(data.frame(x = x_data, fitted = fitted_probs),
-                             ggplot2::aes(x = x, y = fitted)) +
-          ggplot2::geom_line(colour = "#2C3E50", linewidth = 1) +
-          ggplot2::labs(title = "Predicted Probabilities", x = x_var, y = "P(y=1)")
-      }
-
-    } else {
-      # Count response
-      pred_names = setdiff(colnames(m$model), .reg_formula(m$formula)$response)
-      x_var = pred_names[1]
-      x_data = m$model[[x_var]]
-      fitted_vals = fitted(m)
-
-      p = ggplot2::ggplot(data.frame(x = x_data, fitted = fitted_vals),
-                           ggplot2::aes(x = x, y = fitted)) +
-        ggplot2::geom_line(colour = "#2C3E50", linewidth = 1) +
-        ggplot2::labs(title = "Fitted Count Values", x = x_var, y = "Count")
     }
   } else {
     stop("Unsupported model for prediction plot.")
@@ -870,4 +821,3 @@ reg_plot_predict = function(model_result,
                              show_ci = TRUE) {
   .prediction_plot_generic(model_result, type, show_ci = show_ci)
 }
-

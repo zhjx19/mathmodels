@@ -81,10 +81,10 @@ reg_poisson(y ~ x1, data = data.frame(y, x1))
 #> 
 #> $coefficient
 #> # A tibble: 2 × 7
-#>   term        estimate std.error statistic p.value conf.low conf.high
-#>   <chr>          <dbl>     <dbl>     <dbl>   <dbl>    <dbl>     <dbl>
-#> 1 (Intercept)    0.848     0.848    0.0687   12.3     0.712     0.985
-#> 2 x1             0.423     0.423    0.0664    6.37    0.291     0.554
+#>   term        estimate std.error statistic  p.value conf.low conf.high
+#>   <chr>          <dbl>     <dbl>     <dbl>    <dbl>    <dbl>     <dbl>
+#> 1 (Intercept)    0.848    0.0687     12.3  5.32e-35    0.712     0.985
+#> 2 x1             0.423    0.0664      6.37 1.92e-10    0.291     0.554
 #> 
 #> $dispersion
 #> [1] 1.154
@@ -208,7 +208,7 @@ reg_poisson(y ~ x1, data = data.frame(y, x1))
 #> 
 #> $formula
 #> y ~ x1
-#> <environment: 0x0000018fae75f040>
+#> <environment: 0x0000023d17078690>
 #> 
 #> $input
 #>     y          x1
