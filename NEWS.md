@@ -42,6 +42,15 @@
   - `reg_plot_predict()`: Prediction plots with confidence bands — supports both
     fitted (training data) and predicted (new data) modes.
 
+## Bug fixes
+
+- Fixed `reg_plot_predict()` and `reg_plot_residuals()` errors for GLM models
+  (logistic, Poisson, negative binomial) caused by `inherits(x, "lm")` matching
+  `glm` objects before the `glm` branch, and by inconsistent residual column
+  names across model types.
+- Fixed `reg_plot_predict()` for negative binomial models where `m$formula`
+  was `NULL`; now falls back to `model_result$formula`.
+
 # mathmodels 0.0.9
 
 ## Time series toolkit (new)
