@@ -72,6 +72,37 @@ test_that("interp_linear() validates input via ._validate_xy", {
   expect_error(interp_linear(c(1,1), c(1,2), xout = c(1,2)), "duplicate")
 })
 
+# --- interp_spline ---
+
+test_that("interp_spline() returns expected structure", {
+  res = interp_spline(c(1,2,3,4,5), c(2,4,1,5,3), xout = c(1,2,3))
+  expect_s3_class(res, "tbl_df")
+  expect_named(res, c("x", "y"))
+  expect_identical(attr(res, "method"), "spline")
+})
+
+test_that("interp_spline() passes through known points", {
+  res = interp_spline(c(1,3,5,7), c(10,30,50,70), xout = c(1,3,5,7))
+  expect_equal(res$y, c(10, 30, 50, 70))
+})
+
+test_that("interp_spline() interpolates between points", {
+  res = interp_spline(c(0, 1, 2, 3), c(0, 2, 4, 6), xout = 0.5)
+  expect_gt(res$y, 0)
+  expect_lt(res$y, 4)
+})
+
+test_that("interp_spline() with spar uses smooth.spline", {
+  res = interp_spline(c(1,2,3,4,5), c(2.1,3.9,5.8,8.2,9.9), xout = c(1,3,5), spar = 0.5)
+  expect_identical(attr(res, "method"), "smooth_spline")
+  expect_equal(nrow(res), 3)
+})
+
+test_that("interp_spline() requires at least 4 points", {
+  expect_error(interp_spline(c(1,2,3), c(1,2,3), xout = c(1,2)),
+               "length >= 4")
+})
+
 test_that("interp_linear() handles single xout", {
   res = interp_linear(c(1,2,3), c(10,20,30), xout = 2)
   expect_equal(nrow(res), 1)
