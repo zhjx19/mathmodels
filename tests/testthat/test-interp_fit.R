@@ -192,3 +192,38 @@ test_that("._build_fit_residuals() returns expected structure", {
   expect_equal(resid_tbl$.observed, c(1, 2, 3))
   expect_equal(resid_tbl$.residual[1], 1 - 1.1)
 })
+
+# --- poly_fit ---
+
+test_that("poly_fit() returns expected list structure", {
+  set.seed(42)
+  x = 1:20
+  y = 3 + 2*x + rnorm(20, sd = 1)
+  res = poly_fit(x, y, degree = 1)
+  expect_type(res, "list")
+  expect_setequal(names(res), c("model", "coefficient", "model_info", "residuals", "formula", "type", "input"))
+  expect_s3_class(res$model_info, "tbl_df")
+  expect_s3_class(res$coefficient, "tbl_df")
+  expect_s3_class(res$residuals, "tbl_df")
+  expect_equal(res$type, "poly")
+})
+
+test_that("poly_fit() degree=2 recovers quadratic coefficients", {
+  set.seed(42)
+  x = seq(-5, 5, length.out = 30)
+  y = 1 + 2*x + 0.5*x^2 + rnorm(30, sd = 0.5)
+  res = poly_fit(x, y, degree = 2)
+  expect_true(abs(res$coefficient$estimate[3] - 0.5) < 0.2)
+})
+
+test_that("poly_fit() validates input", {
+  expect_error(poly_fit(c(1,2), c(1,2), degree = 3), "length >= 4")
+})
+
+test_that("poly_fit() residuals match data length", {
+  x = 1:10
+  y = 2 + 3*x + rnorm(10, sd = 0.5)
+  res = poly_fit(x, y, degree = 1)
+  expect_equal(nrow(res$residuals), 10)
+  expect_equal(nrow(res$input), 10)
+})
