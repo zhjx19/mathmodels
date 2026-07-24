@@ -2,6 +2,8 @@
 # Lightweight time-series toolkit for mathmodels
 # =============================================================================
 
+#' @importFrom stats diffinv
+
 # -----------------------------------------------------------------------------
 # ts_df data structure
 # -----------------------------------------------------------------------------
@@ -460,6 +462,8 @@ ts_transform = function(x,
     steps = c(steps, "seasonal_diff")
   }
 
+  last_pre_diff = utils::tail(values, max(1L, diff))
+
   if (diff > 0L) {
     for (i in seq_len(diff)) {
       values = diff(values)
@@ -477,7 +481,8 @@ ts_transform = function(x,
     diff = diff,
     seasonal_diff = seasonal_diff,
     frequency = freq,
-    last_base_values = utils::tail(base_values, max(1L, freq))
+    last_base_values = utils::tail(base_values, max(1L, freq)),
+    last_pre_diff = last_pre_diff
   )
 
   summary = tibble::tibble(
@@ -509,9 +514,12 @@ ts_back_transform = function(forecast_tbl, params) {
   num_cols = setdiff(names(tbl)[vapply(tbl, is.numeric, logical(1))], "step")
 
   if (params$diff > 0L) {
-    last_val = utils::tail(params$last_base_values, 1)
+    n_anchor = params$diff
+    last_vals = utils::tail(params$last_pre_diff, n_anchor)
     for (col in num_cols) {
-      tbl[[col]] = cumsum(c(last_val, tbl[[col]]))[-1]
+      recovered = diffinv(tbl[[col]], lag = 1L, differences = params$diff,
+                          xi = last_vals)
+      tbl[[col]] = utils::tail(recovered, nrow(tbl))
     }
   }
 
@@ -612,7 +620,7 @@ ts_sarima = function(x,
   se_vec = if (length(coef_vec) > 0 && !is.null(fit$var.coef)) {
     sqrt(diag(fit$var.coef))
   } else {
-    numeric(0)
+    rep(NA_real_, length(coef_vec))
   }
 
   lb = stats::Box.test(

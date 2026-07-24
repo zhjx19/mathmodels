@@ -8,7 +8,7 @@
 # Internal Helpers
 # -----------------------------------------------------------------------------
 
-#' @importFrom stats AIC BIC as.formula binomial coef density fitted glm pchisq plogis poisson ppoints qnorm quantile residuals rnorm shapiro.test terms update vcov qt
+#' @importFrom stats AIC BIC as.formula binomial coef density fitted glm pchisq plogis poisson ppoints qnorm quantile residuals rnorm shapiro.test step terms update vcov qt
 #' @importFrom lmtest bptest dwtest
 #' @importFrom car vif
 #' @importFrom utils globalVariables
@@ -733,7 +733,7 @@ reg_predict = function(model_result, n_new = 10, level = 0.95) {
 #'
 #' @return A ggplot-based composite.
 #' @export
-reg_plot_residuals = function(model_result) {
+plot_reg_residuals = function(model_result) {
   if (inherits(model_result$model, "glm")) {
     return(.resid_plot_glm(model_result))
   } else if (inherits(model_result$model, "lm")) {
@@ -816,8 +816,8 @@ reg_plot_residuals = function(model_result) {
 #'
 #' @return A \link[ggplot2:ggplot]{ggplot} object.
 #' @export
-reg_plot_predict = function(model_result,
-                             type = c("fitted", "predicted"),
-                             show_ci = TRUE) {
+plot_reg_predict = function(model_result,
+                            type = c("fitted", "predicted"),
+                            show_ci = TRUE) {
   .prediction_plot_generic(model_result, type, show_ci = show_ci)
 }
