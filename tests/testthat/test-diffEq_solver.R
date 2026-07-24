@@ -163,10 +163,12 @@ test_that("model_sis conserves total population", {
 
 test_that("model_sis reaches endemic equilibrium when R0 > 1", {
   res = model_sis(init = c(S = 990, I = 10),
-                  params = c(beta = 0.004, gamma = 0.1),
+                  params = c(beta = 0.3, gamma = 0.1),
                   times = seq(0, 200, by = 1))
   final_S = res$S[nrow(res)]
-  expect_equal(final_S, 25, tolerance = 0.5)
+  N = 1000
+  expected_S = N * 0.1 / 0.3
+  expect_equal(final_S, expected_S, tolerance = 0.5)
 })
 
 # =========================== model_sir ============================

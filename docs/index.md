@@ -169,8 +169,8 @@ functionalities. Currently implemented modules include:
   with stepwise selection;
   [`reg_predict()`](https://zhjx19.github.io/mathmodels/reference/reg_predict.md),
   [`reg_diagnostics()`](https://zhjx19.github.io/mathmodels/reference/reg_diagnostics.md),
-  [`reg_plot_predict()`](https://zhjx19.github.io/mathmodels/reference/reg_plot_predict.md),
-  [`reg_plot_residuals()`](https://zhjx19.github.io/mathmodels/reference/reg_plot_residuals.md)
+  [`plot_reg_predict()`](https://zhjx19.github.io/mathmodels/reference/plot_reg_predict.md),
+  [`plot_reg_residuals()`](https://zhjx19.github.io/mathmodels/reference/plot_reg_residuals.md)
 - **Markov chain prediction**:
   [`markov_chain()`](https://zhjx19.github.io/mathmodels/reference/markov_chain.md)
   and

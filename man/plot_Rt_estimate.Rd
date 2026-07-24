@@ -28,11 +28,10 @@ Estimates the time-varying effective reproduction number
 \eqn{R_t} directly from compartment data.  Two methods are
 available:
 \describe{
-\item{\code{"mechanistic"}}{Uses \eqn{R_t = \beta S(t) / \gamma}.
-This is the standard formula for an SIR-type model and is
-recommended when the model dynamics match the SIR structure.}
+\item{\code{"mechanistic"}}{Uses \eqn{R_t = \beta S(t) / (\gamma N)}.
+This is the standard formula for a frequency-dependent SIR-type model.}
 \item{\code{"normalized"}}{Uses \eqn{R_t = R_0 \, S(t) / N} with
-\eqn{R_0 = \beta N / \gamma}.  Suitable when different
+\eqn{R_0 = \beta / \gamma}.  Suitable when different
 normalisations are desired.}
 }
 }

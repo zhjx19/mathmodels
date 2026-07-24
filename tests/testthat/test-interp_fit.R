@@ -162,18 +162,18 @@ test_that("interp_hermite() validates input", {
 # --- fitting helpers ---
 
 test_that("._compute_fit_stats() returns expected columns", {
-  obs = c(1, 2, 3)
-  fitted = c(1.1, 2.2, 2.9)
-  info = mathmodels:::._compute_fit_stats(obs, fitted, df_residual = 1)
+  d = data.frame(x = 1:3, y = c(1.1, 2.2, 2.9))
+  fit = lm(y ~ x, data = d)
+  info = mathmodels:::._compute_fit_stats(d$y, fitted(fit), fit)
   expect_s3_class(info, "tbl_df")
   expect_named(info, c("r.squared", "adj.r.squared", "aic", "bic", "sigma"))
   expect_true(info$r.squared >= 0 && info$r.squared <= 1)
 })
 
 test_that("._compute_fit_stats() gives r.squared=1 for perfect fit", {
-  obs = c(1, 2, 3)
-  fitted = c(1, 2, 3)
-  info = mathmodels:::._compute_fit_stats(obs, fitted, df_residual = 0)
+  d = data.frame(x = 1:3, y = 1:3)
+  fit = lm(y ~ x, data = d)
+  info = mathmodels:::._compute_fit_stats(d$y, fitted(fit), fit)
   expect_equal(info$r.squared, 1)
   expect_equal(info$sigma, 0)
 })

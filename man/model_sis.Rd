@@ -24,8 +24,8 @@ A \code{data.frame} with columns \code{time}, \code{S}, \code{I}.
 }
 \description{
 Two-compartment model with recovery but no lasting immunity:
-\deqn{\frac{dS}{dt} = -\beta S I + \gamma I}
-\deqn{\frac{dI}{dt} =  \beta S I - \gamma I}
+\deqn{\frac{dS}{dt} = -\beta \frac{S I}{N} + \gamma I}
+\deqn{\frac{dI}{dt} =  \beta \frac{S I}{N} - \gamma I}
 }
 \details{
 Population size \eqn{N = S + I} is conserved.

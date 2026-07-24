@@ -26,13 +26,13 @@ A \code{data.frame} with columns \code{time}, \code{S}, \code{I},
 }
 \description{
 Three-compartment model with permanent immunity after recovery:
-\deqn{\frac{dS}{dt} = -\beta S I}
-\deqn{\frac{dI}{dt} =  \beta S I - \gamma I}
+\deqn{\frac{dS}{dt} = -\beta \frac{S I}{N}}
+\deqn{\frac{dI}{dt} =  \beta \frac{S I}{N} - \gamma I}
 \deqn{\frac{dR}{dt} =  \gamma I}
 }
 \details{
 Population size \eqn{N = S + I + R} is conserved.
-The basic reproduction number is \eqn{R_0 = \beta N / \gamma}.
+The basic reproduction number is \eqn{R_0 = \beta / \gamma}.
 }
 \examples{
 model_sir(

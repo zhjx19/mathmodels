@@ -243,9 +243,9 @@ stepwise selection, diagnostics, and visualization.
   : Model Diagnostics
 - [`reg_predict()`](https://zhjx19.github.io/mathmodels/reference/reg_predict.md)
   : Predictions
-- [`reg_plot_residuals()`](https://zhjx19.github.io/mathmodels/reference/reg_plot_residuals.md)
+- [`plot_reg_residuals()`](https://zhjx19.github.io/mathmodels/reference/plot_reg_residuals.md)
   : Residual Diagnostics
-- [`reg_plot_predict()`](https://zhjx19.github.io/mathmodels/reference/reg_plot_predict.md)
+- [`plot_reg_predict()`](https://zhjx19.github.io/mathmodels/reference/plot_reg_predict.md)
   : Prediction Plot
 
 ## Differential Equation Algorithms

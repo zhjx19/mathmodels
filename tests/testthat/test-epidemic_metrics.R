@@ -26,16 +26,15 @@ test_that("epi_metrics accepts named data argument", {
   expect_named(r, c("R0", "peak_infection", "peak_time", "attack_rate"))
 })
 
-test_that("epi_metrics R0 = beta * N / gamma", {
+test_that("epi_metrics R0 = beta / gamma", {
   r = epi_metrics(sir, beta = 0.002, gamma = 0.1)
-  N = 990 + 10
-  expected_R0 = 0.002 * N / 0.1
+  expected_R0 = 0.002 / 0.1
   expect_equal(r$R0, expected_R0, ignore_attr = TRUE)
 })
 
-test_that("epi_metrics uses explicit N", {
+test_that("epi_metrics uses explicit N (R0 independent of N)", {
   r = epi_metrics(sir, beta = 0.002, gamma = 0.1, N = 2000)
-  expected_R0 = 0.002 * 2000 / 0.1
+  expected_R0 = 0.002 / 0.1
   expect_equal(r$R0, expected_R0, ignore_attr = TRUE)
 })
 
@@ -51,17 +50,15 @@ test_that("epi_metrics attack_rate in [0,1]", {
 
 # =========================== N auto-inference ================================
 
-test_that("epi_metrics infers N from initial state", {
+test_that("epi_metrics infers N from initial state (R0 independent of N)", {
   r = epi_metrics(sir, beta = 0.002, gamma = 0.1)
-  N_inferred = sum(sir[1, setdiff(names(sir), "time")])
-  expected_R0 = 0.002 * N_inferred / 0.1
+  expected_R0 = 0.002 / 0.1
   expect_equal(r$R0, expected_R0, ignore_attr = TRUE)
 })
 
 test_that("epi_metrics with SEIR: N inferred from all compartments", {
   r = epi_metrics(seir, beta = 0.3, gamma = 0.1)
-  N_inferred = sum(seir[1, setdiff(names(seir), "time")])
-  expected_R0 = 0.3 * N_inferred / 0.1
+  expected_R0 = 0.3 / 0.1
   expect_equal(r$R0, expected_R0, ignore_attr = TRUE)
 })
 

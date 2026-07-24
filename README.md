@@ -22,12 +22,19 @@ suite of evaluation methods (AHP, Entropy, CRITIC, PCA, TOPSIS, Fuzzy, RSR, DEA)
 *   **Evaluation Models** — AHP, Entropy weighting, CRITIC, PCA weighting, TOPSIS, Grey Relational Analysis (GRA),
     Rank Sum Ratio (RSR), Fuzzy Comprehensive Evaluation (FCE), Data Envelopment Analysis (CCR/BCC/SBM, Malmquist),
     plus inequality measures (Gini, Theil Index), coupling coordination degree, and obstacle degree models.
-*   **Prediction Models** — Grey prediction (GM(1,1), GM(1,N), Verhulst), Markov chain prediction (`markov_chain()`,
-    `GM11_markov()`), and a lightweight **time series toolkit** built around `ts_df`: `as_ts_df()` for conversion,
-    `complete_ts_df()` / `impute_ts_df()` for gap handling, `ts_transform()` / `ts_back_transform()` for
-    Box-Cox / log / differencing workflows, `ts_test()` for stationarity tests, `ts_stl()` for STL decomposition,
-    `ts_ets()` and `ts_sarima()` for modeling, `ts_forecast()` for unified forecasting, plus `plot_ts()`,
-    `plot_ts_forecast()`, `plot_ts_acf()`, `plot_ts_pacf()`, `plot_ts_stl()`, and `plot_ts_residuals()`.
+*   **Prediction Models** — 
+    - **Grey prediction** (GM(1,1), GM(1,N), Verhulst), Markov chain prediction (`markov_chain()`,`GM11_markov()`), 
+    - **regression prediction** toolkit (`reg_lm()`, `reg_logistic()`, `reg_poisson()`,
+      `reg_negbin()` with stepwise selection; `reg_predict()`, `reg_diagnostics()`, `plot_reg_predict()`, `plot_reg_residuals()`), 
+    - lightweight **time series toolkit** built around `ts_df`: `as_ts_df()` for conversion,
+      `complete_ts_df()` / `impute_ts_df()` for gap handling, `ts_transform()` / `ts_back_transform()` for
+      Box-Cox / log / differencing workflows, `ts_test()` for stationarity tests, `ts_stl()` for STL decomposition,
+      `ts_ets()` and `ts_sarima()` for modeling, `ts_forecast()` for unified forecasting, plus `plot_ts()`,
+      `plot_ts_forecast()`, `plot_ts_acf()`, `plot_ts_pacf()`, `plot_ts_stl()`, and `plot_ts_residuals()`.
+*   **interpolation and curve fitting** — piecewise linear, cubic spline, polynomial, and Hermite
+    interpolation (`interp_linear()`, `interp_spline()`, `interp_poly()`, `interp_hermite()`), plus curve fitting
+    (`poly_fit()`, `curve_fit()`, `growth_fit()`) with automatic starting values for logistic, Gompertz,
+    and Michaelis-Menten nonlinear models.
 *   **Differential Equation Models** — String-formula `ode_solver()` for arbitrary ODE systems; ready-to-use
     population models (Malthus, Logistic), epidemic compartment models (SI, SIS, SIR, SEIR), and
     Lotka–Volterra predator–prey model, all with a unified `init` + `params` interface.
@@ -93,7 +100,8 @@ This online book is the definitive guide to the package's functionalities. Curre
 
 - **Differential equation models**: Malthus, Logistic, SI, SIS, SIR, SEIR, Lotka–Volterra with `ode_solver()` and `model_*()` functions; epidemic visualization (`plot_compartments()`, `plot_incidence()`, `plot_phase_si()`, `plot_Rt_estimate()`) and metrics (`epi_metrics()`)
 - **Time series**: `ts_df()`, `as_ts_df()`, `validate_ts_df()`, `complete_ts_df()`, `impute_ts_df()`, `drop_na_ts_df()`, `ts_transform()`, `ts_back_transform()`, `ts_ets()`, `ts_sarima()`, `ts_stl()`, `ts_test()`, `ts_forecast()`; visualization: `plot_ts()`, `plot_ts_acf()`, `plot_ts_pacf()`, `plot_ts_forecast()`, `plot_ts_stl()`, `plot_ts_residuals()`
-- **Regression prediction**: `reg_lm()`, `reg_logistic()`, `reg_poisson()`, `reg_negbin()` with stepwise selection; `reg_predict()`, `reg_diagnostics()`, `reg_plot_predict()`, `reg_plot_residuals()`
+- **Regression prediction**: `reg_lm()`, `reg_logistic()`, `reg_poisson()`, `reg_negbin()` with stepwise selection; `reg_predict()`, `reg_diagnostics()`, `plot_reg_predict()`, `plot_reg_residuals()`
+- **Interpolation & curve fitting**: `interp_linear()`, `interp_spline()`, `interp_poly()`, `interp_hermite()` for interpolation; `poly_fit()`, `curve_fit()`, `growth_fit()` for curve fitting
 - **Markov chain prediction**: `markov_chain()` and `GM11_markov()`
 - Indicator data preprocessing
 - AHP, Entropy weighting, CRITIC, PCA weighting

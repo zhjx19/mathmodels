@@ -30,6 +30,19 @@ Each curve is transformed to a linear form:
 }
 
 Fit statistics are computed on the original scale.
+
+\strong{Note on log-transform bias}: For \code{"exp"} and \code{"power"} types,
+fitted values are back-transformed directly (\code{a * exp(b * x)} or
+\code{a * x^b}), which yields the geometric-mean prediction. As a result,
+predicted values on the original scale are systematically biased
+downward by a factor of approximately \code{exp(sigma^2 / 2)}. This does
+not affect the regression coefficients (unbiased on the log scale) or
+the goodness-of-fit statistics (computed on the original scale).
+
+\strong{Note on coefficients}: For \code{"exp"} and \code{"power"} types, the coefficient
+table reports estimates on the log-transformed scale (the parameterization
+of the underlying \code{lm()} model). The formula string shows the
+back-transformed parameters on the original scale.
 }
 \examples{
 set.seed(42)

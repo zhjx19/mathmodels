@@ -224,7 +224,7 @@ test_that("reg_predict() works for logistic regression", {
 
 # --- Residual plot edge cases ---
 
-test_that("reg_plot_residuals() works for GLM", {
+test_that("plot_reg_residuals() works for GLM", {
   set.seed(42)
   n = 50
   x = rnorm(n)
@@ -235,7 +235,7 @@ test_that("reg_plot_residuals() works for GLM", {
   )
 
   fit = reg_logistic(y ~ x, data = df)
-  p = reg_plot_residuals(fit)
+  p = plot_reg_residuals(fit)
   expect_s3_class(p, "patchwork")
 })
 
@@ -324,7 +324,7 @@ test_that("reg_diagnostics() returns valid diagnostics for logistic model", {
 
 # --- Plotting ---
 
-test_that("reg_plot_residuals() returns a ggplot object", {
+test_that("plot_reg_residuals() returns a ggplot object", {
   df = data.frame(
     y = rnorm(50),
     x1 = rnorm(50),
@@ -333,11 +333,11 @@ test_that("reg_plot_residuals() returns a ggplot object", {
 
   fit = reg_lm(y ~ x1 + x2, data = df)
 
-  p = reg_plot_residuals(fit)
+  p = plot_reg_residuals(fit)
   expect_s3_class(p, "ggplot")
 })
 
-test_that("reg_plot_residuals() works for Poisson model", {
+test_that("plot_reg_residuals() works for Poisson model", {
   set.seed(42)
   n = 100
   x = rnorm(n)
@@ -348,12 +348,12 @@ test_that("reg_plot_residuals() works for Poisson model", {
   )
 
   fit = reg_poisson(count ~ x, data = df)
-  p = reg_plot_residuals(fit)
+  p = plot_reg_residuals(fit)
 
   expect_s3_class(p, "patchwork")
 })
 
-test_that("reg_plot_residuals() works for GLM returns patchwork", {
+test_that("plot_reg_residuals() works for GLM returns patchwork", {
   set.seed(42)
   n = 50
   x = rnorm(n)
@@ -364,7 +364,7 @@ test_that("reg_plot_residuals() works for GLM returns patchwork", {
   )
 
   fit = reg_logistic(y ~ x, data = df)
-  p = reg_plot_residuals(fit)
+  p = plot_reg_residuals(fit)
 
   # GLM residual plot returns patchwork (2-panel layout)
   expect_s3_class(p, "patchwork")

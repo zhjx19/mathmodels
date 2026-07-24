@@ -16,6 +16,11 @@
     with automatic starting values (Logistic, Gompertz, exponential saturation,
     Michaelis-Menten).
 
+- **Refinements**:
+  - `poly_fit()` now returns explicit polynomial equations (e.g., `y = 3 + 2 * x - 0.5 * x^2`) instead of R formula strings.
+  - Internal `._compute_fit_stats()` avoids redundant AIC/BIC computation for `lm` models (uses `stats::AIC()` / `stats::BIC()` directly; normal-approximation fallback for `nls`).
+  - `curve_fit()` documentation now notes log-transform back-transformation bias for `"exp"` and `"power"` types.
+
 - **Dependencies** (new): `minpack.lm` for Levenberg-Marquardt nonlinear least squares.
 
 # mathmodels 0.0.10
@@ -38,9 +43,9 @@
     generate fitted or predicted values with 95% confidence intervals.
 
 - **Visualization** (`pred_reg.R`):
-  - `reg_plot_residuals()`: Residual diagnostic plots (residuals vs. fitted,
+  - `plot_reg_residuals()`: Residual diagnostic plots (residuals vs. fitted,
     normal Q-Q, density).
-  - `reg_plot_predict()`: Prediction plots with confidence bands — supports both
+  - `plot_reg_predict()`: Prediction plots with confidence bands — supports both
     fitted (training data) and predicted (new data) modes.
 
 # mathmodels 0.0.9

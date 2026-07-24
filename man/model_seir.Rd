@@ -29,8 +29,8 @@ A \code{data.frame} with columns \code{time}, \code{S}, \code{E},
 }
 \description{
 Four-compartment model that adds an exposed (latent) class:
-\deqn{\frac{dS}{dt} = -\beta S I}
-\deqn{\frac{dE}{dt} =  \beta S I - \alpha E}
+\deqn{\frac{dS}{dt} = -\beta \frac{S I}{N}}
+\deqn{\frac{dE}{dt} =  \beta \frac{S I}{N} - \alpha E}
 \deqn{\frac{dI}{dt} =  \alpha E - \gamma I}
 \deqn{\frac{dR}{dt} =  \gamma I}
 }

@@ -26,24 +26,24 @@
     Draw new predictor data from the empirical distribution and generate
     fitted or predicted values with 95% confidence intervals.
 - **Visualization** (`pred_reg.R`):
-  - [`reg_plot_residuals()`](https://zhjx19.github.io/mathmodels/reference/reg_plot_residuals.md):
-    Residual diagnostic plots (residuals vs. fitted, normal Q-Q,
+  - [`plot_reg_residuals()`](https://zhjx19.github.io/mathmodels/reference/plot_reg_residuals.md):
+    Residual diagnostic plots (residuals vs. fitted, normal Q-Q,
     density).
-  - [`reg_plot_predict()`](https://zhjx19.github.io/mathmodels/reference/reg_plot_predict.md):
+  - [`plot_reg_predict()`](https://zhjx19.github.io/mathmodels/reference/plot_reg_predict.md):
     Prediction plots with confidence bands — supports both fitted
     (training data) and predicted (new data) modes.
 
 ### Bug fixes
 
 - Fixed
-  [`reg_plot_predict()`](https://zhjx19.github.io/mathmodels/reference/reg_plot_predict.md)
+  [`plot_reg_predict()`](https://zhjx19.github.io/mathmodels/reference/plot_reg_predict.md)
   and
-  [`reg_plot_residuals()`](https://zhjx19.github.io/mathmodels/reference/reg_plot_residuals.md)
+  [`plot_reg_residuals()`](https://zhjx19.github.io/mathmodels/reference/plot_reg_residuals.md)
   errors for GLM models (logistic, Poisson, negative binomial) caused by
   `inherits(x, "lm")` matching `glm` objects before the `glm` branch,
   and by inconsistent residual column names across model types.
 - Fixed
-  [`reg_plot_predict()`](https://zhjx19.github.io/mathmodels/reference/reg_plot_predict.md)
+  [`plot_reg_predict()`](https://zhjx19.github.io/mathmodels/reference/plot_reg_predict.md)
   for negative binomial models where `m$formula` was `NULL`; now falls
   back to `model_result$formula`.
 

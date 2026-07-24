@@ -36,24 +36,34 @@
 # -----------------------------------------------------------------------------
 
 # Compute fit stats on the original scale
-._compute_fit_stats = function(observed, fitted, df_residual) {
+._compute_fit_stats = function(observed, fitted, model) {
   ss_res = sum((observed - fitted)^2)
   ss_tot = sum((observed - mean(observed))^2)
   r_sq   = if (ss_tot > 0) 1 - ss_res / ss_tot else NA_real_
   n      = length(observed)
+  df_residual = if (inherits(model, "lm")) {
+    model$df.residual
+  } else {
+    length(fitted) - length(stats::coef(model))
+  }
   p      = n - df_residual
   adj_r_sq = if (ss_tot > 0 && df_residual > 0) {
     1 - (1 - r_sq) * (n - 1) / df_residual
   } else NA_real_
   sigma = if (df_residual > 0) sqrt(ss_res / df_residual) else 0
-  nll   = -sum(stats::dnorm(observed, mean = fitted, sd = sigma, log = TRUE))
-  aic   = 2 * p + 2 * nll
-  bic   = log(n) * p + 2 * nll
+  if (inherits(model, "lm")) {
+    aic = round(stats::AIC(model), 4)
+    bic = round(stats::BIC(model), 4)
+  } else {
+    nll = -sum(stats::dnorm(observed, mean = fitted, sd = sigma, log = TRUE))
+    aic = round(2 * p + 2 * nll, 4)
+    bic = round(log(n) * p + 2 * nll, 4)
+  }
   tibble::tibble(
     r.squared     = round(r_sq, 4),
     adj.r.squared = round(adj_r_sq, 4),
-    aic           = round(aic, 4),
-    bic           = round(bic, 4),
+    aic           = aic,
+    bic           = bic,
     sigma         = round(sigma, 4)
   )
 }
@@ -92,16 +102,7 @@
 # Assemble unified return value
 ._assemble_return = function(model, observed, fitted, formula, type, x, y) {
   coefs  = ._tidy_fit_coefs(model)
-  df_residual = if (inherits(model, "lm")) {
-    model$df.residual
-  } else {
-    length(fitted) - length(stats::coef(model))
-  }
-  info   = ._compute_fit_stats(observed, fitted, df_residual)
-  if (inherits(model, "lm")) {
-    info$aic = round(stats::AIC(model), 4)
-    info$bic = round(stats::BIC(model), 4)
-  }
+  info   = ._compute_fit_stats(observed, fitted, model)
   resid  = ._build_fit_residuals(observed, fitted)
   list(
     model       = model,
@@ -264,7 +265,13 @@ poly_fit = function(x, y, degree = 1) {
   ._validate_xy(x, y, min_len = degree + 1)
   fit = lm(y ~ poly(x, degree, raw = TRUE))
   fitted_vals = as.numeric(stats::fitted(fit))
-  formula_str = paste0("y ~ poly(x, ", degree, ", raw = TRUE)")
+  co = stats::coef(fit) |> unname()
+  formula_str = sprintf("y = %.4g", co[1])
+  for (i in seq_len(degree)) {
+    sign = if (co[i + 1] >= 0) " + " else " - "
+    term = if (i == 1) "x" else sprintf("x^%d", i)
+    formula_str = paste0(formula_str, sign, sprintf("%.4g * ", abs(co[i + 1])), term)
+  }
   ._assemble_return(fit, y, fitted_vals, formula_str, "poly", x, y)
 }
 
@@ -286,8 +293,15 @@ poly_fit = function(x, y, degree = 1) {
 #'
 #' Fit statistics are computed on the original scale.
 #'
-#' \cr
-#' \strong{Note on coefficients}: For `"exp"` and `"power"` types, the coefficient
+#' **Note on log-transform bias**: For `"exp"` and `"power"` types,
+#' fitted values are back-transformed directly (`a * exp(b * x)` or
+#' `a * x^b`), which yields the geometric-mean prediction. As a result,
+#' predicted values on the original scale are systematically biased
+#' downward by a factor of approximately `exp(sigma^2 / 2)`. This does
+#' not affect the regression coefficients (unbiased on the log scale) or
+#' the goodness-of-fit statistics (computed on the original scale).
+#'
+#' **Note on coefficients**: For `"exp"` and `"power"` types, the coefficient
 #' table reports estimates on the log-transformed scale (the parameterization
 #' of the underlying `lm()` model). The formula string shows the
 #' back-transformed parameters on the original scale.
@@ -309,7 +323,7 @@ curve_fit = function(x, y, type = c("exp", "power", "log", "hyperbolic")) {
     if (any(y <= 0)) stop("y must be positive for exponential fit.", call. = FALSE)
     ly = log(y)
     fit = lm(ly ~ x)
-    coefs = stats::coef(fit)
+    coefs = unname(stats::coef(fit))
     a_hat = exp(coefs[1])
     b_hat = coefs[2]
     fitted_vals = a_hat * exp(b_hat * x)
@@ -319,7 +333,7 @@ curve_fit = function(x, y, type = c("exp", "power", "log", "hyperbolic")) {
     if (any(y <= 0)) stop("y must be positive for power fit.", call. = FALSE)
     lx = log(x); ly = log(y)
     fit = lm(ly ~ lx)
-    coefs = stats::coef(fit)
+    coefs = unname(stats::coef(fit))
     a_hat = exp(coefs[1])
     b_hat = coefs[2]
     fitted_vals = a_hat * x^b_hat
@@ -328,7 +342,7 @@ curve_fit = function(x, y, type = c("exp", "power", "log", "hyperbolic")) {
     if (any(x <= 0)) stop("x must be positive for logarithmic fit.", call. = FALSE)
     lx = log(x)
     fit = lm(y ~ lx)
-    coefs = stats::coef(fit)
+    coefs = unname(stats::coef(fit))
     a_hat = coefs[1]; b_hat = coefs[2]
     fitted_vals = a_hat + b_hat * log(x)
     formula_str = sprintf("y = %.4g + %.4g * log(x)", a_hat, b_hat)
@@ -336,7 +350,7 @@ curve_fit = function(x, y, type = c("exp", "power", "log", "hyperbolic")) {
     if (any(x == 0)) stop("x must be non-zero for hyperbolic fit.", call. = FALSE)
     inv_x = 1/x
     fit = lm(y ~ inv_x)
-    coefs = stats::coef(fit)
+    coefs = unname(stats::coef(fit))
     a_hat = coefs[1]; b_hat = coefs[2]
     fitted_vals = a_hat + b_hat / x
     formula_str = sprintf("y = %.4g + %.4g / x", a_hat, b_hat)
@@ -405,7 +419,7 @@ growth_fit = function(x, y, type = c("logistic", "gompertz", "saturation", "mm")
       y_adj = pmin(y_adj, L0 - 1e-8)
       ratio = log((L0 - y_adj) / y_adj)
       lin = stats::lm(ratio ~ x)
-      co = stats::coef(lin) |> unname()
+      co = unname(stats::coef(lin))
       c(L = L0, k = -co[2], x0 = co[1] / (-co[2]))
     }, error = function(e) c(L = L0, k = 1/diff(range(x)), x0 = mean(x)))
     fit = nlsLM(y ~ L / (1 + exp(-k * (x - x0))),
@@ -422,7 +436,7 @@ growth_fit = function(x, y, type = c("logistic", "gompertz", "saturation", "mm")
       y_adj = pmin(y_adj, 1 - 1e-8)
       dublog = log(-log(y_adj))
       lin = stats::lm(dublog ~ x)
-      co = stats::coef(lin) |> unname()
+      co = unname(stats::coef(lin))
       c(L = L0, k = -co[2], x0 = co[1] / (-co[2]))
     }, error = function(e) c(L = L0, k = 1/diff(range(x)), x0 = mean(x)))
     fit = nlsLM(y ~ L * exp(-exp(-k * (x - x0))),
@@ -437,7 +451,7 @@ growth_fit = function(x, y, type = c("logistic", "gompertz", "saturation", "mm")
     start_vals = tryCatch({
       diff_y = pmax(a0 - y, 1e-8)
       lin = stats::lm(log(diff_y) ~ x)
-      co = stats::coef(lin) |> unname()
+      co = unname(stats::coef(lin))
       c(a = a0, b = -co[2])
     }, error = function(e) c(a = a0, b = 1/diff(range(x))))
     fit = nlsLM(y ~ a * (1 - exp(-b * x)),
@@ -451,7 +465,7 @@ growth_fit = function(x, y, type = c("logistic", "gompertz", "saturation", "mm")
     start_vals = tryCatch({
       pos = x > 0 & y > 0
       lin = stats::lm(I(1/y[pos]) ~ I(1/x[pos]))
-      co = stats::coef(lin) |> unname()
+      co = unname(stats::coef(lin))
       c(a = 1/co[1], b = co[2]/co[1])
     }, error = function(e) c(a = a0, b = stats::median(x)))
     fit = nlsLM(y ~ a * x / (b + x),

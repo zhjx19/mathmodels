@@ -23,8 +23,8 @@ A \code{data.frame} with columns \code{time}, \code{S}, \code{I}.
 }
 \description{
 Two-compartment model with no recovery:
-\deqn{\frac{dS}{dt} = -\beta S I}
-\deqn{\frac{dI}{dt} =  \beta S I}
+\deqn{\frac{dS}{dt} = -\beta \frac{S I}{N}}
+\deqn{\frac{dI}{dt} =  \beta \frac{S I}{N}}
 }
 \details{
 Population size \eqn{N = S + I} is conserved.

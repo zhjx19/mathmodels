@@ -52,7 +52,7 @@ Models and starting value strategies:
 Falls back to heuristic defaults if linearized estimation fails.
 }
 \examples{
-\dontrun{
+\donttest{
 set.seed(42)
 x = seq(0, 10, length.out = 30)
 y = 100 / (1 + exp(-1.5 * (x - 5))) + rnorm(30, sd = 2)

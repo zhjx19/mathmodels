@@ -245,8 +245,8 @@ model_logistic = function(init, params, times, ...) {
 #' SI Epidemic Model
 #'
 #' Two-compartment model with no recovery:
-#' \deqn{\frac{dS}{dt} = -\beta S I}
-#' \deqn{\frac{dI}{dt} =  \beta S I}
+#' \deqn{\frac{dS}{dt} = -\beta \frac{S I}{N}}
+#' \deqn{\frac{dI}{dt} =  \beta \frac{S I}{N}}
 #'
 #' Population size \eqn{N = S + I} is conserved.
 #'
@@ -272,8 +272,8 @@ model_si = function(init, params, times, ...) {
   init = .check_init(init, expected = c("S", "I"))
   ode_solver(init, times,
              equations = c(
-               S = "-beta * S * I",
-               I = "beta * S * I"
+                S = "-beta * S * I / (S+I)",
+                I = "beta * S * I / (S+I)"
              ),
              params = params, ...)
 }
@@ -283,8 +283,8 @@ model_si = function(init, params, times, ...) {
 #' SIS Epidemic Model
 #'
 #' Two-compartment model with recovery but no lasting immunity:
-#' \deqn{\frac{dS}{dt} = -\beta S I + \gamma I}
-#' \deqn{\frac{dI}{dt} =  \beta S I - \gamma I}
+#' \deqn{\frac{dS}{dt} = -\beta \frac{S I}{N} + \gamma I}
+#' \deqn{\frac{dI}{dt} =  \beta \frac{S I}{N} - \gamma I}
 #'
 #' Population size \eqn{N = S + I} is conserved.
 #'
@@ -311,8 +311,8 @@ model_sis = function(init, params, times, ...) {
   init = .check_init(init, expected = c("S", "I"))
   ode_solver(init, times,
              equations = c(
-               S = "-beta * S * I + gamma * I",
-               I = "beta * S * I - gamma * I"
+                S = "-beta * S * I / (S+I) + gamma * I",
+                I = "beta * S * I / (S+I) - gamma * I"
              ),
              params = params, ...)
 }
@@ -322,12 +322,12 @@ model_sis = function(init, params, times, ...) {
 #' SIR Epidemic Model
 #'
 #' Three-compartment model with permanent immunity after recovery:
-#' \deqn{\frac{dS}{dt} = -\beta S I}
-#' \deqn{\frac{dI}{dt} =  \beta S I - \gamma I}
+#' \deqn{\frac{dS}{dt} = -\beta \frac{S I}{N}}
+#' \deqn{\frac{dI}{dt} =  \beta \frac{S I}{N} - \gamma I}
 #' \deqn{\frac{dR}{dt} =  \gamma I}
 #'
 #' Population size \eqn{N = S + I + R} is conserved.
-#' The basic reproduction number is \eqn{R_0 = \beta N / \gamma}.
+#' The basic reproduction number is \eqn{R_0 = \beta / \gamma}.
 #'
 #' @param init   Named numeric vector.  \code{R} defaults to 0 if omitted,
 #'   e.g. \code{c(S = 990, I = 10)}.
@@ -357,9 +357,9 @@ model_sir = function(init, params, times, ...) {
   )
   ode_solver(init, times,
              equations = c(
-               S = "-beta * S * I",
-               I = "beta * S * I - gamma * I",
-               R = "gamma * I"
+                S = "-beta * S * I / (S+I+R)",
+                I = "beta * S * I / (S+I+R) - gamma * I",
+                R = "gamma * I"
              ),
              params = params, ...)
 }
@@ -369,8 +369,8 @@ model_sir = function(init, params, times, ...) {
 #' SEIR Epidemic Model
 #'
 #' Four-compartment model that adds an exposed (latent) class:
-#' \deqn{\frac{dS}{dt} = -\beta S I}
-#' \deqn{\frac{dE}{dt} =  \beta S I - \alpha E}
+#' \deqn{\frac{dS}{dt} = -\beta \frac{S I}{N}}
+#' \deqn{\frac{dE}{dt} =  \beta \frac{S I}{N} - \alpha E}
 #' \deqn{\frac{dI}{dt} =  \alpha E - \gamma I}
 #' \deqn{\frac{dR}{dt} =  \gamma I}
 #'
@@ -416,10 +416,10 @@ model_seir = function(init, params, times, ...) {
   )
   ode_solver(init, times,
              equations = c(
-               S = "-beta * S * I",
-               E = "beta * S * I - alpha * E",
-               I = "alpha * E - gamma * I",
-               R = "gamma * I"
+                S = "-beta * S * I / (S+E+I+R)",
+                E = "beta * S * I / (S+E+I+R) - alpha * E",
+                I = "alpha * E - gamma * I",
+                R = "gamma * I"
              ),
              params = params, ...)
 }
@@ -655,11 +655,10 @@ plot_phase_si = function(df) {
 #' \eqn{R_t} directly from compartment data.  Two methods are
 #' available:
 #' \describe{
-#'   \item{\code{"mechanistic"}}{Uses \eqn{R_t = \beta S(t) / \gamma}.
-#'     This is the standard formula for an SIR-type model and is
-#'     recommended when the model dynamics match the SIR structure.}
+#'   \item{\code{"mechanistic"}}{Uses \eqn{R_t = \beta S(t) / (\gamma N)}.
+#'     This is the standard formula for a frequency-dependent SIR-type model.}
 #'   \item{\code{"normalized"}}{Uses \eqn{R_t = R_0 \, S(t) / N} with
-#'     \eqn{R_0 = \beta N / \gamma}.  Suitable when different
+#'     \eqn{R_0 = \beta / \gamma}.  Suitable when different
 #'     normalisations are desired.}
 #' }
 #'
@@ -711,9 +710,9 @@ plot_Rt_estimate = function(df,
   gamma = params[["gamma"]]
 
   if (method == "mechanistic") {
-    df$Rt = beta * df$S / gamma
+    df$Rt = beta * df$S / (gamma * N)
   } else {
-    R0 = beta * N / gamma
+    R0 = beta / gamma
     df$Rt = R0 * df$S / N
   }
 

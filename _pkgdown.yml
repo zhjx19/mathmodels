@@ -166,8 +166,8 @@ reference:
   - reg_negbin
   - reg_diagnostics
   - reg_predict
-  - reg_plot_residuals
-  - reg_plot_predict
+  - plot_reg_residuals
+  - plot_reg_predict
 
 
 - title: "Differential Equation Algorithms"
