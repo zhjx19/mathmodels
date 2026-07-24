@@ -249,7 +249,7 @@
       </dl></div><div class="section level2">
       <h2 id="prediction-algorithms">Prediction Algorithms<a class="anchor" aria-label="anchor" href="#prediction-algorithms"></a></h2>
 
-      <div class="section-desc"><p>Grey prediction, Markov prediction, and time series models.</p></div>
+      <div class="section-desc"><p>Grey prediction, Markov prediction, regression, and time series models.</p></div>
 
       <dl></dl></div><div class="section level2">
       <h2 id="grey-prediction-models">Grey Prediction Models<a class="anchor" aria-label="anchor" href="#grey-prediction-models"></a></h2>
@@ -300,7 +300,7 @@
       </dl></div><div class="section level2">
       <h2 id="time-series-models">Time Series Models<a class="anchor" aria-label="anchor" href="#time-series-models"></a></h2>
 
-      <div class="section-desc"><p>Time series transformation, diagnostics, modeling, forecasting, and visualization.</p></div>
+      <div class="section-desc"><p>Time series data structure, transformation, diagnostics, modeling, forecasting, and visualization.</p></div>
 
       <dl></dl></div><div class="section level2">
 
@@ -309,17 +309,66 @@
 
       <dl><dt>
 
+          <code><a href="ts_df.html">ts_df()</a></code>
+
+        </dt>
+        <dd>Lightweight Time-Series Data Frame</dd>
+
+        <dt>
+
+          <code><a href="as_ts_df.html">as_ts_df()</a></code>
+
+        </dt>
+        <dd>Convert Common Inputs to <code>ts_df</code></dd>
+
+        <dt>
+
+          <code><a href="is_ts_df.html">is_ts_df()</a></code>
+
+        </dt>
+        <dd>Check Whether an Object Is a <code>ts_df</code></dd>
+
+        <dt>
+
+          <code><a href="validate_ts_df.html">validate_ts_df()</a></code>
+
+        </dt>
+        <dd>Validate a <code>ts_df</code></dd>
+
+        <dt>
+
+          <code><a href="complete_ts_df.html">complete_ts_df()</a></code>
+
+        </dt>
+        <dd>Complete Missing Time Points</dd>
+
+        <dt>
+
+          <code><a href="impute_ts_df.html">impute_ts_df()</a></code>
+
+        </dt>
+        <dd>Complete and Interpolate a <code>ts_df</code></dd>
+
+        <dt>
+
+          <code><a href="drop_na_ts_df.html">drop_na_ts_df()</a></code>
+
+        </dt>
+        <dd>Drop Missing Values from a <code>ts_df</code></dd>
+
+        <dt>
+
           <code><a href="ts_transform.html">ts_transform()</a></code>
 
         </dt>
-        <dd>Transform a Time Series for Stationarity</dd>
+        <dd>Transform a <code>ts_df</code></dd>
 
         <dt>
 
           <code><a href="ts_back_transform.html">ts_back_transform()</a></code>
 
         </dt>
-        <dd>Back-Transform Forecasts to the Original Scale</dd>
+        <dd>Back-Transform Forecasts</dd>
 
         <dt>
 
@@ -333,14 +382,14 @@
           <code><a href="ts_stl.html">ts_stl()</a></code>
 
         </dt>
-        <dd>STL (Seasonal + Trend + Loess) Decomposition</dd>
+        <dd>STL Decomposition for a <code>ts_df</code></dd>
 
         <dt>
 
           <code><a href="ts_ets.html">ts_ets()</a></code>
 
         </dt>
-        <dd>ETS (Error, Trend, Seasonality) Exponential Smoothing</dd>
+        <dd>ETS Model Fitting</dd>
 
         <dt>
 
@@ -351,24 +400,10 @@
 
         <dt>
 
-          <code><a href="ts_garch.html">ts_garch()</a></code>
-
-        </dt>
-        <dd>GARCH Variance Modeling</dd>
-
-        <dt>
-
-          <code><a href="ts_sarima_garch.html">ts_sarima_garch()</a></code>
-
-        </dt>
-        <dd>Two-Stage SARIMA-GARCH Joint Model</dd>
-
-        <dt>
-
           <code><a href="ts_forecast.html">ts_forecast()</a></code>
 
         </dt>
-        <dd>Generate Forecasts from a Fitted Time Series Model</dd>
+        <dd>Generate Forecasts</dd>
 
         <dt>
 
@@ -382,49 +417,100 @@
           <code><a href="plot_ts_forecast.html">plot_ts_forecast()</a></code>
 
         </dt>
-        <dd>Plot Historical Series + Forecast with Confidence Bands</dd>
-
-        <dt>
-
-          <code><a href="plot_ts_sarima_garch.html">plot_ts_sarima_garch()</a></code>
-
-        </dt>
-        <dd>Dual-Axis Plot for SARIMA-GARCH: Mean + Conditional Volatility</dd>
-
-        <dt>
-
-          <code><a href="plot_ts_garch.html">plot_ts_garch()</a></code>
-
-        </dt>
-        <dd>GARCH Volatility Plot</dd>
+        <dd>Plot Forecasts</dd>
 
         <dt>
 
           <code><a href="plot_ts_residuals.html">plot_ts_residuals()</a></code>
 
         </dt>
-        <dd>Residual Diagnostic Plots</dd>
+        <dd>Residual Diagnostic Plot</dd>
 
         <dt>
 
           <code><a href="plot_ts_stl.html">plot_ts_stl()</a></code>
 
         </dt>
-        <dd>Plot STL Decomposition Components</dd>
+        <dd>STL Decomposition Plot</dd>
 
         <dt>
 
           <code><a href="plot_ts_acf.html">plot_ts_acf()</a></code>
 
         </dt>
-        <dd>ACF and PACF Plots</dd>
+        <dd>Autocorrelation Plot</dd>
 
         <dt>
 
           <code><a href="plot_ts_pacf.html">plot_ts_pacf()</a></code>
 
         </dt>
-        <dd>PACF Plot (convenience alias)</dd>
+        <dd>Partial Autocorrelation Plot</dd>
+      </dl></div><div class="section level2">
+      <h2 id="regression-prediction-models">Regression Prediction Models<a class="anchor" aria-label="anchor" href="#regression-prediction-models"></a></h2>
+
+      <div class="section-desc"><p>Linear, logistic, Poisson, and negative binomial regression with stepwise selection, diagnostics, and visualization.</p></div>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="reg_lm.html">reg_lm()</a></code>
+
+        </dt>
+        <dd>Multivariable Linear Regression</dd>
+
+        <dt>
+
+          <code><a href="reg_logistic.html">reg_logistic()</a></code>
+
+        </dt>
+        <dd>Logistic Regression</dd>
+
+        <dt>
+
+          <code><a href="reg_poisson.html">reg_poisson()</a></code>
+
+        </dt>
+        <dd>Poisson Regression</dd>
+
+        <dt>
+
+          <code><a href="reg_negbin.html">reg_negbin()</a></code>
+
+        </dt>
+        <dd>Negative Binomial Regression</dd>
+
+        <dt>
+
+          <code><a href="reg_diagnostics.html">reg_diagnostics()</a></code>
+
+        </dt>
+        <dd>Model Diagnostics</dd>
+
+        <dt>
+
+          <code><a href="reg_predict.html">reg_predict()</a></code>
+
+        </dt>
+        <dd>Predictions</dd>
+
+        <dt>
+
+          <code><a href="reg_plot_residuals.html">reg_plot_residuals()</a></code>
+
+        </dt>
+        <dd>Residual Diagnostics</dd>
+
+        <dt>
+
+          <code><a href="reg_plot_predict.html">reg_plot_predict()</a></code>
+
+        </dt>
+        <dd>Prediction Plot</dd>
       </dl></div><div class="section level2">
       <h2 id="differential-equation-algorithms">Differential Equation Algorithms<a class="anchor" aria-label="anchor" href="#differential-equation-algorithms"></a></h2>
 
@@ -573,7 +659,7 @@
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Jingxin zhang.</p>
+  <p>Developed by Jingxin Zhang.</p>
 </div>
 
 <div class="pkgdown-footer-right">

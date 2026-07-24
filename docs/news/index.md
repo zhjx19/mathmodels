@@ -4,36 +4,42 @@
 
 ### Time series toolkit (new)
 
-- **Modeling** (`ts_models.R`):
+- **Data structure and preprocessing** (`pred_ts.R`):
+  - [`ts_df()`](https://zhjx19.github.io/mathmodels/reference/ts_df.md)
+    and
+    [`as_ts_df()`](https://zhjx19.github.io/mathmodels/reference/as_ts_df.md):
+    Lightweight single-series time-series data frame and conversion
+    helpers.
+  - [`complete_ts_df()`](https://zhjx19.github.io/mathmodels/reference/complete_ts_df.md)
+    and
+    [`impute_ts_df()`](https://zhjx19.github.io/mathmodels/reference/impute_ts_df.md):
+    Gap completion and linear / spline interpolation.
+- **Modeling and diagnostics** (`pred_ts.R`):
   - [`ts_test()`](https://zhjx19.github.io/mathmodels/reference/ts_test.md):
-    Stationarity & white-noise diagnostics (ADF, KPSS, PP, Ljung-Box).
+    Stationarity diagnostics (ADF and KPSS).
   - [`ts_stl()`](https://zhjx19.github.io/mathmodels/reference/ts_stl.md):
     Seasonal-trend decomposition (STL).
   - [`ts_ets()`](https://zhjx19.github.io/mathmodels/reference/ts_ets.md):
-    Exponential smoothing (auto / user-specified).
+    Exponential smoothing.
   - [`ts_sarima()`](https://zhjx19.github.io/mathmodels/reference/ts_sarima.md):
     SARIMA with auto-selection or user-specified orders.
-  - [`ts_garch()`](https://zhjx19.github.io/mathmodels/reference/ts_garch.md):
-    GARCH / GJR-GARCH with Student-t support and ARCH-LM diagnostics.
-  - [`ts_sarima_garch()`](https://zhjx19.github.io/mathmodels/reference/ts_sarima_garch.md):
-    Combined SARIMA-GARCH modeling.
   - [`ts_forecast()`](https://zhjx19.github.io/mathmodels/reference/ts_forecast.md):
-    Unified forecasting for ETS, SARIMA, GARCH, SARIMA-GARCH.
-- **Transformation** (`ts_models.R`):
-  - [`ts_transform()`](https://zhjx19.github.io/mathmodels/reference/ts_transform.md):
-    Box-Cox / log / identity with optional differencing and seasonal
-    differencing.
-  - [`ts_back_transform()`](https://zhjx19.github.io/mathmodels/reference/ts_back_transform.md):
-    Inverse transform for forecasts back to original scale.
-- **Visualization** (`ts_plots.R`):
-  - `plot_ts_decomposition()`: Faceted STL decomposition plot.
-  - [`plot_ts_residuals()`](https://zhjx19.github.io/mathmodels/reference/plot_ts_residuals.md):
-    Residual diagnostics (ACF, histogram, Q-Q, Ljung-Box).
-  - [`plot_ts_forecast()`](https://zhjx19.github.io/mathmodels/reference/plot_ts_forecast.md):
-    Forecast plot with historical data, prediction intervals, and
-    optional back-transformed labels.
-- **Dependencies** (new): forecast (ETS, ARIMA), tseries (ADF/KPSS/PP
-  tests), rugarch (GARCH/GJR-GARCH).
+    Unified forecasting for ETS and SARIMA models.
+  - [`ts_transform()`](https://zhjx19.github.io/mathmodels/reference/ts_transform.md)
+    and
+    [`ts_back_transform()`](https://zhjx19.github.io/mathmodels/reference/ts_back_transform.md):
+    Box-Cox / log / differencing workflows and inverse transformation
+    for forecasts.
+- **Visualization** (`pred_ts.R`):
+  - [`plot_ts()`](https://zhjx19.github.io/mathmodels/reference/plot_ts.md),
+    [`plot_ts_forecast()`](https://zhjx19.github.io/mathmodels/reference/plot_ts_forecast.md),
+    [`plot_ts_acf()`](https://zhjx19.github.io/mathmodels/reference/plot_ts_acf.md),
+    [`plot_ts_pacf()`](https://zhjx19.github.io/mathmodels/reference/plot_ts_pacf.md),
+    [`plot_ts_stl()`](https://zhjx19.github.io/mathmodels/reference/plot_ts_stl.md),
+    and
+    [`plot_ts_residuals()`](https://zhjx19.github.io/mathmodels/reference/plot_ts_residuals.md).
+- **Dependencies** (new): forecast (ETS, ARIMA), tseries (ADF/KPSS
+  tests), patchwork (multi-panel plots).
 
 ### Epidemic visualization & metrics overhaul
 

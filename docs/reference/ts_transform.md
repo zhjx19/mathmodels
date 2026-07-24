@@ -1,8 +1,8 @@
-# Transform a Time Series for Stationarity
+# Transform a `ts_df`
 
-Applies variance-stabilising transformation (Box-Cox / log) and/or
-differencing, returning the transformed series together with all
-parameters needed to back-transform forecasts.
+Applies a variance-stabilising transform and optional differencing.
+Returns a transformed `ts_df` plus explicit parameters for
+back-transformation.
 
 ## Usage
 
@@ -12,9 +12,7 @@ ts_transform(
   method = c("none", "log", "boxcox"),
   lambda = NULL,
   diff = 0L,
-  seasonal_diff = 0L,
-  frequency = NULL,
-  verbose = TRUE
+  seasonal_diff = 0L
 )
 ```
 
@@ -22,73 +20,203 @@ ts_transform(
 
 - x:
 
-  A numeric vector or `ts` object.
+  A complete `ts_df` with no missing values.
 
 - method:
 
-  Character. Variance transformation: `"none"` (default), `"log"`,
-  `"boxcox"` (auto-selects lambda via
-  [`forecast::BoxCox.lambda()`](https://pkg.robjhyndman.com/forecast/reference/BoxCox.lambda.html)).
+  One of `"none"`, `"log"`, or `"boxcox"`.
 
 - lambda:
 
-  Numeric. Fixed Box-Cox lambda. Ignored unless `method = "boxcox"`. If
-  `NULL` (default), lambda is estimated.
+  Optional Box-Cox lambda.
 
 - diff:
 
-  Integer. Number of regular differences (default `0`).
+  Number of regular differences.
 
 - seasonal_diff:
 
-  Integer. Number of seasonal differences (default `0`).
-
-- frequency:
-
-  Integer. Series frequency, required when `x` is a plain numeric vector
-  and `seasonal_diff > 0`.
-
-- verbose:
-
-  Logical. Print transformation summary (default `TRUE`).
+  Number of seasonal differences.
 
 ## Value
 
-A named list:
-
-- transformed:
-
-  Transformed `ts` object ready for modelling.
-
-- params:
-
-  Named list with `method`, `lambda`, `diff`, `seasonal_diff`,
-  `frequency` — everything needed by
-  [`ts_back_transform()`](https://zhjx19.github.io/mathmodels/reference/ts_back_transform.md).
-
-- summary:
-
-  One-row tibble describing each step applied.
-
-## See also
-
-[`ts_back_transform`](https://zhjx19.github.io/mathmodels/reference/ts_back_transform.md)
+A list with `transformed`, `params`, and `summary`.
 
 ## Examples
 
 ``` r
-data(AirPassengers)
-res = ts_transform(AirPassengers, method = "log", diff = 1,
-                    seasonal_diff = 1)
+ts_transform(as_ts_df(AirPassengers), method = "log", diff = 1)
+#> $transformed
+#>     time        value
+#> 1      2  0.052185753
+#> 2      3  0.112117298
+#> 3      4 -0.022989518
+#> 4      5 -0.064021859
+#> 5      6  0.109484233
+#> 6      7  0.091937495
+#> 7      8  0.000000000
+#> 8      9 -0.084557388
+#> 9     10 -0.133531393
+#> 10    11 -0.134732594
+#> 11    12  0.126293725
+#> 12    13 -0.025752496
+#> 13    14  0.091349779
+#> 14    15  0.112477983
+#> 15    16 -0.043485112
+#> 16    17 -0.076961041
+#> 17    18  0.175632569
+#> 18    19  0.131852131
+#> 19    20  0.000000000
+#> 20    21 -0.073203404
+#> 21    22 -0.172245905
+#> 22    23 -0.154150680
+#> 23    24  0.205443974
+#> 24    25  0.035091320
+#> 25    26  0.033901552
+#> 26    27  0.171148256
+#> 27    28 -0.088033349
+#> 28    29  0.053744276
+#> 29    30  0.034289073
+#> 30    31  0.111521274
+#> 31    32  0.000000000
+#> 32    33 -0.078369067
+#> 33    34 -0.127339422
+#> 34    35 -0.103989714
+#> 35    36  0.128381167
+#> 36    37  0.029675768
+#> 37    38  0.051293294
+#> 38    39  0.069733338
+#> 39    40 -0.064193158
+#> 40    41  0.010989122
+#> 41    42  0.175008910
+#> 42    43  0.053584246
+#> 43    44  0.050858417
+#> 44    45 -0.146603474
+#> 45    46 -0.090060824
+#> 46    47 -0.104778951
+#> 47    48  0.120363682
+#> 48    49  0.010256500
+#> 49    50  0.000000000
+#> 50    51  0.185717146
+#> 51    52 -0.004246291
+#> 52    53 -0.025863511
+#> 53    54  0.059339440
+#> 54    55  0.082887660
+#> 55    56  0.029852963
+#> 56    57 -0.137741925
+#> 57    58 -0.116202008
+#> 58    59 -0.158901283
+#> 59    60  0.110348057
+#> 60    61  0.014815086
+#> 61    62 -0.081678031
+#> 62    63  0.223143551
+#> 63    64 -0.034635497
+#> 64    65  0.030371098
+#> 65    66  0.120627988
+#> 66    67  0.134477914
+#> 67    68 -0.030254408
+#> 68    69 -0.123344547
+#> 69    70 -0.123106058
+#> 70    71 -0.120516025
+#> 71    72  0.120516025
+#> 72    73  0.055215723
+#> 73    74 -0.037899273
+#> 74    75  0.136210205
+#> 75    76  0.007462721
+#> 76    77  0.003710579
+#> 77    78  0.154150680
+#> 78    79  0.144581229
+#> 79    80 -0.047829088
+#> 80    81 -0.106321592
+#> 81    82 -0.129875081
+#> 82    83 -0.145067965
+#> 83    84  0.159560973
+#> 84    85  0.021353124
+#> 85    86 -0.024956732
+#> 86    87  0.134884268
+#> 87    88 -0.012698583
+#> 88    89  0.015848192
+#> 89    90  0.162204415
+#> 90    91  0.099191796
+#> 91    92 -0.019560526
+#> 92    93 -0.131769278
+#> 93    94 -0.148532688
+#> 94    95 -0.121466281
+#> 95    96  0.121466281
+#> 96    97  0.028987537
+#> 97    98 -0.045462374
+#> 98    99  0.167820466
+#> 99   100 -0.022728251
+#> 100  101  0.019915310
+#> 101  102  0.172887525
+#> 102  103  0.097032092
+#> 103  104  0.004291852
+#> 104  105 -0.144914380
+#> 105  106 -0.152090098
+#> 106  107 -0.129013003
+#> 107  108  0.096799383
+#> 108  109  0.011834458
+#> 109  110 -0.066894235
+#> 110  111  0.129592829
+#> 111  112 -0.039441732
+#> 112  113  0.042200354
+#> 113  114  0.180943197
+#> 114  115  0.121098097
+#> 115  116  0.028114301
+#> 116  117 -0.223143551
+#> 117  118 -0.118092489
+#> 118  119 -0.146750091
+#> 119  120  0.083510633
+#> 120  121  0.066021101
+#> 121  122 -0.051293294
+#> 122  123  0.171542423
+#> 123  124 -0.024938948
+#> 124  125  0.058840500
+#> 125  126  0.116724274
+#> 126  127  0.149296301
+#> 127  128  0.019874186
+#> 128  129 -0.188422419
+#> 129  130 -0.128913869
+#> 130  131 -0.117168974
+#> 131  132  0.112242855
+#> 132  133  0.029199155
+#> 133  134 -0.064378662
+#> 134  135  0.069163360
+#> 135  136  0.095527123
+#> 136  137  0.023580943
+#> 137  138  0.125287761
+#> 138  139  0.150673346
+#> 139  140 -0.026060107
+#> 140  141 -0.176398538
+#> 141  142 -0.097083405
+#> 142  143 -0.167251304
+#> 143  144  0.102278849
 #> 
-#> === ts_transform() ===
-#> Steps: log(x) -> seasonal_diff(lag=12) -> diff(lag=1) 
-#> Length: 144 -> 131 
-res$summary
+#> $params
+#> $params$method
+#> [1] "log"
+#> 
+#> $params$lambda
+#> [1] NA
+#> 
+#> $params$diff
+#> [1] 1
+#> 
+#> $params$seasonal_diff
+#> [1] 0
+#> 
+#> $params$frequency
+#> [1] 12
+#> 
+#> $params$last_base_values
+#>  [1] 6.033086 5.968708 6.037871 6.133398 6.156979 6.282267 6.432940 6.406880
+#>  [9] 6.230481 6.133398 5.966147 6.068426
+#> 
+#> 
+#> $summary
 #> # A tibble: 1 × 4
-#>   original_length transformed_length steps_applied                        lambda
-#>             <int>              <int> <chr>                                 <dbl>
-#> 1             144                131 log(x) -> seasonal_diff(lag=12) -> …     NA
-plot_ts(res$transformed, title = "Transformed AirPassengers")
-
+#>   original_length transformed_length steps_applied lambda
+#>             <int>              <int> <chr>          <dbl>
+#> 1             144                143 log -> diff       NA
+#> 
 ```

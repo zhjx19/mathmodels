@@ -1,60 +1,33 @@
 # Plot a Time Series
 
-Renders a clean line chart for one or more time series.
+Plot a Time Series
 
 ## Usage
 
 ``` r
-plot_ts(
-  x,
-  title = "Time Series",
-  subtitle = NULL,
-  x_lab = "Time",
-  y_lab = "Value",
-  colour = .PALETTE$observed,
-  add_points = FALSE
-)
+plot_ts(x, title = "Time Series", x_lab = "Time", y_lab = "Value")
 ```
 
 ## Arguments
 
 - x:
 
-  A numeric vector, `ts` object, tidy tibble with columns
-  `(index, value)`, or a named list of such objects for multi-series.
+  A `ts_df`.
 
 - title:
 
-  Character. Plot title.
+  Plot title.
 
-- subtitle:
+- x_lab, y_lab:
 
-  Character. Plot subtitle.
-
-- x_lab:
-
-  Character. x-axis label (default `"Time"`).
-
-- y_lab:
-
-  Character. y-axis label (default `"Value"`).
-
-- colour:
-
-  Character. Line colour (ignored for multi-series).
-
-- add_points:
-
-  Logical. Add point markers (default `FALSE`).
+  Axis labels.
 
 ## Value
 
-A `ggplot` object.
+A ggplot object.
 
 ## Examples
 
 ``` r
-data(AirPassengers)
-plot_ts(AirPassengers, title = "Air Passengers", y_lab = "Thousands")
-
+plot_ts(as_ts_df(AirPassengers))
 ```

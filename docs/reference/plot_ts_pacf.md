@@ -1,29 +1,33 @@
-# PACF Plot (convenience alias)
+# Partial Autocorrelation Plot
 
-Shortcut for `plot_ts_acf(x, type = "pacf")`.
+Partial Autocorrelation Plot
 
 ## Usage
 
 ``` r
-plot_ts_pacf(x, max_lag = 40L, title = NULL, diff = 0L)
+plot_ts_pacf(x, max_lag = 40L, title = "PACF")
 ```
 
 ## Arguments
 
 - x:
 
-  A numeric vector, `ts` object, or tidy tibble/data.frame with a
-  `value` column.
+  A complete `ts_df` with no missing values.
 
 - max_lag:
 
-  Integer. Maximum lag (default 40).
+  Maximum lag.
 
 - title:
 
-  Character. Plot title.
+  Plot title.
 
-- diff:
+## Value
 
-  Integer. Apply [`diff()`](https://rdrr.io/r/base/diff.html) this many
-  times before plotting (default 0).
+A ggplot object.
+
+## Examples
+
+``` r
+plot_ts_pacf(as_ts_df(log(AirPassengers)))
+```

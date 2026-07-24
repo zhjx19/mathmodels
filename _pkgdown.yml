@@ -116,7 +116,7 @@ reference:
   - obstacle_degree
 
 - title: "Prediction Algorithms"
-  desc: "Grey prediction, Markov prediction, and time series models."
+  desc: "Grey prediction, Markov prediction, regression, and time series models."
 
 - title: "Grey Prediction Models"
   desc: "Grey forecasting models and utilities for combining predictions."
@@ -134,25 +134,41 @@ reference:
   - GM11_markov
 
 - title: "Time Series Models"
-  desc: "Time series transformation, diagnostics, modeling, forecasting, and visualization."
+  desc: "Time series data structure, transformation, diagnostics, modeling, forecasting, and visualization."
   contents:
+  - ts_df
+  - as_ts_df
+  - is_ts_df
+  - validate_ts_df
+  - complete_ts_df
+  - impute_ts_df
+  - drop_na_ts_df
   - ts_transform
   - ts_back_transform
   - ts_test
   - ts_stl
   - ts_ets
   - ts_sarima
-  - ts_garch
-  - ts_sarima_garch
   - ts_forecast
   - plot_ts
   - plot_ts_forecast
-  - plot_ts_sarima_garch
-  - plot_ts_garch
   - plot_ts_residuals
   - plot_ts_stl
   - plot_ts_acf
   - plot_ts_pacf
+
+- title: "Regression Prediction Models"
+  desc: "Linear, logistic, Poisson, and negative binomial regression with stepwise selection, diagnostics, and visualization."
+  contents:
+  - reg_lm
+  - reg_logistic
+  - reg_poisson
+  - reg_negbin
+  - reg_diagnostics
+  - reg_predict
+  - reg_plot_residuals
+  - reg_plot_predict
+
 
 - title: "Differential Equation Algorithms"
   desc: "ODE solvers, dynamic models, epidemic models, metrics, and visualizations."

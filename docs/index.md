@@ -5,9 +5,10 @@ developed as a companion to the book *Mathematical Modeling: Algorithms
 and Programming Implementation* (China Machine Press). It focuses on
 implementing rigorous algorithms in a user-friendly manner.
 
-**Current Version (0.0.9)** adds a complete time series toolkit (SARIMA,
-ETS, GARCH, with integrated transformation and visualization) and
-overhauls epidemic modeling with streamlined visualization
+**Current Version (0.0.9)** adds a lightweight time-series workflow
+built around `ts_df` (conversion, gap completion / interpolation, STL
+decomposition, ETS / SARIMA modeling, forecasting, and visualization)
+and overhauls epidemic modeling with streamlined visualization
 (`epi_plots.R`) — on top of differential equation models, grey
 prediction, Markov chain models, and a rich suite of evaluation methods
 (AHP, Entropy, CRITIC, PCA, TOPSIS, Fuzzy, RSR, DEA).
@@ -23,23 +24,34 @@ prediction, Markov chain models, and a rich suite of evaluation methods
   Markov chain prediction
   ([`markov_chain()`](https://zhjx19.github.io/mathmodels/reference/markov_chain.md),
   [`GM11_markov()`](https://zhjx19.github.io/mathmodels/reference/GM11_markov.md)),
-  and a full **time series toolkit**:
+  and a lightweight **time series toolkit** built around `ts_df`:
+  [`as_ts_df()`](https://zhjx19.github.io/mathmodels/reference/as_ts_df.md)
+  for conversion,
+  [`complete_ts_df()`](https://zhjx19.github.io/mathmodels/reference/complete_ts_df.md)
+  /
+  [`impute_ts_df()`](https://zhjx19.github.io/mathmodels/reference/impute_ts_df.md)
+  for gap handling,
   [`ts_transform()`](https://zhjx19.github.io/mathmodels/reference/ts_transform.md)
   /
   [`ts_back_transform()`](https://zhjx19.github.io/mathmodels/reference/ts_back_transform.md)
-  for Box-Cox–model–forecast–back-transform workflows;
-  [`ts_ets()`](https://zhjx19.github.io/mathmodels/reference/ts_ets.md),
-  [`ts_sarima()`](https://zhjx19.github.io/mathmodels/reference/ts_sarima.md),
-  [`ts_garch()`](https://zhjx19.github.io/mathmodels/reference/ts_garch.md),
-  [`ts_sarima_garch()`](https://zhjx19.github.io/mathmodels/reference/ts_sarima_garch.md)
-  for modeling;
-  [`ts_stl()`](https://zhjx19.github.io/mathmodels/reference/ts_stl.md)
-  for decomposition;
+  for Box-Cox / log / differencing workflows,
   [`ts_test()`](https://zhjx19.github.io/mathmodels/reference/ts_test.md)
-  for stationarity/ARCH tests;
+  for stationarity tests,
+  [`ts_stl()`](https://zhjx19.github.io/mathmodels/reference/ts_stl.md)
+  for STL decomposition,
+  [`ts_ets()`](https://zhjx19.github.io/mathmodels/reference/ts_ets.md)
+  and
+  [`ts_sarima()`](https://zhjx19.github.io/mathmodels/reference/ts_sarima.md)
+  for modeling,
   [`ts_forecast()`](https://zhjx19.github.io/mathmodels/reference/ts_forecast.md)
-  for unified forecasting; plus dedicated `plot_ts_*()` visualization
-  functions.
+  for unified forecasting, plus
+  [`plot_ts()`](https://zhjx19.github.io/mathmodels/reference/plot_ts.md),
+  [`plot_ts_forecast()`](https://zhjx19.github.io/mathmodels/reference/plot_ts_forecast.md),
+  [`plot_ts_acf()`](https://zhjx19.github.io/mathmodels/reference/plot_ts_acf.md),
+  [`plot_ts_pacf()`](https://zhjx19.github.io/mathmodels/reference/plot_ts_pacf.md),
+  [`plot_ts_stl()`](https://zhjx19.github.io/mathmodels/reference/plot_ts_stl.md),
+  and
+  [`plot_ts_residuals()`](https://zhjx19.github.io/mathmodels/reference/plot_ts_residuals.md).
 - **Differential Equation Models** — String-formula
   [`ode_solver()`](https://zhjx19.github.io/mathmodels/reference/ode_solver.md)
   for arbitrary ODE systems; ready-to-use population models (Malthus,
@@ -58,20 +70,19 @@ prediction, Markov chain models, and a rich suite of evaluation methods
 
 ## Installation
 
-You can install the latest development version of `mathmodels` directly
-from [GitHub](https://github.com/zhjx19/mathmodels) use:
+Once released on CRAN, install `mathmodels` with:
+
+``` r
+
+install.packages("mathmodels")
+```
+
+You can install the latest development version directly from
+[GitHub](https://github.com/zhjx19/mathmodels):
 
 ``` r
 
 remotes::install_github("zhjx19/mathmodels")
-```
-
-Or download to current path, unzip and use:
-
-``` r
-
-# install.packages("lpSolveAPI")   # If necessary, install dependency packages first
-install.packages("mathmodels-main", repos=NULL, type="source")
 ```
 
 ## Getting Started
@@ -133,8 +144,7 @@ functionalities. Currently implemented modules include:
   [`ts_back_transform()`](https://zhjx19.github.io/mathmodels/reference/ts_back_transform.md),
   [`ts_ets()`](https://zhjx19.github.io/mathmodels/reference/ts_ets.md),
   [`ts_sarima()`](https://zhjx19.github.io/mathmodels/reference/ts_sarima.md),
-  [`ts_garch()`](https://zhjx19.github.io/mathmodels/reference/ts_garch.md),
-  [`ts_sarima_garch()`](https://zhjx19.github.io/mathmodels/reference/ts_sarima_garch.md),
+  `ts_garch()`, `ts_sarima_garch()`,
   [`ts_stl()`](https://zhjx19.github.io/mathmodels/reference/ts_stl.md),
   [`ts_test()`](https://zhjx19.github.io/mathmodels/reference/ts_test.md),
   [`ts_forecast()`](https://zhjx19.github.io/mathmodels/reference/ts_forecast.md),

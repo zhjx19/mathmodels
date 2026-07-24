@@ -124,7 +124,7 @@ systems.
 
 ## Prediction Algorithms
 
-Grey prediction, Markov prediction, and time series models.
+Grey prediction, Markov prediction, regression, and time series models.
 
 ## Grey Prediction Models
 
@@ -149,43 +149,104 @@ Markov chain prediction and Grey-Markov forecasting models.
 
 ## Time Series Models
 
-Time series transformation, diagnostics, modeling, forecasting, and
-visualization.
+Time series data structure, transformation, diagnostics, modeling,
+forecasting, and visualization.
+
+- [`ts_df()`](https://zhjx19.github.io/mathmodels/reference/ts_df.md) :
+  Lightweight Time-Series Data Frame
+
+- [`as_ts_df()`](https://zhjx19.github.io/mathmodels/reference/as_ts_df.md)
+  :
+
+  Convert Common Inputs to `ts_df`
+
+- [`is_ts_df()`](https://zhjx19.github.io/mathmodels/reference/is_ts_df.md)
+  :
+
+  Check Whether an Object Is a `ts_df`
+
+- [`validate_ts_df()`](https://zhjx19.github.io/mathmodels/reference/validate_ts_df.md)
+  :
+
+  Validate a `ts_df`
+
+- [`complete_ts_df()`](https://zhjx19.github.io/mathmodels/reference/complete_ts_df.md)
+  : Complete Missing Time Points
+
+- [`impute_ts_df()`](https://zhjx19.github.io/mathmodels/reference/impute_ts_df.md)
+  :
+
+  Complete and Interpolate a `ts_df`
+
+- [`drop_na_ts_df()`](https://zhjx19.github.io/mathmodels/reference/drop_na_ts_df.md)
+  :
+
+  Drop Missing Values from a `ts_df`
 
 - [`ts_transform()`](https://zhjx19.github.io/mathmodels/reference/ts_transform.md)
-  : Transform a Time Series for Stationarity
+  :
+
+  Transform a `ts_df`
+
 - [`ts_back_transform()`](https://zhjx19.github.io/mathmodels/reference/ts_back_transform.md)
-  : Back-Transform Forecasts to the Original Scale
+  : Back-Transform Forecasts
+
 - [`ts_test()`](https://zhjx19.github.io/mathmodels/reference/ts_test.md)
   : Stationarity Tests for a Time Series
+
 - [`ts_stl()`](https://zhjx19.github.io/mathmodels/reference/ts_stl.md)
-  : STL (Seasonal + Trend + Loess) Decomposition
+  :
+
+  STL Decomposition for a `ts_df`
+
 - [`ts_ets()`](https://zhjx19.github.io/mathmodels/reference/ts_ets.md)
-  : ETS (Error, Trend, Seasonality) Exponential Smoothing
+  : ETS Model Fitting
+
 - [`ts_sarima()`](https://zhjx19.github.io/mathmodels/reference/ts_sarima.md)
   : SARIMA Model Fitting
-- [`ts_garch()`](https://zhjx19.github.io/mathmodels/reference/ts_garch.md)
-  : GARCH Variance Modeling
-- [`ts_sarima_garch()`](https://zhjx19.github.io/mathmodels/reference/ts_sarima_garch.md)
-  : Two-Stage SARIMA-GARCH Joint Model
+
 - [`ts_forecast()`](https://zhjx19.github.io/mathmodels/reference/ts_forecast.md)
-  : Generate Forecasts from a Fitted Time Series Model
+  : Generate Forecasts
+
 - [`plot_ts()`](https://zhjx19.github.io/mathmodels/reference/plot_ts.md)
   : Plot a Time Series
+
 - [`plot_ts_forecast()`](https://zhjx19.github.io/mathmodels/reference/plot_ts_forecast.md)
-  : Plot Historical Series + Forecast with Confidence Bands
-- [`plot_ts_sarima_garch()`](https://zhjx19.github.io/mathmodels/reference/plot_ts_sarima_garch.md)
-  : Dual-Axis Plot for SARIMA-GARCH: Mean + Conditional Volatility
-- [`plot_ts_garch()`](https://zhjx19.github.io/mathmodels/reference/plot_ts_garch.md)
-  : GARCH Volatility Plot
+  : Plot Forecasts
+
 - [`plot_ts_residuals()`](https://zhjx19.github.io/mathmodels/reference/plot_ts_residuals.md)
-  : Residual Diagnostic Plots
+  : Residual Diagnostic Plot
+
 - [`plot_ts_stl()`](https://zhjx19.github.io/mathmodels/reference/plot_ts_stl.md)
-  : Plot STL Decomposition Components
+  : STL Decomposition Plot
+
 - [`plot_ts_acf()`](https://zhjx19.github.io/mathmodels/reference/plot_ts_acf.md)
-  : ACF and PACF Plots
+  : Autocorrelation Plot
+
 - [`plot_ts_pacf()`](https://zhjx19.github.io/mathmodels/reference/plot_ts_pacf.md)
-  : PACF Plot (convenience alias)
+  : Partial Autocorrelation Plot
+
+## Regression Prediction Models
+
+Linear, logistic, Poisson, and negative binomial regression with
+stepwise selection, diagnostics, and visualization.
+
+- [`reg_lm()`](https://zhjx19.github.io/mathmodels/reference/reg_lm.md)
+  : Multivariable Linear Regression
+- [`reg_logistic()`](https://zhjx19.github.io/mathmodels/reference/reg_logistic.md)
+  : Logistic Regression
+- [`reg_poisson()`](https://zhjx19.github.io/mathmodels/reference/reg_poisson.md)
+  : Poisson Regression
+- [`reg_negbin()`](https://zhjx19.github.io/mathmodels/reference/reg_negbin.md)
+  : Negative Binomial Regression
+- [`reg_diagnostics()`](https://zhjx19.github.io/mathmodels/reference/reg_diagnostics.md)
+  : Model Diagnostics
+- [`reg_predict()`](https://zhjx19.github.io/mathmodels/reference/reg_predict.md)
+  : Predictions
+- [`reg_plot_residuals()`](https://zhjx19.github.io/mathmodels/reference/reg_plot_residuals.md)
+  : Residual Diagnostics
+- [`reg_plot_predict()`](https://zhjx19.github.io/mathmodels/reference/reg_plot_predict.md)
+  : Prediction Plot
 
 ## Differential Equation Algorithms
 

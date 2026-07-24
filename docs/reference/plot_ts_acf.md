@@ -1,52 +1,33 @@
-# ACF and PACF Plots
+# Autocorrelation Plot
 
-ACF and PACF Plots
+Autocorrelation Plot
 
 ## Usage
 
 ``` r
-plot_ts_acf(
-  x,
-  max_lag = 40L,
-  type = c("acf", "pacf", "both"),
-  title = NULL,
-  diff = 0L
-)
+plot_ts_acf(x, max_lag = 40L, title = "ACF")
 ```
 
 ## Arguments
 
 - x:
 
-  A numeric vector, `ts` object, or tidy tibble/data.frame with a
-  `value` column.
+  A complete `ts_df` with no missing values.
 
 - max_lag:
 
-  Integer. Maximum lag (default 40).
-
-- type:
-
-  Character. `"acf"` (default), `"pacf"`, or `"both"` (returns a
-  patchwork panel).
+  Maximum lag.
 
 - title:
 
-  Character. Plot title.
-
-- diff:
-
-  Integer. Apply [`diff()`](https://rdrr.io/r/base/diff.html) this many
-  times before plotting (default 0).
+  Plot title.
 
 ## Value
 
-A `ggplot` or `patchwork` object.
+A ggplot object.
 
 ## Examples
 
 ``` r
-data(AirPassengers)
-plot_ts_acf(log(AirPassengers), type = "both")
-
+plot_ts_acf(as_ts_df(log(AirPassengers)))
 ```

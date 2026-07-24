@@ -42,40 +42,34 @@
 <div class="section level3">
 <h3 id="time-series-toolkit-new-0-0-9">Time series toolkit (new)<a class="anchor" aria-label="anchor" href="#time-series-toolkit-new-0-0-9"></a></h3>
 <ul><li>
-<strong>Modeling</strong> (<code>ts_models.R</code>):
+<strong>Data structure and preprocessing</strong> (<code>pred_ts.R</code>):
 <ul><li>
-<code><a href="../reference/ts_test.html">ts_test()</a></code>: Stationarity &amp; white-noise diagnostics (ADF, KPSS, PP, Ljung-Box).</li>
+<code><a href="../reference/ts_df.html">ts_df()</a></code> and <code><a href="../reference/as_ts_df.html">as_ts_df()</a></code>: Lightweight single-series time-series data frame and conversion helpers.</li>
+<li>
+<code><a href="../reference/complete_ts_df.html">complete_ts_df()</a></code> and <code><a href="../reference/impute_ts_df.html">impute_ts_df()</a></code>: Gap completion and linear / spline interpolation.</li>
+</ul></li>
+<li>
+<strong>Modeling and diagnostics</strong> (<code>pred_ts.R</code>):
+<ul><li>
+<code><a href="../reference/ts_test.html">ts_test()</a></code>: Stationarity diagnostics (ADF and KPSS).</li>
 <li>
 <code><a href="../reference/ts_stl.html">ts_stl()</a></code>: Seasonal-trend decomposition (STL).</li>
 <li>
-<code><a href="../reference/ts_ets.html">ts_ets()</a></code>: Exponential smoothing (auto / user-specified).</li>
+<code><a href="../reference/ts_ets.html">ts_ets()</a></code>: Exponential smoothing.</li>
 <li>
 <code><a href="../reference/ts_sarima.html">ts_sarima()</a></code>: SARIMA with auto-selection or user-specified orders.</li>
 <li>
-<code><a href="../reference/ts_garch.html">ts_garch()</a></code>: GARCH / GJR-GARCH with Student-t support and ARCH-LM diagnostics.</li>
+<code><a href="../reference/ts_forecast.html">ts_forecast()</a></code>: Unified forecasting for ETS and SARIMA models.</li>
 <li>
-<code><a href="../reference/ts_sarima_garch.html">ts_sarima_garch()</a></code>: Combined SARIMA-GARCH modeling.</li>
-<li>
-<code><a href="../reference/ts_forecast.html">ts_forecast()</a></code>: Unified forecasting for ETS, SARIMA, GARCH, SARIMA-GARCH.</li>
+<code><a href="../reference/ts_transform.html">ts_transform()</a></code> and <code><a href="../reference/ts_back_transform.html">ts_back_transform()</a></code>: Box-Cox / log / differencing workflows and inverse transformation for forecasts.</li>
 </ul></li>
 <li>
-<strong>Transformation</strong> (<code>ts_models.R</code>):
+<strong>Visualization</strong> (<code>pred_ts.R</code>):
 <ul><li>
-<code><a href="../reference/ts_transform.html">ts_transform()</a></code>: Box-Cox / log / identity with optional differencing and seasonal differencing.</li>
-<li>
-<code><a href="../reference/ts_back_transform.html">ts_back_transform()</a></code>: Inverse transform for forecasts back to original scale.</li>
+<code><a href="../reference/plot_ts.html">plot_ts()</a></code>, <code><a href="../reference/plot_ts_forecast.html">plot_ts_forecast()</a></code>, <code><a href="../reference/plot_ts_acf.html">plot_ts_acf()</a></code>, <code><a href="../reference/plot_ts_pacf.html">plot_ts_pacf()</a></code>, <code><a href="../reference/plot_ts_stl.html">plot_ts_stl()</a></code>, and <code><a href="../reference/plot_ts_residuals.html">plot_ts_residuals()</a></code>.</li>
 </ul></li>
 <li>
-<strong>Visualization</strong> (<code>ts_plots.R</code>):
-<ul><li>
-<code>plot_ts_decomposition()</code>: Faceted STL decomposition plot.</li>
-<li>
-<code><a href="../reference/plot_ts_residuals.html">plot_ts_residuals()</a></code>: Residual diagnostics (ACF, histogram, Q-Q, Ljung-Box).</li>
-<li>
-<code><a href="../reference/plot_ts_forecast.html">plot_ts_forecast()</a></code>: Forecast plot with historical data, prediction intervals, and optional back-transformed labels.</li>
-</ul></li>
-<li>
-<strong>Dependencies</strong> (new): forecast (ETS, ARIMA), tseries (ADF/KPSS/PP tests), rugarch (GARCH/GJR-GARCH).</li>
+<strong>Dependencies</strong> (new): forecast (ETS, ARIMA), tseries (ADF/KPSS tests), patchwork (multi-panel plots).</li>
 </ul></div>
 <div class="section level3">
 <h3 id="epidemic-visualization--metrics-overhaul-0-0-9">Epidemic visualization &amp; metrics overhaul<a class="anchor" aria-label="anchor" href="#epidemic-visualization--metrics-overhaul-0-0-9"></a></h3>
@@ -299,7 +293,7 @@
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Jingxin zhang.</p>
+  <p>Developed by Jingxin Zhang.</p>
 </div>
 
 <div class="pkgdown-footer-right">

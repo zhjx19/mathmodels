@@ -1,6 +1,6 @@
-# Plot STL Decomposition Components
+# STL Decomposition Plot
 
-Stacked four-panel plot: observed, trend, seasonal, remainder.
+STL Decomposition Plot
 
 ## Usage
 
@@ -12,22 +12,19 @@ plot_ts_stl(stl_result, title = "STL Decomposition")
 
 - stl_result:
 
-  Result list from
+  Result from
   [`ts_stl()`](https://zhjx19.github.io/mathmodels/reference/ts_stl.md).
 
 - title:
 
-  Character. Plot title.
+  Plot title.
 
 ## Value
 
-A `patchwork` composite `ggplot`.
+A patchwork plot.
 
 ## Examples
 
 ``` r
-data(AirPassengers)
-res = ts_stl(AirPassengers)
-plot_ts_stl(res)
-
+plot_ts_stl(ts_stl(as_ts_df(AirPassengers)))
 ```

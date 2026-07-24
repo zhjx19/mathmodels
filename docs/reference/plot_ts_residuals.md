@@ -1,38 +1,37 @@
-# Residual Diagnostic Plots
+# Residual Diagnostic Plot
 
-Four-panel diagnostic: (1) residuals over time, (2) ACF of residuals,
-(3) Q-Q plot, (4) histogram vs normal density.
+Residual Diagnostic Plot
 
 ## Usage
 
 ``` r
-plot_ts_residuals(model_result, title = "Residual Diagnostics", max_lag = 30L)
+plot_ts_residuals(model_result, max_lag = 30L, title = "Residual Diagnostics")
 ```
 
 ## Arguments
 
 - model_result:
 
-  Result from any `ts_*()` function that contains a `$fitted` tibble
-  with a `residual` column.
-
-- title:
-
-  Character. Plot title.
+  Result from
+  [`ts_ets()`](https://zhjx19.github.io/mathmodels/reference/ts_ets.md)
+  or
+  [`ts_sarima()`](https://zhjx19.github.io/mathmodels/reference/ts_sarima.md).
 
 - max_lag:
 
-  Integer. Maximum lag for ACF (default `30`).
+  Maximum lag.
+
+- title:
+
+  Plot title.
 
 ## Value
 
-A `patchwork` composite `ggplot`.
+A patchwork plot.
 
 ## Examples
 
 ``` r
-data(AirPassengers)
-fit = ts_sarima(log(AirPassengers))
+fit = ts_sarima(as_ts_df(log(AirPassengers)), stepwise = TRUE, approximation = TRUE)
 plot_ts_residuals(fit)
-
 ```

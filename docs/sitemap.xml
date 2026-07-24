@@ -3,12 +3,15 @@
 <url><loc>https://zhjx19.github.io/mathmodels/articles/index.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/articles/welcome.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/authors.html</loc></url>
+<url><loc>https://zhjx19.github.io/mathmodels/CLAUDE.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/index.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/LICENSE.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/news/index.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/AHP.html</loc></url>
+<url><loc>https://zhjx19.github.io/mathmodels/reference/as_ts_df.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/combine_preds.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/combine_weights.html</loc></url>
+<url><loc>https://zhjx19.github.io/mathmodels/reference/complete_ts_df.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/compute_incidence.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/compute_mf.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/coupling.html</loc></url>
@@ -21,6 +24,7 @@
 <url><loc>https://zhjx19.github.io/mathmodels/reference/dot-ts_theme.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/dot-ts_to_tbl.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/dot-validate_ts_input.html</loc></url>
+<url><loc>https://zhjx19.github.io/mathmodels/reference/drop_na_ts_df.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/entropy_weight.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/epidemic_metrics.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/epi_metrics.html</loc></url>
@@ -28,8 +32,10 @@
 <url><loc>https://zhjx19.github.io/mathmodels/reference/GM11_markov.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/grey_analysis.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/grey_models.html</loc></url>
+<url><loc>https://zhjx19.github.io/mathmodels/reference/impute_ts_df.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/index.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/inequality.html</loc></url>
+<url><loc>https://zhjx19.github.io/mathmodels/reference/is_ts_df.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/linear_sum.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/markov.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/markov_chain.html</loc></url>
@@ -61,9 +67,18 @@
 <url><loc>https://zhjx19.github.io/mathmodels/reference/rank_sum_ratio.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/read_nbs.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/regional_economics.html</loc></url>
+<url><loc>https://zhjx19.github.io/mathmodels/reference/reg_diagnostics.html</loc></url>
+<url><loc>https://zhjx19.github.io/mathmodels/reference/reg_lm.html</loc></url>
+<url><loc>https://zhjx19.github.io/mathmodels/reference/reg_logistic.html</loc></url>
+<url><loc>https://zhjx19.github.io/mathmodels/reference/reg_negbin.html</loc></url>
+<url><loc>https://zhjx19.github.io/mathmodels/reference/reg_plot_predict.html</loc></url>
+<url><loc>https://zhjx19.github.io/mathmodels/reference/reg_plot_residuals.html</loc></url>
+<url><loc>https://zhjx19.github.io/mathmodels/reference/reg_poisson.html</loc></url>
+<url><loc>https://zhjx19.github.io/mathmodels/reference/reg_predict.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/system_evaluation.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/topsis.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/ts_back_transform.html</loc></url>
+<url><loc>https://zhjx19.github.io/mathmodels/reference/ts_df.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/ts_ets.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/ts_forecast.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/ts_garch.html</loc></url>
@@ -72,6 +87,7 @@
 <url><loc>https://zhjx19.github.io/mathmodels/reference/ts_stl.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/ts_test.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/ts_transform.html</loc></url>
+<url><loc>https://zhjx19.github.io/mathmodels/reference/validate_ts_df.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/water_quality.html</loc></url>
 </urlset>
 

@@ -1,10 +1,6 @@
 # SARIMA Model Fitting
 
-Auto-selects or fits a user-specified SARIMA model via
-[`forecast::auto.arima()`](https://pkg.robjhyndman.com/forecast/reference/auto.arima.html)
-or
-[`forecast::Arima()`](https://pkg.robjhyndman.com/forecast/reference/Arima.html),
-returning a comprehensive tidy result.
+SARIMA Model Fitting
 
 ## Usage
 
@@ -13,7 +9,6 @@ ts_sarima(
   x,
   order = NULL,
   seasonal = NULL,
-  frequency = NULL,
   stepwise = TRUE,
   approximation = TRUE,
   ...
@@ -24,70 +19,227 @@ ts_sarima(
 
 - x:
 
-  A numeric vector or `ts` object.
+  A complete `ts_df` with no missing values.
 
 - order:
 
-  Integer vector of length 3: `c(p, d, q)`. `NULL` (default) triggers
-  automatic selection.
+  Optional non-seasonal ARIMA order.
 
 - seasonal:
 
-  A list `list(order = c(P,D,Q), period = m)` or `NULL` for automatic
-  selection.
+  Optional seasonal specification.
 
-- frequency:
+- stepwise, approximation:
 
-  Integer. Required when `x` is a plain vector.
-
-- stepwise:
-
-  Logical. Use stepwise search in auto.arima (default `TRUE`).
-
-- approximation:
-
-  Logical. Use approximation in auto.arima (default `TRUE`).
+  Passed to
+  [`forecast::auto.arima()`](https://pkg.robjhyndman.com/forecast/reference/auto.arima.html).
 
 - ...:
 
-  Additional arguments forwarded to
-  [`forecast::auto.arima()`](https://pkg.robjhyndman.com/forecast/reference/auto.arima.html)
-  or
-  [`forecast::Arima()`](https://pkg.robjhyndman.com/forecast/reference/Arima.html).
+  Additional arguments passed to the forecast fitting function.
 
 ## Value
 
-A named list:
-
-- model_info:
-
-  One-row tibble: ARIMA order string, AIC, AICc, BIC, log-likelihood,
-  sigma².
-
-- coefficients:
-
-  Tidy tibble with estimate and std error.
-
-- fitted:
-
-  Tibble: `index, observed, fitted, residual`.
-
-- diagnostics:
-
-  Ljung-Box test result tibble.
-
-- model:
-
-  Raw `Arima` object.
+A list containing tidy model summaries, the raw model, and input.
 
 ## Examples
 
 ``` r
-data(AirPassengers)
-res = ts_sarima(log(AirPassengers))
-res$model_info
-#> # A tibble: 1 × 6
-#>   model_type            log_lik   aic  aicc   bic  sigma2
-#>   <chr>                   <dbl> <dbl> <dbl> <dbl>   <dbl>
-#> 1 ARIMA0,1,1(2,1,1)[12]    245. -480. -479. -466. 0.00138
+ts_sarima(as_ts_df(log(AirPassengers)), stepwise = TRUE, approximation = TRUE)
+#> $model_info
+#> # A tibble: 1 × 5
+#>   log_lik   aic  aicc   bic  sigma2
+#>     <dbl> <dbl> <dbl> <dbl>   <dbl>
+#> 1    245. -480. -479. -466. 0.00138
+#> 
+#> $coefficients
+#> # A tibble: 4 × 3
+#>   term  estimate std_error
+#>   <chr>    <dbl>     <dbl>
+#> 1 ma1    -0.414     0.0902
+#> 2 sar1   -0.137     0.236 
+#> 3 sar2   -0.0231    0.156 
+#> 4 sma1   -0.457     0.220 
+#> 
+#> $fitted
+#> # A tibble: 144 × 4
+#>     time observed fitted residual
+#>    <int>    <dbl>  <dbl>    <dbl>
+#>  1     1     4.72   4.72 0.00272 
+#>  2     2     4.77   4.77 0.00126 
+#>  3     3     4.88   4.88 0.000919
+#>  4     4     4.86   4.86 0.000665
+#>  5     5     4.80   4.80 0.000472
+#>  6     6     4.91   4.90 0.000494
+#>  7     7     5.00   5.00 0.000508
+#>  8     8     5.00   5.00 0.000444
+#>  9     9     4.91   4.91 0.000315
+#> 10    10     4.78   4.78 0.000156
+#> # ℹ 134 more rows
+#> 
+#> $diagnostics
+#> # A tibble: 1 × 5
+#>   test        lag statistic p_value conclusion                 
+#>   <chr>     <int>     <dbl>   <dbl> <chr>                      
+#> 1 Ljung-Box    16      17.3   0.369 No autocorrelation detected
+#> 
+#> $model
+#> Series: x_ts 
+#> ARIMA(0,1,1)(2,1,1)[12] 
+#> 
+#> Coefficients:
+#>           ma1     sar1     sar2     sma1
+#>       -0.4136  -0.1374  -0.0231  -0.4570
+#> s.e.   0.0902   0.2355   0.1562   0.2199
+#> 
+#> sigma^2 = 0.001385:  log likelihood = 244.97
+#> AIC=-479.93   AICc=-479.45   BIC=-465.56
+#> 
+#> $input
+#>     time    value
+#> 1      1 4.718499
+#> 2      2 4.770685
+#> 3      3 4.882802
+#> 4      4 4.859812
+#> 5      5 4.795791
+#> 6      6 4.905275
+#> 7      7 4.997212
+#> 8      8 4.997212
+#> 9      9 4.912655
+#> 10    10 4.779123
+#> 11    11 4.644391
+#> 12    12 4.770685
+#> 13    13 4.744932
+#> 14    14 4.836282
+#> 15    15 4.948760
+#> 16    16 4.905275
+#> 17    17 4.828314
+#> 18    18 5.003946
+#> 19    19 5.135798
+#> 20    20 5.135798
+#> 21    21 5.062595
+#> 22    22 4.890349
+#> 23    23 4.736198
+#> 24    24 4.941642
+#> 25    25 4.976734
+#> 26    26 5.010635
+#> 27    27 5.181784
+#> 28    28 5.093750
+#> 29    29 5.147494
+#> 30    30 5.181784
+#> 31    31 5.293305
+#> 32    32 5.293305
+#> 33    33 5.214936
+#> 34    34 5.087596
+#> 35    35 4.983607
+#> 36    36 5.111988
+#> 37    37 5.141664
+#> 38    38 5.192957
+#> 39    39 5.262690
+#> 40    40 5.198497
+#> 41    41 5.209486
+#> 42    42 5.384495
+#> 43    43 5.438079
+#> 44    44 5.488938
+#> 45    45 5.342334
+#> 46    46 5.252273
+#> 47    47 5.147494
+#> 48    48 5.267858
+#> 49    49 5.278115
+#> 50    50 5.278115
+#> 51    51 5.463832
+#> 52    52 5.459586
+#> 53    53 5.433722
+#> 54    54 5.493061
+#> 55    55 5.575949
+#> 56    56 5.605802
+#> 57    57 5.468060
+#> 58    58 5.351858
+#> 59    59 5.192957
+#> 60    60 5.303305
+#> 61    61 5.318120
+#> 62    62 5.236442
+#> 63    63 5.459586
+#> 64    64 5.424950
+#> 65    65 5.455321
+#> 66    66 5.575949
+#> 67    67 5.710427
+#> 68    68 5.680173
+#> 69    69 5.556828
+#> 70    70 5.433722
+#> 71    71 5.313206
+#> 72    72 5.433722
+#> 73    73 5.488938
+#> 74    74 5.451038
+#> 75    75 5.587249
+#> 76    76 5.594711
+#> 77    77 5.598422
+#> 78    78 5.752573
+#> 79    79 5.897154
+#> 80    80 5.849325
+#> 81    81 5.743003
+#> 82    82 5.613128
+#> 83    83 5.468060
+#> 84    84 5.627621
+#> 85    85 5.648974
+#> 86    86 5.624018
+#> 87    87 5.758902
+#> 88    88 5.746203
+#> 89    89 5.762051
+#> 90    90 5.924256
+#> 91    91 6.023448
+#> 92    92 6.003887
+#> 93    93 5.872118
+#> 94    94 5.723585
+#> 95    95 5.602119
+#> 96    96 5.723585
+#> 97    97 5.752573
+#> 98    98 5.707110
+#> 99    99 5.874931
+#> 100  100 5.852202
+#> 101  101 5.872118
+#> 102  102 6.045005
+#> 103  103 6.142037
+#> 104  104 6.146329
+#> 105  105 6.001415
+#> 106  106 5.849325
+#> 107  107 5.720312
+#> 108  108 5.817111
+#> 109  109 5.828946
+#> 110  110 5.762051
+#> 111  111 5.891644
+#> 112  112 5.852202
+#> 113  113 5.894403
+#> 114  114 6.075346
+#> 115  115 6.196444
+#> 116  116 6.224558
+#> 117  117 6.001415
+#> 118  118 5.883322
+#> 119  119 5.736572
+#> 120  120 5.820083
+#> 121  121 5.886104
+#> 122  122 5.834811
+#> 123  123 6.006353
+#> 124  124 5.981414
+#> 125  125 6.040255
+#> 126  126 6.156979
+#> 127  127 6.306275
+#> 128  128 6.326149
+#> 129  129 6.137727
+#> 130  130 6.008813
+#> 131  131 5.891644
+#> 132  132 6.003887
+#> 133  133 6.033086
+#> 134  134 5.968708
+#> 135  135 6.037871
+#> 136  136 6.133398
+#> 137  137 6.156979
+#> 138  138 6.282267
+#> 139  139 6.432940
+#> 140  140 6.406880
+#> 141  141 6.230481
+#> 142  142 6.133398
+#> 143  143 5.966147
+#> 144  144 6.068426
+#> 
 ```
