@@ -5,14 +5,13 @@ directly from compartment data. Two methods are available:
 
 - `"mechanistic"`:
 
-  Uses \\R_t = \beta S(t) / \gamma\\. This is the standard formula for
-  an SIR-type model and is recommended when the model dynamics match the
-  SIR structure.
+  Uses \\R_t = \beta S(t) / (\gamma N)\\. This is the standard formula
+  for a frequency-dependent SIR-type model.
 
 - `"normalized"`:
 
-  Uses \\R_t = R_0 \\ S(t) / N\\ with \\R_0 = \beta N / \gamma\\.
-  Suitable when different normalisations are desired.
+  Uses \\R_t = R_0 \\ S(t) / N\\ with \\R_0 = \beta / \gamma\\. Suitable
+  when different normalisations are desired.
 
 ## Usage
 

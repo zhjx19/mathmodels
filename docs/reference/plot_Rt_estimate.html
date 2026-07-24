@@ -3,13 +3,12 @@
 \(R_t\) directly from compartment data.  Two methods are
 available:
 "mechanistic"
-Uses \(R_t = \beta S(t) / \gamma\).
-This is the standard formula for an SIR-type model and is
-recommended when the model dynamics match the SIR structure.
+Uses \(R_t = \beta S(t) / (\gamma N)\).
+This is the standard formula for a frequency-dependent SIR-type model.
 
 "normalized"
 Uses \(R_t = R_0 \, S(t) / N\) with
-\(R_0 = \beta N / \gamma\).  Suitable when different
+\(R_0 = \beta / \gamma\).  Suitable when different
 normalisations are desired.
 
 
@@ -18,13 +17,12 @@ normalisations are desired.
 \(R_t\) directly from compartment data.  Two methods are
 available:
 "mechanistic"
-Uses \(R_t = \beta S(t) / \gamma\).
-This is the standard formula for an SIR-type model and is
-recommended when the model dynamics match the SIR structure.
+Uses \(R_t = \beta S(t) / (\gamma N)\).
+This is the standard formula for a frequency-dependent SIR-type model.
 
 "normalized"
 Uses \(R_t = R_0 \, S(t) / N\) with
-\(R_0 = \beta N / \gamma\).  Suitable when different
+\(R_0 = \beta / \gamma\).  Suitable when different
 normalisations are desired.
 
 
@@ -37,7 +35,7 @@ normalisations are desired.
 
     <a class="navbar-brand me-2" href="../index.html">mathmodels</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.10</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.11</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -72,13 +70,12 @@ normalisations are desired.
     <p>Estimates the time-varying effective reproduction number
 \(R_t\) directly from compartment data.  Two methods are
 available:</p><dl><dt><code>"mechanistic"</code></dt>
-<dd><p>Uses \(R_t = \beta S(t) / \gamma\).
-This is the standard formula for an SIR-type model and is
-recommended when the model dynamics match the SIR structure.</p></dd>
+<dd><p>Uses \(R_t = \beta S(t) / (\gamma N)\).
+This is the standard formula for a frequency-dependent SIR-type model.</p></dd>
 
 <dt><code>"normalized"</code></dt>
 <dd><p>Uses \(R_t = R_0 \, S(t) / N\) with
-\(R_0 = \beta N / \gamma\).  Suitable when different
+\(R_0 = \beta / \gamma\).  Suitable when different
 normalisations are desired.</p></dd>
 
 

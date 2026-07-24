@@ -69,15 +69,15 @@ sir = model_sir(
 )
 epi_metrics(sir, beta = 0.002, gamma = 0.1)
 #> $R0
-#> [1] 20
+#> [1] 0.02
 #> 
 #> $peak_infection
-#> [1] 800.5652
+#> [1] 10
 #> 
 #> $peak_time
-#> [1] 4.1
+#> [1] 0
 #> 
 #> $attack_rate
-#> [1] 0.99
+#> [1] 0.0002004762
 #> 
 ```

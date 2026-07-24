@@ -1,5 +1,44 @@
 # Changelog
 
+## mathmodels 0.0.11
+
+### Interpolation & curve fitting toolkit (new)
+
+- **Interpolation** (`interp_fit.R`):
+  - [`interp_linear()`](https://zhjx19.github.io/mathmodels/reference/interp_linear.md):
+    Piecewise linear interpolation.
+  - [`interp_spline()`](https://zhjx19.github.io/mathmodels/reference/interp_spline.md):
+    Cubic spline interpolation with optional smoothing via `spar`.
+  - [`interp_poly()`](https://zhjx19.github.io/mathmodels/reference/interp_poly.md):
+    Polynomial interpolation of specified degree.
+  - [`interp_hermite()`](https://zhjx19.github.io/mathmodels/reference/interp_hermite.md):
+    Shape-preserving piecewise cubic Hermite interpolation.
+- **Curve fitting** (`interp_fit.R`):
+  - [`poly_fit()`](https://zhjx19.github.io/mathmodels/reference/poly_fit.md):
+    Polynomial regression.
+  - [`curve_fit()`](https://zhjx19.github.io/mathmodels/reference/curve_fit.md):
+    Unified interface for linearizable curves via variable
+    transformation (exponential, power-law, logarithmic, hyperbolic).
+  - [`growth_fit()`](https://zhjx19.github.io/mathmodels/reference/growth_fit.md):
+    Nonlinear growth curve fitting via
+    [`minpack.lm::nlsLM()`](https://rdrr.io/pkg/minpack.lm/man/nlsLM.html)
+    with automatic starting values (Logistic, Gompertz, exponential
+    saturation, Michaelis-Menten).
+- **Refinements**:
+  - [`poly_fit()`](https://zhjx19.github.io/mathmodels/reference/poly_fit.md)
+    now returns explicit polynomial equations (e.g.,
+    `y = 3 + 2 * x - 0.5 * x^2`) instead of R formula strings.
+  - Internal `._compute_fit_stats()` avoids redundant AIC/BIC
+    computation for `lm` models (uses
+    [`stats::AIC()`](https://rdrr.io/r/stats/AIC.html) /
+    [`stats::BIC()`](https://rdrr.io/r/stats/AIC.html) directly;
+    normal-approximation fallback for `nls`).
+  - [`curve_fit()`](https://zhjx19.github.io/mathmodels/reference/curve_fit.md)
+    documentation now notes log-transform back-transformation bias for
+    `"exp"` and `"power"` types.
+- **Dependencies** (new): `minpack.lm` for Levenberg-Marquardt nonlinear
+  least squares.
+
 ## mathmodels 0.0.10
 
 ### Regression prediction toolkit (new)
@@ -27,25 +66,11 @@
     fitted or predicted values with 95% confidence intervals.
 - **Visualization** (`pred_reg.R`):
   - [`plot_reg_residuals()`](https://zhjx19.github.io/mathmodels/reference/plot_reg_residuals.md):
-    Residual diagnostic plots (residuals vs. fitted, normal Q-Q,
+    Residual diagnostic plots (residuals vs. fitted, normal Q-Q,
     density).
   - [`plot_reg_predict()`](https://zhjx19.github.io/mathmodels/reference/plot_reg_predict.md):
     Prediction plots with confidence bands — supports both fitted
     (training data) and predicted (new data) modes.
-
-### Bug fixes
-
-- Fixed
-  [`plot_reg_predict()`](https://zhjx19.github.io/mathmodels/reference/plot_reg_predict.md)
-  and
-  [`plot_reg_residuals()`](https://zhjx19.github.io/mathmodels/reference/plot_reg_residuals.md)
-  errors for GLM models (logistic, Poisson, negative binomial) caused by
-  `inherits(x, "lm")` matching `glm` objects before the `glm` branch,
-  and by inconsistent residual column names across model types.
-- Fixed
-  [`plot_reg_predict()`](https://zhjx19.github.io/mathmodels/reference/plot_reg_predict.md)
-  for negative binomial models where `m$formula` was `NULL`; now falls
-  back to `model_result$formula`.
 
 ## mathmodels 0.0.9
 

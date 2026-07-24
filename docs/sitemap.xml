@@ -16,6 +16,7 @@
 <url><loc>https://zhjx19.github.io/mathmodels/reference/compute_mf.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/coupling.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/critic_weight.html</loc></url>
+<url><loc>https://zhjx19.github.io/mathmodels/reference/curve_fit.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/cv_weight.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/DEA.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/defuzzify.html</loc></url>
@@ -32,9 +33,14 @@
 <url><loc>https://zhjx19.github.io/mathmodels/reference/GM11_markov.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/grey_analysis.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/grey_models.html</loc></url>
+<url><loc>https://zhjx19.github.io/mathmodels/reference/growth_fit.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/impute_ts_df.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/index.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/inequality.html</loc></url>
+<url><loc>https://zhjx19.github.io/mathmodels/reference/interp_hermite.html</loc></url>
+<url><loc>https://zhjx19.github.io/mathmodels/reference/interp_linear.html</loc></url>
+<url><loc>https://zhjx19.github.io/mathmodels/reference/interp_poly.html</loc></url>
+<url><loc>https://zhjx19.github.io/mathmodels/reference/interp_spline.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/is_ts_df.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/linear_sum.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/markov.html</loc></url>
@@ -54,6 +60,8 @@
 <url><loc>https://zhjx19.github.io/mathmodels/reference/plot_incidence.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/plot_infectious_curve.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/plot_phase_si.html</loc></url>
+<url><loc>https://zhjx19.github.io/mathmodels/reference/plot_reg_predict.html</loc></url>
+<url><loc>https://zhjx19.github.io/mathmodels/reference/plot_reg_residuals.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/plot_Rt_estimate.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/plot_ts.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/plot_ts_acf.html</loc></url>
@@ -63,6 +71,7 @@
 <url><loc>https://zhjx19.github.io/mathmodels/reference/plot_ts_residuals.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/plot_ts_sarima_garch.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/plot_ts_stl.html</loc></url>
+<url><loc>https://zhjx19.github.io/mathmodels/reference/poly_fit.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/preprocess.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/rank_sum_ratio.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/read_nbs.html</loc></url>

@@ -248,6 +248,26 @@ stepwise selection, diagnostics, and visualization.
 - [`plot_reg_predict()`](https://zhjx19.github.io/mathmodels/reference/plot_reg_predict.md)
   : Prediction Plot
 
+## Curve Fitting & Interpolation
+
+Polynomial fitting, linearizable curve fitting, growth models, and
+interpolation methods.
+
+- [`poly_fit()`](https://zhjx19.github.io/mathmodels/reference/poly_fit.md)
+  : Polynomial Fit
+- [`curve_fit()`](https://zhjx19.github.io/mathmodels/reference/curve_fit.md)
+  : Linearizable Curve Fit
+- [`growth_fit()`](https://zhjx19.github.io/mathmodels/reference/growth_fit.md)
+  : Nonlinear Growth Curve Fit
+- [`interp_linear()`](https://zhjx19.github.io/mathmodels/reference/interp_linear.md)
+  : Linear Interpolation
+- [`interp_poly()`](https://zhjx19.github.io/mathmodels/reference/interp_poly.md)
+  : Polynomial Interpolation
+- [`interp_hermite()`](https://zhjx19.github.io/mathmodels/reference/interp_hermite.md)
+  : Piecewise Cubic Hermite Interpolation
+- [`interp_spline()`](https://zhjx19.github.io/mathmodels/reference/interp_spline.md)
+  : Cubic Spline Interpolation
+
 ## Differential Equation Algorithms
 
 ODE solvers, dynamic models, epidemic models, metrics, and

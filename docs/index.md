@@ -19,38 +19,60 @@ prediction, Markov chain models, and a rich suite of evaluation methods
   Comprehensive Evaluation (FCE), Data Envelopment Analysis
   (CCR/BCC/SBM, Malmquist), plus inequality measures (Gini, Theil
   Index), coupling coordination degree, and obstacle degree models.
-- **Prediction Models** — Grey prediction (GM(1,1), GM(1,N), Verhulst),
-  Markov chain prediction
-  ([`markov_chain()`](https://zhjx19.github.io/mathmodels/reference/markov_chain.md),
-  [`GM11_markov()`](https://zhjx19.github.io/mathmodels/reference/GM11_markov.md)),
-  and a lightweight **time series toolkit** built around `ts_df`:
-  [`as_ts_df()`](https://zhjx19.github.io/mathmodels/reference/as_ts_df.md)
-  for conversion,
-  [`complete_ts_df()`](https://zhjx19.github.io/mathmodels/reference/complete_ts_df.md)
-  /
-  [`impute_ts_df()`](https://zhjx19.github.io/mathmodels/reference/impute_ts_df.md)
-  for gap handling,
-  [`ts_transform()`](https://zhjx19.github.io/mathmodels/reference/ts_transform.md)
-  /
-  [`ts_back_transform()`](https://zhjx19.github.io/mathmodels/reference/ts_back_transform.md)
-  for Box-Cox / log / differencing workflows,
-  [`ts_test()`](https://zhjx19.github.io/mathmodels/reference/ts_test.md)
-  for stationarity tests,
-  [`ts_stl()`](https://zhjx19.github.io/mathmodels/reference/ts_stl.md)
-  for STL decomposition,
-  [`ts_ets()`](https://zhjx19.github.io/mathmodels/reference/ts_ets.md)
-  and
-  [`ts_sarima()`](https://zhjx19.github.io/mathmodels/reference/ts_sarima.md)
-  for modeling,
-  [`ts_forecast()`](https://zhjx19.github.io/mathmodels/reference/ts_forecast.md)
-  for unified forecasting, plus
-  [`plot_ts()`](https://zhjx19.github.io/mathmodels/reference/plot_ts.md),
-  [`plot_ts_forecast()`](https://zhjx19.github.io/mathmodels/reference/plot_ts_forecast.md),
-  [`plot_ts_acf()`](https://zhjx19.github.io/mathmodels/reference/plot_ts_acf.md),
-  [`plot_ts_pacf()`](https://zhjx19.github.io/mathmodels/reference/plot_ts_pacf.md),
-  [`plot_ts_stl()`](https://zhjx19.github.io/mathmodels/reference/plot_ts_stl.md),
-  and
-  [`plot_ts_residuals()`](https://zhjx19.github.io/mathmodels/reference/plot_ts_residuals.md).
+- **Prediction Models** —
+  - **Grey prediction** (GM(1,1), GM(1,N), Verhulst), Markov chain
+    prediction
+    ([`markov_chain()`](https://zhjx19.github.io/mathmodels/reference/markov_chain.md),[`GM11_markov()`](https://zhjx19.github.io/mathmodels/reference/GM11_markov.md)),
+  - **regression prediction** toolkit
+    ([`reg_lm()`](https://zhjx19.github.io/mathmodels/reference/reg_lm.md),
+    [`reg_logistic()`](https://zhjx19.github.io/mathmodels/reference/reg_logistic.md),
+    [`reg_poisson()`](https://zhjx19.github.io/mathmodels/reference/reg_poisson.md),
+    [`reg_negbin()`](https://zhjx19.github.io/mathmodels/reference/reg_negbin.md)
+    with stepwise selection;
+    [`reg_predict()`](https://zhjx19.github.io/mathmodels/reference/reg_predict.md),
+    [`reg_diagnostics()`](https://zhjx19.github.io/mathmodels/reference/reg_diagnostics.md),
+    [`plot_reg_predict()`](https://zhjx19.github.io/mathmodels/reference/plot_reg_predict.md),
+    [`plot_reg_residuals()`](https://zhjx19.github.io/mathmodels/reference/plot_reg_residuals.md)),
+  - lightweight **time series toolkit** built around `ts_df`:
+    [`as_ts_df()`](https://zhjx19.github.io/mathmodels/reference/as_ts_df.md)
+    for conversion,
+    [`complete_ts_df()`](https://zhjx19.github.io/mathmodels/reference/complete_ts_df.md)
+    /
+    [`impute_ts_df()`](https://zhjx19.github.io/mathmodels/reference/impute_ts_df.md)
+    for gap handling,
+    [`ts_transform()`](https://zhjx19.github.io/mathmodels/reference/ts_transform.md)
+    /
+    [`ts_back_transform()`](https://zhjx19.github.io/mathmodels/reference/ts_back_transform.md)
+    for Box-Cox / log / differencing workflows,
+    [`ts_test()`](https://zhjx19.github.io/mathmodels/reference/ts_test.md)
+    for stationarity tests,
+    [`ts_stl()`](https://zhjx19.github.io/mathmodels/reference/ts_stl.md)
+    for STL decomposition,
+    [`ts_ets()`](https://zhjx19.github.io/mathmodels/reference/ts_ets.md)
+    and
+    [`ts_sarima()`](https://zhjx19.github.io/mathmodels/reference/ts_sarima.md)
+    for modeling,
+    [`ts_forecast()`](https://zhjx19.github.io/mathmodels/reference/ts_forecast.md)
+    for unified forecasting, plus
+    [`plot_ts()`](https://zhjx19.github.io/mathmodels/reference/plot_ts.md),
+    [`plot_ts_forecast()`](https://zhjx19.github.io/mathmodels/reference/plot_ts_forecast.md),
+    [`plot_ts_acf()`](https://zhjx19.github.io/mathmodels/reference/plot_ts_acf.md),
+    [`plot_ts_pacf()`](https://zhjx19.github.io/mathmodels/reference/plot_ts_pacf.md),
+    [`plot_ts_stl()`](https://zhjx19.github.io/mathmodels/reference/plot_ts_stl.md),
+    and
+    [`plot_ts_residuals()`](https://zhjx19.github.io/mathmodels/reference/plot_ts_residuals.md).
+- **interpolation and curve fitting** — piecewise linear, cubic spline,
+  polynomial, and Hermite interpolation
+  ([`interp_linear()`](https://zhjx19.github.io/mathmodels/reference/interp_linear.md),
+  [`interp_spline()`](https://zhjx19.github.io/mathmodels/reference/interp_spline.md),
+  [`interp_poly()`](https://zhjx19.github.io/mathmodels/reference/interp_poly.md),
+  [`interp_hermite()`](https://zhjx19.github.io/mathmodels/reference/interp_hermite.md)),
+  plus curve fitting
+  ([`poly_fit()`](https://zhjx19.github.io/mathmodels/reference/poly_fit.md),
+  [`curve_fit()`](https://zhjx19.github.io/mathmodels/reference/curve_fit.md),
+  [`growth_fit()`](https://zhjx19.github.io/mathmodels/reference/growth_fit.md))
+  with automatic starting values for logistic, Gompertz, and
+  Michaelis-Menten nonlinear models.
 - **Differential Equation Models** — String-formula
   [`ode_solver()`](https://zhjx19.github.io/mathmodels/reference/ode_solver.md)
   for arbitrary ODE systems; ready-to-use population models (Malthus,
@@ -171,6 +193,16 @@ functionalities. Currently implemented modules include:
   [`reg_diagnostics()`](https://zhjx19.github.io/mathmodels/reference/reg_diagnostics.md),
   [`plot_reg_predict()`](https://zhjx19.github.io/mathmodels/reference/plot_reg_predict.md),
   [`plot_reg_residuals()`](https://zhjx19.github.io/mathmodels/reference/plot_reg_residuals.md)
+- **Interpolation & curve fitting**:
+  [`interp_linear()`](https://zhjx19.github.io/mathmodels/reference/interp_linear.md),
+  [`interp_spline()`](https://zhjx19.github.io/mathmodels/reference/interp_spline.md),
+  [`interp_poly()`](https://zhjx19.github.io/mathmodels/reference/interp_poly.md),
+  [`interp_hermite()`](https://zhjx19.github.io/mathmodels/reference/interp_hermite.md)
+  for interpolation;
+  [`poly_fit()`](https://zhjx19.github.io/mathmodels/reference/poly_fit.md),
+  [`curve_fit()`](https://zhjx19.github.io/mathmodels/reference/curve_fit.md),
+  [`growth_fit()`](https://zhjx19.github.io/mathmodels/reference/growth_fit.md)
+  for curve fitting
 - **Markov chain prediction**:
   [`markov_chain()`](https://zhjx19.github.io/mathmodels/reference/markov_chain.md)
   and

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">mathmodels</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.10</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.11</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -38,6 +38,42 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.11" id="mathmodels-0011">mathmodels 0.0.11<a class="anchor" aria-label="anchor" href="#mathmodels-0011"></a></h2>
+<div class="section level3">
+<h3 id="interpolation--curve-fitting-toolkit-new-0-0-11">Interpolation &amp; curve fitting toolkit (new)<a class="anchor" aria-label="anchor" href="#interpolation--curve-fitting-toolkit-new-0-0-11"></a></h3>
+<ul><li>
+<strong>Interpolation</strong> (<code>interp_fit.R</code>):
+<ul><li>
+<code><a href="../reference/interp_linear.html">interp_linear()</a></code>: Piecewise linear interpolation.</li>
+<li>
+<code><a href="../reference/interp_spline.html">interp_spline()</a></code>: Cubic spline interpolation with optional smoothing via <code>spar</code>.</li>
+<li>
+<code><a href="../reference/interp_poly.html">interp_poly()</a></code>: Polynomial interpolation of specified degree.</li>
+<li>
+<code><a href="../reference/interp_hermite.html">interp_hermite()</a></code>: Shape-preserving piecewise cubic Hermite interpolation.</li>
+</ul></li>
+<li>
+<strong>Curve fitting</strong> (<code>interp_fit.R</code>):
+<ul><li>
+<code><a href="../reference/poly_fit.html">poly_fit()</a></code>: Polynomial regression.</li>
+<li>
+<code><a href="../reference/curve_fit.html">curve_fit()</a></code>: Unified interface for linearizable curves via variable transformation (exponential, power-law, logarithmic, hyperbolic).</li>
+<li>
+<code><a href="../reference/growth_fit.html">growth_fit()</a></code>: Nonlinear growth curve fitting via <code><a href="https://rdrr.io/pkg/minpack.lm/man/nlsLM.html" class="external-link">minpack.lm::nlsLM()</a></code> with automatic starting values (Logistic, Gompertz, exponential saturation, Michaelis-Menten).</li>
+</ul></li>
+<li>
+<strong>Refinements</strong>:
+<ul><li>
+<code><a href="../reference/poly_fit.html">poly_fit()</a></code> now returns explicit polynomial equations (e.g., <code>y = 3 + 2 * x - 0.5 * x^2</code>) instead of R formula strings.</li>
+<li>Internal <code>._compute_fit_stats()</code> avoids redundant AIC/BIC computation for <code>lm</code> models (uses <code><a href="https://rdrr.io/r/stats/AIC.html" class="external-link">stats::AIC()</a></code> / <code><a href="https://rdrr.io/r/stats/AIC.html" class="external-link">stats::BIC()</a></code> directly; normal-approximation fallback for <code>nls</code>).</li>
+<li>
+<code><a href="../reference/curve_fit.html">curve_fit()</a></code> documentation now notes log-transform back-transformation bias for <code>"exp"</code> and <code>"power"</code> types.</li>
+</ul></li>
+<li>
+<strong>Dependencies</strong> (new): <code>minpack.lm</code> for Levenberg-Marquardt nonlinear least squares.</li>
+</ul></div>
+</div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.10" id="mathmodels-0010">mathmodels 0.0.10<a class="anchor" aria-label="anchor" href="#mathmodels-0010"></a></h2>
 <div class="section level3">
 <h3 id="regression-prediction-toolkit-new-0-0-10">Regression prediction toolkit (new)<a class="anchor" aria-label="anchor" href="#regression-prediction-toolkit-new-0-0-10"></a></h3>
@@ -62,15 +98,10 @@
 <li>
 <strong>Visualization</strong> (<code>pred_reg.R</code>):
 <ul><li>
-<code><a href="../reference/reg_plot_residuals.html">reg_plot_residuals()</a></code>: Residual diagnostic plots (residuals vs. fitted, normal Q-Q, density).</li>
+<code><a href="../reference/plot_reg_residuals.html">plot_reg_residuals()</a></code>: Residual diagnostic plots (residuals vs. fitted, normal Q-Q, density).</li>
 <li>
-<code><a href="../reference/reg_plot_predict.html">reg_plot_predict()</a></code>: Prediction plots with confidence bands — supports both fitted (training data) and predicted (new data) modes.</li>
+<code><a href="../reference/plot_reg_predict.html">plot_reg_predict()</a></code>: Prediction plots with confidence bands — supports both fitted (training data) and predicted (new data) modes.</li>
 </ul></li>
-</ul></div>
-<div class="section level3">
-<h3 id="bug-fixes-0-0-10">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-0-10"></a></h3>
-<ul><li>Fixed <code><a href="../reference/reg_plot_predict.html">reg_plot_predict()</a></code> and <code><a href="../reference/reg_plot_residuals.html">reg_plot_residuals()</a></code> errors for GLM models (logistic, Poisson, negative binomial) caused by <code>inherits(x, "lm")</code> matching <code>glm</code> objects before the <code>glm</code> branch, and by inconsistent residual column names across model types.</li>
-<li>Fixed <code><a href="../reference/reg_plot_predict.html">reg_plot_predict()</a></code> for negative binomial models where <code>m$formula</code> was <code>NULL</code>; now falls back to <code>model_result$formula</code>.</li>
 </ul></div>
 </div>
     <div class="section level2">

@@ -170,6 +170,17 @@ reference:
   - plot_reg_predict
 
 
+- title: "Curve Fitting & Interpolation"
+  desc: "Polynomial fitting, linearizable curve fitting, growth models, and interpolation methods."
+  contents:
+  - poly_fit
+  - curve_fit
+  - growth_fit
+  - interp_linear
+  - interp_poly
+  - interp_hermite
+  - interp_spline
+
 - title: "Differential Equation Algorithms"
   desc: "ODE solvers, dynamic models, epidemic models, metrics, and visualizations."
 
