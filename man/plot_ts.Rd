@@ -4,40 +4,21 @@
 \alias{plot_ts}
 \title{Plot a Time Series}
 \usage{
-plot_ts(
-  x,
-  title = "Time Series",
-  subtitle = NULL,
-  x_lab = "Time",
-  y_lab = "Value",
-  colour = .PALETTE$observed,
-  add_points = FALSE
-)
+plot_ts(x, title = "Time Series", x_lab = "Time", y_lab = "Value")
 }
 \arguments{
-\item{x}{A numeric vector, \code{ts} object, tidy tibble with columns
-\code{(index, value)}, or a named list of such objects for multi-series.}
+\item{x}{A \code{ts_df}.}
 
-\item{title}{Character. Plot title.}
+\item{title}{Plot title.}
 
-\item{subtitle}{Character. Plot subtitle.}
-
-\item{x_lab}{Character. x-axis label (default \code{"Time"}).}
-
-\item{y_lab}{Character. y-axis label (default \code{"Value"}).}
-
-\item{colour}{Character. Line colour (ignored for multi-series).}
-
-\item{add_points}{Logical. Add point markers (default \code{FALSE}).}
+\item{x_lab, y_lab}{Axis labels.}
 }
 \value{
-A \code{ggplot} object.
+A ggplot object.
 }
 \description{
-Renders a clean line chart for one or more time series.
+Plot a Time Series
 }
 \examples{
-data(AirPassengers)
-plot_ts(AirPassengers, title = "Air Passengers", y_lab = "Thousands")
-
+plot_ts(as_ts_df(AirPassengers))
 }

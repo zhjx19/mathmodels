@@ -2,35 +2,24 @@
 % Please edit documentation in R/pred_ts.R
 \name{ts_back_transform}
 \alias{ts_back_transform}
-\title{Back-Transform Forecasts to the Original Scale}
+\title{Back-Transform Forecasts}
 \usage{
-ts_back_transform(forecast_tbl, params, x_original)
+ts_back_transform(forecast_tbl, params)
 }
 \arguments{
-\item{forecast_tbl}{Tibble from \code{ts_forecast()} (columns: \code{step},
-\code{forecast}, optionally \code{lo_*} and \code{hi_*}).}
+\item{forecast_tbl}{Forecast tibble from \code{ts_forecast()}.}
 
-\item{params}{The \code{$params} element from a \code{ts_transform()} result.}
-
-\item{x_original}{The original (pre-transform) \code{ts} or numeric vector,
-needed to supply the last observed level(s) for un-differencing.}
+\item{params}{The \code{params} element from \code{ts_transform()}.}
 }
 \value{
-The \code{forecast_tbl} with \code{forecast} and all interval
-columns converted to the original scale.
+The forecast tibble with numeric forecast columns restored.
 }
 \description{
-Reverses the operations applied by \code{ts_transform()} to restore
-point forecasts and confidence intervals to the original scale.
-Differencing is un-done by cumulative summation using the tail of the
-original series as the starting level.
+Converts forecasts produced on a transformed scale back to the original scale.
 }
 \examples{
-data(AirPassengers)
-tr  = ts_transform(AirPassengers, method = "log", diff = 1,
-                    seasonal_diff = 1, verbose = FALSE)
-fit = ts_sarima(tr$transformed)
-fc  = ts_forecast(fit, h = 12)
-fc_orig = ts_back_transform(fc, tr$params, AirPassengers)
-
+x = as_ts_df(AirPassengers)
+tr = ts_transform(x, method = "log")
+fc = tibble::tibble(step = 1:2, forecast = log(c(500, 600)))
+ts_back_transform(fc, tr$params)
 }

@@ -2,28 +2,24 @@
 % Please edit documentation in R/pred_ts.R
 \name{plot_ts_residuals}
 \alias{plot_ts_residuals}
-\title{Residual Diagnostic Plots}
+\title{Residual Diagnostic Plot}
 \usage{
-plot_ts_residuals(model_result, title = "Residual Diagnostics", max_lag = 30L)
+plot_ts_residuals(model_result, max_lag = 30L, title = "Residual Diagnostics")
 }
 \arguments{
-\item{model_result}{Result from any \code{ts_*()} function that contains a
-\code{$fitted} tibble with a \code{residual} column.}
+\item{model_result}{Result from \code{ts_ets()} or \code{ts_sarima()}.}
 
-\item{title}{Character. Plot title.}
+\item{max_lag}{Maximum lag.}
 
-\item{max_lag}{Integer. Maximum lag for ACF (default \code{30}).}
+\item{title}{Plot title.}
 }
 \value{
-A \code{patchwork} composite \code{ggplot}.
+A patchwork plot.
 }
 \description{
-Four-panel diagnostic: (1) residuals over time, (2) ACF of residuals,
-(3) Q-Q plot, (4) histogram vs normal density.
+Residual Diagnostic Plot
 }
 \examples{
-data(AirPassengers)
-fit = ts_sarima(log(AirPassengers))
+fit = ts_sarima(as_ts_df(log(AirPassengers)), stepwise = TRUE, approximation = TRUE)
 plot_ts_residuals(fit)
-
 }

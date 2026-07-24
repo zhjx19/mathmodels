@@ -2,24 +2,21 @@
 % Please edit documentation in R/pred_ts.R
 \name{plot_ts_stl}
 \alias{plot_ts_stl}
-\title{Plot STL Decomposition Components}
+\title{STL Decomposition Plot}
 \usage{
 plot_ts_stl(stl_result, title = "STL Decomposition")
 }
 \arguments{
-\item{stl_result}{Result list from \code{ts_stl()}.}
+\item{stl_result}{Result from \code{ts_stl()}.}
 
-\item{title}{Character. Plot title.}
+\item{title}{Plot title.}
 }
 \value{
-A \code{patchwork} composite \code{ggplot}.
+A patchwork plot.
 }
 \description{
-Stacked four-panel plot: observed, trend, seasonal, remainder.
+STL Decomposition Plot
 }
 \examples{
-data(AirPassengers)
-res = ts_stl(AirPassengers)
-plot_ts_stl(res)
-
+plot_ts_stl(ts_stl(as_ts_df(AirPassengers)))
 }

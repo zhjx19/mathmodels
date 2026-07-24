@@ -4,42 +4,19 @@
 \alias{ts_test}
 \title{Stationarity Tests for a Time Series}
 \usage{
-ts_test(
-  x,
-  adf_lags = NULL,
-  kpss_type = c("Level", "Trend"),
-  pp_type = c("Z(t_alpha)", "Z(alpha)"),
-  verbose = TRUE
-)
+ts_test(x, adf_lags = NULL)
 }
 \arguments{
-\item{x}{A numeric vector, \code{ts} object, or single-column data frame.}
+\item{x}{A complete \code{ts_df} with no missing values.}
 
-\item{adf_lags}{Integer. Max lag for ADF (default: \code{NULL} = auto via
-\code{trunc((length(x)-1)^(1/3))}).}
-
-\item{kpss_type}{Character. \code{"Level"} (default) or \code{"Trend"}
-for KPSS null hypothesis.}
-
-\item{pp_type}{Character. \code{"Z(t_alpha)"} (default) or \code{"Z(alpha)"}.}
-
-\item{verbose}{Logical. Print test results to console (default \code{TRUE}).}
+\item{adf_lags}{Optional lag for the ADF test.}
 }
 \value{
-A \code{tibble} with columns:
-\describe{
-\item{test}{Test name (ADF / KPSS / PP)}
-\item{null_hypothesis}{Plain-English description of H0}
-\item{statistic}{Test statistic}
-\item{p_value}{p-value (or NA when only bounds are available)}
-\item{conclusion}{Character: "Stationary" or "Non-stationary"}
-}
+A tibble with test results.
 }
 \description{
-Runs ADF, KPSS, and PP tests and returns a tidy summary data frame.
+Runs ADF and KPSS tests on a complete \code{ts_df}.
 }
 \examples{
-data(AirPassengers)
-ts_test(AirPassengers)
-
+ts_test(as_ts_df(log(AirPassengers)))
 }

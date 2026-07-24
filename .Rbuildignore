@@ -20,3 +20,6 @@
 ^vignettes/welcome\.html$
 ^vignettes/welcome\.md$
 ^_pkgdown\.yml$
+^CRAN_SUBMISSION\.md$
+^CRAN_SUBMISSION\.md$
+^CRAN_SUBMISSION\.md$

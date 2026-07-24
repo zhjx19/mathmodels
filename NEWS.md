@@ -2,25 +2,22 @@
 
 ## Time series toolkit (new)
 
-- **Modeling** (`ts_models.R`):
-  - `ts_test()`: Stationarity & white-noise diagnostics (ADF, KPSS, PP, Ljung-Box).
+- **Data structure and preprocessing** (`pred_ts.R`):
+  - `ts_df()` and `as_ts_df()`: Lightweight single-series time-series data frame and conversion helpers.
+  - `complete_ts_df()` and `impute_ts_df()`: Gap completion and linear / spline interpolation.
+
+- **Modeling and diagnostics** (`pred_ts.R`):
+  - `ts_test()`: Stationarity diagnostics (ADF and KPSS).
   - `ts_stl()`: Seasonal-trend decomposition (STL).
-  - `ts_ets()`: Exponential smoothing (auto / user-specified).
+  - `ts_ets()`: Exponential smoothing.
   - `ts_sarima()`: SARIMA with auto-selection or user-specified orders.
-  - `ts_garch()`: GARCH / GJR-GARCH with Student-t support and ARCH-LM diagnostics.
-  - `ts_sarima_garch()`: Combined SARIMA-GARCH modeling.
-  - `ts_forecast()`: Unified forecasting for ETS, SARIMA, GARCH, SARIMA-GARCH.
+  - `ts_forecast()`: Unified forecasting for ETS and SARIMA models.
+  - `ts_transform()` and `ts_back_transform()`: Box-Cox / log / differencing workflows and inverse transformation for forecasts.
 
-- **Transformation** (`ts_models.R`):
-  - `ts_transform()`: Box-Cox / log / identity with optional differencing and seasonal differencing.
-  - `ts_back_transform()`: Inverse transform for forecasts back to original scale.
+- **Visualization** (`pred_ts.R`):
+  - `plot_ts()`, `plot_ts_forecast()`, `plot_ts_acf()`, `plot_ts_pacf()`, `plot_ts_stl()`, and `plot_ts_residuals()`.
 
-- **Visualization** (`ts_plots.R`):
-  - `plot_ts_decomposition()`: Faceted STL decomposition plot.
-  - `plot_ts_residuals()`: Residual diagnostics (ACF, histogram, Q-Q, Ljung-Box).
-  - `plot_ts_forecast()`: Forecast plot with historical data, prediction intervals, and optional back-transformed labels.
-
-- **Dependencies** (new): forecast (ETS, ARIMA), tseries (ADF/KPSS/PP tests), rugarch (GARCH/GJR-GARCH).
+- **Dependencies** (new): forecast (ETS, ARIMA), tseries (ADF/KPSS tests), patchwork (multi-panel plots).
 
 ## Epidemic visualization & metrics overhaul
 

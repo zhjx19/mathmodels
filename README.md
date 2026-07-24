@@ -11,10 +11,11 @@
 
 An R package providing a versatile toolkit for mathematical modeling, developed as a companion to the book *Mathematical Modeling: Algorithms and Programming Implementation* (China Machine Press). It focuses on implementing rigorous algorithms in a user-friendly manner.
 
-**Current Version (0.0.9)** adds a complete time series toolkit (SARIMA, ETS, GARCH, with integrated transformation
-and visualization) and overhauls epidemic modeling with streamlined visualization (`epi_plots.R`) —
-on top of differential equation models, grey prediction, Markov chain models, and a rich suite of
-evaluation methods (AHP, Entropy, CRITIC, PCA, TOPSIS, Fuzzy, RSR, DEA).
+**Current Version (0.0.9)** adds a lightweight time-series workflow built around `ts_df` (conversion,
+gap completion / interpolation, STL decomposition, ETS / SARIMA modeling, forecasting, and visualization)
+and overhauls epidemic modeling with streamlined visualization (`epi_plots.R`) — on top of differential
+equation models, grey prediction, Markov chain models, and a rich suite of evaluation methods
+(AHP, Entropy, CRITIC, PCA, TOPSIS, Fuzzy, RSR, DEA).
 
 ## Key Features
 
@@ -22,10 +23,11 @@ evaluation methods (AHP, Entropy, CRITIC, PCA, TOPSIS, Fuzzy, RSR, DEA).
     Rank Sum Ratio (RSR), Fuzzy Comprehensive Evaluation (FCE), Data Envelopment Analysis (CCR/BCC/SBM, Malmquist),
     plus inequality measures (Gini, Theil Index), coupling coordination degree, and obstacle degree models.
 *   **Prediction Models** — Grey prediction (GM(1,1), GM(1,N), Verhulst), Markov chain prediction (`markov_chain()`,
-    `GM11_markov()`), and a full **time series toolkit**: `ts_transform()` / `ts_back_transform()` for
-    Box-Cox–model–forecast–back-transform workflows; `ts_ets()`, `ts_sarima()`, `ts_garch()`,
-    `ts_sarima_garch()` for modeling; `ts_stl()` for decomposition; `ts_test()` for stationarity/ARCH tests;
-    `ts_forecast()` for unified forecasting; plus dedicated `plot_ts_*()` visualization functions.
+    `GM11_markov()`), and a lightweight **time series toolkit** built around `ts_df`: `as_ts_df()` for conversion,
+    `complete_ts_df()` / `impute_ts_df()` for gap handling, `ts_transform()` / `ts_back_transform()` for
+    Box-Cox / log / differencing workflows, `ts_test()` for stationarity tests, `ts_stl()` for STL decomposition,
+    `ts_ets()` and `ts_sarima()` for modeling, `ts_forecast()` for unified forecasting, plus `plot_ts()`,
+    `plot_ts_forecast()`, `plot_ts_acf()`, `plot_ts_pacf()`, `plot_ts_stl()`, and `plot_ts_residuals()`.
 *   **Differential Equation Models** — String-formula `ode_solver()` for arbitrary ODE systems; ready-to-use
     population models (Malthus, Logistic), epidemic compartment models (SI, SIS, SIR, SEIR), and
     Lotka–Volterra predator–prey model, all with a unified `init` + `params` interface.
@@ -36,18 +38,16 @@ evaluation methods (AHP, Entropy, CRITIC, PCA, TOPSIS, Fuzzy, RSR, DEA).
 
 ## Installation
 
-You can install the latest development version of `mathmodels` directly
-from [GitHub](https://github.com/zhjx19/mathmodels) use:
+Once released on CRAN, install `mathmodels` with:
+
+``` r
+install.packages("mathmodels")
+```
+
+You can install the latest development version directly from [GitHub](https://github.com/zhjx19/mathmodels):
 
 ``` r
 remotes::install_github("zhjx19/mathmodels")
-```
-
-Or download to current path, unzip and use:
-
-```r
-# install.packages("lpSolveAPI")   # If necessary, install dependency packages first
-install.packages("mathmodels-main", repos=NULL, type="source")
 ```
 
 ## Getting Started

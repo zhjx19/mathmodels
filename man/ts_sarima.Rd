@@ -8,48 +8,28 @@ ts_sarima(
   x,
   order = NULL,
   seasonal = NULL,
-  frequency = NULL,
   stepwise = TRUE,
   approximation = TRUE,
   ...
 )
 }
 \arguments{
-\item{x}{A numeric vector or \code{ts} object.}
+\item{x}{A complete \code{ts_df} with no missing values.}
 
-\item{order}{Integer vector of length 3: \code{c(p, d, q)}.
-\code{NULL} (default) triggers automatic selection.}
+\item{order}{Optional non-seasonal ARIMA order.}
 
-\item{seasonal}{A list \code{list(order = c(P,D,Q), period = m)} or
-\code{NULL} for automatic selection.}
+\item{seasonal}{Optional seasonal specification.}
 
-\item{frequency}{Integer. Required when \code{x} is a plain vector.}
+\item{stepwise, approximation}{Passed to \code{forecast::auto.arima()}.}
 
-\item{stepwise}{Logical. Use stepwise search in auto.arima (default \code{TRUE}).}
-
-\item{approximation}{Logical. Use approximation in auto.arima (default \code{TRUE}).}
-
-\item{...}{Additional arguments forwarded to \code{forecast::auto.arima()}
-or \code{forecast::Arima()}.}
+\item{...}{Additional arguments passed to the forecast fitting function.}
 }
 \value{
-A named list:
-\describe{
-\item{model_info}{One-row tibble: ARIMA order string, AIC, AICc, BIC,
-log-likelihood, sigma².}
-\item{coefficients}{Tidy tibble with estimate and std error.}
-\item{fitted}{Tibble: \code{index, observed, fitted, residual}.}
-\item{diagnostics}{Ljung-Box test result tibble.}
-\item{model}{Raw \code{Arima} object.}
-}
+A list containing tidy model summaries, the raw model, and input.
 }
 \description{
-Auto-selects or fits a user-specified SARIMA model via \code{forecast::auto.arima()}
-or \code{forecast::Arima()}, returning a comprehensive tidy result.
+SARIMA Model Fitting
 }
 \examples{
-data(AirPassengers)
-res = ts_sarima(log(AirPassengers))
-res$model_info
-
+ts_sarima(as_ts_df(log(AirPassengers)), stepwise = TRUE, approximation = TRUE)
 }

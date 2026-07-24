@@ -2,42 +2,35 @@
 % Please edit documentation in R/pred_ts.R
 \name{plot_ts_forecast}
 \alias{plot_ts_forecast}
-\title{Plot Historical Series + Forecast with Confidence Bands}
+\title{Plot Forecasts}
 \usage{
 plot_ts_forecast(
-  observed,
+  x,
   forecast_tbl,
   level = c(80, 95),
-  title = "Forecast",
-  y_lab = "Value",
-  trim_n = NULL
+  by = NULL,
+  title = "Forecast"
 )
 }
 \arguments{
-\item{observed}{A numeric vector or \code{ts} object of the historical data.}
+\item{x}{Original \code{ts_df}.}
 
-\item{forecast_tbl}{Tibble from \code{ts_forecast()}.}
+\item{forecast_tbl}{Result from \code{ts_forecast()}.}
 
-\item{level}{Numeric vector. Which confidence levels to shade (must match
-columns in \code{forecast_tbl}).}
+\item{level}{Confidence levels to draw when present.}
 
-\item{title}{Character. Plot title.}
+\item{by}{Step size for future time values.}
 
-\item{y_lab}{Character. y-axis label.}
-
-\item{trim_n}{Integer. Show only the last \code{trim_n} observations from
-history (default \code{NULL} = show all).}
+\item{title}{Plot title.}
 }
 \value{
-A \code{ggplot} object.
+A ggplot object.
 }
 \description{
-Works with the tibble returned by \code{ts_forecast()}.
+Plot Forecasts
 }
 \examples{
-data(AirPassengers)
-fit = ts_sarima(log(AirPassengers))
-fc  = ts_forecast(fit, h = 24)
-plot_ts_forecast(log(AirPassengers), fc, title = "Log Air Passengers Forecast")
-
+fit = ts_ets(as_ts_df(log(AirPassengers)))
+fc = ts_forecast(fit, h = 3)
+plot_ts_forecast(as_ts_df(log(AirPassengers)), fc, by = 1)
 }

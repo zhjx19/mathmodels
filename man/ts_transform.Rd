@@ -2,61 +2,34 @@
 % Please edit documentation in R/pred_ts.R
 \name{ts_transform}
 \alias{ts_transform}
-\title{Transform a Time Series for Stationarity}
+\title{Transform a \code{ts_df}}
 \usage{
 ts_transform(
   x,
   method = c("none", "log", "boxcox"),
   lambda = NULL,
   diff = 0L,
-  seasonal_diff = 0L,
-  frequency = NULL,
-  verbose = TRUE
+  seasonal_diff = 0L
 )
 }
 \arguments{
-\item{x}{A numeric vector or \code{ts} object.}
+\item{x}{A complete \code{ts_df} with no missing values.}
 
-\item{method}{Character. Variance transformation:
-\code{"none"} (default), \code{"log"}, \code{"boxcox"} (auto-selects
-lambda via \code{forecast::BoxCox.lambda()}).}
+\item{method}{One of \code{"none"}, \code{"log"}, or \code{"boxcox"}.}
 
-\item{lambda}{Numeric. Fixed Box-Cox lambda. Ignored unless
-\code{method = "boxcox"}. If \code{NULL} (default), lambda is estimated.}
+\item{lambda}{Optional Box-Cox lambda.}
 
-\item{diff}{Integer. Number of regular differences (default \code{0}).}
+\item{diff}{Number of regular differences.}
 
-\item{seasonal_diff}{Integer. Number of seasonal differences (default
-\code{0}).}
-
-\item{frequency}{Integer. Series frequency, required when \code{x} is a
-plain numeric vector and \code{seasonal_diff > 0}.}
-
-\item{verbose}{Logical. Print transformation summary (default \code{TRUE}).}
+\item{seasonal_diff}{Number of seasonal differences.}
 }
 \value{
-A named list:
-\describe{
-\item{transformed}{Transformed \code{ts} object ready for modelling.}
-\item{params}{Named list with \code{method}, \code{lambda},
-\code{diff}, \code{seasonal_diff}, \code{frequency} — everything
-needed by \code{ts_back_transform()}.}
-\item{summary}{One-row tibble describing each step applied.}
-}
+A list with \code{transformed}, \code{params}, and \code{summary}.
 }
 \description{
-Applies variance-stabilising transformation (Box-Cox / log) and/or
-differencing, returning the transformed series together with all parameters
-needed to back-transform forecasts.
+Applies a variance-stabilising transform and optional differencing. Returns a
+transformed \code{ts_df} plus explicit parameters for back-transformation.
 }
 \examples{
-data(AirPassengers)
-res = ts_transform(AirPassengers, method = "log", diff = 1,
-                    seasonal_diff = 1)
-res$summary
-plot_ts(res$transformed, title = "Transformed AirPassengers")
-
-}
-\seealso{
-\code{\link{ts_back_transform}}
+ts_transform(as_ts_df(AirPassengers), method = "log", diff = 1)
 }

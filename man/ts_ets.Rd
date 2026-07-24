@@ -2,37 +2,23 @@
 % Please edit documentation in R/pred_ts.R
 \name{ts_ets}
 \alias{ts_ets}
-\title{ETS (Error, Trend, Seasonality) Exponential Smoothing}
+\title{ETS Model Fitting}
 \usage{
-ts_ets(x, model = "ZZZ", frequency = NULL, ...)
+ts_ets(x, model = "ZZZ", ...)
 }
 \arguments{
-\item{x}{A numeric vector or \code{ts} object.}
+\item{x}{A complete \code{ts_df} with no missing values.}
 
-\item{model}{Character ETS model string, e.g. \code{"ZZZ"} (auto-select,
-default), \code{"AAN"}, \code{"AAA"}.}
+\item{model}{ETS model string passed to \code{forecast::ets()}.}
 
-\item{frequency}{Integer. Required when \code{x} is a plain numeric vector.}
-
-\item{...}{Additional arguments forwarded to \code{forecast::ets()}.}
+\item{...}{Additional arguments passed to \code{forecast::ets()}.}
 }
 \value{
-A named list:
-\describe{
-\item{model_info}{One-row tibble: model type, AIC, AICc, BIC,
-log-likelihood.}
-\item{parameters}{Tidy tibble of smoothing parameters and initial
-states.}
-\item{fitted}{Tibble with \code{index, observed, fitted, residual}.}
-\item{model}{Raw \code{ets} object.}
-}
+A list containing tidy model summaries, the raw model, and input.
 }
 \description{
-Wraps \code{forecast::ets()} and returns a tidy result list.
+ETS Model Fitting
 }
 \examples{
-data(AirPassengers)
-res = ts_ets(AirPassengers)
-res$model_info
-
+ts_ets(as_ts_df(log(AirPassengers)))
 }

@@ -1,10 +1,9 @@
 Package: mathmodels
 Type: Package
-Title: Comprehensive Mathematical Modeling Algorithms in R
+Title: Mathematical Modeling Algorithms
 Version: 0.0.9
-Author: Jingxin Zhang
-Maintainer: Jingxin zhang <zhjx_19@163.com>
-Description: A versatile R package for mathematical modeling, developed as a companion to Mathematical Modeling: Algorithms and Programming Implementation (China Machine Press). The package implements algorithms across differential and difference equations, statistical analysis, optimization, evaluation, and prediction. Currently, it focuses on evaluation algorithms, including indicator data preprocessing (e.g., standardization, rescaling), subjective and objective weighting methods (e.g., AHP, entropy weighting, CRITIC, PCA weighting) and weight combination, TOPSIS, fuzzy comprehensive evaluation, grey relational analysis, rank sum ratio, DEA (CCR, BCC, SBM, Malmquist, powered by lpSolveAPI), regional economics (LQ, HHI and EG index), inequality measures (e.g., Gini and Theil indices), grey prediction models (e.g., GM(1,1), GM(1,N), Verhulst), Markov chain prediction, and Grey-Markov combined prediction. It also provides ordinary differential equation (ODE) solvers for compartmental epidemic models (SIR, SEIR, SEIRS, SIDP), along with epidemic visualization and summary metrics. Designed for researchers and practitioners in mathematical modeling. 
+Authors@R: person("Jingxin", "Zhang", email = "zhjx_19@163.com", role = c("aut", "cre", "cph"))
+Description: Implements algorithms for mathematical modeling across evaluation, prediction, and differential equation systems. It supports indicator preprocessing, weighting, TOPSIS, fuzzy comprehensive evaluation, grey relational analysis, rank sum ratio, data envelopment analysis (DEA), regional economics, inequality measures, grey prediction, Markov prediction, and time series modeling. It also provides ordinary differential equation solvers for compartmental epidemic models together with visualization and summary metrics.
 License: AGPL (>= 3)
 URL: https://github.com/zhjx19/mathmodels, https://zhjx19.github.io/mathmodels/
 BugReports: https://github.com/zhjx19/mathmodels/issues
@@ -27,12 +26,12 @@ Imports:
     tseries,
     deSolve,
     patchwork,
-    rugarch
+    car,
+    lmtest
 Depends: 
     R (>= 4.1)
-Suggests: 
+Suggests:
     knitr,
-    quarto,
     rmarkdown,
     scales,
     testthat (>= 3.0.0)

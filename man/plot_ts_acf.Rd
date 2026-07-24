@@ -2,38 +2,23 @@
 % Please edit documentation in R/pred_ts.R
 \name{plot_ts_acf}
 \alias{plot_ts_acf}
-\title{ACF and PACF Plots}
+\title{Autocorrelation Plot}
 \usage{
-plot_ts_acf(
-  x,
-  max_lag = 40L,
-  type = c("acf", "pacf", "both"),
-  title = NULL,
-  diff = 0L
-)
+plot_ts_acf(x, max_lag = 40L, title = "ACF")
 }
 \arguments{
-\item{x}{A numeric vector, \code{ts} object, or tidy tibble/data.frame with
-a \code{value} column.}
+\item{x}{A complete \code{ts_df} with no missing values.}
 
-\item{max_lag}{Integer. Maximum lag (default 40).}
+\item{max_lag}{Maximum lag.}
 
-\item{type}{Character. \code{"acf"} (default), \code{"pacf"}, or
-\code{"both"} (returns a patchwork panel).}
-
-\item{title}{Character. Plot title.}
-
-\item{diff}{Integer. Apply \code{diff()} this many times before plotting
-(default 0).}
+\item{title}{Plot title.}
 }
 \value{
-A \code{ggplot} or \code{patchwork} object.
+A ggplot object.
 }
 \description{
-ACF and PACF Plots
+Autocorrelation Plot
 }
 \examples{
-data(AirPassengers)
-plot_ts_acf(log(AirPassengers), type = "both")
-
+plot_ts_acf(as_ts_df(log(AirPassengers)))
 }

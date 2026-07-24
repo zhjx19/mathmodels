@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -c 'import sys *)",
+      "Skill(simplify)",
+      "Skill(simplify:*)"
+    ]
+  }
+}

@@ -2,40 +2,25 @@
 % Please edit documentation in R/pred_ts.R
 \name{ts_stl}
 \alias{ts_stl}
-\title{STL (Seasonal + Trend + Loess) Decomposition}
+\title{STL Decomposition for a \code{ts_df}}
 \usage{
-ts_stl(x, frequency = NULL, s_window = "periodic", robust = TRUE, ...)
+ts_stl(x, s_window = "periodic", robust = TRUE, ...)
 }
 \arguments{
-\item{x}{A \code{ts} object with \code{frequency > 1}, or a numeric vector
-with \code{frequency} specified.}
+\item{x}{A complete seasonal \code{ts_df} with no missing values.}
 
-\item{frequency}{Integer. Required if \code{x} is a plain numeric vector.}
+\item{s_window}{Seasonal smoothing window.}
 
-\item{s_window}{Seasonal smoothing window passed to \code{stl()}.
-Use \code{"periodic"} (default) for purely periodic seasonality.}
+\item{robust}{Use robust STL fitting.}
 
-\item{robust}{Logical. Use robust fitting in STL (default \code{TRUE}).}
-
-\item{...}{Additional arguments forwarded to \code{stats::stl()}.}
+\item{...}{Additional arguments passed to \code{stats::stl()}.}
 }
 \value{
-A named list:
-\describe{
-\item{components}{Tidy \code{tibble} with columns
-\code{index, observed, trend, seasonal, remainder}.}
-\item{strength}{Tibble: \code{seasonal_strength} and
-\code{trend_strength} (Wang et al. 2006 metrics).}
-\item{model}{Raw \code{stl} object.}
-}
+A list with \code{components}, \code{strength}, and \code{model}.
 }
 \description{
-Wraps \code{stats::stl()} and returns both a tidy long-format tibble and
-the raw \code{stl} object for further use.
+Decomposes a complete seasonal \code{ts_df} with \code{stats::stl()}.
 }
 \examples{
-data(AirPassengers)
-res = ts_stl(AirPassengers)
-res$components
-
+ts_stl(as_ts_df(AirPassengers))
 }

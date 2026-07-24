@@ -1,7 +1,7 @@
 #' Read and Combine National Bureau of Statistics XLS Files
 #'
 #' This function reads multiple XLS files downloaded from the National Bureau of Statistics of China
-#' website (\url{http://www.stats.gov.cn}) without requiring renaming. It extracts the variable name
+#' website (\url{https://www.stats.gov.cn}) without requiring renaming. It extracts the variable name
 #' from the "indicator: XXX" text in cell A1 of each file, skips the first 3 rows of headers, reads
 #' the first 31 rows of data, and combines the data into a single data frame by stacking vertically
 #' based on the indicator names. It also simplifies region names by removing suffixes such as "city",

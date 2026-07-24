@@ -2,39 +2,24 @@
 % Please edit documentation in R/pred_ts.R
 \name{ts_forecast}
 \alias{ts_forecast}
-\title{Generate Forecasts from a Fitted Time Series Model}
+\title{Generate Forecasts}
 \usage{
-ts_forecast(model_result, h = 12, level = c(80, 95), x_ts = NULL)
+ts_forecast(model_result, h = 12, level = c(80, 95))
 }
 \arguments{
-\item{model_result}{A result list from \code{ts_ets()}, \code{ts_sarima()},
-\code{ts_garch()}, or \code{ts_sarima_garch()}.}
+\item{model_result}{Result from \code{ts_ets()} or \code{ts_sarima()}.}
 
-\item{h}{Integer. Forecast horizon (number of steps ahead).}
+\item{h}{Forecast horizon.}
 
-\item{level}{Numeric vector. Confidence levels in percent (default
-\code{c(80, 95)}).}
-
-\item{x_ts}{Original \code{ts} object (required for GARCH/SARIMA-GARCH to
-preserve time attributes). If \code{NULL}, integer steps are used.}
+\item{level}{Confidence levels.}
 }
 \value{
-A \code{tibble} with columns:
-\describe{
-\item{step}{Forecast step (1 to h).}
-\item{forecast}{Point forecast.}
-\item{lo_\if{html}{\out{<level>}}}{Lower bound for each confidence level.}
-\item{hi_\if{html}{\out{<level>}}}{Upper bound for each confidence level.}
-\item{sigma}{Predicted conditional std dev (GARCH models only).}
-}
+A tibble with point forecasts and intervals.
 }
 \description{
-A unified interface for forecasting from ETS, SARIMA, GARCH, or
-SARIMA-GARCH model results produced by the \code{ts_*()} functions.
+Generate Forecasts
 }
 \examples{
-data(AirPassengers)
-fit = ts_sarima(log(AirPassengers))
-ts_forecast(fit, h = 24)
-
+fit = ts_ets(as_ts_df(log(AirPassengers)))
+ts_forecast(fit, h = 3)
 }

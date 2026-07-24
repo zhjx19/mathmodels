@@ -2,21 +2,23 @@
 % Please edit documentation in R/pred_ts.R
 \name{plot_ts_pacf}
 \alias{plot_ts_pacf}
-\title{PACF Plot (convenience alias)}
+\title{Partial Autocorrelation Plot}
 \usage{
-plot_ts_pacf(x, max_lag = 40L, title = NULL, diff = 0L)
+plot_ts_pacf(x, max_lag = 40L, title = "PACF")
 }
 \arguments{
-\item{x}{A numeric vector, \code{ts} object, or tidy tibble/data.frame with
-a \code{value} column.}
+\item{x}{A complete \code{ts_df} with no missing values.}
 
-\item{max_lag}{Integer. Maximum lag (default 40).}
+\item{max_lag}{Maximum lag.}
 
-\item{title}{Character. Plot title.}
-
-\item{diff}{Integer. Apply \code{diff()} this many times before plotting
-(default 0).}
+\item{title}{Plot title.}
+}
+\value{
+A ggplot object.
 }
 \description{
-Shortcut for \code{plot_ts_acf(x, type = "pacf")}.
+Partial Autocorrelation Plot
+}
+\examples{
+plot_ts_pacf(as_ts_df(log(AirPassengers)))
 }
