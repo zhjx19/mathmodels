@@ -232,31 +232,73 @@ interp_hermite = function(x, y, xout) {
 # Curve Fitting
 # -----------------------------------------------------------------------------
 
-#' Polynomial Fit
+#' Linearizable Curve Fit
 #'
-#' Fits a polynomial regression model via `lm()`.
+#' Fits common empirical curves via variable transformation and `lm()`.
+#' Supported types: exponential, power-law, logarithmic, and hyperbolic.
 #'
 #' @param x Numeric vector of observed predictor values.
 #' @param y Numeric vector of observed response values.
-#' @param degree Integer, degree of the polynomial. Default is 1 (linear).
+#' @param type Character, one of `"exp"`, `"power"`, `"log"`, `"hyperbolic"`.
 #'
-#' @return A named list with elements: `model` (lm object), `coefficient`
-#'   (tibble with estimates, SE, t-value, p-value, 95% CI), `model_info`
-#'   (tibble with r.squared, adj.r.squared, AIC, BIC, sigma), `residuals`
-#'   (tibble of .observed, .fitted, .residual), `formula` (character),
-#'   `type` (character), and `input` (tibble of x, y).
+#' @details
+#' Each curve is transformed to a linear form:
+#' - `"exp"`: fits `log(y) ~ x`, back-transforms to `y = a * exp(b * x)`
+#' - `"power"`: fits `log(y) ~ log(x)`, back-transforms to `y = a * x^b`
+#' - `"log"`: fits `y ~ log(x)`, gives `y = a + b * log(x)`
+#' - `"hyperbolic"`: fits `y ~ 1/x`, gives `y = a + b / x`
+#'
+#' Fit statistics are computed on the original scale.
+#'
+#' @return A named list, see [poly_fit()] for details.
 #'
 #' @examples
+#' set.seed(42)
 #' x = 1:20
-#' y = 3 + 2*x + rnorm(20, sd = 2)
-#' poly_fit(x, y, degree = 1)
-#' poly_fit(x, y, degree = 2)
+#' y = 2 * exp(0.15 * x) * rlnorm(20, sdlog = 0.1)
+#' curve_fit(x, y, type = "exp")
 #'
 #' @export
-poly_fit = function(x, y, degree = 1) {
-  ._validate_xy(x, y, min_len = degree + 1)
-  fit = lm(y ~ poly(x, degree, raw = TRUE))
-  fitted_vals = as.numeric(stats::fitted(fit))
-  formula_str = paste0("y ~ poly(x, ", degree, ", raw = TRUE)")
-  ._assemble_return(fit, y, fitted_vals, formula_str, "poly", x, y)
+curve_fit = function(x, y, type = c("exp", "power", "log", "hyperbolic")) {
+  type = match.arg(type)
+  ._validate_xy(x, y, min_len = 3)
+
+  if (type == "exp") {
+    if (any(y <= 0)) stop("y must be positive for exponential fit.", call. = FALSE)
+    ly = log(y)
+    fit = lm(ly ~ x)
+    coefs = stats::coef(fit)
+    a_hat = exp(coefs[1])
+    b_hat = coefs[2]
+    fitted_vals = a_hat * exp(b_hat * x)
+    formula_str = sprintf("y = %.4g * exp(%.4g * x)", a_hat, b_hat)
+  } else if (type == "power") {
+    if (any(x <= 0)) stop("x must be positive for power fit.", call. = FALSE)
+    if (any(y <= 0)) stop("y must be positive for power fit.", call. = FALSE)
+    lx = log(x); ly = log(y)
+    fit = lm(ly ~ lx)
+    coefs = stats::coef(fit)
+    a_hat = exp(coefs[1])
+    b_hat = coefs[2]
+    fitted_vals = a_hat * x^b_hat
+    formula_str = sprintf("y = %.4g * x^(%.4g)", a_hat, b_hat)
+  } else if (type == "log") {
+    if (any(x <= 0)) stop("x must be positive for logarithmic fit.", call. = FALSE)
+    lx = log(x)
+    fit = lm(y ~ lx)
+    coefs = stats::coef(fit)
+    a_hat = coefs[1]; b_hat = coefs[2]
+    fitted_vals = a_hat + b_hat * log(x)
+    formula_str = sprintf("y = %.4g + %.4g * log(x)", a_hat, b_hat)
+  } else if (type == "hyperbolic") {
+    if (any(x == 0)) stop("x must be non-zero for hyperbolic fit.", call. = FALSE)
+    inv_x = 1/x
+    fit = lm(y ~ inv_x)
+    coefs = stats::coef(fit)
+    a_hat = coefs[1]; b_hat = coefs[2]
+    fitted_vals = a_hat + b_hat / x
+    formula_str = sprintf("y = %.4g + %.4g / x", a_hat, b_hat)
+  }
+
+  ._assemble_return(fit, y, fitted_vals, formula_str, type, x, y)
 }

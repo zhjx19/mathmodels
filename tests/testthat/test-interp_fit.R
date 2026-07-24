@@ -227,3 +227,66 @@ test_that("poly_fit() residuals match data length", {
   expect_equal(nrow(res$residuals), 10)
   expect_equal(nrow(res$input), 10)
 })
+
+# --- curve_fit ---
+
+test_that("curve_fit() returns expected list structure", {
+  set.seed(42)
+  x = 1:20
+  y = 2 * exp(0.15 * x) * exp(rnorm(20, sd = 0.1))
+  res = curve_fit(x, y, type = "exp")
+  expect_type(res, "list")
+  expect_setequal(names(res), c("model", "coefficient", "model_info", "residuals", "formula", "type", "input"))
+  expect_equal(res$type, "exp")
+})
+
+test_that("curve_fit(type='exp') recovers parameters", {
+  set.seed(42)
+  x = seq(0, 5, length.out = 50)
+  y = 2 * exp(0.5 * x) * exp(rnorm(50, sd = 0.05))
+  res = curve_fit(x, y, type = "exp")
+  # coefficient on transformed scale: intercept ~ log(a), slope ~ b
+  expect_true(abs(res$coefficient$estimate[1] - log(2)) < 0.3)
+  expect_true(abs(res$coefficient$estimate[2] - 0.5) < 0.1)
+})
+
+test_that("curve_fit(type='power') recovers parameters", {
+  set.seed(42)
+  x = seq(1, 10, length.out = 50)
+  y = 3 * x^2 * exp(rnorm(50, sd = 0.1))
+  res = curve_fit(x, y, type = "power")
+  expect_true(abs(exp(res$coefficient$estimate[1]) - 3) < 1)
+  expect_true(abs(res$coefficient$estimate[2] - 2) < 0.3)
+})
+
+test_that("curve_fit(type='log') recovers parameters", {
+  set.seed(42)
+  x = seq(1, 20, length.out = 50)
+  y = 1 + 3 * log(x) + rnorm(50, sd = 0.3)
+  res = curve_fit(x, y, type = "log")
+  expect_true(abs(res$coefficient$estimate[1] - 1) < 0.5)
+  expect_true(abs(res$coefficient$estimate[2] - 3) < 0.3)
+})
+
+test_that("curve_fit(type='hyperbolic') recovers parameters", {
+  set.seed(42)
+  x = seq(1, 20, length.out = 50)
+  y = 5 + 10/x + rnorm(50, sd = 0.3)
+  res = curve_fit(x, y, type = "hyperbolic")
+  expect_true(abs(res$coefficient$estimate[1] - 5) < 1)
+  expect_true(abs(res$coefficient$estimate[2] - 10) < 2)
+})
+
+test_that("curve_fit() basic validation for exp type", {
+  # y must be > 0 for exp fit
+  expect_error(curve_fit(1:5, c(-1, 1, 2, 3, 4), type = "exp"), "positive")
+})
+
+test_that("curve_fit() basic validation for power type", {
+  # x must be > 0 for power fit
+  expect_error(curve_fit(c(1, -2, 3), c(1, 2, 3), type = "power"), "positive")
+})
+
+test_that("curve_fit() rejects invalid type", {
+  expect_error(curve_fit(1:5, 1:5, type = "unknown"), "should be one of")
+})
