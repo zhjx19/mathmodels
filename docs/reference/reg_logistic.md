@@ -215,7 +215,7 @@ reg_logistic(y ~ x1, data = data.frame(y, x1))
 #> 
 #> $formula
 #> y ~ x1
-#> <environment: 0x0000023d1da3a468>
+#> <environment: 0x000001ecda970578>
 #> 
 #> $input
 #>     y          x1

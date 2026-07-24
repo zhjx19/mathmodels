@@ -99,21 +99,23 @@ A = matrix(c(1,   1/2, 4, 3,   3,
 AHP(A)
 
 # --- Epidemic compartment modeling ---
-library(ggplot2)
-
 result = model_sir(
   init   = c(S = 990, I = 10, R = 0),
-  params = c(beta = 0.3, gamma = 0.1),
-  times  = seq(0, 100, by = 0.5)
-)
+  params = c(beta = 0.15, gamma = 0.1),  # R0 = 1.5
+  times  = seq(0, 100, by = 0.5))
 
 # Visualize
 plot_compartments(result, compartments = c("S", "I", "R"))
 
 # Compute epidemic metrics
-metrics = epi_metrics(result, beta = 0.3, gamma = 0.1, N = 1000)
+metrics = epi_metrics(result, beta = 0.15, gamma = 0.1, N = 1000)
 metrics$R0         # basic reproduction number
-metrics$peak_time  # time of peak infection
+
+# --- Time series ---
+x = as_ts_df(log(AirPassengers))
+fit = ts_sarima(x)
+fc  = ts_forecast(fit, h = 12)
+plot_ts_forecast(x, fc)           # forecast with CIs
 ```
 
 ## Learning More
@@ -139,15 +141,36 @@ functionalities. Currently implemented modules include:
   and metrics
   ([`epi_metrics()`](https://zhjx19.github.io/mathmodels/reference/epi_metrics.md))
 - **Time series**:
+  [`ts_df()`](https://zhjx19.github.io/mathmodels/reference/ts_df.md),
+  [`as_ts_df()`](https://zhjx19.github.io/mathmodels/reference/as_ts_df.md),
+  [`validate_ts_df()`](https://zhjx19.github.io/mathmodels/reference/validate_ts_df.md),
+  [`complete_ts_df()`](https://zhjx19.github.io/mathmodels/reference/complete_ts_df.md),
+  [`impute_ts_df()`](https://zhjx19.github.io/mathmodels/reference/impute_ts_df.md),
+  [`drop_na_ts_df()`](https://zhjx19.github.io/mathmodels/reference/drop_na_ts_df.md),
   [`ts_transform()`](https://zhjx19.github.io/mathmodels/reference/ts_transform.md),
   [`ts_back_transform()`](https://zhjx19.github.io/mathmodels/reference/ts_back_transform.md),
   [`ts_ets()`](https://zhjx19.github.io/mathmodels/reference/ts_ets.md),
   [`ts_sarima()`](https://zhjx19.github.io/mathmodels/reference/ts_sarima.md),
-  `ts_garch()`, `ts_sarima_garch()`,
   [`ts_stl()`](https://zhjx19.github.io/mathmodels/reference/ts_stl.md),
   [`ts_test()`](https://zhjx19.github.io/mathmodels/reference/ts_test.md),
-  [`ts_forecast()`](https://zhjx19.github.io/mathmodels/reference/ts_forecast.md),
-  `plot_ts_*()`
+  [`ts_forecast()`](https://zhjx19.github.io/mathmodels/reference/ts_forecast.md);
+  visualization:
+  [`plot_ts()`](https://zhjx19.github.io/mathmodels/reference/plot_ts.md),
+  [`plot_ts_acf()`](https://zhjx19.github.io/mathmodels/reference/plot_ts_acf.md),
+  [`plot_ts_pacf()`](https://zhjx19.github.io/mathmodels/reference/plot_ts_pacf.md),
+  [`plot_ts_forecast()`](https://zhjx19.github.io/mathmodels/reference/plot_ts_forecast.md),
+  [`plot_ts_stl()`](https://zhjx19.github.io/mathmodels/reference/plot_ts_stl.md),
+  [`plot_ts_residuals()`](https://zhjx19.github.io/mathmodels/reference/plot_ts_residuals.md)
+- **Regression prediction**:
+  [`reg_lm()`](https://zhjx19.github.io/mathmodels/reference/reg_lm.md),
+  [`reg_logistic()`](https://zhjx19.github.io/mathmodels/reference/reg_logistic.md),
+  [`reg_poisson()`](https://zhjx19.github.io/mathmodels/reference/reg_poisson.md),
+  [`reg_negbin()`](https://zhjx19.github.io/mathmodels/reference/reg_negbin.md)
+  with stepwise selection;
+  [`reg_predict()`](https://zhjx19.github.io/mathmodels/reference/reg_predict.md),
+  [`reg_diagnostics()`](https://zhjx19.github.io/mathmodels/reference/reg_diagnostics.md),
+  [`reg_plot_predict()`](https://zhjx19.github.io/mathmodels/reference/reg_plot_predict.md),
+  [`reg_plot_residuals()`](https://zhjx19.github.io/mathmodels/reference/reg_plot_residuals.md)
 - **Markov chain prediction**:
   [`markov_chain()`](https://zhjx19.github.io/mathmodels/reference/markov_chain.md)
   and
