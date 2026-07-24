@@ -13,6 +13,9 @@
   if (!is.numeric(x) || !is.numeric(y)) {
     stop("x and y must be numeric vectors.", call. = FALSE)
   }
+  if (!is.vector(x) || !is.vector(y)) {
+    stop("x and y must be vectors.", call. = FALSE)
+  }
   if (length(x) != length(y)) {
     stop("x and y must have the same length.", call. = FALSE)
   }
@@ -95,6 +98,10 @@
     length(fitted) - length(stats::coef(model))
   }
   info   = ._compute_fit_stats(observed, fitted, df_residual)
+  if (inherits(model, "lm")) {
+    info$aic = round(stats::AIC(model), 4)
+    info$bic = round(stats::BIC(model), 4)
+  }
   resid  = ._build_fit_residuals(observed, fitted)
   list(
     model       = model,
@@ -279,6 +286,12 @@ poly_fit = function(x, y, degree = 1) {
 #'
 #' Fit statistics are computed on the original scale.
 #'
+#' \cr
+#' \strong{Note on coefficients}: For `"exp"` and `"power"` types, the coefficient
+#' table reports estimates on the log-transformed scale (the parameterization
+#' of the underlying `lm()` model). The formula string shows the
+#' back-transformed parameters on the original scale.
+#'
 #' @return A named list, see [poly_fit()] for details.
 #'
 #' @examples
@@ -367,7 +380,7 @@ curve_fit = function(x, y, type = c("exp", "power", "log", "hyperbolic")) {
 #'   the `nls` object.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' set.seed(42)
 #' x = seq(0, 10, length.out = 30)
 #' y = 100 / (1 + exp(-1.5 * (x - 5))) + rnorm(30, sd = 2)

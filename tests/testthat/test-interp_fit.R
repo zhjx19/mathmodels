@@ -4,8 +4,9 @@
 
 # --- ._validate_xy ---
 
-test_that("._validate_xy() passes for valid input", {
-  expect_no_error(mathmodels:::`._validate_xy`(c(1,2,3), c(4,5,6)))
+test_that("._validate_xy() rejects matrix input", {
+  expect_error(mathmodels:::`._validate_xy`(matrix(1:4, 2, 2), c(1, 2, 3, 4)),
+               "must be vectors")
 })
 
 test_that("._validate_xy() rejects non-numeric x", {
@@ -226,6 +227,14 @@ test_that("poly_fit() residuals match data length", {
   res = poly_fit(x, y, degree = 1)
   expect_equal(nrow(res$residuals), 10)
   expect_equal(nrow(res$input), 10)
+})
+
+test_that("poly_fit() model_info AIC matches stats::AIC", {
+  x = 1:20
+  y = 3 + 2*x + rnorm(20, sd = 1)
+  res = poly_fit(x, y, degree = 1)
+  expect_equal(res$model_info$aic, round(stats::AIC(res$model), 4))
+  expect_equal(res$model_info$bic, round(stats::BIC(res$model), 4))
 })
 
 # --- curve_fit ---
