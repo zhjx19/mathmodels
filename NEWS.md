@@ -1,21 +1,22 @@
 # mathmodels 0.0.11
 
-## 插值与曲线拟合工具包（新增）
+## Interpolation & curve fitting toolkit (new)
 
-- **插值**（`interp_fit.R`）：
-  - `interp_linear()`：分段线性插值。
-  - `interp_spline()`：三次样条插值，可选通过 `spar` 进行平滑处理。
-  - `interp_poly()`：给定次数的多项式插值。
-  - `interp_hermite()`：保形分段三次 Hermite 插值。
+- **Interpolation** (`interp_fit.R`):
+  - `interp_linear()`: Piecewise linear interpolation.
+  - `interp_spline()`: Cubic spline interpolation with optional smoothing via `spar`.
+  - `interp_poly()`: Polynomial interpolation of specified degree.
+  - `interp_hermite()`: Shape-preserving piecewise cubic Hermite interpolation.
 
-- **曲线拟合**（`interp_fit.R`）：
-  - `poly_fit()`：多项式回归。
-  - `curve_fit()`：通过变量变换实现可线性化曲线的统一接口
-    （指数、幂律、对数、双曲）。
-  - `growth_fit()`：通过 `minpack.lm::nlsLM()` 进行非线性生长曲线拟合，
-    自动生成初值（Logistic、Gompertz、指数饱和、Michaelis-Menten）。
+- **Curve fitting** (`interp_fit.R`):
+  - `poly_fit()`: Polynomial regression.
+  - `curve_fit()`: Unified interface for linearizable curves via variable transformation
+    (exponential, power-law, logarithmic, hyperbolic).
+  - `growth_fit()`: Nonlinear growth curve fitting via `minpack.lm::nlsLM()`
+    with automatic starting values (Logistic, Gompertz, exponential saturation,
+    Michaelis-Menten).
 
-- **依赖项**（新增）：`minpack.lm`，用于基于 Levenberg-Marquardt 的非线性最小二乘拟合。
+- **Dependencies** (new): `minpack.lm` for Levenberg-Marquardt nonlinear least squares.
 
 # mathmodels 0.0.10
 
@@ -41,15 +42,6 @@
     normal Q-Q, density).
   - `reg_plot_predict()`: Prediction plots with confidence bands — supports both
     fitted (training data) and predicted (new data) modes.
-
-## Bug fixes
-
-- Fixed `reg_plot_predict()` and `reg_plot_residuals()` errors for GLM models
-  (logistic, Poisson, negative binomial) caused by `inherits(x, "lm")` matching
-  `glm` objects before the `glm` branch, and by inconsistent residual column
-  names across model types.
-- Fixed `reg_plot_predict()` for negative binomial models where `m$formula`
-  was `NULL`; now falls back to `model_result$formula`.
 
 # mathmodels 0.0.9
 
