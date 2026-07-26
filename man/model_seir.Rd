@@ -17,6 +17,10 @@ e.g. \code{c(S = 980, E = 10, I = 10)}.}
 \item{alpha}{Rate of progression from exposed to infectious
 (1/alpha = mean latent period).}
 \item{gamma}{Recovery rate (1/gamma = mean infectious period).}
+\item{N}{Total population size.  Optional — defaults to
+\code{sum(init)}.}
+\item{b}{Birth rate (per capita per time).  Optional.}
+\item{d}{Death rate (per capita per time).  Optional.}
 }}
 
 \item{times}{Numeric vector of output times.}
@@ -28,13 +32,21 @@ A \code{data.frame} with columns \code{time}, \code{S}, \code{E},
 \code{I}, \code{R}.
 }
 \description{
-Four-compartment model that adds an exposed (latent) class:
+Four-compartment model that adds an exposed (latent) class.
+}
+\details{
+\strong{Closed population} (default):
 \deqn{\frac{dS}{dt} = -\beta \frac{S I}{N}}
 \deqn{\frac{dE}{dt} =  \beta \frac{S I}{N} - \alpha E}
 \deqn{\frac{dI}{dt} =  \alpha E - \gamma I}
 \deqn{\frac{dR}{dt} =  \gamma I}
-}
-\details{
+
+\strong{Open population} (when \code{b} / \code{d} are provided):
+\deqn{\frac{dS}{dt} = b N - \beta \frac{S I}{N} - d S}
+\deqn{\frac{dE}{dt} = \beta \frac{S I}{N} - \alpha E - d E}
+\deqn{\frac{dI}{dt} = \alpha E - \gamma I - d I}
+\deqn{\frac{dR}{dt} = \gamma I - d R}
+
 \itemize{
 \item \strong{S} Susceptible — not yet infected.
 \item \strong{E} Exposed — infected but not yet infectious
@@ -44,13 +56,21 @@ Four-compartment model that adds an exposed (latent) class:
 \item \strong{R} Recovered — permanently immune.
 }
 
-Population size \eqn{N = S + E + I + R} is conserved.
+In the closed case population size \eqn{N = S + E + I + R} is conserved.
 }
 \examples{
+# Closed population
 model_seir(
   init   = c(S = 980, E = 10, I = 10),
   params = c(beta = 0.3, alpha = 0.2, gamma = 0.1),
   times  = seq(0, 50, by = 0.1)
+)
+
+# Open population with births and deaths
+model_seir(
+  init   = c(S = 980, E = 10, I = 10),
+  params = c(beta = 0.3, alpha = 0.2, gamma = 0.1, b = 0.01, d = 0.01),
+  times  = seq(0, 200, by = 1)
 )
 
 }

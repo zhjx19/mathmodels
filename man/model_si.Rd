@@ -12,6 +12,10 @@ model_si(init, params, times, ...)
 \item{params}{Named numeric vector, e.g. \code{c(beta = 0.002)}.
 \describe{
 \item{beta}{Transmission rate (contacts per individual per time).}
+\item{N}{Total population size.  Optional — defaults to
+\code{sum(init)}.}
+\item{b}{Birth rate (per capita per time).  Optional.}
+\item{d}{Death rate (per capita per time).  Optional.}
 }}
 
 \item{times}{Numeric vector of output times.}
@@ -22,18 +26,32 @@ model_si(init, params, times, ...)
 A \code{data.frame} with columns \code{time}, \code{S}, \code{I}.
 }
 \description{
-Two-compartment model with no recovery:
-\deqn{\frac{dS}{dt} = -\beta \frac{S I}{N}}
-\deqn{\frac{dI}{dt} =  \beta \frac{S I}{N}}
+Two-compartment model with no recovery.
 }
 \details{
-Population size \eqn{N = S + I} is conserved.
+\strong{Closed population} (default):
+\deqn{\frac{dS}{dt} = -\beta \frac{S I}{N}}
+\deqn{\frac{dI}{dt} =  \beta \frac{S I}{N}}
+
+\strong{Open population} (when \code{b} / \code{d} are provided):
+\deqn{\frac{dS}{dt} = b N - \beta \frac{S I}{N} - d S}
+\deqn{\frac{dI}{dt} = \beta \frac{S I}{N} - d I}
+
+In the closed case population size \eqn{N = S + I} is conserved.
 }
 \examples{
+# Closed population
 model_si(
   init   = c(S = 990, I = 10),
   params = c(beta = 0.002),
   times  = seq(0, 30, by = 0.1)
+)
+
+# Open population with births and deaths
+model_si(
+  init   = c(S = 990, I = 10),
+  params = c(beta = 0.002, b = 0.01, d = 0.01),
+  times  = seq(0, 200, by = 1)
 )
 
 }

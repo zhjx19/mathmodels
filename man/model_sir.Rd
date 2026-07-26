@@ -14,6 +14,10 @@ e.g. \code{c(S = 990, I = 10)}.}
 \describe{
 \item{beta}{Transmission rate.}
 \item{gamma}{Recovery rate (1/gamma = mean infectious period).}
+\item{N}{Total population size.  Optional — defaults to
+\code{sum(init)}.}
+\item{b}{Birth rate (per capita per time).  Optional.}
+\item{d}{Death rate (per capita per time).  Optional.}
 }}
 
 \item{times}{Numeric vector of output times.}
@@ -25,20 +29,35 @@ A \code{data.frame} with columns \code{time}, \code{S}, \code{I},
 \code{R}.
 }
 \description{
-Three-compartment model with permanent immunity after recovery:
+Three-compartment model with permanent immunity after recovery.
+}
+\details{
+\strong{Closed population} (default):
 \deqn{\frac{dS}{dt} = -\beta \frac{S I}{N}}
 \deqn{\frac{dI}{dt} =  \beta \frac{S I}{N} - \gamma I}
 \deqn{\frac{dR}{dt} =  \gamma I}
-}
-\details{
-Population size \eqn{N = S + I + R} is conserved.
+
+\strong{Open population} (when \code{b} / \code{d} are provided):
+\deqn{\frac{dS}{dt} = b N - \beta \frac{S I}{N} - d S}
+\deqn{\frac{dI}{dt} = \beta \frac{S I}{N} - \gamma I - d I}
+\deqn{\frac{dR}{dt} = \gamma I - d R}
+
+In the closed case population size \eqn{N = S + I + R} is conserved.
 The basic reproduction number is \eqn{R_0 = \beta / \gamma}.
 }
 \examples{
+# Closed population
 model_sir(
   init   = c(S = 990, I = 10),
   params = c(beta = 0.002, gamma = 0.1),
   times  = seq(0, 50, by = 0.1)
+)
+
+# Open population with births and deaths
+model_sir(
+  init   = c(S = 990, I = 10),
+  params = c(beta = 0.002, gamma = 0.1, b = 0.01, d = 0.01),
+  times  = seq(0, 200, by = 1)
 )
 
 }

@@ -13,6 +13,10 @@ model_sis(init, params, times, ...)
 \describe{
 \item{beta}{Transmission rate.}
 \item{gamma}{Recovery rate (1/gamma = mean infectious period).}
+\item{N}{Total population size.  Optional — defaults to
+\code{sum(init)}.}
+\item{b}{Birth rate (per capita per time).  Optional.}
+\item{d}{Death rate (per capita per time).  Optional.}
 }}
 
 \item{times}{Numeric vector of output times.}
@@ -23,18 +27,32 @@ model_sis(init, params, times, ...)
 A \code{data.frame} with columns \code{time}, \code{S}, \code{I}.
 }
 \description{
-Two-compartment model with recovery but no lasting immunity:
-\deqn{\frac{dS}{dt} = -\beta \frac{S I}{N} + \gamma I}
-\deqn{\frac{dI}{dt} =  \beta \frac{S I}{N} - \gamma I}
+Two-compartment model with recovery but no lasting immunity.
 }
 \details{
-Population size \eqn{N = S + I} is conserved.
+\strong{Closed population} (default):
+\deqn{\frac{dS}{dt} = -\beta \frac{S I}{N} + \gamma I}
+\deqn{\frac{dI}{dt} =  \beta \frac{S I}{N} - \gamma I}
+
+\strong{Open population} (when \code{b} / \code{d} are provided):
+\deqn{\frac{dS}{dt} = b N - \beta \frac{S I}{N} + \gamma I - d S}
+\deqn{\frac{dI}{dt} = \beta \frac{S I}{N} - \gamma I - d I}
+
+In the closed case population size \eqn{N = S + I} is conserved.
 }
 \examples{
+# Closed population
 model_sis(
   init   = c(S = 990, I = 10),
   params = c(beta = 0.002, gamma = 0.1),
   times  = seq(0, 50, by = 0.1)
+)
+
+# Open population with births and deaths
+model_sis(
+  init   = c(S = 990, I = 10),
+  params = c(beta = 0.3, gamma = 0.1, b = 0.01, d = 0.01),
+  times  = seq(0, 200, by = 1)
 )
 
 }

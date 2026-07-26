@@ -53,6 +53,24 @@
 }
 
 
+# -----------------------------------------------------------------------------
+# Internal helper: prepare params list (N, b, d) and choose equation set
+# -----------------------------------------------------------------------------
+.prepare_epidemic_params = function(init, params, eq_closed, eq_open) {
+  params = as.list(params)
+  params$N = if (!is.null(params[["N"]])) params[["N"]] else sum(init)
+  has_bd = !is.null(params[["b"]]) || !is.null(params[["d"]])
+  if (has_bd) {
+    if (is.null(params[["b"]])) params[["b"]] = 0
+    if (is.null(params[["d"]])) params[["d"]] = 0
+    equations = eq_open
+  } else {
+    equations = eq_closed
+  }
+  list(params = params, equations = equations)
+}
+
+
 # =============================================================================
 #' General ODE Solver
 #'
@@ -244,16 +262,26 @@ model_logistic = function(init, params, times, ...) {
 # =============================================================================
 #' SI Epidemic Model
 #'
-#' Two-compartment model with no recovery:
+#' Two-compartment model with no recovery.
+#'
+#' \strong{Closed population} (default):
 #' \deqn{\frac{dS}{dt} = -\beta \frac{S I}{N}}
 #' \deqn{\frac{dI}{dt} =  \beta \frac{S I}{N}}
 #'
-#' Population size \eqn{N = S + I} is conserved.
+#' \strong{Open population} (when \code{b} / \code{d} are provided):
+#' \deqn{\frac{dS}{dt} = b N - \beta \frac{S I}{N} - d S}
+#' \deqn{\frac{dI}{dt} = \beta \frac{S I}{N} - d I}
+#'
+#' In the closed case population size \eqn{N = S + I} is conserved.
 #'
 #' @param init   Named numeric vector, e.g. \code{c(S = 990, I = 10)}.
 #' @param params Named numeric vector, e.g. \code{c(beta = 0.002)}.
 #'   \describe{
 #'     \item{beta}{Transmission rate (contacts per individual per time).}
+#'     \item{N}{Total population size.  Optional — defaults to
+#'           \code{sum(init)}.}
+#'     \item{b}{Birth rate (per capita per time).  Optional.}
+#'     \item{d}{Death rate (per capita per time).  Optional.}
 #'   }
 #' @param times  Numeric vector of output times.
 #' @param ...    Additional arguments passed to \code{ode_solver}.
@@ -261,38 +289,57 @@ model_logistic = function(init, params, times, ...) {
 #' @return A \code{data.frame} with columns \code{time}, \code{S}, \code{I}.
 #'
 #' @examples
+#' # Closed population
 #' model_si(
 #'   init   = c(S = 990, I = 10),
 #'   params = c(beta = 0.002),
 #'   times  = seq(0, 30, by = 0.1)
 #' )
 #'
+#' # Open population with births and deaths
+#' model_si(
+#'   init   = c(S = 990, I = 10),
+#'   params = c(beta = 0.002, b = 0.01, d = 0.01),
+#'   times  = seq(0, 200, by = 1)
+#' )
+#'
 #' @export
 model_si = function(init, params, times, ...) {
   init = .check_init(init, expected = c("S", "I"))
-  ode_solver(init, times,
-             equations = c(
-                S = "-beta * S * I / (S+I)",
-                I = "beta * S * I / (S+I)"
-             ),
-             params = params, ...)
+  p = .prepare_epidemic_params(init, params,
+    eq_closed = c(S = "-beta * S * I / N",
+                  I = "beta * S * I / N"),
+    eq_open   = c(S = "b * N - beta * S * I / N - d * S",
+                  I = "beta * S * I / N - d * I")
+  )
+  ode_solver(init, times, equations = p$equations, params = p$params, ...)
 }
 
 
 # =============================================================================
 #' SIS Epidemic Model
 #'
-#' Two-compartment model with recovery but no lasting immunity:
+#' Two-compartment model with recovery but no lasting immunity.
+#'
+#' \strong{Closed population} (default):
 #' \deqn{\frac{dS}{dt} = -\beta \frac{S I}{N} + \gamma I}
 #' \deqn{\frac{dI}{dt} =  \beta \frac{S I}{N} - \gamma I}
 #'
-#' Population size \eqn{N = S + I} is conserved.
+#' \strong{Open population} (when \code{b} / \code{d} are provided):
+#' \deqn{\frac{dS}{dt} = b N - \beta \frac{S I}{N} + \gamma I - d S}
+#' \deqn{\frac{dI}{dt} = \beta \frac{S I}{N} - \gamma I - d I}
+#'
+#' In the closed case population size \eqn{N = S + I} is conserved.
 #'
 #' @param init   Named numeric vector, e.g. \code{c(S = 990, I = 10)}.
 #' @param params Named numeric vector, e.g. \code{c(beta = 0.002, gamma = 0.1)}.
 #'   \describe{
 #'     \item{beta}{Transmission rate.}
 #'     \item{gamma}{Recovery rate (1/gamma = mean infectious period).}
+#'     \item{N}{Total population size.  Optional — defaults to
+#'           \code{sum(init)}.}
+#'     \item{b}{Birth rate (per capita per time).  Optional.}
+#'     \item{d}{Death rate (per capita per time).  Optional.}
 #'   }
 #' @param times  Numeric vector of output times.
 #' @param ...    Additional arguments passed to \code{ode_solver}.
@@ -300,33 +347,49 @@ model_si = function(init, params, times, ...) {
 #' @return A \code{data.frame} with columns \code{time}, \code{S}, \code{I}.
 #'
 #' @examples
+#' # Closed population
 #' model_sis(
 #'   init   = c(S = 990, I = 10),
 #'   params = c(beta = 0.002, gamma = 0.1),
 #'   times  = seq(0, 50, by = 0.1)
 #' )
 #'
+#' # Open population with births and deaths
+#' model_sis(
+#'   init   = c(S = 990, I = 10),
+#'   params = c(beta = 0.3, gamma = 0.1, b = 0.01, d = 0.01),
+#'   times  = seq(0, 200, by = 1)
+#' )
+#'
 #' @export
 model_sis = function(init, params, times, ...) {
   init = .check_init(init, expected = c("S", "I"))
-  ode_solver(init, times,
-             equations = c(
-                S = "-beta * S * I / (S+I) + gamma * I",
-                I = "beta * S * I / (S+I) - gamma * I"
-             ),
-             params = params, ...)
+  p = .prepare_epidemic_params(init, params,
+    eq_closed = c(S = "-beta * S * I / N + gamma * I",
+                  I = "beta * S * I / N - gamma * I"),
+    eq_open   = c(S = "b * N - beta * S * I / N + gamma * I - d * S",
+                  I = "beta * S * I / N - gamma * I - d * I")
+  )
+  ode_solver(init, times, equations = p$equations, params = p$params, ...)
 }
 
 
 # =============================================================================
 #' SIR Epidemic Model
 #'
-#' Three-compartment model with permanent immunity after recovery:
+#' Three-compartment model with permanent immunity after recovery.
+#'
+#' \strong{Closed population} (default):
 #' \deqn{\frac{dS}{dt} = -\beta \frac{S I}{N}}
 #' \deqn{\frac{dI}{dt} =  \beta \frac{S I}{N} - \gamma I}
 #' \deqn{\frac{dR}{dt} =  \gamma I}
 #'
-#' Population size \eqn{N = S + I + R} is conserved.
+#' \strong{Open population} (when \code{b} / \code{d} are provided):
+#' \deqn{\frac{dS}{dt} = b N - \beta \frac{S I}{N} - d S}
+#' \deqn{\frac{dI}{dt} = \beta \frac{S I}{N} - \gamma I - d I}
+#' \deqn{\frac{dR}{dt} = \gamma I - d R}
+#'
+#' In the closed case population size \eqn{N = S + I + R} is conserved.
 #' The basic reproduction number is \eqn{R_0 = \beta / \gamma}.
 #'
 #' @param init   Named numeric vector.  \code{R} defaults to 0 if omitted,
@@ -335,6 +398,10 @@ model_sis = function(init, params, times, ...) {
 #'   \describe{
 #'     \item{beta}{Transmission rate.}
 #'     \item{gamma}{Recovery rate (1/gamma = mean infectious period).}
+#'     \item{N}{Total population size.  Optional — defaults to
+#'           \code{sum(init)}.}
+#'     \item{b}{Birth rate (per capita per time).  Optional.}
+#'     \item{d}{Death rate (per capita per time).  Optional.}
 #'   }
 #' @param times  Numeric vector of output times.
 #' @param ...    Additional arguments passed to \code{ode_solver}.
@@ -343,10 +410,18 @@ model_sis = function(init, params, times, ...) {
 #'   \code{R}.
 #'
 #' @examples
+#' # Closed population
 #' model_sir(
 #'   init   = c(S = 990, I = 10),
 #'   params = c(beta = 0.002, gamma = 0.1),
 #'   times  = seq(0, 50, by = 0.1)
+#' )
+#'
+#' # Open population with births and deaths
+#' model_sir(
+#'   init   = c(S = 990, I = 10),
+#'   params = c(beta = 0.002, gamma = 0.1, b = 0.01, d = 0.01),
+#'   times  = seq(0, 200, by = 1)
 #' )
 #'
 #' @export
@@ -355,24 +430,34 @@ model_sir = function(init, params, times, ...) {
                       expected = c("S", "I", "R"),
                       defaults = list(R = 0)
   )
-  ode_solver(init, times,
-             equations = c(
-                S = "-beta * S * I / (S+I+R)",
-                I = "beta * S * I / (S+I+R) - gamma * I",
-                R = "gamma * I"
-             ),
-             params = params, ...)
+  p = .prepare_epidemic_params(init, params,
+    eq_closed = c(S = "-beta * S * I / N",
+                  I = "beta * S * I / N - gamma * I",
+                  R = "gamma * I"),
+    eq_open   = c(S = "b * N - beta * S * I / N - d * S",
+                  I = "beta * S * I / N - gamma * I - d * I",
+                  R = "gamma * I - d * R")
+  )
+  ode_solver(init, times, equations = p$equations, params = p$params, ...)
 }
 
 
 # =============================================================================
 #' SEIR Epidemic Model
 #'
-#' Four-compartment model that adds an exposed (latent) class:
+#' Four-compartment model that adds an exposed (latent) class.
+#'
+#' \strong{Closed population} (default):
 #' \deqn{\frac{dS}{dt} = -\beta \frac{S I}{N}}
 #' \deqn{\frac{dE}{dt} =  \beta \frac{S I}{N} - \alpha E}
 #' \deqn{\frac{dI}{dt} =  \alpha E - \gamma I}
 #' \deqn{\frac{dR}{dt} =  \gamma I}
+#'
+#' \strong{Open population} (when \code{b} / \code{d} are provided):
+#' \deqn{\frac{dS}{dt} = b N - \beta \frac{S I}{N} - d S}
+#' \deqn{\frac{dE}{dt} = \beta \frac{S I}{N} - \alpha E - d E}
+#' \deqn{\frac{dI}{dt} = \alpha E - \gamma I - d I}
+#' \deqn{\frac{dR}{dt} = \gamma I - d R}
 #'
 #' \itemize{
 #'   \item \strong{S} Susceptible — not yet infected.
@@ -383,7 +468,7 @@ model_sir = function(init, params, times, ...) {
 #'   \item \strong{R} Recovered — permanently immune.
 #' }
 #'
-#' Population size \eqn{N = S + E + I + R} is conserved.
+#' In the closed case population size \eqn{N = S + E + I + R} is conserved.
 #'
 #' @param init   Named numeric vector.  \code{R} defaults to 0 if omitted,
 #'   e.g. \code{c(S = 980, E = 10, I = 10)}.
@@ -394,6 +479,10 @@ model_sir = function(init, params, times, ...) {
 #'     \item{alpha}{Rate of progression from exposed to infectious
 #'           (1/alpha = mean latent period).}
 #'     \item{gamma}{Recovery rate (1/gamma = mean infectious period).}
+#'     \item{N}{Total population size.  Optional — defaults to
+#'           \code{sum(init)}.}
+#'     \item{b}{Birth rate (per capita per time).  Optional.}
+#'     \item{d}{Death rate (per capita per time).  Optional.}
 #'   }
 #' @param times  Numeric vector of output times.
 #' @param ...    Additional arguments passed to \code{ode_solver}.
@@ -402,10 +491,18 @@ model_sir = function(init, params, times, ...) {
 #'   \code{I}, \code{R}.
 #'
 #' @examples
+#' # Closed population
 #' model_seir(
 #'   init   = c(S = 980, E = 10, I = 10),
 #'   params = c(beta = 0.3, alpha = 0.2, gamma = 0.1),
 #'   times  = seq(0, 50, by = 0.1)
+#' )
+#'
+#' # Open population with births and deaths
+#' model_seir(
+#'   init   = c(S = 980, E = 10, I = 10),
+#'   params = c(beta = 0.3, alpha = 0.2, gamma = 0.1, b = 0.01, d = 0.01),
+#'   times  = seq(0, 200, by = 1)
 #' )
 #'
 #' @export
@@ -414,14 +511,17 @@ model_seir = function(init, params, times, ...) {
                       expected = c("S", "E", "I", "R"),
                       defaults = list(R = 0)
   )
-  ode_solver(init, times,
-             equations = c(
-                S = "-beta * S * I / (S+E+I+R)",
-                E = "beta * S * I / (S+E+I+R) - alpha * E",
-                I = "alpha * E - gamma * I",
-                R = "gamma * I"
-             ),
-             params = params, ...)
+  p = .prepare_epidemic_params(init, params,
+    eq_closed = c(S = "-beta * S * I / N",
+                  E = "beta * S * I / N - alpha * E",
+                  I = "alpha * E - gamma * I",
+                  R = "gamma * I"),
+    eq_open   = c(S = "b * N - beta * S * I / N - d * S",
+                  E = "beta * S * I / N - alpha * E - d * E",
+                  I = "alpha * E - gamma * I - d * I",
+                  R = "gamma * I - d * R")
+  )
+  ode_solver(init, times, equations = p$equations, params = p$params, ...)
 }
 
 
