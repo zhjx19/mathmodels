@@ -11,9 +11,9 @@
 
 An R package providing a versatile toolkit for mathematical modeling, developed as a companion to the book *Mathematical Modeling: Algorithms and Programming Implementation* (China Machine Press). It focuses on implementing rigorous algorithms in a user-friendly manner.
 
-**Current Version (0.0.10)** introduces a regression prediction toolkit (`reg_lm`,
-`reg_logistic`, `reg_poisson`, `reg_negbin`) with stepwise selection, diagnostics,
-and visualization — on top of the time-series workflow, epidemic modeling,
+**Current Version (0.0.11)** introduces an interpolation and curve fitting toolkit (`interp_linear`,
+`interp_spline`, `interp_poly`, `interp_hermite`, `poly_fit`, `curve_fit`, `growth_fit`)
+— on top of the regression prediction toolkit, time-series workflow, epidemic modeling,
 differential equation models, grey prediction, Markov chain models, and a rich
 suite of evaluation methods (AHP, Entropy, CRITIC, PCA, TOPSIS, Fuzzy, RSR, DEA).
 
