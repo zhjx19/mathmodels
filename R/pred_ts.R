@@ -583,39 +583,7 @@ ts_ets = function(x, model = "ZZZ", ...) {
   )
 }
 
-#' SARIMA Model Fitting
-#'
-#' @param x A complete `ts_df` with no missing values.
-#' @param order Optional non-seasonal ARIMA order.
-#' @param seasonal Optional seasonal specification.
-#' @param stepwise,approximation Passed to `forecast::auto.arima()`.
-#' @param ... Additional arguments passed to the forecast fitting function.
-#'
-#' @return A list containing tidy model summaries, the raw model, and input.
-#' @examples
-#' ts_sarima(as_ts_df(log(AirPassengers)), stepwise = TRUE, approximation = TRUE)
-#' @export
-ts_sarima = function(x,
-                      order = NULL,
-                      seasonal = NULL,
-                      stepwise = TRUE,
-                      approximation = TRUE,
-                      ...) {
-  x = validate_ts_df(x, require_complete = TRUE, require_no_na = TRUE)
-  x_ts = .ts_df_to_ts(x)
-
-  if (is.null(order)) {
-    fit = forecast::auto.arima(
-      x_ts,
-      stepwise = stepwise,
-      approximation = approximation,
-      ...
-    )
-  } else {
-    seas = if (is.null(seasonal)) list(order = c(0, 0, 0)) else seasonal
-    fit = forecast::Arima(x_ts, order = order, seasonal = seas, ...)
-  }
-
+.ts_arima_tidy = function(fit, x) {
   coef_vec = stats::coef(fit)
   se_vec = if (length(coef_vec) > 0 && !is.null(fit$var.coef)) {
     sqrt(diag(fit$var.coef))
@@ -625,7 +593,7 @@ ts_sarima = function(x,
 
   lb = stats::Box.test(
     fit$residuals,
-    lag = min(20, floor(length(x_ts) / 5)),
+    lag = min(20, floor(nrow(x) / 5)),
     type = "Ljung-Box",
     fitdf = length(coef_vec)
   )
@@ -659,23 +627,160 @@ ts_sarima = function(x,
   )
 }
 
+#' SARIMA Model Fitting
+#'
+#' @param x A complete `ts_df` with no missing values.
+#' @param order Optional non-seasonal ARIMA order.
+#' @param seasonal Optional seasonal specification.
+#' @param stepwise,approximation Passed to `forecast::auto.arima()`.
+#' @param ... Additional arguments passed to the forecast fitting function.
+#'
+#' @return A list containing tidy model summaries, the raw model, and input.
+#' @examples
+#' ts_sarima(as_ts_df(log(AirPassengers)), stepwise = TRUE, approximation = TRUE)
+#' @export
+ts_sarima = function(x,
+                      order = NULL,
+                      seasonal = NULL,
+                      stepwise = TRUE,
+                      approximation = TRUE,
+                      ...) {
+  x = validate_ts_df(x, require_complete = TRUE, require_no_na = TRUE)
+  x_ts = .ts_df_to_ts(x)
+
+  if (is.null(order)) {
+    fit = forecast::auto.arima(
+      x_ts,
+      stepwise = stepwise,
+      approximation = approximation,
+      ...
+    )
+  } else {
+    seas = if (is.null(seasonal)) list(order = c(0, 0, 0)) else seasonal
+    fit = forecast::Arima(x_ts, order = order, seasonal = seas, ...)
+  }
+
+  .ts_arima_tidy(fit, x)
+}
+
+#' ARIMAX Model Fitting
+#'
+#' Fits an ARIMA model with exogenous regressors (ARIMAX).
+#'
+#' @param x A complete `ts_df` with no missing values.
+#' @param xreg A matrix or data.frame of exogenous regressors with
+#'   `nrow(xreg) == nrow(x)`.
+#' @param order Optional non-seasonal ARIMA order. If `NULL` (default),
+#'   automatic order selection via `forecast::auto.arima()`.
+#' @param seasonal Optional seasonal specification.
+#' @param stepwise,approximation Passed to `forecast::auto.arima()`.
+#' @param ... Additional arguments passed to the forecast fitting function.
+#'
+#' @return A list containing tidy model summaries, the raw model, input,
+#'   and the exogenous regressors used.
+#' @examples
+#' x = as_ts_df(log(AirPassengers))
+#' xreg = data.frame(trend = seq_len(nrow(x)))
+#' ts_arimax(x, xreg = xreg)
+#' @export
+ts_arimax = function(x,
+                     xreg,
+                     order = NULL,
+                     seasonal = NULL,
+                     stepwise = TRUE,
+                     approximation = TRUE,
+                     ...) {
+  x = validate_ts_df(x, require_complete = TRUE, require_no_na = TRUE)
+  x_ts = .ts_df_to_ts(x)
+
+  if (missing(xreg) || is.null(xreg)) {
+    stop("xreg must be supplied for ARIMAX models.", call. = FALSE)
+  }
+  if (is.data.frame(xreg)) {
+    xreg = as.matrix(xreg)
+  }
+  if (!is.matrix(xreg) || !is.numeric(xreg)) {
+    stop("xreg must be a numeric matrix or data.frame.", call. = FALSE)
+  }
+  if (nrow(xreg) != nrow(x)) {
+    stop(
+      sprintf("xreg must have %d rows (same as x), but has %d.",
+              nrow(x), nrow(xreg)),
+      call. = FALSE
+    )
+  }
+
+  if (is.null(order)) {
+    fit = forecast::auto.arima(
+      x_ts,
+      xreg = xreg,
+      stepwise = stepwise,
+      approximation = approximation,
+      ...
+    )
+  } else {
+    seas = if (is.null(seasonal)) list(order = c(0, 0, 0)) else seasonal
+    fit = forecast::Arima(x_ts, order = order, seasonal = seas, xreg = xreg, ...)
+  }
+
+  result = .ts_arima_tidy(fit, x)
+  result$xreg = xreg
+  result
+}
+
 #' Generate Forecasts
 #'
-#' @param model_result Result from `ts_ets()` or `ts_sarima()`.
+#' @param model_result Result from `ts_ets()`, `ts_sarima()`, or `ts_arimax()`.
 #' @param h Forecast horizon.
 #' @param level Confidence levels.
+#' @param newxreg Future exogenous regressors for ARIMAX models. A matrix or
+#'   data.frame with `nrow(newxreg) == h` and the same number of columns as
+#'   the original `xreg`.
 #'
 #' @return A tibble with point forecasts and intervals.
 #' @examples
 #' fit = ts_ets(as_ts_df(log(AirPassengers)))
 #' ts_forecast(fit, h = 3)
+#'
+#' x = as_ts_df(log(AirPassengers))
+#' xreg = data.frame(trend = seq_len(nrow(x)))
+#' fit_arimax = ts_arimax(x, xreg = xreg, order = c(1, 1, 1))
+#' newxreg = data.frame(trend = nrow(x) + 1:3)
+#' ts_forecast(fit_arimax, h = 3, newxreg = newxreg)
 #' @export
-ts_forecast = function(model_result, h = 12, level = c(80, 95)) {
+ts_forecast = function(model_result, h = 12, level = c(80, 95),
+                       newxreg = NULL) {
   if (!inherits(model_result$model, c("ets", "ARIMA", "Arima"))) {
-    stop("model_result must be returned by ts_ets() or ts_sarima().", call. = FALSE)
+    stop("model_result must be returned by ts_ets(), ts_sarima(), or ts_arimax().",
+         call. = FALSE)
   }
 
-  fc = forecast::forecast(model_result$model, h = h, level = level)
+  is_arimax = inherits(model_result$model, "Arima") &&
+    !is.null(model_result$xreg)
+  if (is_arimax) {
+    if (is.null(newxreg)) {
+      stop("newxreg must be supplied for ARIMAX forecasts.", call. = FALSE)
+    }
+    if (is.data.frame(newxreg)) {
+      newxreg = as.matrix(newxreg)
+    }
+    if (!is.matrix(newxreg) || !is.numeric(newxreg)) {
+      stop("newxreg must be a numeric matrix or data.frame.", call. = FALSE)
+    }
+    if (nrow(newxreg) != h) {
+      stop(sprintf("newxreg must have %d rows (same as h), but has %d.",
+                   h, nrow(newxreg)), call. = FALSE)
+    }
+    if (ncol(newxreg) != ncol(model_result$xreg)) {
+      stop(sprintf("newxreg must have %d columns (same as xreg), but has %d.",
+                   ncol(model_result$xreg), ncol(newxreg)), call. = FALSE)
+    }
+    fc = forecast::forecast(model_result$model, h = h, level = level,
+                            xreg = newxreg)
+  } else {
+    fc = forecast::forecast(model_result$model, h = h, level = level)
+  }
+
   tbl = tibble::tibble(step = seq_len(h), forecast = as.numeric(fc$mean))
 
   for (lv in level) {

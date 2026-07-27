@@ -198,6 +198,62 @@ test_that("ts_ets() and ts_sarima() return fitted values tied to ts_df input", {
   expect_s3_class(sarima$input, "ts_df")
 })
 
+test_that("ts_arimax() fits ARIMAX with auto-selected order and xreg", {
+  x = as_ts_df(ap_log)
+  xreg = data.frame(trend = seq_len(nrow(x)))
+
+  fit = ts_arimax(x, xreg = xreg, stepwise = TRUE, approximation = TRUE)
+
+  expect_setequal(names(fit), c("model_info", "coefficients", "fitted",
+                                 "diagnostics", "model", "input", "xreg"))
+  expect_s3_class(fit$model, "Arima")
+  expect_s3_class(fit$input, "ts_df")
+  expect_true(is.matrix(fit$xreg))
+  expect_equal(nrow(fit$xreg), nrow(x))
+  expect_equal(fit$fitted$time, x$time)
+  expect_equal(nrow(fit$coefficients), length(stats::coef(fit$model)))
+})
+
+test_that("ts_arimax() fits ARIMAX with manual order and xreg", {
+  x = as_ts_df(ap_log)
+  xreg = data.frame(trend = seq_len(nrow(x)))
+
+  fit = ts_arimax(x, xreg = xreg, order = c(1, 1, 1))
+
+  expect_s3_class(fit$model, "Arima")
+  expect_equal(nrow(fit$coefficients), length(stats::coef(fit$model)))
+  expect_true("xreg" %in% names(fit))
+})
+
+test_that("ts_arimax() rejects missing or mismatched xreg", {
+  x = as_ts_df(ap_log)
+
+  expect_error(ts_arimax(x), "xreg must be supplied")
+  expect_error(ts_arimax(x, xreg = data.frame(a = 1:5)),
+               "xreg must have .* rows")
+  expect_error(ts_arimax(x, xreg = "not_a_matrix"), "xreg must be a numeric")
+})
+
+test_that("ts_forecast() works with ARIMAX model and newxreg", {
+  x = as_ts_df(ap_log)
+  xreg = data.frame(trend = seq_len(nrow(x)))
+  fit = ts_arimax(x, xreg = xreg, order = c(1, 1, 1))
+
+  newxreg = data.frame(trend = nrow(x) + 1:3)
+  fc = ts_forecast(fit, h = 3, newxreg = newxreg)
+
+  expect_equal(nrow(fc), 3)
+  expect_named(fc, c("step", "forecast", "lo_80", "hi_80", "lo_95", "hi_95"))
+})
+
+test_that("ts_forecast() errors when newxreg is missing for ARIMAX", {
+  x = as_ts_df(ap_log)
+  xreg = data.frame(trend = seq_len(nrow(x)))
+  fit = ts_arimax(x, xreg = xreg, order = c(1, 1, 1))
+
+  expect_error(ts_forecast(fit, h = 3), "newxreg must be supplied")
+})
+
 test_that("ts_forecast() forecasts ETS and SARIMA results", {
   x = as_ts_df(ap_log)
   ets = ts_ets(x)

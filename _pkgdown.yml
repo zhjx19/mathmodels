@@ -149,6 +149,7 @@ reference:
   - ts_stl
   - ts_ets
   - ts_sarima
+  - ts_arimax
   - ts_forecast
   - plot_ts
   - plot_ts_forecast

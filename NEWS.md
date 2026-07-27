@@ -1,5 +1,8 @@
 # mathmodels 0.0.11
 
+- **New function** `ts_arimax()`: Fits ARIMA models with exogenous regressors (ARIMAX). Supports both automatic order selection (`forecast::auto.arima()`) and manual specification (`forecast::Arima()`), consistent with the existing `ts_sarima()` interface.
+- **Updated** `ts_forecast()`: Added `newxreg` parameter for forecasting ARIMAX models with future exogenous regressor values.
+
 ## Interpolation & curve fitting toolkit (new)
 
 - **Interpolation** (`interp_fit.R`):

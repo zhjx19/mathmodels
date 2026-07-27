@@ -4,14 +4,18 @@
 \alias{ts_forecast}
 \title{Generate Forecasts}
 \usage{
-ts_forecast(model_result, h = 12, level = c(80, 95))
+ts_forecast(model_result, h = 12, level = c(80, 95), newxreg = NULL)
 }
 \arguments{
-\item{model_result}{Result from \code{ts_ets()} or \code{ts_sarima()}.}
+\item{model_result}{Result from \code{ts_ets()}, \code{ts_sarima()}, or \code{ts_arimax()}.}
 
 \item{h}{Forecast horizon.}
 
 \item{level}{Confidence levels.}
+
+\item{newxreg}{Future exogenous regressors for ARIMAX models. A matrix or
+data.frame with \code{nrow(newxreg) == h} and the same number of columns as
+the original \code{xreg}.}
 }
 \value{
 A tibble with point forecasts and intervals.
@@ -22,4 +26,10 @@ Generate Forecasts
 \examples{
 fit = ts_ets(as_ts_df(log(AirPassengers)))
 ts_forecast(fit, h = 3)
+
+x = as_ts_df(log(AirPassengers))
+xreg = data.frame(trend = seq_len(nrow(x)))
+fit_arimax = ts_arimax(x, xreg = xreg, order = c(1, 1, 1))
+newxreg = data.frame(trend = nrow(x) + 1:3)
+ts_forecast(fit_arimax, h = 3, newxreg = newxreg)
 }
