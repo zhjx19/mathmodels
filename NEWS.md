@@ -2,6 +2,7 @@
 
 - **New function** `ts_arimax()`: Fits ARIMA models with exogenous regressors (ARIMAX). Supports both automatic order selection (`forecast::auto.arima()`) and manual specification (`forecast::Arima()`), consistent with the existing `ts_sarima()` interface.
 - **Updated** `ts_forecast()`: Added `newxreg` parameter for forecasting ARIMAX models with future exogenous regressor values.
+- **Improved** `compute_mf()` / `compute_mf_funs()`: Added `.builder` parameter supporting Gaussian (`"gauss"`) and sigmoid (`"sigmoid"`) membership functions in addition to the default triangular/trapezoidal (`"tri"`). Custom builder functions are also accepted. Fixed `defuzzify()` floating-point comparison in `max_membership` method.
 
 ## Interpolation & curve fitting toolkit (new)
 

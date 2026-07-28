@@ -16,6 +16,16 @@
   [`ts_forecast()`](https://zhjx19.github.io/mathmodels/reference/ts_forecast.md):
   Added `newxreg` parameter for forecasting ARIMAX models with future
   exogenous regressor values.
+- **Improved**
+  [`compute_mf()`](https://zhjx19.github.io/mathmodels/reference/compute_mf.md)
+  /
+  [`compute_mf_funs()`](https://zhjx19.github.io/mathmodels/reference/compute_mf.md):
+  Added `.builder` parameter supporting Gaussian (`"gauss"`) and sigmoid
+  (`"sigmoid"`) membership functions in addition to the default
+  triangular/trapezoidal (`"tri"`). Custom builder functions are also
+  accepted. Fixed
+  [`defuzzify()`](https://zhjx19.github.io/mathmodels/reference/defuzzify.md)
+  floating-point comparison in `max_membership` method.
 
 ### Interpolation & curve fitting toolkit (new)
 

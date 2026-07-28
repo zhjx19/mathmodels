@@ -3,38 +3,81 @@
 \name{compute_mf}
 \alias{compute_mf}
 \alias{compute_mf_funs}
-\title{Compute fuzzy membership vector and return corresponding membership functions.}
+\title{Build membership functions from thresholds}
 \usage{
-compute_mf_funs(thresholds)
+compute_mf_funs(thresholds, .builder = "tri", ...)
 
-compute_mf(x, thresholds)
+compute_mf(x, thresholds, .builder = "tri", ...)
 }
 \arguments{
-\item{thresholds}{A numeric vector containing at least two threshold values that define
-the boundaries between evaluation levels.}
+\item{thresholds}{A numeric vector of length \eqn{n \ge 2} defining the
+characteristic values (peaks / centers) of each evaluation level.}
 
-\item{x}{A numeric scalar representing the value of an indicator.}
+\item{.builder}{A character string or function that specifies how membership
+functions are built from \code{thresholds}:
+\describe{
+\item{\code{"tri"}}{(default) Piecewise linear (triangular + trapezoidal).
+First level decays linearly from 1 to 0 across \code{[th[1], th[2]]},
+last level rises from 0 to 1 across \code{[th[n-1], th[n]]}, middle
+levels are isosceles triangles peaking at each threshold.}
+\item{\code{"gauss"}}{Gaussian (normal) membership. First level is a
+right-half Gaussian decaying from 1 at \code{th[1]}, last level is a
+left-half Gaussian rising to 1 at \code{th[n]}, middle levels are full
+Gaussians centered at each threshold.  Pass \code{sigma} to control
+spread (default = \code{mean(diff(thresholds)) / 3}).}
+\item{\code{"sigmoid"}}{Sigmoid-based membership. First level uses a
+decreasing sigmoid, last level an increasing sigmoid, middle levels
+use difference-of-sigmoids (bell-shaped). Pass \code{slope} to control
+steepness (default = \code{5 / mean(diff(thresholds))}).}
+\item{User-supplied function}{A function with signature
+\code{function(thresholds, ...)} that returns a list of \eqn{n}
+functions, each accepting a numeric vector \code{x} and returning
+membership values in \eqn{[0, 1]}.}
+}}
+
+\item{...}{Additional arguments passed to the builder (e.g. \code{sigma}
+for \code{"gauss"}, \code{slope} for \code{"sigmoid"}, or forwarded to a
+custom builder function).}
+
+\item{x}{Numeric vector, input values for which to compute membership.}
 }
 \value{
-A list with two elements:
-\describe{
-\item{mv}{A numeric vector, membership degrees to each level.}
-\item{mfs}{A list of functions, one per level, for plotting membership functions.}
+\itemize{
+\item \code{compute_mf_funs}: A list of \eqn{n} functions, one per level.
+\item \code{compute_mf}: A numeric vector of length \eqn{n} with membership
+degrees for each level.
 }
 }
 \description{
-\code{compute_mf} transforms a single indicator value into a fuzzy membership vector,
-where each element represents the degree of membership to a specific evaluation level.
-\code{compute_mf_funs} returns the list of membership functions for visualization purposes.
+\code{compute_mf_funs} constructs a list of membership functions (one per evaluation
+level) from threshold values. \code{compute_mf} evaluates a single indicator value
+against those functions, returning a membership vector.
 }
 \examples{
-# Example: SO2 concentration = 0.07, thresholds = c(0.05, 0.15, 0.25, 0.5)
+# Triangular membership (default)
 th = c(0.05, 0.15, 0.25, 0.5)
 compute_mf(0.07, th)
 
+# Gaussian membership with custom sigma
+compute_mf(0.07, th, .builder = "gauss", sigma = 0.05)
+
+# Sigmoid membership with custom slope
+compute_mf(0.07, th, .builder = "sigmoid", slope = 20)
+
+# Custom builder: exponential decay
+exp_builder = function(thresholds, rate = 1) {
+  n = length(thresholds)
+  lapply(seq_len(n), function(i) {
+    force(i)
+    function(x) exp(-rate * abs(x - thresholds[i]))
+  })
+}
+compute_mf(0.07, th, .builder = exp_builder, rate = 10)
+
 \dontrun{
-mfs = compute_mf_funs(th)
-plots = lapply(mfs, \(x) plot_mf(x, xlim = c(0, 0.6)))
+# Visualise all levels for a given builder
+mfs = compute_mf_funs(th, .builder = "gauss", sigma = 0.05)
+plots = lapply(mfs, \(f) plot_mf(f, xlim = c(0, 0.6)))
 gridExtra::grid.arrange(grobs = plots, nrow = 2)
 }
 

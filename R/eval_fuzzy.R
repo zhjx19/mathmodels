@@ -5,7 +5,7 @@
 
 
 # ============================================================================
-# 隶属函数 (Membership Functions)
+# Membership Functions
 # ============================================================================
 
 #' @title Membership Functions for Fuzzy Logic
@@ -296,33 +296,169 @@ plot_mf = function(mf, xlim = c(0, 10), main = NULL) {
 
 
 # ============================================================================
-# compute_mf — 指标值 → 模糊隶属向量
+# compute_mf — indicator value to membership vector
 # ============================================================================
 
-#' Compute fuzzy membership vector and return corresponding membership functions.
+# ---------- internal builder: triangular / trapezoidal (piecewise linear) ----------
+
+build_mf_tri = function(thresholds, ...) {
+  n = length(thresholds)
+  mfs = vector("list", n)
+
+  mfs[[1]] = function(x) trap_mf(x, c(-Inf, -Inf, thresholds[1], thresholds[2]))
+
+  mfs[[n]] = function(x) trap_mf(x, c(thresholds[n - 1], thresholds[n], Inf, Inf))
+
+  if (n > 2) {
+    for (i in seq_len(n - 2)) {
+      t = thresholds[i + 0:2]
+      mfs[[i + 1]] = local({
+        t_local = t
+        function(x) tri_mf(x, t_local)
+      })
+    }
+  }
+
+  mfs
+}
+
+# ---------- internal builder: Gaussian ----------
+
+build_mf_gauss = function(thresholds, sigma = NULL, ...) {
+  n = length(thresholds)
+  if (is.null(sigma)) sigma = mean(diff(thresholds)) / 3
+  if (!is.numeric(sigma) || length(sigma) != 1 || sigma <= 0)
+    stop("sigma must be a positive numeric scalar.")
+
+  mfs = vector("list", n)
+
+  c1 = thresholds[1]
+  mfs[[1]] = function(x) {
+    y = rep(1, length(x))
+    y[x > c1] = exp(-(x[x > c1] - c1)^2 / (2 * sigma^2))
+    y
+  }
+
+  if (n > 2) {
+    for (i in seq_len(n - 2)) {
+      cen = thresholds[i + 1]; s = sigma
+      mfs[[i + 1]] = local({
+        c_local = cen; s_local = s
+        function(x) gauss_mf(x, c(s_local, c_local))
+      })
+    }
+  }
+
+  cn = thresholds[n]
+  mfs[[n]] = function(x) {
+    y = exp(-(x - cn)^2 / (2 * sigma^2))
+    y[x >= cn] = 1
+    y
+  }
+
+  mfs
+}
+
+# ---------- internal builder: Sigmoid ----------
+
+build_mf_sigmoid = function(thresholds, slope = NULL, ...) {
+  n = length(thresholds)
+  if (is.null(slope)) slope = 5 / mean(diff(thresholds))
+  if (!is.numeric(slope) || length(slope) != 1 || slope <= 0)
+    stop("slope must be a positive numeric scalar.")
+
+  mfs = vector("list", n)
+
+  mfs[[1]] = function(x) sigmoid_mf(x, c(-slope, thresholds[1]))
+
+  if (n > 2) {
+    for (i in seq_len(n - 2)) {
+      cen = thresholds[i + 1]; sl = slope
+      left = thresholds[i]
+      right = thresholds[i + 2]
+      delta = min(cen - left, right - cen) / 3
+      mfs[[i + 1]] = local({
+        a1 = sl; c1 = cen - delta
+        a2 = sl; c2 = cen + delta
+        function(x) dsigmoid_mf(x, c(a1, c1, a2, c2))
+      })
+    }
+  }
+
+  mfs[[n]] = function(x) sigmoid_mf(x, c(slope, thresholds[n]))
+
+  mfs
+}
+
+# ---------- public API ----------
+
+#' Build membership functions from thresholds
 #'
-#' `compute_mf` transforms a single indicator value into a fuzzy membership vector,
-#' where each element represents the degree of membership to a specific evaluation level.
-#' `compute_mf_funs` returns the list of membership functions for visualization purposes.
+#' @description
+#' `compute_mf_funs` constructs a list of membership functions (one per evaluation
+#' level) from threshold values. `compute_mf` evaluates a single indicator value
+#' against those functions, returning a membership vector.
 #'
-#' @param x A numeric scalar representing the value of an indicator.
-#' @param thresholds A numeric vector containing at least two threshold values that define
-#'                   the boundaries between evaluation levels.
-#'
-#' @return A list with two elements:
+#' @inheritParams membership
+#' @param thresholds A numeric vector of length \eqn{n \ge 2} defining the
+#'   characteristic values (peaks / centers) of each evaluation level.
+#' @param .builder A character string or function that specifies how membership
+#'   functions are built from `thresholds`:
 #'   \describe{
-#'     \item{mv}{A numeric vector, membership degrees to each level.}
-#'     \item{mfs}{A list of functions, one per level, for plotting membership functions.}
+#'     \item{`"tri"`}{(default) Piecewise linear (triangular + trapezoidal).
+#'       First level decays linearly from 1 to 0 across \code{[th[1], th[2]]},
+#'       last level rises from 0 to 1 across \code{[th[n-1], th[n]]}, middle
+#'       levels are isosceles triangles peaking at each threshold.}
+#'     \item{`"gauss"`}{Gaussian (normal) membership. First level is a
+#'       right-half Gaussian decaying from 1 at \code{th[1]}, last level is a
+#'       left-half Gaussian rising to 1 at \code{th[n]}, middle levels are full
+#'       Gaussians centered at each threshold.  Pass \code{sigma} to control
+#'       spread (default = \code{mean(diff(thresholds)) / 3}).}
+#'     \item{`"sigmoid"`}{Sigmoid-based membership. First level uses a
+#'       decreasing sigmoid, last level an increasing sigmoid, middle levels
+#'       use difference-of-sigmoids (bell-shaped). Pass \code{slope} to control
+#'       steepness (default = \code{5 / mean(diff(thresholds))}).}
+#'     \item{User-supplied function}{A function with signature
+#'       \code{function(thresholds, ...)} that returns a list of \eqn{n}
+#'       functions, each accepting a numeric vector \code{x} and returning
+#'       membership values in \eqn{[0, 1]}.}
 #'   }
+#' @param ... Additional arguments passed to the builder (e.g. \code{sigma}
+#'   for \code{"gauss"}, \code{slope} for \code{"sigmoid"}, or forwarded to a
+#'   custom builder function).
+#'
+#' @return
+#' \itemize{
+#'   \item `compute_mf_funs`: A list of \eqn{n} functions, one per level.
+#'   \item `compute_mf`: A numeric vector of length \eqn{n} with membership
+#'     degrees for each level.
+#' }
 #'
 #' @examples
-#' # Example: SO2 concentration = 0.07, thresholds = c(0.05, 0.15, 0.25, 0.5)
+#' # Triangular membership (default)
 #' th = c(0.05, 0.15, 0.25, 0.5)
 #' compute_mf(0.07, th)
 #'
+#' # Gaussian membership with custom sigma
+#' compute_mf(0.07, th, .builder = "gauss", sigma = 0.05)
+#'
+#' # Sigmoid membership with custom slope
+#' compute_mf(0.07, th, .builder = "sigmoid", slope = 20)
+#'
+#' # Custom builder: exponential decay
+#' exp_builder = function(thresholds, rate = 1) {
+#'   n = length(thresholds)
+#'   lapply(seq_len(n), function(i) {
+#'     force(i)
+#'     function(x) exp(-rate * abs(x - thresholds[i]))
+#'   })
+#' }
+#' compute_mf(0.07, th, .builder = exp_builder, rate = 10)
+#'
 #' \dontrun{
-#' mfs = compute_mf_funs(th)
-#' plots = lapply(mfs, \(x) plot_mf(x, xlim = c(0, 0.6)))
+#' # Visualise all levels for a given builder
+#' mfs = compute_mf_funs(th, .builder = "gauss", sigma = 0.05)
+#' plots = lapply(mfs, \(f) plot_mf(f, xlim = c(0, 0.6)))
 #' gridExtra::grid.arrange(grobs = plots, nrow = 2)
 #' }
 #'
@@ -331,46 +467,47 @@ NULL
 
 #' @rdname compute_mf
 #' @export
-compute_mf_funs = function(thresholds) {
-  if(!is.numeric(thresholds) || is.matrix(thresholds))
+compute_mf_funs = function(thresholds, .builder = "tri", ...) {
+  if (!is.numeric(thresholds) || is.matrix(thresholds))
     stop("thresholds must be a numeric vector.")
   n = length(thresholds)
-  if(n < 2) stop("thresholds must contain at least two values")
+  if (n < 2) stop("thresholds must contain at least two values")
 
-  mfs = list()
-
-  # Right-half trapezoid for the first level
-  mfs[[1]] = function(x) trap_mf(x, c(-Inf,-Inf,thresholds[1:2]))
-
-  # Left-half trapezoid for the last level
-  mfs[[n]] = function(x) trap_mf(x, c(thresholds[(n-1):n],Inf,Inf))
-
-  if(n > 2) {
-    mfs[2:(n-1)] = sapply(1:(n-2), function(i) {
-      function(x) tri_mf(x, thresholds[i:(i + 2)])
-    })
+  if (is.function(.builder)) {
+    return(.builder(thresholds, ...))
   }
+
+  if (!is.character(.builder) || length(.builder) != 1)
+    stop(".builder must be a character string or a function.")
+
+  .builder = match.arg(.builder, c("tri", "gauss", "sigmoid"))
+
+  mfs = switch(.builder,
+    tri     = build_mf_tri(thresholds, ...),
+    gauss   = build_mf_gauss(thresholds, ...),
+    sigmoid = build_mf_sigmoid(thresholds, ...)
+  )
 
   mfs
 }
 
 #' @rdname compute_mf
 #' @export
-compute_mf = function(x, thresholds) {
-  if(!is.numeric(x) || length(x) != 1)
+compute_mf = function(x, thresholds, .builder = "tri", ...) {
+  if (!is.numeric(x) || length(x) != 1)
     stop("x must be a numeric scalar.")
-  if(!is.numeric(thresholds) || is.matrix(thresholds))
+  if (!is.numeric(thresholds) || is.matrix(thresholds))
     stop("thresholds must be a numeric vector.")
   n = length(thresholds)
-  if(n < 2) stop("thresholds must contain at least two values")
+  if (n < 2) stop("thresholds must contain at least two values")
 
-  mfs = compute_mf_funs(thresholds)
+  mfs = compute_mf_funs(thresholds, .builder = .builder, ...)
   sapply(mfs, function(f) f(x))
 }
 
 
 # ============================================================================
-# fuzzy_eval — 模糊综合评价
+# fuzzy_eval — fuzzy comprehensive evaluation
 # ============================================================================
 
 #' Fuzzy Comprehensive Evaluation
@@ -464,7 +601,7 @@ fuzzy_eval = function(w, R, type) {
 
 
 # ============================================================================
-# defuzzify — 去模糊化
+# defuzzify — defuzzification
 # ============================================================================
 
 #' @title Defuzzification Methods for Fuzzy Comprehensive Evaluation

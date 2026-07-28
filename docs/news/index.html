@@ -43,6 +43,8 @@
 <strong>New function</strong> <code><a href="../reference/ts_arimax.html">ts_arimax()</a></code>: Fits ARIMA models with exogenous regressors (ARIMAX). Supports both automatic order selection (<code><a href="https://pkg.robjhyndman.com/forecast/reference/auto.arima.html" class="external-link">forecast::auto.arima()</a></code>) and manual specification (<code><a href="https://pkg.robjhyndman.com/forecast/reference/Arima.html" class="external-link">forecast::Arima()</a></code>), consistent with the existing <code><a href="../reference/ts_sarima.html">ts_sarima()</a></code> interface.</li>
 <li>
 <strong>Updated</strong> <code><a href="../reference/ts_forecast.html">ts_forecast()</a></code>: Added <code>newxreg</code> parameter for forecasting ARIMAX models with future exogenous regressor values.</li>
+<li>
+<strong>Improved</strong> <code><a href="../reference/compute_mf.html">compute_mf()</a></code> / <code><a href="../reference/compute_mf.html">compute_mf_funs()</a></code>: Added <code>.builder</code> parameter supporting Gaussian (<code>"gauss"</code>) and sigmoid (<code>"sigmoid"</code>) membership functions in addition to the default triangular/trapezoidal (<code>"tri"</code>). Custom builder functions are also accepted. Fixed <code><a href="../reference/defuzzify.html">defuzzify()</a></code> floating-point comparison in <code>max_membership</code> method.</li>
 </ul><div class="section level3">
 <h3 id="interpolation--curve-fitting-toolkit-new-0-0-11">Interpolation &amp; curve fitting toolkit (new)<a class="anchor" aria-label="anchor" href="#interpolation--curve-fitting-toolkit-new-0-0-11"></a></h3>
 <ul><li>
