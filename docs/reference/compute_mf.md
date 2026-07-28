@@ -1,20 +1,20 @@
-# Build membership functions from thresholds
+# Build membership functions from knots
 
 `compute_mf_funs` constructs a list of membership functions (one per
-evaluation level) from threshold values. `compute_mf` evaluates a single
+evaluation level) from knot values. `compute_mf` evaluates a single
 indicator value against those functions, returning a membership vector.
 
 ## Usage
 
 ``` r
-compute_mf_funs(thresholds, .builder = "tri", ...)
+compute_mf_funs(knots, .builder = "tri", ...)
 
-compute_mf(x, thresholds, .builder = "tri", ...)
+compute_mf(x, knots, .builder = "tri", ...)
 ```
 
 ## Arguments
 
-- thresholds:
+- knots:
 
   A numeric vector of length \\n \ge 2\\ defining the characteristic
   values (peaks / centers) of each evaluation level.
@@ -22,34 +22,34 @@ compute_mf(x, thresholds, .builder = "tri", ...)
 - .builder:
 
   A character string or function that specifies how membership functions
-  are built from `thresholds`:
+  are built from `knots`:
 
   `"tri"`
 
   :   (default) Piecewise linear (triangular + trapezoidal). First level
       decays linearly from 1 to 0 across `[th[1], th[2]]`, last level
       rises from 0 to 1 across `[th[n-1], th[n]]`, middle levels are
-      isosceles triangles peaking at each threshold.
+      isosceles triangles peaking at each knot.
 
   `"gauss"`
 
   :   Gaussian (normal) membership. First level is a right-half Gaussian
       decaying from 1 at `th[1]`, last level is a left-half Gaussian
       rising to 1 at `th[n]`, middle levels are full Gaussians centered
-      at each threshold. Pass `sigma` to control spread (default =
-      `mean(diff(thresholds)) / 3`).
+      at each knot. Pass `sigma` to control spread (default =
+      `mean(diff(knots)) / 3`).
 
   `"sigmoid"`
 
   :   Sigmoid-based membership. First level uses a decreasing sigmoid,
       last level an increasing sigmoid, middle levels use
       difference-of-sigmoids (bell-shaped). Pass `slope` to control
-      steepness (default = `5 / mean(diff(thresholds))`).
+      steepness (default = `5 / mean(diff(knots))`).
 
   User-supplied function
 
-  :   A function with signature `function(thresholds, ...)` that returns
-      a list of \\n\\ functions, each accepting a numeric vector `x` and
+  :   A function with signature `function(knots, ...)` that returns a
+      list of \\n\\ functions, each accepting a numeric vector `x` and
       returning membership values in \\\[0, 1\]\\.
 
 - ...:
@@ -86,11 +86,11 @@ compute_mf(0.07, th, .builder = "sigmoid", slope = 20)
 #> [1] 0.4013123399 0.1883274470 0.0366957707 0.0001840719
 
 # Custom builder: exponential decay
-exp_builder = function(thresholds, rate = 1) {
-  n = length(thresholds)
+exp_builder = function(knots, rate = 1) {
+  n = length(knots)
   lapply(seq_len(n), function(i) {
     force(i)
-    function(x) exp(-rate * abs(x - thresholds[i]))
+    function(x) exp(-rate * abs(x - knots[i]))
   })
 }
 compute_mf(0.07, th, .builder = exp_builder, rate = 10)

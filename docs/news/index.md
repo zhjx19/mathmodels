@@ -23,7 +23,7 @@
   Added `.builder` parameter supporting Gaussian (`"gauss"`) and sigmoid
   (`"sigmoid"`) membership functions in addition to the default
   triangular/trapezoidal (`"tri"`). Custom builder functions are also
-  accepted. Fixed
+  accepted. Renamed `thresholds` parameter to `knots` for clarity. Fixed
   [`defuzzify()`](https://zhjx19.github.io/mathmodels/reference/defuzzify.md)
   floating-point comparison in `max_membership` method.
 

@@ -72,11 +72,11 @@ test_that("compute_mf sigmoid builder far right", {
 
 test_that("compute_mf custom builder function", {
   th = c(0.05, 0.15, 0.25)
-  exp_decay = function(thresholds, rate = 10) {
-    n = length(thresholds)
+  exp_decay = function(knots, rate = 10) {
+    n = length(knots)
     lapply(seq_len(n), function(i) {
       force(i)
-      function(x) exp(-rate * abs(x - thresholds[i]))
+      function(x) exp(-rate * abs(x - knots[i]))
     })
   }
   r = compute_mf(0.15, th, .builder = exp_decay, rate = 10)
@@ -87,11 +87,11 @@ test_that("compute_mf custom builder function", {
 
 test_that("compute_mf_funs custom builder returns closures", {
   th = c(0.05, 0.15, 0.25)
-  custom = function(thresholds, ...) {
-    n = length(thresholds)
+  custom = function(knots, ...) {
+    n = length(knots)
     lapply(seq_len(n), function(i) {
       force(i)
-      function(x) 1 / (1 + abs(x - thresholds[i]))
+      function(x) 1 / (1 + abs(x - knots[i]))
     })
   }
   mfs = compute_mf_funs(th, .builder = custom)

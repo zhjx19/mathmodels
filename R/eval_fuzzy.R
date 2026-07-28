@@ -301,22 +301,20 @@ plot_mf = function(mf, xlim = c(0, 10), main = NULL) {
 
 # ---------- internal builder: triangular / trapezoidal (piecewise linear) ----------
 
-build_mf_tri = function(thresholds, ...) {
-  n = length(thresholds)
+build_mf_tri = function(knots, ...) {
+  n = length(knots)
   mfs = vector("list", n)
 
-  mfs[[1]] = function(x) trap_mf(x, c(-Inf, -Inf, thresholds[1], thresholds[2]))
+  mfs[[1]] = function(x) trap_mf(x, c(-Inf, -Inf, knots[1], knots[2]))
 
-  mfs[[n]] = function(x) trap_mf(x, c(thresholds[n - 1], thresholds[n], Inf, Inf))
+  mfs[[n]] = function(x) trap_mf(x, c(knots[n - 1], knots[n], Inf, Inf))
 
   if (n > 2) {
-    for (i in seq_len(n - 2)) {
-      t = thresholds[i + 0:2]
-      mfs[[i + 1]] = local({
-        t_local = t
-        function(x) tri_mf(x, t_local)
-      })
-    }
+    i = seq_len(n - 2)
+    mfs[2:(n-1)] = lapply(i, function(i) {
+      t = knots[i + 0:2]
+      function(x) tri_mf(x, t)
+    })
   }
 
   mfs
@@ -324,15 +322,15 @@ build_mf_tri = function(thresholds, ...) {
 
 # ---------- internal builder: Gaussian ----------
 
-build_mf_gauss = function(thresholds, sigma = NULL, ...) {
-  n = length(thresholds)
-  if (is.null(sigma)) sigma = mean(diff(thresholds)) / 3
+build_mf_gauss = function(knots, sigma = NULL, ...) {
+  n = length(knots)
+  if (is.null(sigma)) sigma = mean(diff(knots)) / 3
   if (!is.numeric(sigma) || length(sigma) != 1 || sigma <= 0)
     stop("sigma must be a positive numeric scalar.")
 
   mfs = vector("list", n)
 
-  c1 = thresholds[1]
+  c1 = knots[1]
   mfs[[1]] = function(x) {
     y = rep(1, length(x))
     y[x > c1] = exp(-(x[x > c1] - c1)^2 / (2 * sigma^2))
@@ -340,16 +338,13 @@ build_mf_gauss = function(thresholds, sigma = NULL, ...) {
   }
 
   if (n > 2) {
-    for (i in seq_len(n - 2)) {
-      cen = thresholds[i + 1]; s = sigma
-      mfs[[i + 1]] = local({
-        c_local = cen; s_local = s
-        function(x) gauss_mf(x, c(s_local, c_local))
-      })
-    }
+    i = seq_len(n - 2)
+    mfs[2:(n-1)] = lapply(i, function(i) {
+      function(x) gauss_mf(x, c(sigma, knots[i + 1]))
+    })
   }
 
-  cn = thresholds[n]
+  cn = knots[n]
   mfs[[n]] = function(x) {
     y = exp(-(x - cn)^2 / (2 * sigma^2))
     y[x >= cn] = 1
@@ -361,65 +356,60 @@ build_mf_gauss = function(thresholds, sigma = NULL, ...) {
 
 # ---------- internal builder: Sigmoid ----------
 
-build_mf_sigmoid = function(thresholds, slope = NULL, ...) {
-  n = length(thresholds)
-  if (is.null(slope)) slope = 5 / mean(diff(thresholds))
+build_mf_sigmoid = function(knots, slope = NULL, ...) {
+  n = length(knots)
+  if (is.null(slope)) slope = 5 / mean(diff(knots))
   if (!is.numeric(slope) || length(slope) != 1 || slope <= 0)
     stop("slope must be a positive numeric scalar.")
 
   mfs = vector("list", n)
 
-  mfs[[1]] = function(x) sigmoid_mf(x, c(-slope, thresholds[1]))
+  mfs[[1]] = function(x) sigmoid_mf(x, c(-slope, knots[1]))
 
   if (n > 2) {
-    for (i in seq_len(n - 2)) {
-      cen = thresholds[i + 1]; sl = slope
-      left = thresholds[i]
-      right = thresholds[i + 2]
-      delta = min(cen - left, right - cen) / 3
-      mfs[[i + 1]] = local({
-        a1 = sl; c1 = cen - delta
-        a2 = sl; c2 = cen + delta
-        function(x) dsigmoid_mf(x, c(a1, c1, a2, c2))
-      })
-    }
+    i = seq_len(n - 2)
+    mfs[2:(n-1)] = lapply(i, function(i) {
+      cen = knots[i + 1]
+      delta = min(cen - knots[i], knots[i + 2] - cen) / 3
+      function(x) dsigmoid_mf(x, c(slope, cen - delta, slope, cen + delta))
+    })
   }
 
-  mfs[[n]] = function(x) sigmoid_mf(x, c(slope, thresholds[n]))
+  mfs[[n]] = function(x) sigmoid_mf(x, c(slope, knots[n]))
 
   mfs
 }
 
 # ---------- public API ----------
 
-#' Build membership functions from thresholds
+#' Build membership functions from knots
 #'
 #' @description
 #' `compute_mf_funs` constructs a list of membership functions (one per evaluation
-#' level) from threshold values. `compute_mf` evaluates a single indicator value
+#' level) from knot values. `compute_mf` evaluates a single indicator value
 #' against those functions, returning a membership vector.
 #'
 #' @inheritParams membership
-#' @param thresholds A numeric vector of length \eqn{n \ge 2} defining the
+#' @param knots A numeric vector of length \eqn{n \ge 2} defining the
 #'   characteristic values (peaks / centers) of each evaluation level.
 #' @param .builder A character string or function that specifies how membership
-#'   functions are built from `thresholds`:
+#'   functions are built from `knots`:
 #'   \describe{
 #'     \item{`"tri"`}{(default) Piecewise linear (triangular + trapezoidal).
 #'       First level decays linearly from 1 to 0 across \code{[th[1], th[2]]},
 #'       last level rises from 0 to 1 across \code{[th[n-1], th[n]]}, middle
-#'       levels are isosceles triangles peaking at each threshold.}
+#'       levels are isosceles triangles peaking at each knot.}
 #'     \item{`"gauss"`}{Gaussian (normal) membership. First level is a
 #'       right-half Gaussian decaying from 1 at \code{th[1]}, last level is a
 #'       left-half Gaussian rising to 1 at \code{th[n]}, middle levels are full
-#'       Gaussians centered at each threshold.  Pass \code{sigma} to control
-#'       spread (default = \code{mean(diff(thresholds)) / 3}).}
+#'       Gaussians centered at each knot.  Pass \code{sigma} to control
+#'       spread (default = \code{mean(diff(knots)) / 3}).}
 #'     \item{`"sigmoid"`}{Sigmoid-based membership. First level uses a
 #'       decreasing sigmoid, last level an increasing sigmoid, middle levels
 #'       use difference-of-sigmoids (bell-shaped). Pass \code{slope} to control
-#'       steepness (default = \code{5 / mean(diff(thresholds))}).}
+#'       steepness (default = \code{5 / mean(diff(knots))}).}
 #'     \item{User-supplied function}{A function with signature
-#'       \code{function(thresholds, ...)} that returns a list of \eqn{n}
+#'       \code{function(knots, ...)} that returns a list of \eqn{n}
 #'       functions, each accepting a numeric vector \code{x} and returning
 #'       membership values in \eqn{[0, 1]}.}
 #'   }
@@ -446,11 +436,11 @@ build_mf_sigmoid = function(thresholds, slope = NULL, ...) {
 #' compute_mf(0.07, th, .builder = "sigmoid", slope = 20)
 #'
 #' # Custom builder: exponential decay
-#' exp_builder = function(thresholds, rate = 1) {
-#'   n = length(thresholds)
+#' exp_builder = function(knots, rate = 1) {
+#'   n = length(knots)
 #'   lapply(seq_len(n), function(i) {
 #'     force(i)
-#'     function(x) exp(-rate * abs(x - thresholds[i]))
+#'     function(x) exp(-rate * abs(x - knots[i]))
 #'   })
 #' }
 #' compute_mf(0.07, th, .builder = exp_builder, rate = 10)
@@ -467,14 +457,14 @@ NULL
 
 #' @rdname compute_mf
 #' @export
-compute_mf_funs = function(thresholds, .builder = "tri", ...) {
-  if (!is.numeric(thresholds) || is.matrix(thresholds))
-    stop("thresholds must be a numeric vector.")
-  n = length(thresholds)
-  if (n < 2) stop("thresholds must contain at least two values")
+compute_mf_funs = function(knots, .builder = "tri", ...) {
+  if (!is.numeric(knots) || is.matrix(knots))
+    stop("knots must be a numeric vector.")
+  n = length(knots)
+  if (n < 2) stop("knots must contain at least two values")
 
   if (is.function(.builder)) {
-    return(.builder(thresholds, ...))
+    return(.builder(knots, ...))
   }
 
   if (!is.character(.builder) || length(.builder) != 1)
@@ -483,9 +473,9 @@ compute_mf_funs = function(thresholds, .builder = "tri", ...) {
   .builder = match.arg(.builder, c("tri", "gauss", "sigmoid"))
 
   mfs = switch(.builder,
-    tri     = build_mf_tri(thresholds, ...),
-    gauss   = build_mf_gauss(thresholds, ...),
-    sigmoid = build_mf_sigmoid(thresholds, ...)
+    tri     = build_mf_tri(knots, ...),
+    gauss   = build_mf_gauss(knots, ...),
+    sigmoid = build_mf_sigmoid(knots, ...)
   )
 
   mfs
@@ -493,15 +483,15 @@ compute_mf_funs = function(thresholds, .builder = "tri", ...) {
 
 #' @rdname compute_mf
 #' @export
-compute_mf = function(x, thresholds, .builder = "tri", ...) {
+compute_mf = function(x, knots, .builder = "tri", ...) {
   if (!is.numeric(x) || length(x) != 1)
     stop("x must be a numeric scalar.")
-  if (!is.numeric(thresholds) || is.matrix(thresholds))
-    stop("thresholds must be a numeric vector.")
-  n = length(thresholds)
-  if (n < 2) stop("thresholds must contain at least two values")
+  if (!is.numeric(knots) || is.matrix(knots))
+    stop("knots must be a numeric vector.")
+  n = length(knots)
+  if (n < 2) stop("knots must contain at least two values")
 
-  mfs = compute_mf_funs(thresholds, .builder = .builder, ...)
+  mfs = compute_mf_funs(knots, .builder = .builder, ...)
   sapply(mfs, function(f) f(x))
 }
 

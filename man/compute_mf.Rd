@@ -3,34 +3,34 @@
 \name{compute_mf}
 \alias{compute_mf}
 \alias{compute_mf_funs}
-\title{Build membership functions from thresholds}
+\title{Build membership functions from knots}
 \usage{
-compute_mf_funs(thresholds, .builder = "tri", ...)
+compute_mf_funs(knots, .builder = "tri", ...)
 
-compute_mf(x, thresholds, .builder = "tri", ...)
+compute_mf(x, knots, .builder = "tri", ...)
 }
 \arguments{
-\item{thresholds}{A numeric vector of length \eqn{n \ge 2} defining the
+\item{knots}{A numeric vector of length \eqn{n \ge 2} defining the
 characteristic values (peaks / centers) of each evaluation level.}
 
 \item{.builder}{A character string or function that specifies how membership
-functions are built from \code{thresholds}:
+functions are built from \code{knots}:
 \describe{
 \item{\code{"tri"}}{(default) Piecewise linear (triangular + trapezoidal).
 First level decays linearly from 1 to 0 across \code{[th[1], th[2]]},
 last level rises from 0 to 1 across \code{[th[n-1], th[n]]}, middle
-levels are isosceles triangles peaking at each threshold.}
+levels are isosceles triangles peaking at each knot.}
 \item{\code{"gauss"}}{Gaussian (normal) membership. First level is a
 right-half Gaussian decaying from 1 at \code{th[1]}, last level is a
 left-half Gaussian rising to 1 at \code{th[n]}, middle levels are full
-Gaussians centered at each threshold.  Pass \code{sigma} to control
-spread (default = \code{mean(diff(thresholds)) / 3}).}
+Gaussians centered at each knot.  Pass \code{sigma} to control
+spread (default = \code{mean(diff(knots)) / 3}).}
 \item{\code{"sigmoid"}}{Sigmoid-based membership. First level uses a
 decreasing sigmoid, last level an increasing sigmoid, middle levels
 use difference-of-sigmoids (bell-shaped). Pass \code{slope} to control
-steepness (default = \code{5 / mean(diff(thresholds))}).}
+steepness (default = \code{5 / mean(diff(knots))}).}
 \item{User-supplied function}{A function with signature
-\code{function(thresholds, ...)} that returns a list of \eqn{n}
+\code{function(knots, ...)} that returns a list of \eqn{n}
 functions, each accepting a numeric vector \code{x} and returning
 membership values in \eqn{[0, 1]}.}
 }}
@@ -50,7 +50,7 @@ degrees for each level.
 }
 \description{
 \code{compute_mf_funs} constructs a list of membership functions (one per evaluation
-level) from threshold values. \code{compute_mf} evaluates a single indicator value
+level) from knot values. \code{compute_mf} evaluates a single indicator value
 against those functions, returning a membership vector.
 }
 \examples{
@@ -65,11 +65,11 @@ compute_mf(0.07, th, .builder = "gauss", sigma = 0.05)
 compute_mf(0.07, th, .builder = "sigmoid", slope = 20)
 
 # Custom builder: exponential decay
-exp_builder = function(thresholds, rate = 1) {
-  n = length(thresholds)
+exp_builder = function(knots, rate = 1) {
+  n = length(knots)
   lapply(seq_len(n), function(i) {
     force(i)
-    function(x) exp(-rate * abs(x - thresholds[i]))
+    function(x) exp(-rate * abs(x - knots[i]))
   })
 }
 compute_mf(0.07, th, .builder = exp_builder, rate = 10)

@@ -72,7 +72,7 @@ defuzzification.
   : Membership Functions for Fuzzy Logic
 - [`compute_mf_funs()`](https://zhjx19.github.io/mathmodels/reference/compute_mf.md)
   [`compute_mf()`](https://zhjx19.github.io/mathmodels/reference/compute_mf.md)
-  : Build membership functions from thresholds
+  : Build membership functions from knots
 - [`fuzzy_eval()`](https://zhjx19.github.io/mathmodels/reference/fuzzy_eval.md)
   : Fuzzy Comprehensive Evaluation
 - [`defuzzify()`](https://zhjx19.github.io/mathmodels/reference/defuzzify.md)
