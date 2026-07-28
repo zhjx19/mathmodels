@@ -49,9 +49,10 @@ Fuzzy, RSR, DEA).
     for stationarity tests,
     [`ts_stl()`](https://zhjx19.github.io/mathmodels/reference/ts_stl.md)
     for STL decomposition,
-    [`ts_ets()`](https://zhjx19.github.io/mathmodels/reference/ts_ets.md)
+    [`ts_ets()`](https://zhjx19.github.io/mathmodels/reference/ts_ets.md),
+    [`ts_sarima()`](https://zhjx19.github.io/mathmodels/reference/ts_sarima.md),
     and
-    [`ts_sarima()`](https://zhjx19.github.io/mathmodels/reference/ts_sarima.md)
+    [`ts_arimax()`](https://zhjx19.github.io/mathmodels/reference/ts_arimax.md)
     for modeling,
     [`ts_forecast()`](https://zhjx19.github.io/mathmodels/reference/ts_forecast.md)
     for unified forecasting, plus
@@ -174,6 +175,7 @@ functionalities. Currently implemented modules include:
   [`ts_back_transform()`](https://zhjx19.github.io/mathmodels/reference/ts_back_transform.md),
   [`ts_ets()`](https://zhjx19.github.io/mathmodels/reference/ts_ets.md),
   [`ts_sarima()`](https://zhjx19.github.io/mathmodels/reference/ts_sarima.md),
+  [`ts_arimax()`](https://zhjx19.github.io/mathmodels/reference/ts_arimax.md),
   [`ts_stl()`](https://zhjx19.github.io/mathmodels/reference/ts_stl.md),
   [`ts_test()`](https://zhjx19.github.io/mathmodels/reference/ts_test.md),
   [`ts_forecast()`](https://zhjx19.github.io/mathmodels/reference/ts_forecast.md);
