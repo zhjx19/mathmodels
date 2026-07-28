@@ -205,6 +205,9 @@ forecasting, and visualization.
 - [`ts_sarima()`](https://zhjx19.github.io/mathmodels/reference/ts_sarima.md)
   : SARIMA Model Fitting
 
+- [`ts_arimax()`](https://zhjx19.github.io/mathmodels/reference/ts_arimax.md)
+  : ARIMAX Model Fitting
+
 - [`ts_forecast()`](https://zhjx19.github.io/mathmodels/reference/ts_forecast.md)
   : Generate Forecasts
 
