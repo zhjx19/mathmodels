@@ -28,6 +28,11 @@ test_that("rescale_middle works", {
   expect_true(all(r >= 0 & r <= 1))
 })
 
+test_that("rescale_middle all-equal values return 1s", {
+  expect_equal(rescale_middle(rep(7, 4), 7), rep(1, 4))
+})
+
+
 test_that("rescale_interval works", {
   Temp = c(35.2, 35.8, 36.6, 37.1, 37.8, 38.4)
   r = rescale_interval(Temp, 36, 37)
@@ -71,3 +76,14 @@ test_that("preprocess input validation", {
   expect_error(rescale(c(1,1,1)), "zero range")
   expect_error(rescale_middle("a", 1), "must be a numeric vector")
 })
+
+test_that("preprocess degenerate input errors", {
+  expect_error(rescale(1:5, a = 2, b = 1), "a must be < b")
+  expect_error(normalize(c(0, 0)), "zero L2 norm")
+  expect_error(standardize(c(3, 3, 3)), "zero variance")
+  expect_error(rescale_mean(c(NA_real_, NA_real_)), "no non-missing values")
+  expect_error(to_positive(c(1, 0, 2), "reciprocal"), "strictly positive")
+  expect_error(rescale_extreme(c(1, 0, 2)), "strictly positive")
+  expect_error(rescale_extreme(c(1, -2, 2), "-"), "strictly positive")
+})
+

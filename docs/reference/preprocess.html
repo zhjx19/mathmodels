@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">mathmodels</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.11</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.12</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -118,7 +118,7 @@
 <li><p><code>rescale_extreme</code>: Extreme-based normalized values using <code>min(x)/x</code> (positive) or <code>x/max(x)</code> (negative).</p></li>
 <li><p><code>rescale_initial</code>: Initial-based normalized values using <code>x/x[1]</code> or <code>x[1]/x</code>.</p></li>
 <li><p><code>rescale_mean</code>: Mean-based normalized values using <code>x/mean(x)</code>.</p></li>
-<li><p><code>to_positive</code>: Transformed values converting negative indicators to positive using min-max or reciprocal transformation.</p></li>
+<li><p><code>to_positive</code>: Converts negative indicators to positive: <code>minmax</code> returns <code>max(x) - x</code> (a reversal in the original units, not a rescale to <code>[0, 1]</code>); <code>reciprocal</code> returns <code>1/x</code> and requires strictly positive data.</p></li>
 </ul></div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -130,7 +130,7 @@
 <li><p><code>rescale_extreme</code>: Normalizes using extreme values: <code>min(x)/x</code> for positive indicators or <code>x/max(x)</code> for negative indicators, often used in grey relational analysis.</p></li>
 <li><p><code>rescale_initial</code>: Normalizes by dividing by the first value (<code>x/x[1]</code> or <code>x[1]/x</code>), commonly used in grey relational analysis.</p></li>
 <li><p><code>rescale_mean</code>: Normalizes by dividing by the mean (<code>x/mean(x)</code>), commonly used in grey relational analysis.</p></li>
-<li><p><code>to_positive</code>: Converts negative indicators to positive using either min-max (<code>max(x) - x</code>) or reciprocal (<code>1/x</code>) transformation.</p></li>
+<li><p><code>to_positive</code>: Converts negative indicators to positive: <code>minmax</code> returns <code>max(x) - x</code> (a reversal in the original units, not a rescale to <code>c(0,1)</code>), and <code>reciprocal</code> returns <code>1/x</code>, which requires strictly positive data (no zeros or negatives).</p></li>
 </ul><p>Missing values (<code>NA</code>) are preserved in the output. For <code>rescale_initial</code> and <code>rescale_mean</code>, the initial value or mean must be non-zero, respectively.</p>
     </div>
 

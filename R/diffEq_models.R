@@ -7,16 +7,20 @@
 # -----------------------------------------------------------------------------
 .check_init = function(init, expected, defaults = NULL) {
   if (is.null(names(init)))
-    stop("'init' must be a named numeric vector.")
+    stop("'init' must be a named numeric vector.", call. = FALSE)
   if (!is.null(defaults)) {
     for (nm in names(defaults)) {
       if (!nm %in% names(init)) init[nm] = defaults[[nm]]
     }
   }
+  unknown = setdiff(names(init), expected)
+  if (length(unknown) > 0)
+    stop("'init' contains compartment(s) not used by this model: ",
+         paste(unknown, collapse = ", "), ".", call. = FALSE)
   missing_vars = setdiff(expected, names(init))
   if (length(missing_vars) > 0)
     stop("'init' is missing compartment(s): ",
-         paste(missing_vars, collapse = ", "), ".")
+         paste(missing_vars, collapse = ", "), ".", call. = FALSE)
   init[expected]
 }
 
@@ -82,11 +86,15 @@
 #'
 #' @param init      A named numeric vector of initial values for all state
 #'   variables.
-#' @param times     A numeric vector of output times.
+#' @param times     A strictly increasing numeric vector of output times.
+#'   Note that \code{init} is the state AT \code{times[1]} (deSolve
+#'   convention) — it does not have to be time 0.
 #' @param equations A named character vector; names are variable names, values
 #'   are derivative expressions (e.g. \code{c(S = "-beta*S*I")}).
 #' @param params    A named numeric vector or list of parameters referenced
-#'   inside \code{equations}.
+#'   inside \code{equations}. Parameters named \code{t} or sharing a name
+#'   with a state variable are shadowed inside the equations (a warning is
+#'   issued).
 #' @param method    Integration method passed to \code{deSolve::ode}.
 #'   Default \code{"lsoda"}.
 #' @param ...       Additional arguments forwarded to \code{deSolve::ode}.
@@ -102,7 +110,7 @@
 #'
 #' @examples
 #' # Built-in wrapper (one-liner)
-#' sir = model_sir(
+#' sir = ode_sir(
 #'   init   = c(S = 990, I = 10),
 #'   params = c(beta = 0.002, gamma = 0.1),
 #'   times  = seq(0, 50, by = 0.1)
@@ -133,8 +141,18 @@ ode_solver = function(init, times, equations, params = NULL,
   # ------------------------------------------------------------------
   if (is.null(names(init)))
     stop("'init' must be a named numeric vector.", call. = FALSE)
+  if (!is.numeric(init))
+    stop("'init' must be a named numeric vector.", call. = FALSE)
+  if (anyDuplicated(names(init)))
+    stop("'init' has duplicated names.", call. = FALSE)
+  if (!is.numeric(times) || length(times) == 0)
+    stop("'times' must be a numeric vector of output times.", call. = FALSE)
+  if (anyNA(times) || any(diff(times) <= 0))
+    stop("'times' must be strictly increasing and free of NA.", call. = FALSE)
   if (is.null(names(equations)))
     stop("'equations' must be a named character vector.", call. = FALSE)
+  if (anyDuplicated(names(equations)))
+    stop("'equations' has duplicated names.", call. = FALSE)
   if (length(equations) != length(init))
     stop("'equations' must have the same length as 'init'.", call. = FALSE)
 
@@ -150,15 +168,29 @@ ode_solver = function(init, times, equations, params = NULL,
     params = list()
   } else if (!is.list(params)) {
     if (is.null(names(params)) || any(nchar(names(params)) == 0))
-      warning("All parameters should be named for access inside equations.")
+      warning("All parameters should be named for access inside equations.",
+              call. = FALSE)
     params = as.list(params)
   }
+  shadowed = intersect(names(params), c("t", names(init)))
+  if (length(shadowed) > 0)
+    warning("parameter(s) ", paste(shadowed, collapse = ", "),
+            " are shadowed by time/state variables inside the equations.",
+            call. = FALSE)
 
   # ------------------------------------------------------------------
   # 3. Pre-parse all equation strings (done once, not per ODE call)
   # ------------------------------------------------------------------
-  vars       = names(init)
-  parsed_eqs = lapply(equations, function(eq) parse(text = eq)[[1]])
+  vars = names(init)
+  parsed_eqs = lapply(names(equations), function(nm) {
+    tryCatch(
+      parse(text = equations[[nm]])[[1]],
+      error = function(e)
+        stop("cannot parse the equation for variable '", nm, "': ",
+             conditionMessage(e), call. = FALSE)
+    )
+  })
+  names(parsed_eqs) = names(equations)
 
   # ------------------------------------------------------------------
   # 4. Build derivative function with pre-allocated evaluation environment
@@ -203,7 +235,7 @@ ode_solver = function(init, times, equations, params = NULL,
 #' @return A \code{data.frame} with columns \code{time} and \code{N}.
 #'
 #' @examples
-#' res = model_malthus(
+#' res = ode_malthus(
 #'   init   = c(N = 100),
 #'   params = c(r = 0.3),
 #'   times  = seq(0, 10, by = 0.1)
@@ -213,7 +245,7 @@ ode_solver = function(init, times, equations, params = NULL,
 #' head(res)
 #'
 #' @export
-model_malthus = function(init, params, times, ...) {
+ode_malthus = function(init, params, times, ...) {
   init = .check_init(init, expected = "N")
   ode_solver(init, times,
              equations = c(N = "r * N"),
@@ -243,7 +275,7 @@ model_malthus = function(init, params, times, ...) {
 #' @return A \code{data.frame} with columns \code{time} and \code{N}.
 #'
 #' @examples
-#' res = model_logistic(
+#' res = ode_logistic(
 #'   init   = c(N = 10),
 #'   params = c(r = 0.5, K = 100),
 #'   times  = seq(0, 20, by = 0.1)
@@ -251,7 +283,7 @@ model_malthus = function(init, params, times, ...) {
 #' head(res)
 #'
 #' @export
-model_logistic = function(init, params, times, ...) {
+ode_logistic = function(init, params, times, ...) {
   init = .check_init(init, expected = "N")
   ode_solver(init, times,
              equations = c(N = "r * (1 - N/K) * N"),
@@ -280,8 +312,11 @@ model_logistic = function(init, params, times, ...) {
 #'     \item{beta}{Transmission rate (contacts per individual per time).}
 #'     \item{N}{Total population size.  Optional — defaults to
 #'           \code{sum(init)}.}
-#'     \item{b}{Birth rate (per capita per time).  Optional.}
-#'     \item{d}{Death rate (per capita per time).  Optional.}
+#'     \item{b}{Recruitment rate — births enter the S compartment at the
+#'           constant rate \code{b * N}.  Optional; providing \code{b}
+#'           and/or \code{d} (the omitted one defaults to 0) switches to
+#'           the open-population equations.}
+#'     \item{d}{Per capita death rate.  Optional; see \code{b}.}
 #'   }
 #' @param times  Numeric vector of output times.
 #' @param ...    Additional arguments passed to \code{ode_solver}.
@@ -290,21 +325,21 @@ model_logistic = function(init, params, times, ...) {
 #'
 #' @examples
 #' # Closed population
-#' model_si(
+#' ode_si(
 #'   init   = c(S = 990, I = 10),
 #'   params = c(beta = 0.002),
 #'   times  = seq(0, 30, by = 0.1)
 #' )
 #'
 #' # Open population with births and deaths
-#' model_si(
+#' ode_si(
 #'   init   = c(S = 990, I = 10),
 #'   params = c(beta = 0.002, b = 0.01, d = 0.01),
 #'   times  = seq(0, 200, by = 1)
 #' )
 #'
 #' @export
-model_si = function(init, params, times, ...) {
+ode_si = function(init, params, times, ...) {
   init = .check_init(init, expected = c("S", "I"))
   p = .prepare_epidemic_params(init, params,
     eq_closed = c(S = "-beta * S * I / N",
@@ -338,8 +373,11 @@ model_si = function(init, params, times, ...) {
 #'     \item{gamma}{Recovery rate (1/gamma = mean infectious period).}
 #'     \item{N}{Total population size.  Optional — defaults to
 #'           \code{sum(init)}.}
-#'     \item{b}{Birth rate (per capita per time).  Optional.}
-#'     \item{d}{Death rate (per capita per time).  Optional.}
+#'     \item{b}{Recruitment rate — births enter the S compartment at the
+#'           constant rate \code{b * N}.  Optional; providing \code{b}
+#'           and/or \code{d} (the omitted one defaults to 0) switches to
+#'           the open-population equations.}
+#'     \item{d}{Per capita death rate.  Optional; see \code{b}.}
 #'   }
 #' @param times  Numeric vector of output times.
 #' @param ...    Additional arguments passed to \code{ode_solver}.
@@ -348,21 +386,21 @@ model_si = function(init, params, times, ...) {
 #'
 #' @examples
 #' # Closed population
-#' model_sis(
+#' ode_sis(
 #'   init   = c(S = 990, I = 10),
 #'   params = c(beta = 0.002, gamma = 0.1),
 #'   times  = seq(0, 50, by = 0.1)
 #' )
 #'
 #' # Open population with births and deaths
-#' model_sis(
+#' ode_sis(
 #'   init   = c(S = 990, I = 10),
 #'   params = c(beta = 0.3, gamma = 0.1, b = 0.01, d = 0.01),
 #'   times  = seq(0, 200, by = 1)
 #' )
 #'
 #' @export
-model_sis = function(init, params, times, ...) {
+ode_sis = function(init, params, times, ...) {
   init = .check_init(init, expected = c("S", "I"))
   p = .prepare_epidemic_params(init, params,
     eq_closed = c(S = "-beta * S * I / N + gamma * I",
@@ -400,8 +438,11 @@ model_sis = function(init, params, times, ...) {
 #'     \item{gamma}{Recovery rate (1/gamma = mean infectious period).}
 #'     \item{N}{Total population size.  Optional — defaults to
 #'           \code{sum(init)}.}
-#'     \item{b}{Birth rate (per capita per time).  Optional.}
-#'     \item{d}{Death rate (per capita per time).  Optional.}
+#'     \item{b}{Recruitment rate — births enter the S compartment at the
+#'           constant rate \code{b * N}.  Optional; providing \code{b}
+#'           and/or \code{d} (the omitted one defaults to 0) switches to
+#'           the open-population equations.}
+#'     \item{d}{Per capita death rate.  Optional; see \code{b}.}
 #'   }
 #' @param times  Numeric vector of output times.
 #' @param ...    Additional arguments passed to \code{ode_solver}.
@@ -411,21 +452,21 @@ model_sis = function(init, params, times, ...) {
 #'
 #' @examples
 #' # Closed population
-#' model_sir(
+#' ode_sir(
 #'   init   = c(S = 990, I = 10),
 #'   params = c(beta = 0.002, gamma = 0.1),
 #'   times  = seq(0, 50, by = 0.1)
 #' )
 #'
 #' # Open population with births and deaths
-#' model_sir(
+#' ode_sir(
 #'   init   = c(S = 990, I = 10),
 #'   params = c(beta = 0.002, gamma = 0.1, b = 0.01, d = 0.01),
 #'   times  = seq(0, 200, by = 1)
 #' )
 #'
 #' @export
-model_sir = function(init, params, times, ...) {
+ode_sir = function(init, params, times, ...) {
   init = .check_init(init,
                       expected = c("S", "I", "R"),
                       defaults = list(R = 0)
@@ -481,8 +522,11 @@ model_sir = function(init, params, times, ...) {
 #'     \item{gamma}{Recovery rate (1/gamma = mean infectious period).}
 #'     \item{N}{Total population size.  Optional — defaults to
 #'           \code{sum(init)}.}
-#'     \item{b}{Birth rate (per capita per time).  Optional.}
-#'     \item{d}{Death rate (per capita per time).  Optional.}
+#'     \item{b}{Recruitment rate — births enter the S compartment at the
+#'           constant rate \code{b * N}.  Optional; providing \code{b}
+#'           and/or \code{d} (the omitted one defaults to 0) switches to
+#'           the open-population equations.}
+#'     \item{d}{Per capita death rate.  Optional; see \code{b}.}
 #'   }
 #' @param times  Numeric vector of output times.
 #' @param ...    Additional arguments passed to \code{ode_solver}.
@@ -492,21 +536,21 @@ model_sir = function(init, params, times, ...) {
 #'
 #' @examples
 #' # Closed population
-#' model_seir(
+#' ode_seir(
 #'   init   = c(S = 980, E = 10, I = 10),
 #'   params = c(beta = 0.3, alpha = 0.2, gamma = 0.1),
 #'   times  = seq(0, 50, by = 0.1)
 #' )
 #'
 #' # Open population with births and deaths
-#' model_seir(
+#' ode_seir(
 #'   init   = c(S = 980, E = 10, I = 10),
 #'   params = c(beta = 0.3, alpha = 0.2, gamma = 0.1, b = 0.01, d = 0.01),
 #'   times  = seq(0, 200, by = 1)
 #' )
 #'
 #' @export
-model_seir = function(init, params, times, ...) {
+ode_seir = function(init, params, times, ...) {
   init = .check_init(init,
                       expected = c("S", "E", "I", "R"),
                       defaults = list(R = 0)
@@ -552,14 +596,14 @@ model_seir = function(init, params, times, ...) {
 #' @return A \code{data.frame} with columns \code{time}, \code{x}, \code{y}.
 #'
 #' @examples
-#' model_lv(
+#' ode_lv(
 #'   init   = c(x = 40, y = 9),
 #'   params = c(alpha = 0.4, beta = 0.04, delta = 0.02, mu = 0.5),
 #'   times  = seq(0, 100, by = 0.1)
 #' )
 #'
 #' @export
-model_lv = function(init, params, times, ...) {
+ode_lv = function(init, params, times, ...) {
   init = .check_init(init, expected = c("x", "y"))
   ode_solver(init, times,
              equations = c(
@@ -576,7 +620,7 @@ model_lv = function(init, params, times, ...) {
 #
 # A collection of ggplot2-based visualizations and key metrics for compartmental
 # epidemic models.  All functions accept a data frame returned by any modelling
-# function (model_sir, model_seir, or a custom ode_solver call).
+# function (ode_sir, ode_seir, or a custom ode_solver call).
 #
 # Functions:
 #   plot_compartments()      Compartment trajectories
@@ -620,7 +664,7 @@ model_lv = function(init, params, times, ...) {
 #' @importFrom ggplot2 ggplot aes geom_line labs theme_minimal
 #'
 #' @examples
-#' sir = model_sir(
+#' sir = ode_sir(
 #'   init   = c(S = 990, I = 10),
 #'   params = c(beta = 0.002, gamma = 0.1),
 #'   times  = seq(0, 50, by = 0.1)
@@ -667,7 +711,7 @@ plot_compartments = function(df, compartments = NULL) {
 #' @importFrom ggplot2 ggplot aes geom_line geom_point labs theme_minimal
 #'
 #' @examples
-#' sir = model_sir(
+#' sir = ode_sir(
 #'   init   = c(S = 990, I = 10),
 #'   params = c(beta = 0.002, gamma = 0.1),
 #'   times  = seq(0, 50, by = 0.1)
@@ -680,6 +724,12 @@ plot_incidence = function(df) {
   if (!"I" %in% names(df)) stop("Requires column I.", call. = FALSE)
 
   df = df[order(df$time), , drop = FALSE]
+
+  dt = diff(df$time)
+  if (any(dt <= 0)) stop("time must be strictly increasing.", call. = FALSE)
+  if (max(dt) - min(dt) > 1e-8 * max(1, max(dt)))
+    warning("time steps are non-uniform; dI is the raw difference, not a ",
+            "per-time-unit rate.", call. = FALSE)
 
   # dI = diff(I), drop first row (NA from differencing)
   dI = diff(df$I)
@@ -722,7 +772,7 @@ plot_incidence = function(df) {
 #' @importFrom ggplot2 ggplot aes geom_path labs theme_minimal
 #'
 #' @examples
-#' sir = model_sir(
+#' sir = ode_sir(
 #'   init   = c(S = 990, I = 10),
 #'   params = c(beta = 0.002, gamma = 0.1),
 #'   times  = seq(0, 50, by = 0.1)
@@ -752,24 +802,16 @@ plot_phase_si = function(df) {
 #' Plot effective reproduction number R_t
 #'
 #' Estimates the time-varying effective reproduction number
-#' \eqn{R_t} directly from compartment data.  Two methods are
-#' available:
-#' \describe{
-#'   \item{\code{"mechanistic"}}{Uses \eqn{R_t = \beta S(t) / (\gamma N)}.
-#'     This is the standard formula for a frequency-dependent SIR-type model.}
-#'   \item{\code{"normalized"}}{Uses \eqn{R_t = R_0 \, S(t) / N} with
-#'     \eqn{R_0 = \beta / \gamma}.  Suitable when different
-#'     normalisations are desired.}
-#' }
+#' \eqn{R_t = \beta S(t) / (\gamma N)} directly from compartment data
+#' (the standard formula for a frequency-dependent SIR-type model;
+#' equivalently \eqn{R_0 S(t)/N} with \eqn{R_0 = \beta / \gamma}).
 #'
 #' @param df     A data frame with columns \code{time} and \code{S}.
 #' @param params A named numeric vector or list containing at least
 #'   \code{beta} and \code{gamma}.
 #' @param N      Total population size.  If \code{NULL} (the default),
-#'   it is estimated from the sum of all state columns at the first
-#'   time step.
-#' @param method Estimation method: \code{"mechanistic"} (default) or
-#'   \code{"normalized"}.
+#'   it is estimated from the sum of the known state columns (S, E, I, R)
+#'   at the first time step.
 #'
 #' @return A \link[ggplot2:ggplot]{ggplot} object with a dashed
 #'   horizontal line at \eqn{R_t = 1}.
@@ -778,7 +820,7 @@ plot_phase_si = function(df) {
 #' @importFrom rlang .data
 #'
 #' @examples
-#' sir = model_sir(
+#' sir = ode_sir(
 #'   init   = c(S = 990, I = 10),
 #'   params = c(beta = 0.002, gamma = 0.1),
 #'   times  = seq(0, 50, by = 0.1)
@@ -786,13 +828,7 @@ plot_phase_si = function(df) {
 #' plot_Rt_estimate(sir, params = c(beta = 0.002, gamma = 0.1))
 #'
 #' @export
-plot_Rt_estimate = function(df,
-                             params,
-                             N = NULL,
-                             method = c("mechanistic", "normalized")) {
-
-  method = match.arg(method)
-
+plot_Rt_estimate = function(df, params, N = NULL) {
   if (!"S" %in% names(df)) stop("Column 'S' required.", call. = FALSE)
   params = as.list(params)
   if (is.null(params[["beta"]]) || is.null(params[["gamma"]])) {
@@ -802,19 +838,16 @@ plot_Rt_estimate = function(df,
   df = df[order(df$time), , drop = FALSE]
 
   if (is.null(N)) {
-    state_cols = setdiff(names(df), "time")
-    N = rowSums(df[, state_cols, drop = FALSE])[1]
+    state_cols = intersect(c("S", "E", "I", "R"), names(df))
+    N = sum(df[1, state_cols])
   }
+  if (is.null(N) || is.na(N) || N <= 0)
+    stop("Cannot infer a positive total population N from the data; ",
+         "supply N explicitly.", call. = FALSE)
 
   beta  = params[["beta"]]
   gamma = params[["gamma"]]
-
-  if (method == "mechanistic") {
-    df$Rt = beta * df$S / (gamma * N)
-  } else {
-    R0 = beta / gamma
-    df$Rt = R0 * df$S / N
-  }
+  df$Rt = beta * df$S / (gamma * N)
 
   ggplot2::ggplot(df, ggplot2::aes(x = .data$time, y = .data$Rt)) +
     ggplot2::geom_line(linewidth = 1, color = "#d62728") +
@@ -835,13 +868,13 @@ plot_Rt_estimate = function(df,
 #' This function computes core epidemiological summary statistics from
 #' deterministic compartmental epidemic models (e.g., SIR, SIS, SEIR).
 #'
-#' The input data frame is expected to be the output of `model_*()` functions,
+#' The input data frame is expected to be the output of `ode_*()` functions,
 #' containing a time column and one or more compartment columns (e.g., S, I, R, E).
 #' All compartment values are assumed to be in absolute population counts,
 #' and the total population is assumed to be conserved unless otherwise specified.
 #'
 #' @param data
-#'   A data frame returned by `model_*()` functions. Must contain a column
+#'   A data frame returned by `ode_*()` functions. Must contain a column
 #'   \code{time}, and at least \code{S} and \code{I}. Additional compartments
 #'   such as \code{E} or \code{R} are allowed.
 #'
@@ -853,7 +886,8 @@ plot_Rt_estimate = function(df,
 #'
 #' @param N
 #'   Total population (numeric). If \code{NULL} (default), it is computed as
-#'   the sum of all compartment values at the first time point.
+#'   the sum of the known compartment columns (S, E, I, R) at the first time
+#'   point; extra user-added columns are ignored.
 #'
 #' @return A named list with:
 #' \describe{
@@ -861,11 +895,12 @@ plot_Rt_estimate = function(df,
 #'   \item{peak_infection}{Maximum number of infectious individuals.}
 #'   \item{peak_time}{Time at which infectious peak occurs.}
 #'   \item{attack_rate}{Proportion of population that transitioned out of S;
-#'     defined only for models containing an R compartment (e.g., SIR/SEIR).}
+#'     defined only for models containing an R compartment (e.g., SIR/SEIR)
+#'     and meaningful only for CLOSED populations.}
 #' }
 #'
 #' @examples
-#' sir = model_sir(
+#' sir = ode_sir(
 #'   init   = c(S = 990, I = 10),
 #'   params = c(beta = 0.002, gamma = 0.1),
 #'   times  = seq(0, 50, by = 0.1)
@@ -882,22 +917,31 @@ epi_metrics = function(data, beta, gamma, N = NULL) {
 
   if (missing(beta)  || is.null(beta))  stop("Must provide beta.",  call. = FALSE)
   if (missing(gamma) || is.null(gamma)) stop("Must provide gamma.", call. = FALSE)
+  if (!is.numeric(beta) || !is.numeric(gamma) || beta < 0 || gamma < 0)
+    stop("beta and gamma must be non-negative numbers.", call. = FALSE)
 
-  # ---- total population ----
+  # ---- total population (known compartments only; user-added computed
+  #      columns must not inflate N) ----
   if (is.null(N)) {
-    state_cols = setdiff(names(data), "time")
-    N = rowSums(data[, state_cols, drop = FALSE])[1]
+    state_cols = intersect(c("S", "E", "I", "R"), names(data))
+    N = sum(data[1, state_cols])
   }
+  if (is.null(N) || is.na(N) || N <= 0)
+    stop("Cannot infer a positive total population N from the data; ",
+         "supply N explicitly.", call. = FALSE)
 
   # ---- R0 ----
   R0 = if (gamma == 0) Inf else beta / gamma
 
   # ---- peak infection ----
+  if (all(is.na(data$I)))
+    stop("Column 'I' contains no non-missing values.", call. = FALSE)
   peak_infection = max(data$I, na.rm = TRUE)
   peak_time = data$time[which.max(data$I)]
 
-  # ---- attack rate (model-dependent) ----
-  attack_rate = if (any("R" %in% names(data))) {
+  # ---- attack rate (model-dependent; meaningful only for closed
+  #      populations with an R compartment) ----
+  attack_rate = if ("R" %in% names(data)) {
     (data$S[1] - utils::tail(data$S, 1)) / N
   } else {
     NA_real_

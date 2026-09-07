@@ -63,7 +63,7 @@ A numeric vector of the same length as \code{x}, transformed as follows:
 \item \code{rescale_extreme}: Extreme-based normalized values using \code{min(x)/x} (positive) or \code{x/max(x)} (negative).
 \item \code{rescale_initial}: Initial-based normalized values using \code{x/x[1]} or \code{x[1]/x}.
 \item \code{rescale_mean}: Mean-based normalized values using \code{x/mean(x)}.
-\item \code{to_positive}: Transformed values converting negative indicators to positive using min-max or reciprocal transformation.
+\item \code{to_positive}: Converts negative indicators to positive: \code{minmax} returns \code{max(x) - x} (a reversal in the original units, not a rescale to \code{[0, 1]}); \code{reciprocal} returns \code{1/x} and requires strictly positive data.
 }
 }
 \description{
@@ -80,7 +80,7 @@ These functions support various preprocessing needs in data analysis:
 \item \code{rescale_extreme}: Normalizes using extreme values: \code{min(x)/x} for positive indicators or \code{x/max(x)} for negative indicators, often used in grey relational analysis.
 \item \code{rescale_initial}: Normalizes by dividing by the first value (\code{x/x[1]} or \code{x[1]/x}), commonly used in grey relational analysis.
 \item \code{rescale_mean}: Normalizes by dividing by the mean (\code{x/mean(x)}), commonly used in grey relational analysis.
-\item \code{to_positive}: Converts negative indicators to positive using either min-max (\code{max(x) - x}) or reciprocal (\code{1/x}) transformation.
+\item \code{to_positive}: Converts negative indicators to positive: \code{minmax} returns \code{max(x) - x} (a reversal in the original units, not a rescale to \code{c(0,1)}), and \code{reciprocal} returns \code{1/x}, which requires strictly positive data (no zeros or negatives).
 }
 Missing values (\code{NA}) are preserved in the output. For \code{rescale_initial} and \code{rescale_mean}, the initial value or mean must be non-zero, respectively.
 }

@@ -40,11 +40,17 @@ verhulst(X)
 For `GM11`: List with fitted values (`fitted`), next prediction
 (`pnext`), prediction function (`f`), matrix (`mat`), parameters (`u`),
 level ratios (`lambda`), and range (`rng`). For `GM1N`: List with fitted
-values (`fitted`), posterior variance ratio (`C`), small error
-probability (`P`), and prediction function (`f`). For `DGM21`,
-`verhulst`: List with fitted values (`fitted`), next prediction
-(`pnext`), prediction function (`f`), matrix (`mat`), and parameters
-(`u`).
+values (`fitted`), next prediction (`pred`, `NULL` unless `new_data` is
+supplied), posterior variance ratio (`C`), small error probability
+(`P`), and prediction function (`f`). For `DGM21`, `verhulst`: List with
+fitted values (`fitted`), next prediction (`pnext`), prediction function
+(`f`), matrix (`mat`), and parameters (`u`).
+
+## Details
+
+For `GM11`, the returned prediction function `f(k)` implements the
+inverse accumulated generating operation (IAGO) formula and is valid for
+`k >= 2`; `fitted[1]` always equals the first original value `X[1]`.
 
 ## Examples
 

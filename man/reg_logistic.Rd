@@ -28,7 +28,7 @@ Default is \code{FALSE}.}
 A named list analogous to \code{reg_lm()}, plus:
 \describe{
 \item{odds_ratio}{Tibble with odds ratios and 95\% CIs.}
-\item{residuals}{DataFrame of observed, fitted probability, residual.}
+\item{residuals}{Tibble of observed (0/1), fitted probability, Pearson residual.}
 }
 }
 \description{

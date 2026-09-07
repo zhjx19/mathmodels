@@ -28,6 +28,12 @@ interp_hermite(x, y, xout)
 A tibble with columns `x` and `y`. The attribute `method` is set to
 `"hermite"`.
 
+## Details
+
+Implements the Fritsch-Carlson monotone cubic method via
+`stats::splinefun(method = "monoH.FC")`: if the input data are monotone,
+the interpolant preserves that monotonicity.
+
 ## Examples
 
 ``` r

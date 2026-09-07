@@ -20,7 +20,8 @@ utils::globalVariables(c("RSR", "ID", "barR", "f", "barRn", "Probit",
 #' applies weights, and computes relative closeness to the ideal solution.
 #'
 #' @param X A numeric matrix or data frame where rows represent alternatives and columns represent criteria.
-#' @param w A numeric vector of weights for each criterion. Must be non-negative and sum to 1.
+#' @param w A numeric vector of weights for each criterion. Must be non-negative
+#'          with a positive total; only relative weights matter (they need not sum to 1).
 #'          If not provided, equal weights are used.
 #' @param index A character vector indicating the direction of each indicator:
 #'              Use `"+"` for positive indicators (higher is better),
@@ -62,11 +63,20 @@ topsis = function(X, w = NULL, index = NULL) {
   if(is.null(index)) index = rep("+", m)
   if(length(index) != m)
     stop("index must have length equal to ncol(X).")
+  if(!all(index %in% c("+", "-")))
+    stop('index must contain only "+" and "-"', call. = FALSE)
   if(is.null(w)) w = rep(1/m, m)
   if(length(w) != m)
     stop("w must have length equal to ncol(X).")
+  if(!is.numeric(w) || anyNA(w))
+    stop("w must be numeric and contain no NA values.", call. = FALSE)
   if(any(w < 0) || sum(w) == 0)
     stop("w must be non-negative and sum to a positive value.")
+
+  zero_cols = which(vapply(seq_len(m), \(j) all(X[[j]] == 0), logical(1)))
+  if(length(zero_cols) > 0)
+    stop(sprintf("Criterion column(s) %s contain only zeros; L2 normalization is undefined.",
+                 paste(zero_cols, collapse = ", ")), call. = FALSE)
 
   B = apply(X, 2, normalize)         # L2 norm normalization
   C = B %*% diag(w)                  # Weighted normalized matrix
@@ -79,7 +89,10 @@ topsis = function(X, w = NULL, index = NULL) {
 
   Sstar = apply(C, 1, \(x) norm(x - Cstar, "2"))
   S0    = apply(C, 1, \(x) norm(x - C0, "2"))
-  S0 / (S0 + Sstar)                  # Relative closeness
+  closeness = S0 / (S0 + Sstar)      # Relative closeness
+  rn = rownames(X)
+  names(closeness) = if (is.null(rn)) paste0("Sample", seq_len(nrow(X))) else rn
+  closeness
 }
 
 
@@ -141,13 +154,10 @@ rank_sum_ratio = function(data, w = NULL, method = "int") {
     stop("w must have length equal to the number of indicator columns (ncol(data)-1).")
 
   # Select ranking method
-  switch(method,
-         "int" = {
-           rankTable = dplyr::mutate(data, dplyr::across(-1, rank))
-         },
-         "non-int" = {
-           rankTable = dplyr::mutate(data, dplyr::across(-1, \(x) rescale(x, a = 1, b = n)))
-         }
+  rankTable = switch(method,
+         "int" = dplyr::mutate(data, dplyr::across(-1, rank)),
+         "non-int" = dplyr::mutate(data, dplyr::across(-1, \(x) rescale(x, a = 1, b = n))),
+         stop('method must be "int" or "non-int"', call. = FALSE)
   )
   # Main computation
   rltTable = rankTable |>
@@ -203,7 +213,8 @@ rank_sum_ratio = function(data, w = NULL, method = "int") {
 #' \describe{
 #'   \item{grey_corr}{Computes the grey correlation degree between a reference sequence (`ref`)
 #'                    and comparison sequences (`cmp`) using the distinguishing coefficient (`rho`)
-#'                    and optional weights (`w`).}
+#'                    and optional weights (`w`), where `w` weights the sampling points
+#'                    (rows of `cmp`).}
 #'   \item{grey_corr_topsis}{Evaluates a decision matrix (`X`) by normalizing it,
 #'                           applying weights (`w`), computing grey correlation with the ideal sequence.
 #'                           Direction of indicators can be specified via `index`.}
@@ -236,15 +247,24 @@ grey_corr = function(ref, cmp, rho = 0.5, w = NULL) {
     stop("cmp must be a matrix or data frame.")
   if(length(ref) != nrow(cmp))
     stop("Length of ref must equal number of rows in cmp.")
-  if(!is.null(w) && length(w) != nrow(cmp))
-    stop("w must have length equal to nrow(cmp).")
+  if(!is.null(w)) {
+    if(!is.numeric(w) || anyNA(w) || any(w < 0))
+      stop("w must be a numeric vector of non-negative values without NA.",
+           call. = FALSE)
+    if(length(w) != nrow(cmp))
+      stop("w must have length equal to nrow(cmp).")
+  }
 
   p = nrow(cmp)
   if(is.null(w)) w = rep(1/p, p)
   t = apply(cmp, 2, \(x) x - ref)
   min2 = min(apply(abs(t), 2, min))              # Minimum difference
   max2 = max(apply(abs(t), 2, max))              # Maximum difference
-  eta = (min2 + rho*max2) / (abs(t) + rho*max2)  # Correlation coefficient
+  eta = if (max2 == 0) {
+    matrix(1, nrow = p, ncol = ncol(cmp))
+  } else {
+    (min2 + rho*max2) / (abs(t) + rho*max2)      # Correlation coefficient
+  }
   r = w %*% eta
   r[1,]
 }

@@ -27,7 +27,7 @@
 #'   \item `rescale_extreme`: Extreme-based normalized values using `min(x)/x` (positive) or `x/max(x)` (negative).
 #'   \item `rescale_initial`: Initial-based normalized values using `x/x[1]` or `x[1]/x`.
 #'   \item `rescale_mean`: Mean-based normalized values using `x/mean(x)`.
-#'   \item `to_positive`: Transformed values converting negative indicators to positive using min-max or reciprocal transformation.
+#'   \item `to_positive`: Converts negative indicators to positive: `minmax` returns `max(x) - x` (a reversal in the original units, not a rescale to \code{[0, 1]}); `reciprocal` returns `1/x` and requires strictly positive data.
 #' }
 #'
 #' @details
@@ -41,7 +41,7 @@
 #'   \item `rescale_extreme`: Normalizes using extreme values: `min(x)/x` for positive indicators or `x/max(x)` for negative indicators, often used in grey relational analysis.
 #'   \item `rescale_initial`: Normalizes by dividing by the first value (`x/x[1]` or `x[1]/x`), commonly used in grey relational analysis.
 #'   \item `rescale_mean`: Normalizes by dividing by the mean (`x/mean(x)`), commonly used in grey relational analysis.
-#'   \item `to_positive`: Converts negative indicators to positive using either min-max (`max(x) - x`) or reciprocal (`1/x`) transformation.
+#'   \item `to_positive`: Converts negative indicators to positive: `minmax` returns `max(x) - x` (a reversal in the original units, not a rescale to `c(0,1)`), and `reciprocal` returns `1/x`, which requires strictly positive data (no zeros or negatives).
 #' }
 #' Missing values (`NA`) are preserved in the output. For `rescale_initial` and `rescale_mean`, the initial value or mean must be non-zero, respectively.
 #'
@@ -87,6 +87,11 @@ NULL
 #' @export
 standardize = function(x, center = TRUE, scale = TRUE) {
   if(!is.numeric(x)) stop("x must be a numeric vector.")
+  if (isTRUE(scale)) {
+    s = stats::sd(x, na.rm = TRUE)
+    if (is.na(s)) stop("x has no non-missing values; cannot standardize.")
+    if (s == 0) stop("x has zero variance; cannot standardize.")
+  }
   as.vector(base::scale(x, center = center, scale = scale))
 }
 
@@ -94,7 +99,9 @@ standardize = function(x, center = TRUE, scale = TRUE) {
 #' @export
 normalize = function(x) {
   if(!is.numeric(x)) stop("x must be a numeric vector.")
-  x / norm(x[!is.na(x)], "2")
+  nx = norm(x[!is.na(x)], "2")
+  if (nx == 0) stop("x has zero L2 norm; cannot normalize.")
+  x / nx
 }
 
 #' @rdname preprocess
@@ -102,6 +109,7 @@ normalize = function(x) {
 rescale = function(x, type = "+", a = 0, b = 1) {
   if(!is.numeric(x)) stop("x must be a numeric vector.")
   if(!type %in% c("+", "-")) stop('type must be "+" or "-".')
+  if (a >= b) stop("a must be < b.")
   rng = range(x, na.rm = TRUE)
   if(rng[2] == rng[1]) stop("x has zero range; cannot rescale.")
   switch(type,
@@ -116,7 +124,9 @@ rescale_middle = function(x, m) {
   if(!is.numeric(m) || length(m) != 1) stop("m must be a numeric scalar.")
   # Centered-type rescale, m is the single optimal value
   d = abs(x - m)
-  1 - d / max(d, na.rm = TRUE)
+  dmax = max(d, na.rm = TRUE)
+  if (dmax == 0) return(ifelse(is.na(x), NA_real_, 1))
+  1 - d / dmax
 }
 
 #' @rdname preprocess
@@ -137,6 +147,8 @@ rescale_interval = function(x, a, b) {
 rescale_extreme = function(x, type = "+") {
   if(!is.numeric(x)) stop("x must be a numeric vector.")
   if(!type %in% c("+", "-")) stop('type must be "+" or "-".')
+  if (any(x <= 0, na.rm = TRUE))
+    stop("rescale_extreme() requires strictly positive data (no zeros or negatives).")
   # Normalization using x/max(x) for positive indicators or min(x)/x for negative indicators.
   # Commonly used in grey relational analysis.
   switch(type,
@@ -151,7 +163,7 @@ rescale_initial = function(x, type = "+") {
   if(!type %in% c("+", "-")) stop('type must be "+" or "-".')
   # Normalization using x/x[1] for positive indicators, or x[1]/x for negative indicators.
   # Commonly used in grey relational analysis.
-  if (x[1] == 0 | is.na(x[1])) stop("x[1] must be non-zero.")
+  if (is.na(x[1]) || x[1] == 0) stop("x[1] must be non-zero.")
   if (type == "-" & any(x == 0)) stop("x must not contain zeros since reciprocal transformation is used.")
   switch (type,
     "+" = x / x[1],
@@ -164,6 +176,7 @@ rescale_mean = function(x) {
   if(!is.numeric(x)) stop("x must be a numeric vector.")
   # Normalization using x/mean(x), commonly used in grey relational analysis.
   mu = mean(x, na.rm = TRUE)
+  if (is.na(mu)) stop("x has no non-missing values; mean is NA.")
   if (mu == 0) stop("mean(x) must be non-zero.")
   x / mu
 }
@@ -178,6 +191,8 @@ to_positive = function(x, type = "minmax") {
            max(x, na.rm = TRUE) - x
          },
          "reciprocal" = {
+           if (any(x <= 0, na.rm = TRUE))
+             stop('type = "reciprocal" requires strictly positive data (no zeros or negatives).')
            1 / x
          })
 }

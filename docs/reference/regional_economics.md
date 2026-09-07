@@ -85,10 +85,13 @@ EG(data, region, industry, y)
 
   Calculates the Location Quotient for multiple columns with optional
   grouping. The LQ measures the relative concentration of an industry in
-  a region compared to a national benchmark. The function assumes the
-  first row of `data` contains national totals, with the first two
-  columns specifying the region and total, and the remaining columns
-  used for LQ calculation.
+  a region compared to a national benchmark. The data must be arranged
+  so that within each `region` value (and within each `.by` group) the
+  FIRST row is the national/total benchmark row, which is dropped by the
+  function; every remaining row is treated as a region. Rows must be
+  pre-arranged accordingly (e.g., with
+  [`dplyr::arrange()`](https://dplyr.tidyverse.org/reference/arrange.html)),
+  otherwise the results are silently wrong.
 
 - HHI:
 
@@ -103,6 +106,9 @@ EG(data, region, industry, y)
   concentration of an industry while controlling for firm size
   distribution and random distribution effects. It requires data on
   regions, industries, and an indicator (e.g., employment or output).
+  The data must contain one row per firm/establishment (multiple rows
+  per region-industry combination); passing region-aggregated data (one
+  row per region-industry) silently produces wrong EG values.
 
 ## Examples
 

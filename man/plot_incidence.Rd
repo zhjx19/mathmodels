@@ -20,7 +20,7 @@ directly via \code{diff()} and plots it as a line chart.  The peak is
 highlighted with a point marker.
 }
 \examples{
-sir = model_sir(
+sir = ode_sir(
   init   = c(S = 990, I = 10),
   params = c(beta = 0.002, gamma = 0.1),
   times  = seq(0, 50, by = 0.1)

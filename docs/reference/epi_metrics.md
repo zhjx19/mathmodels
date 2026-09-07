@@ -13,7 +13,7 @@ epi_metrics(data, beta, gamma, N = NULL)
 
 - data:
 
-  A data frame returned by `model_*()` functions. Must contain a column
+  A data frame returned by `ode_*()` functions. Must contain a column
   `time`, and at least `S` and `I`. Additional compartments such as `E`
   or `R` are allowed.
 
@@ -28,7 +28,8 @@ epi_metrics(data, beta, gamma, N = NULL)
 - N:
 
   Total population (numeric). If `NULL` (default), it is computed as the
-  sum of all compartment values at the first time point.
+  sum of the known compartment columns (S, E, I, R) at the first time
+  point; extra user-added columns are ignored.
 
 ## Value
 
@@ -49,11 +50,12 @@ A named list with:
 - attack_rate:
 
   Proportion of population that transitioned out of S; defined only for
-  models containing an R compartment (e.g., SIR/SEIR).
+  models containing an R compartment (e.g., SIR/SEIR) and meaningful
+  only for CLOSED populations.
 
 ## Details
 
-The input data frame is expected to be the output of `model_*()`
+The input data frame is expected to be the output of `ode_*()`
 functions, containing a time column and one or more compartment columns
 (e.g., S, I, R, E). All compartment values are assumed to be in absolute
 population counts, and the total population is assumed to be conserved
@@ -62,7 +64,7 @@ unless otherwise specified.
 ## Examples
 
 ``` r
-sir = model_sir(
+sir = ode_sir(
   init   = c(S = 990, I = 10),
   params = c(beta = 0.002, gamma = 0.1),
   times  = seq(0, 50, by = 0.1)

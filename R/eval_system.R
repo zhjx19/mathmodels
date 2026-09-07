@@ -65,8 +65,12 @@ coupling_degree = function(data, w = NULL, id_cols = NULL,
   if(!is.data.frame(data))
     stop("data must be a data frame.")
 
+  type = match.arg(type, c("standard", "adjusted"))
+
   ID = NULL
   if(!is.null(id_cols)) {
+    if(!all(id_cols %in% names(data)))
+      stop("All id_cols must be columns of data.")
     ID = data[id_cols]
     data = data[setdiff(names(data), id_cols)]
   }
@@ -76,6 +80,9 @@ coupling_degree = function(data, w = NULL, id_cols = NULL,
   if(is.null(w)) w = rep(1/p,p)
   if(length(w) != p)
     stop("w must have length equal to the number of subsystem columns.")
+  if (anyNA(w) || abs(sum(w) - 1) > 1e-8)
+    stop(paste0("w must sum to 1 (got ", sum(w), ")."))
+  idx = utils::combn(p, 2)   # Precompute pairwise index (hoisted out of loop)
   C = switch(type,
     "standard" = {
        row_prod = apply(data, 1, function(x) prod(pmax(x, 1e-10)))
@@ -84,7 +91,6 @@ coupling_degree = function(data, w = NULL, id_cols = NULL,
      },
      "adjusted" = {
        apply(data, 1, function(x) {
-         idx = combn(p, 2)
          C1 = 1 - mean(abs(x[idx[2,]] - x[idx[1,]]))
          C2 = prod(x / max(x)) ^ (1/(p-1))
          sqrt(C1 * C2)
@@ -112,6 +118,8 @@ obstacle_degree = function(data, w = NULL, id_cols = NULL, scaled = FALSE) {
 
   ID = NULL
   if(!is.null(id_cols)) {
+    if(!all(id_cols %in% names(data)))
+      stop("All id_cols must be columns of data.")
     ID = data[id_cols]
     data = data[setdiff(names(data), id_cols)]
   }
@@ -124,6 +132,13 @@ obstacle_degree = function(data, w = NULL, id_cols = NULL, scaled = FALSE) {
     stop("w must have length equal to the number of indicator columns.")
   diff_mat = 1 - as.matrix(data)     # Compute deviation (1 - X_ij)
   O = sweep(diff_mat, 2, w, "*")     # Compute (1 - X_ij) * w_ij
-  if(scaled) O = O / rowSums(O)
+  if(scaled) {
+    rs = rowSums(O)
+    zero_rows = which(rs == 0)
+    if (length(zero_rows) > 0)
+      warning("Rows with all-zero obstacle degrees (all indicators equal to 1) are set to 0.5 (neutral) when scaled.")
+    O = O / rs                       # NaN for all-zero rows (0 / 0)
+    O[zero_rows, ] = 0.5             # Neutral value
+  }
   tibble::tibble(ID, as.data.frame(O))
 }

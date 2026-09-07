@@ -171,6 +171,46 @@ reference:
   - plot_reg_predict
 
 
+- title: "Multivariate Statistics"
+  desc: "Dimension reduction, clustering, discrimination, and correlation structure analysis."
+
+- title: "Dimension Reduction"
+  desc: "Principal component and exploratory factor analysis."
+  contents:
+  - mv_pca
+  - mv_efa
+  - plot_mv_scree
+  - plot_mv_scores
+
+- title: "Clustering Analysis"
+  desc: "Hierarchical clustering, k-means, validity metrics, and diagnostic plots."
+  contents:
+  - mv_hclust
+  - mv_kmeans
+  - mv_cluster_metrics
+  - plot_mv_elbow
+  - plot_mv_silhouette
+  - plot_mv_dendrogram
+
+- title: "Discriminant Analysis"
+  desc: "Linear and quadratic discriminant analysis."
+  contents:
+  - mv_discrim
+
+- title: "Correspondence Analysis and Scaling"
+  desc: "Correspondence analysis and multidimensional scaling."
+  contents:
+  - mv_corresp
+  - mv_mds
+  - plot_mv_corresp
+  - plot_mv_mds
+
+- title: "Correlation Structure"
+  desc: "Canonical and partial correlation analysis."
+  contents:
+  - mv_cancor
+  - mv_pcor
+
 - title: "Curve Fitting & Interpolation"
   desc: "Polynomial fitting, linearizable curve fitting, growth models, and interpolation methods."
   contents:
@@ -189,13 +229,13 @@ reference:
   desc: "ODE solving, population dynamics, epidemic models, metrics, and visualizations."
   contents:
   - ode_solver
-  - model_malthus
-  - model_logistic
-  - model_si
-  - model_sis
-  - model_sir
-  - model_seir
-  - model_lv
+  - ode_malthus
+  - ode_logistic
+  - ode_si
+  - ode_sis
+  - ode_sir
+  - ode_seir
+  - ode_lv
   - epi_metrics
   - plot_compartments
   - plot_incidence

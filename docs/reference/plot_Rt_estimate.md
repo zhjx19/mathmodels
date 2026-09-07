@@ -1,22 +1,14 @@
 # Plot effective reproduction number R_t
 
-Estimates the time-varying effective reproduction number \\R_t\\
-directly from compartment data. Two methods are available:
-
-- `"mechanistic"`:
-
-  Uses \\R_t = \beta S(t) / (\gamma N)\\. This is the standard formula
-  for a frequency-dependent SIR-type model.
-
-- `"normalized"`:
-
-  Uses \\R_t = R_0 \\ S(t) / N\\ with \\R_0 = \beta / \gamma\\. Suitable
-  when different normalisations are desired.
+Estimates the time-varying effective reproduction number \\R_t = \beta
+S(t) / (\gamma N)\\ directly from compartment data (the standard formula
+for a frequency-dependent SIR-type model; equivalently \\R_0 S(t)/N\\
+with \\R_0 = \beta / \gamma\\).
 
 ## Usage
 
 ``` r
-plot_Rt_estimate(df, params, N = NULL, method = c("mechanistic", "normalized"))
+plot_Rt_estimate(df, params, N = NULL)
 ```
 
 ## Arguments
@@ -32,11 +24,8 @@ plot_Rt_estimate(df, params, N = NULL, method = c("mechanistic", "normalized"))
 - N:
 
   Total population size. If `NULL` (the default), it is estimated from
-  the sum of all state columns at the first time step.
-
-- method:
-
-  Estimation method: `"mechanistic"` (default) or `"normalized"`.
+  the sum of the known state columns (S, E, I, R) at the first time
+  step.
 
 ## Value
 
@@ -46,7 +35,7 @@ with a dashed horizontal line at \\R_t = 1\\.
 ## Examples
 
 ``` r
-sir = model_sir(
+sir = ode_sir(
   init   = c(S = 990, I = 10),
   params = c(beta = 0.002, gamma = 0.1),
   times  = seq(0, 50, by = 0.1)

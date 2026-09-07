@@ -1,12 +1,12 @@
 # 传染病指标函数单元测试 -------------------------------------------------
 
-sir = model_sir(
+sir = ode_sir(
   init   = c(S = 990, I = 10),
   params = c(beta = 0.002, gamma = 0.1),
   times  = seq(0, 50, by = 0.5)
 )
 
-seir = model_seir(
+seir = ode_seir(
   init   = c(S = 980, E = 10, I = 10),
   params = c(beta = 0.3, alpha = 0.2, gamma = 0.1),
   times  = seq(0, 30, by = 0.5)

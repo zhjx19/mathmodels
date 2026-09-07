@@ -31,7 +31,11 @@ combine_weights(w_subj, w_obj, type = "linear", alpha = 0.5)
 
 ## Value
 
-A numeric vector of combined weights, normalized to sum to 1.
+A numeric vector of combined weights. For `multiplicative` and `game`,
+the result is normalized to sum to 1. For `linear` and `game_linear`,
+the theoretically-defined combination is returned as is: it sums to 1
+when both input weight vectors do (only the two normalized methods are
+rescaled).
 
 ## Details
 
@@ -40,13 +44,14 @@ The function supports four methods:
 - Linear: Combines weights as alpha \* w_subj + (1 - alpha) \* w_obj.
 
 - Multiplicative: Combines weights as w_subj \* w_obj, requiring
-  positive weights.
+  positive weights, then normalizes to sum to 1.
 
 - Game: Uses the geometric mean (sqrt(w_subj \* w_obj)) to balance
-  weights.
+  weights, then normalizes to sum to 1.
 
 - Game_linear: Uses a game-theoretic approach by solving a linear system
-  based on the cross-product of weights.
+  based on the cross-product of weights. Inputs are expected to be
+  weight vectors that each sum to 1.
 
 ## Examples
 

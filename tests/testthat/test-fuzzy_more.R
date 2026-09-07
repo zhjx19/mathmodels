@@ -136,3 +136,14 @@ test_that("defuzzify input validation", {
   expect_error(defuzzify("a", c(1,2,3)), "must be a numeric vector")
   expect_error(defuzzify(c(1,2), c(3,4,5)), "same length")
 })
+
+test_that("defuzzify unknown method errors", {
+  expect_error(defuzzify(c(0.1, 0.3, 0.5, 0.1), c(10, 20, 30, 40), "bogus"),
+               "method must be one of")
+})
+
+test_that("defuzzify max_membership ties return the first maximum", {
+  r = defuzzify(c(0.5, 0.5, 0.0, 0.1), c(10, 20, 30, 40), "max_membership")
+  expect_length(r, 1)
+  expect_equal(r, 10)
+})

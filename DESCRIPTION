@@ -1,9 +1,9 @@
 Package: mathmodels
 Type: Package
 Title: Mathematical Modeling Algorithms
-Version: 0.0.11
+Version: 0.0.12
 Authors@R: person("Jingxin", "Zhang", email = "zhjx_19@163.com", role = c("aut", "cre", "cph"))
-Description: Implements algorithms for mathematical modeling across evaluation, prediction, and differential equation systems. It supports indicator preprocessing, weighting, TOPSIS, fuzzy comprehensive evaluation, grey relational analysis, rank sum ratio, data envelopment analysis (DEA), regional economics, inequality measures, grey prediction, Markov prediction, and time series modeling. It also provides ordinary differential equation solvers for compartmental epidemic models together with visualization and summary metrics.
+Description: Implements algorithms for mathematical modeling across evaluation, prediction, and differential equation systems. It supports indicator preprocessing, weighting, TOPSIS, fuzzy comprehensive evaluation, grey relational analysis, rank sum ratio, data envelopment analysis (DEA), regional economics, inequality measures, grey prediction, Markov prediction, and time series modeling. It also provides ordinary differential equation solvers for compartmental epidemic models together with visualization and summary metrics. It additionally offers multivariate statistics tools covering principal component and exploratory factor analysis, hierarchical and k-means clustering with validity metrics, linear and quadratic discriminant analysis, correspondence analysis, multidimensional scaling, and canonical and partial correlation analysis.
 License: AGPL (>= 3)
 URL: https://github.com/zhjx19/mathmodels, https://zhjx19.github.io/mathmodels/
 BugReports: https://github.com/zhjx19/mathmodels/issues
@@ -13,7 +13,7 @@ Roxygen: list(markdown = TRUE)
 Imports: 
     lpSolveAPI,
     minpack.lm,
-    dplyr (>= 1.0.0),
+    dplyr (>= 1.1.0),
     forecast,
     ggplot2 (>= 3.5.0),
     MASS,
@@ -35,7 +35,8 @@ Suggests:
     knitr,
     rmarkdown,
     scales,
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    cluster
 VignetteBuilder: knitr
 Config/testthat/edition: 3
 Config/roxygen2/version: 8.0.0

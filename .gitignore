@@ -1,5 +1,16 @@
+# --- History / session artifacts ---
+.Rhistory
 *.aa.bak.*.Rhistory
-R/.Rhistory
-mathmodels.pdf\ndocs/deps/\n
+
+# --- Build artifacts ---
+mathmodels.pdf
+docs/deps/
+
+# --- Editor / IDE ---
 .Rproj.user
+
+# --- Local workspace (agent sessions, quality reports) ---
+.zcode
+
+# --- Local-only notes ---
 CRAN_SUBMISSION.md

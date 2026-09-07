@@ -45,8 +45,10 @@ plot_mf(mf, xlim = c(0, 10), main = NULL)
 
 \item{params}{Numeric vector, parameters defining the membership function:
 \itemize{
-\item For \code{tri_mf}: \code{c(a, b, c)}, where \verb{a <= b <= c} (left base, peak, right base).
-\item For \code{trap_mf}: \code{c(a, b, c, d)}, where \verb{a <= b <= c <= d} (left base, left top, right top, right base).
+\item For \code{tri_mf}: \code{c(a, b, c)}, where \verb{a < b < c} (left base, peak, right base).
+\item For \code{trap_mf}: \code{c(a, b, c, d)}, where \verb{a < b <= c < d} (left base, left top,
+right top, right base); one-sided shoulders are supported with
+\code{a = b = -Inf} (no rise) or \code{c = d = Inf} (no fall).
 \item For \code{gauss_mf}: \code{c(sigma, c)}, where \code{sigma > 0} (spread, center).
 \item For \code{gbell_mf}: \code{c(a, b, c)}, where \code{a > 0}, \code{b > 0} (width, shape, center).
 \item For \code{gauss2mf}: \code{c(s1, c1, s2, c2)}, where \code{s1 > 0}, \code{s2 > 0} (left spread, left center, right spread, right center).
@@ -54,7 +56,7 @@ plot_mf(mf, xlim = c(0, 10), main = NULL)
 \item For \code{dsigmoid_mf}: \code{c(a1, c1, a2, c2)}, where \code{a1 > 0}, \code{a2 > 0} (slopes and inflection points for two sigmoids).
 \item For \code{psigmoid_mf}: \code{c(a1, c1, a2, c2)}, where \code{a1 > 0}, \code{a2 > 0} (slopes and inflection points for two sigmoids).
 \item For \code{z_mf}: \code{c(a, b)}, where \code{a < b} (left base, right base).
-\item For \code{pi_mf}: \code{c(a, b, c, d)}, where \verb{a < b < c < d} (left base, left shoulder, right shoulder, right base).
+\item For \code{pi_mf}: \code{c(a, b, c, d)}, where \verb{a < b <= c < d} (left base, left shoulder, right shoulder, right base).
 \item For \code{s_mf}: \code{c(a, b)}, where \code{a < b} (left base, right base).
 }}
 

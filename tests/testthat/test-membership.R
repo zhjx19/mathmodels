@@ -109,3 +109,27 @@ test_that("membership input validation", {
   expect_error(tri_mf("a", c(3,6,8)), "must be a numeric vector")
   expect_error(tri_mf(0:10, c(3,6)), "length 3")
 })
+
+test_that("membership degenerate parameters are rejected", {
+  expect_error(tri_mf(0:10, c(2, 2, 8)), "a < b < c")
+  expect_error(tri_mf(0:10, c(2, 8, 8)), "a < b < c")
+  expect_error(trap_mf(0:10, c(2, 2, 6, 8)), "a < b <= c < d")
+  expect_error(trap_mf(0:10, c(1, 3, 7, 7)), "a < b <= c < d")
+  expect_error(gauss_mf(0:10, c(0, 5)), "sigma must be positive")
+  expect_error(gauss_mf(0:10, c(-1, 5)), "sigma must be positive")
+  expect_error(gbell_mf(0:10, c(0, 2, 5)), "a must be positive")
+  expect_error(z_mf(0:10, c(3, 3)), "a < b")
+  expect_error(s_mf(0:10, c(3, 3)), "a < b")
+  expect_error(pi_mf(0:10, c(4, 4, 5, 10)), "a < b <= c < d")
+})
+
+test_that("trap_mf one-sided Inf shoulders still work", {
+  r1 = trap_mf(0:10, c(-Inf, -Inf, 5, 8))
+  expect_equal(r1[1], 1)
+  expect_equal(r1[5], 1)
+  expect_equal(r1[11], 0)
+  r2 = trap_mf(0:10, c(1, 3, Inf, Inf))
+  expect_equal(r2[1], 0)
+  expect_equal(r2[4], 1)
+  expect_equal(r2[11], 1)
+})

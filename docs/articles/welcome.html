@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">mathmodels</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.11</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.12</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -182,9 +182,12 @@ positive and negative ideal solutions.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">idx</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"+"</span>,<span class="st">"+"</span>,<span class="st">"-"</span>,<span class="st">"+"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/topsis.html">topsis</a></span><span class="op">(</span><span class="va">df</span><span class="op">[</span><span class="fl">2</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span>, <span class="va">res</span><span class="op">$</span><span class="va">w</span>, <span class="va">idx</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">##  [1] 0.3841556 0.4852199 0.5021310 0.5084128 0.4226200 0.3945085 0.5502261</span></span>
-<span><span class="co">##  [8] 0.6258551 0.7260529 0.7138447 0.8091923 0.6159619 0.6007565 0.1593096</span></span>
-<span><span class="co">## [15] 0.4974685 0.4250799 0.5565555 0.4815844 0.3070290 0.7098355</span></span></code></pre>
+<pre><code><span><span class="co">##         1         2         3         4         5         6         7         8 </span></span>
+<span><span class="co">## 0.3841556 0.4852199 0.5021310 0.5084128 0.4226200 0.3945085 0.5502261 0.6258551 </span></span>
+<span><span class="co">##         9        10        11        12        13        14        15        16 </span></span>
+<span><span class="co">## 0.7260529 0.7138447 0.8091923 0.6159619 0.6007565 0.1593096 0.4974685 0.4250799 </span></span>
+<span><span class="co">##        17        18        19        20 </span></span>
+<span><span class="co">## 0.5565555 0.4815844 0.3070290 0.7098355</span></span></code></pre>
 <p>The obtained result is the relative closeness score.</p>
 </div>
 <div class="section level3">

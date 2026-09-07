@@ -23,6 +23,19 @@ test_that("combine_weights game_linear", {
   expect_equal(sum(r), 1, tolerance=1e-8)
 })
 
+test_that("combine_weights game_linear with proportional vectors", {
+  r = combine_weights(c(0.6, 0.4), c(0.6, 0.4), "game_linear")
+  expect_equal(sum(r), 1, tolerance=1e-8)
+})
+
+test_that("combine_weights type validation", {
+  w_subj = c(0.4, 0.3, 0.2, 0.1)
+  w_obj = c(0.25, 0.2, 0.3, 0.25)
+  expect_error(combine_weights(w_subj, w_obj, "nonsense"),
+               'type must be one of')
+})
+
+
 test_that("combine_weights input validation", {
   expect_error(combine_weights(c(-1, 1), c(0.5, 0.3)), "non-negative")
   expect_error(combine_weights(c(0.3, 0.3), c(0.5)), "same length")

@@ -57,11 +57,22 @@ For output orientation: value = 1/\eqn{\phi}, where \eqn{\phi \ge 1} is the Shep
 
 \item{rts}{\code{"vrs"} (variable returns to scale, default) or \code{"crs"} (constant).}
 
-\item{period}{Column name or index identifying the time period variable.}
+\item{period}{Column name or index identifying the time period variable.
+Numeric periods are sorted numerically; character periods that all parse
+as numbers are sorted numerically as well.}
 
-\item{type1}{\code{"cont"} (contemporaneous), \code{"seq"} (sequential), or \code{"glob"} (global, default).}
+\item{type1}{\code{"cont"} (contemporaneous), \code{"seq"} (sequential), or \code{"glob"}
+(global, default). With \code{"seq"}, the old-technology term of the
+technical-change component at transition t -> t+1 is evaluated against
+the pooled frontier of periods 1..t (sequential frontier); no scale
+decomposition is defined (\code{sech = NA}).}
 
-\item{type2}{\code{"fgnz"} (Färe-Grosskopf-Norris-Zhang) or \code{"rd"} (Ray-Desli, default).}
+\item{type2}{\code{"fgnz"} (Färe-Grosskopf-Norris-Zhang) or \code{"rd"} (default).
+\code{"rd"} reports a scale-efficiency component in the style of the \strong{deaR}
+implementation (closest to Ray-Desli 1997: the scale term is measured at
+the period-t bundle relative to the mixed-period bundle); it is not the
+symmetric Ray-Desli decomposition, and \code{mi} is identical to the \code{"fgnz"}
+value.}
 }
 \value{
 A list with components: \code{efficiencies}, \code{lambdas}, \code{slacks},
@@ -78,7 +89,8 @@ DEA efficiency analysis
 
 \item \code{basic_SBM()}: Standard Slacks-Based Measure (SBM, Tone 2001)
 
-\item \code{super_SBM()}: Super-efficiency SBM (self excluded, no undesirable outputs)
+\item \code{super_SBM()}: Super-efficiency SBM (Tone 2002; self excluded, no
+undesirable outputs)
 
 \item \code{malmquist()}: Malmquist productivity index
 

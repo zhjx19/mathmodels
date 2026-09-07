@@ -46,7 +46,8 @@ between sequences or decision alternatives:
 \describe{
 \item{grey_corr}{Computes the grey correlation degree between a reference sequence (\code{ref})
 and comparison sequences (\code{cmp}) using the distinguishing coefficient (\code{rho})
-and optional weights (\code{w}).}
+and optional weights (\code{w}), where \code{w} weights the sampling points
+(rows of \code{cmp}).}
 \item{grey_corr_topsis}{Evaluates a decision matrix (\code{X}) by normalizing it,
 applying weights (\code{w}), computing grey correlation with the ideal sequence.
 Direction of indicators can be specified via \code{index}.}

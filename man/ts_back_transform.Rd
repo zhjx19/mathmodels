@@ -4,12 +4,21 @@
 \alias{ts_back_transform}
 \title{Back-Transform Forecasts}
 \usage{
-ts_back_transform(forecast_tbl, params)
+ts_back_transform(forecast_tbl, params, bias_adj = TRUE)
 }
 \arguments{
 \item{forecast_tbl}{Forecast tibble from \code{ts_forecast()}.}
 
 \item{params}{The \code{params} element from \code{ts_transform()}.}
+
+\item{bias_adj}{Logical; if \code{TRUE} (default), the point-forecast column is
+back-transformed with a bias adjustment so that forecasts on the
+log/Box-Cox scale represent means rather than medians. The forecast
+variance required by the adjustment is derived per horizon from the widest
+stored prediction interval, so it applies only to genuine forecast rows:
+when the tibble has no \verb{lo_*}/\verb{hi_*} interval columns the plain transform
+is used (historical/fitted values round-trip unchanged). Interval columns
+are quantiles and are always transformed with the plain transform.}
 }
 \value{
 The forecast tibble with numeric forecast columns restored.

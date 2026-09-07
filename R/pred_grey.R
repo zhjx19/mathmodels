@@ -16,9 +16,14 @@
 #' @param dat For `GM1N`: Data frame or matrix, last column is characteristic series, others are related factors.
 #' @param new_data For `GM1N`: Optional future values of related factors (1 row, m-1 columns).
 #'
+#' @details
+#' For `GM11`, the returned prediction function `f(k)` implements the inverse
+#' accumulated generating operation (IAGO) formula and is valid for `k >= 2`;
+#' `fitted[1]` always equals the first original value `X[1]`.
+#'
 #' @return
 #' For `GM11`: List with fitted values (`fitted`), next prediction (`pnext`), prediction function (`f`), matrix (`mat`), parameters (`u`), level ratios (`lambda`), and range (`rng`).
-#' For `GM1N`: List with fitted values (`fitted`), posterior variance ratio (`C`), small error probability (`P`), and prediction function (`f`).
+#' For `GM1N`: List with fitted values (`fitted`), next prediction (`pred`, `NULL` unless `new_data` is supplied), posterior variance ratio (`C`), small error probability (`P`), and prediction function (`f`).
 #' For `DGM21`, `verhulst`: List with fitted values (`fitted`), next prediction (`pnext`), prediction function (`f`), matrix (`mat`), and parameters (`u`).
 #'
 #' @examples
@@ -65,9 +70,12 @@ NULL
 #' @export
 GM11 = function(X) {
   if(!is.numeric(X) || is.matrix(X))
-    stop("X must be a numeric vector.")
+    stop("X must be a numeric vector.", call. = FALSE)
   if(length(X) < 4)
-    stop("X must have length >= 4.")
+    stop("X must have length >= 4.", call. = FALSE)
+  if(anyNA(X) || any(X <= 0, na.rm = TRUE))
+    stop("GM models require strictly positive data with no missing values.",
+         call. = FALSE)
 
   # Level ratio test
   n = length(X)
@@ -83,6 +91,10 @@ GM11 = function(X) {
   Z = (X1[1:n-1] + X1[2:n]) / 2
   B = cbind(-Z, rep(1,n-1))
   u = MASS::ginv(B) %*% X[2:n]
+  if(!is.finite(u[1]) || abs(u[1]) <= 1e-10 * max(1, abs(u[2])))
+    stop("series is essentially constant; GM(1,1) development coefficient a ",
+         "is close to 0 - use the mean of the series as prediction.",
+         call. = FALSE)
   k = 1:n
   X1h = (X[1]-u[2]/u[1])*exp(-u[1]*(k-1)) + u[2]/u[1]
   pred = c(X1h[1], diff(X1h))
@@ -101,21 +113,24 @@ GM11 = function(X) {
 #' @export
 GM1N = function(dat, new_data = NULL) {
   if(!is.data.frame(dat) && !is.matrix(dat))
-    stop("dat must be a data frame or matrix.")
+    stop("dat must be a data frame or matrix.", call. = FALSE)
 
   X0 = as.matrix(dat)
   n = nrow(X0)
   m = ncol(X0)
-  if(m < 2) stop("dat must have at least 2 columns.")
-  if(n < 4) stop("dat must have at least 4 rows.")
+  if(m < 2) stop("dat must have at least 2 columns.", call. = FALSE)
+  if(n < 4) stop("dat must have at least 4 rows.", call. = FALSE)
+  if(anyNA(X0) || any(X0 <= 0, na.rm = TRUE))
+    stop("GM models require strictly positive data with no missing values.",
+         call. = FALSE)
 
   X = X0[, m]           # Characteristic series
 
   # Smoothness check
   X1 = cumsum(X)
   rho = X[2:n] / X1[1:(n-1)]
-  rho_ratio = rho[2:(n-2)] / rho[1:(n-3)]
-  smooth_flag = all(rho[3:(n-2)] <= 0.5 & rho_ratio < 1 & rho[n-1] <= 0.5)
+  rho_ratio = rho[2:(n-1)] / rho[1:(n-2)]
+  smooth_flag = all(rho[3:(n-1)] <= 0.5) && all(rho_ratio < 1)
   cat("Smoothness check:", ifelse(smooth_flag, "Passed", "Failed"), "\n")
 
   # Level ratio check
@@ -133,6 +148,9 @@ GM1N = function(dat, new_data = NULL) {
   u = MASS::ginv(t(B) %*% B) %*% t(B) %*% A
   a = u[1]
   b = u[-1]
+  if(!is.finite(a) || abs(a) <= 1e-10 * max(1, abs(b)))
+    stop("GM(1,N) development coefficient a is close to 0; the model is degenerate (characteristic series is essentially constant).",
+         call. = FALSE)
 
   # Prediction function
   f = function(k, X1_k) {
@@ -164,7 +182,7 @@ GM1N = function(dat, new_data = NULL) {
     pred = X1h_pred[n + 1] - X1h_pred[n]
   }
 
-  list(fitted = fitted, pred = pred, vr = C, err = P, f = f)
+  list(fitted = fitted, pred = pred, C = C, P = P, f = f)
 }
 
 
@@ -176,12 +194,13 @@ GM1N = function(dat, new_data = NULL) {
 #' @export
 DGM21 = function(X) {
   if(!is.numeric(X) || is.matrix(X))
-    stop("X must be a numeric vector.")
+    stop("X must be a numeric vector.", call. = FALSE)
   if(length(X) < 4)
-    stop("X must have length >= 4.")
+    stop("X must have length >= 4.", call. = FALSE)
+  if(anyNA(X))
+    stop("DGM21 requires data with no missing values.", call. = FALSE)
 
   n = length(X)
-  X1 = cumsum(X)
   AX1 = diff(X)
   B = cbind(-X[-1], rep(1, n-1))
   u = MASS::ginv(B) %*% AX1
@@ -206,15 +225,20 @@ DGM21 = function(X) {
 #' @importFrom stats sd
 verhulst = function(X) {
   if(!is.numeric(X) || is.matrix(X))
-    stop("X must be a numeric vector.")
+    stop("X must be a numeric vector.", call. = FALSE)
   if(length(X) < 4)
-    stop("X must have length >= 4.")
+    stop("X must have length >= 4.", call. = FALSE)
+  if(anyNA(X))
+    stop("Verhulst requires data with no missing values.", call. = FALSE)
 
   n = length(X)
   X1 = cumsum(X)
   Z = (X1[1:n-1] + X1[2:n]) / 2
   B = cbind(-Z, Z^2)
   u = MASS::ginv(B) %*% X[-1]
+  if(!is.finite(u[1]) || abs(u[1]) <= 1e-10 * max(1, abs(u[2])))
+    stop("Verhulst development coefficient a is close to 0; the series is not suitable for logistic-growth fitting.",
+         call. = FALSE)
   f = \(k) u[1] * X[1] / (u[2] * X[1] + (u[1]-u[2]*X[1])*exp(u[1]*(k-1)))
   X1h = f(1:(n+1))
   p = c(X1h[1], diff(X1h))
@@ -251,16 +275,18 @@ verhulst = function(X) {
 #' @importFrom utils combn
 combine_preds = function(x) {
   if(!is.numeric(x) || is.matrix(x))
-    stop("x must be a numeric vector.")
+    stop("x must be a numeric vector.", call. = FALSE)
   Lx = length(x)
-  if (Lx < 2) stop("Input x must have length >= 2.")
+  if (Lx < 2) stop("Input x must have length >= 2.", call. = FALSE)
   if(Lx == 2) {    # For two predictions, use equal weights
-    a = mean(x)
-    w = c(1/2,1/2)
+    return(list(a = mean(x), w = c(1/2, 1/2)))
   }
   IndCom = combn(1:Lx,2)
   d = abs(x[IndCom[1,]] - x[IndCom[2,]])
   maxd = max(d)
+  if (maxd == 0) { # All predictions are identical: equal weights
+    return(list(a = mean(x), w = rep(1/Lx, Lx)))
+  }
   idx = expand.grid(1:Lx,1:Lx)
   R = matrix(cos(pi*(x[idx[,1]]-x[idx[,2]]) / (2*maxd)),
              nrow = Lx, byrow = TRUE)

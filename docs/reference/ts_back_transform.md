@@ -6,7 +6,7 @@ scale.
 ## Usage
 
 ``` r
-ts_back_transform(forecast_tbl, params)
+ts_back_transform(forecast_tbl, params, bias_adj = TRUE)
 ```
 
 ## Arguments
@@ -20,6 +20,18 @@ ts_back_transform(forecast_tbl, params)
 
   The `params` element from
   [`ts_transform()`](https://zhjx19.github.io/mathmodels/reference/ts_transform.md).
+
+- bias_adj:
+
+  Logical; if `TRUE` (default), the point-forecast column is
+  back-transformed with a bias adjustment so that forecasts on the
+  log/Box-Cox scale represent means rather than medians. The forecast
+  variance required by the adjustment is derived per horizon from the
+  widest stored prediction interval, so it applies only to genuine
+  forecast rows: when the tibble has no `lo_*`/`hi_*` interval columns
+  the plain transform is used (historical/fitted values round-trip
+  unchanged). Interval columns are quantiles and are always transformed
+  with the plain transform.
 
 ## Value
 

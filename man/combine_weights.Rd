@@ -16,7 +16,10 @@ combine_weights(w_subj, w_obj, type = "linear", alpha = 0.5)
 \item{alpha}{Numeric value between 0 and 1, used only for the linear method to weight subjective weights. Defaults to 0.5.}
 }
 \value{
-A numeric vector of combined weights, normalized to sum to 1.
+A numeric vector of combined weights. For \code{multiplicative} and \code{game},
+the result is normalized to sum to 1. For \code{linear} and \code{game_linear}, the
+theoretically-defined combination is returned as is: it sums to 1 when both
+input weight vectors do (only the two normalized methods are rescaled).
 }
 \description{
 Combines subjective and objective weights using linear, multiplicative, or game theory-based methods (geometric mean or linear system).
@@ -25,9 +28,10 @@ Combines subjective and objective weights using linear, multiplicative, or game 
 The function supports four methods:
 \itemize{
 \item Linear: Combines weights as alpha * w_subj + (1 - alpha) * w_obj.
-\item Multiplicative: Combines weights as w_subj * w_obj, requiring positive weights.
-\item Game: Uses the geometric mean (sqrt(w_subj * w_obj)) to balance weights.
+\item Multiplicative: Combines weights as w_subj * w_obj, requiring positive weights, then normalizes to sum to 1.
+\item Game: Uses the geometric mean (sqrt(w_subj * w_obj)) to balance weights, then normalizes to sum to 1.
 \item Game_linear: Uses a game-theoretic approach by solving a linear system based on the cross-product of weights.
+Inputs are expected to be weight vectors that each sum to 1.
 }
 }
 \examples{

@@ -10,7 +10,7 @@ fuzzy_eval(w, R, type)
 \item{w}{Numeric vector, factor weights (e.g., from \code{combine_weights}).}
 
 \item{R}{Numeric matrix, fuzzy evaluation matrix with columns as factors and rows
-as evaluation grades. Values should be in \code{[0, 1]}.}
+as evaluation grades. Values must be in \code{[0, 1]} with no NA.}
 
 \item{type}{Integer or character (1-5), specifying the fuzzy composition operator:
 \itemize{
@@ -40,6 +40,8 @@ operators are supported:
 \item Type 4 (bounded sum): \code{min(1, sum(min(w, R[j,])))}, bounds the sum of mins.
 \item Type 5 (normalized min-sum): \code{sum(min(w, R[j,]/sum(R[j,])))}, balanced average.
 }
+Note: type 5 is a weighted-sum variant (a normalized min-sum); it is not one
+of the classic Zadeh (min-max) operator pairs.
 The output \code{B} is normalized to sum to 1. If the sum is zero, an error is thrown.
 Uses base R for lightweight implementation.
 }

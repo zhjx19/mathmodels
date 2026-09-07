@@ -28,7 +28,7 @@ Default is \code{FALSE}.}
 A named list analogous to \code{reg_lm()}, plus:
 \describe{
 \item{dispersion}{Dispersion ratio (should be near 1).}
-\item{residuals}{Data frame with observed, fitted, Pearson residual.}
+\item{residuals}{Tibble with observed, fitted, Pearson residual.}
 }
 }
 \description{

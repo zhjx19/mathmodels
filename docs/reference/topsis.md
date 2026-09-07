@@ -21,7 +21,8 @@ topsis(X, w = NULL, index = NULL)
 - w:
 
   A numeric vector of weights for each criterion. Must be non-negative
-  and sum to 1. If not provided, equal weights are used.
+  with a positive total; only relative weights matter (they need not sum
+  to 1). If not provided, equal weights are used.
 
 - index:
 
@@ -66,5 +67,6 @@ A = data.frame(
 w = c(0.6, 0.4)
 idx = c("+","-")
 topsis(A, w, idx)
-#> [1] 0.0000000 1.0000000 0.3111391
+#>         1         2         3 
+#> 0.0000000 1.0000000 0.3111391 
 ```

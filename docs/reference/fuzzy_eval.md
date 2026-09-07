@@ -20,7 +20,7 @@ fuzzy_eval(w, R, type)
 - R:
 
   Numeric matrix, fuzzy evaluation matrix with columns as factors and
-  rows as evaluation grades. Values should be in `[0, 1]`.
+  rows as evaluation grades. Values must be in `[0, 1]` with no NA.
 
 - type:
 
@@ -59,8 +59,10 @@ composition operators are supported:
 - Type 5 (normalized min-sum): `sum(min(w, R[j,]/sum(R[j,])))`, balanced
   average.
 
-The output `B` is normalized to sum to 1. If the sum is zero, an error
-is thrown. Uses base R for lightweight implementation.
+Note: type 5 is a weighted-sum variant (a normalized min-sum); it is not
+one of the classic Zadeh (min-max) operator pairs. The output `B` is
+normalized to sum to 1. If the sum is zero, an error is thrown. Uses
+base R for lightweight implementation.
 
 ## Examples
 

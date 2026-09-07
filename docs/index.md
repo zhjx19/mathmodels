@@ -123,7 +123,7 @@ A = matrix(c(1,   1/2, 4, 3,   3,
 AHP(A)
 
 # --- Epidemic compartment modeling ---
-result = model_sir(
+result = ode_sir(
   init   = c(S = 990, I = 10, R = 0),
   params = c(beta = 0.15, gamma = 0.1),  # R0 = 1.5
   times  = seq(0, 100, by = 0.5))
@@ -157,7 +157,7 @@ functionalities. Currently implemented modules include:
 - **Differential equation models**: Malthus, Logistic, SI, SIS, SIR,
   SEIR, Lotka–Volterra with
   [`ode_solver()`](https://zhjx19.github.io/mathmodels/reference/ode_solver.md)
-  and `model_*()` functions; epidemic visualization
+  and `ode_*()` functions; epidemic visualization
   ([`plot_compartments()`](https://zhjx19.github.io/mathmodels/reference/plot_compartments.md),
   [`plot_incidence()`](https://zhjx19.github.io/mathmodels/reference/plot_incidence.md),
   [`plot_phase_si()`](https://zhjx19.github.io/mathmodels/reference/plot_phase_si.md),

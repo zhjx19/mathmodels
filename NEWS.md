@@ -1,3 +1,115 @@
+# mathmodels 0.0.12
+
+## Breaking changes
+
+- **Renamed** the differential equation model functions from `model_*()` to
+  `ode_*()` for a consistent prefix with `ode_solver()`:
+  `model_malthus()` → `ode_malthus()`, `model_logistic()` → `ode_logistic()`,
+  `model_si()` → `ode_si()`, `model_sis()` → `ode_sis()`,
+  `model_sir()` → `ode_sir()`, `model_seir()` → `ode_seir()`,
+  `model_lv()` → `ode_lv()`.
+- **Removed** the redundant `method` argument of `plot_Rt_estimate()` (the
+  two methods were numerically identical); `R_t = beta * S / (gamma * N)` is
+  now always used and `N` is inferred from the known compartments (S, E, I, R)
+  only.
+
+## Bug fixes
+
+- **pred_reg**: fixed the Hosmer-Lemeshow statistic (wrong column reference
+  and missing variance term — previously reported absurd chi-squares);
+  fixed the factor-response coding in `reg_logistic()` (events were mapped
+  to -1/0); logistic prediction CIs now use the link scale (previous CIs
+  were far too narrow); `.predict_lm()` returns both `confidence_interval`
+  and `prediction_interval` (the prediction interval was mislabeled);
+  `reg_predict()` accepts a `newdata` argument and returns the data used;
+  rank-deficient models no longer break the coefficient table;
+  `shapiro.test()` is guarded for n > 5000.
+- **eval_algorithms**: `topsis()` validates `index` and `w` and rejects
+  all-zero columns; sample names default to `Sample1..n`; `rank_sum_ratio()`
+  rejects unknown `method`; `grey_corr()` guards the degenerate all-equal
+  case and validates `w`.
+- **eval_dea**: `super_SBM()` now implements Tone (2002) super-efficiency
+  (efficient DMUs get rho >= 1 instead of NA); SBM undesirable-output
+  weights follow Tone (2004) (1/s1, 1/s2); `basic_DEA(ud_outputs=)` now
+  actually treats undesirable outputs as inputs (Hailu-Veeman) instead of
+  silently ignoring them; `malmquist(type1 = "seq")` implements sequential
+  reference sets (was identical to "cont"); character periods sort
+  numerically; strictly positive inputs/outputs are enforced; SBM rejects
+  the inapplicable `orientation` argument; malmquist warns on panel
+  irregularities.
+- **eval_weights**: `critic_weight()` / `entropy_weight()` accept matrices
+  again (matrix inputs previously errored element-wise); non-negative data
+  is enforced for entropy paths; `combine_weights()` rejects unknown
+  `type`; `game_linear()` falls back to a pseudo-inverse for proportional
+  weights; `AHP()` returns CI = CR = 0 for n <= 2 and rejects non-positive
+  matrices; unknown `index` values are rejected instead of silently
+  treated as "already normalized".
+- **eval_fuzzy**: `defuzzify()` rejects unknown methods and returns the
+  first maximum on ties; `fuzzy_eval()` validates R in [0, 1] with no NA;
+  membership functions validate their parameters (strict ordering /
+  positivity).
+- **pred_grey / pred_ts**: `combine_preds()` handles identical predictions
+  (equal weights); GM models reject non-positive/NA data and near-constant
+  series (a ~ 0) with informative errors; `GM1N()` returns `C`/`P` as
+  documented; `ts_back_transform()` applies Box-Cox bias adjustment to
+  point forecasts (`bias_adj = TRUE` default); Ljung-Box diagnostics use
+  ARMA-only fitdf and no longer produce NaN rows for short series;
+  `ts_transform()` / `ts_forecast()` validate differencing depth and
+  duplicated levels.
+- **diffEq**: `ode_solver()` validates `times` (strictly increasing) and
+  rejects unused compartments in `init`; equation parse errors name the
+  offending variable; `plot_incidence()` warns on non-uniform time steps;
+  `epi_metrics()` infers N from known compartments only and validates
+  beta/gamma; the `b` parameter is documented as constant recruitment.
+- **eval_system / eval_regional / eval_preprocess / interp_fit**: coupling
+  degree validates `type` and unit-sum weights; `id_cols` typos are
+  rejected; `HHI()` handles single values and rejects negatives; entropy /
+  CV weight functions reject NA; preprocessing helpers guard degenerate
+  inputs (`rescale_middle`, `to_positive`, `rescale_extreme`, `normalize`,
+  `standardize`); `curve_fit()`/`growth_fit()` report AIC/BIC on the
+  original scale (fixes NaN at n = p) with non-finite start-value
+  fallbacks; `interp_poly()` validates `degree`.
+- **read_nbs**: `range = "A1"` (version-robust header read).
+- **DESCRIPTION**: `dplyr (>= 1.1.0)` now declared (`reframe()` requires it).
+
+## Multivariate statistics toolkit (new)
+
+- **Dimension reduction** (`mv_stats.R`):
+  - `mv_pca()`: Principal component analysis with tidy scores, loadings, and
+    variance decomposition.
+  - `mv_efa()`: Exploratory factor analysis (maximum likelihood) with
+    loadings, uniquenesses, variance shares, and optional factor scores.
+- **Clustering** (`mv_stats.R`):
+  - `mv_hclust()`: Hierarchical clustering with tidy cluster assignments,
+    merge heights, and the raw `hclust` object for custom plots.
+  - `mv_kmeans()`: K-means clustering with assignments, centers, and
+    within-cluster sums of squares.
+  - `mv_cluster_metrics()`: Clustering validity metrics computed in base R:
+    per-observation silhouette widths, average silhouette, Davies-Bouldin,
+    Calinski-Harabasz, and Dunn indices.
+  - `plot_mv_elbow()` and `plot_mv_silhouette()`: Elbow plot (k-means or
+    hierarchical) and silhouette plot for both clustering types;
+    `plot_mv_dendrogram()` for hierarchical dendrograms.
+- **Discriminant analysis** (`mv_stats.R`):
+  - `mv_discrim()`: LDA/QDA via `MASS` with training predictions, confusion
+    matrix, accuracy, discriminant scores (LDA), and optional classification
+    of new data.
+- **Other multivariate methods** (`mv_stats.R`):
+  - `mv_corresp()`: Simple correspondence analysis with row/column
+    coordinates and inertia decomposition.
+  - `mv_mds()`: Metric (`cmdscale`) and non-metric (`MASS::isoMDS`)
+    multidimensional scaling.
+  - `mv_cancor()`: Canonical correlation analysis with Wilks' lambda
+    significance tests, coefficients, and structure correlations.
+  - `mv_pcor()`: Partial correlation matrix with t-tests.
+- **Visualization**: `plot_mv_scree()` and `plot_mv_scores()` for PCA/EFA
+  scree and score plots, `plot_mv_corresp()` and `plot_mv_mds()` for CA/MDS
+  configuration maps.
+- **Dependencies**: unchanged. Tidy-select column interfaces are implemented
+  through the existing `dplyr` dependency.
+- All functions follow a tidy interface: tidy-select columns in, tibble
+  components out, and `print()` methods for compact summaries.
+
 # mathmodels 0.0.11
 
 - **New function** `ts_arimax()`: Fits ARIMA models with exogenous regressors (ARIMAX). Supports both automatic order selection (`forecast::auto.arima()`) and manual specification (`forecast::Arima()`), consistent with the existing `ts_sarima()` interface.

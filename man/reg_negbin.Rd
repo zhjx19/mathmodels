@@ -19,7 +19,7 @@ reg_negbin(formula, data, step = FALSE, ...)
 A named list analogous to \code{reg_poisson()}, plus:
 \describe{
 \item{theta}{Estimated dispersion parameter for the negative binomial distribution.}
-\item{residuals}{DataFrame of observed, fitted, Pearson residual.}
+\item{residuals}{Tibble of observed, fitted, Pearson residual.}
 }
 }
 \description{
@@ -30,8 +30,10 @@ via MASS::glm.nb().
 \strong{Note:} The \code{glm.nb} family does not support stepwise selection.
 Set \code{step = FALSE}.
 
-For comparison with Poisson, inspect the dispersion ratio.
-NB is appropriate when dispersion >> 1.
+Unlike \code{reg_poisson()}, the negative binomial model handles
+overdispersion through the estimated dispersion parameter \code{theta}
+(fitted by \code{MASS::glm.nb()}): a small \code{theta} indicates strong
+overdispersion, while \code{theta} growing large approaches the Poisson model.
 }
 \examples{
 set.seed(42)

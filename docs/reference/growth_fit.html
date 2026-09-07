@@ -9,7 +9,7 @@ minpack.lm::nlsLM() with automatic starting value generation."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">mathmodels</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.11</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.12</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -83,7 +83,8 @@ the <code>nls</code> object.</p>
 <li><p><code>lm(log(a0 - y) ~ x)</code> for <code>b</code> initial</p></li>
 </ul><p><strong>Michaelis-Menten</strong>: <code>y = a * x / (b + x)</code></p><ul><li><p><code>a0 = max(y) * 1.1</code></p></li>
 <li><p>Lineweaver-Burk <code>lm(1/y ~ 1/x)</code> for <code>a, b</code> initials</p></li>
-</ul><p>Falls back to heuristic defaults if linearized estimation fails.</p>
+</ul><p>Falls back to heuristic defaults if the linearized estimation fails or
+yields non-finite starting values.</p>
     </div>
 
     <div class="section level2">
@@ -116,7 +117,7 @@ the <code>nls</code> object.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 1 × 5</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   r.squared adj.r.squared   aic   bic sigma</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span>     0.997         0.997  140.  144.  2.37</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span>     0.997         0.997  142.  147.  2.37</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $residuals</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 30 × 3</span></span>

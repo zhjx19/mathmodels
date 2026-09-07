@@ -16,8 +16,10 @@
 #' @param x Numeric vector, input values for which to compute membership.
 #' @param params Numeric vector, parameters defining the membership function:
 #' \itemize{
-#'   \item For `tri_mf`: `c(a, b, c)`, where `a <= b <= c` (left base, peak, right base).
-#'   \item For `trap_mf`: `c(a, b, c, d)`, where `a <= b <= c <= d` (left base, left top, right top, right base).
+#'   \item For `tri_mf`: `c(a, b, c)`, where `a < b < c` (left base, peak, right base).
+#'   \item For `trap_mf`: `c(a, b, c, d)`, where `a < b <= c < d` (left base, left top,
+#'     right top, right base); one-sided shoulders are supported with
+#'     `a = b = -Inf` (no rise) or `c = d = Inf` (no fall).
 #'   \item For `gauss_mf`: `c(sigma, c)`, where `sigma > 0` (spread, center).
 #'   \item For `gbell_mf`: `c(a, b, c)`, where `a > 0`, `b > 0` (width, shape, center).
 #'   \item For `gauss2mf`: `c(s1, c1, s2, c2)`, where `s1 > 0`, `s2 > 0` (left spread, left center, right spread, right center).
@@ -25,7 +27,7 @@
 #'   \item For `dsigmoid_mf`: `c(a1, c1, a2, c2)`, where `a1 > 0`, `a2 > 0` (slopes and inflection points for two sigmoids).
 #'   \item For `psigmoid_mf`: `c(a1, c1, a2, c2)`, where `a1 > 0`, `a2 > 0` (slopes and inflection points for two sigmoids).
 #'   \item For `z_mf`: `c(a, b)`, where `a < b` (left base, right base).
-#'   \item For `pi_mf`: `c(a, b, c, d)`, where `a < b < c < d` (left base, left shoulder, right shoulder, right base).
+#'   \item For `pi_mf`: `c(a, b, c, d)`, where `a < b <= c < d` (left base, left shoulder, right shoulder, right base).
 #'   \item For `s_mf`: `c(a, b)`, where `a < b` (left base, right base).
 #' }
 #' @param mf Function, a membership function with fixed parameters (e.g., `function(x) tri_mf(x, c(2, 5, 8))`).
@@ -121,6 +123,8 @@ tri_mf = function(x, params) {
   a = params[1]
   b = params[2]
   C = params[3]
+  if(!(a < b && b < C))
+    stop("params must satisfy a < b < c.", call. = FALSE)
   y = rep(0, length(x))
   y[x >= a & x <= b] = (x[x >= a & x <= b] - a) / (b - a)
   y[x > b & x <= C] = (C - x[x > b & x <= C]) / (C - b)
@@ -137,6 +141,10 @@ trap_mf = function(x, params) {
   b = params[2]
   C = params[3]
   d = params[4]
+  if(!(a < b || (a == b && is.infinite(a) && is.infinite(b))) ||
+     !(b <= C) ||
+     !(C < d || (C == d && is.infinite(C) && is.infinite(d))))
+    stop("params must satisfy a < b <= c < d.", call. = FALSE)
   y = rep(0, length(x))
   y[x >= a & x <= b] = (x[x >= a & x <= b] - a) / (b - a)
   y[x > b & x < C] = 1
@@ -152,6 +160,8 @@ gauss_mf = function(x, params) {
     stop("params must be a numeric vector of length 2.")
   sigma = params[1]
   C = params[2]
+  if(!(sigma > 0))
+    stop("sigma must be positive.", call. = FALSE)
   exp(-(x - C)^2 / (2 * sigma^2))
 }
 
@@ -164,6 +174,8 @@ gbell_mf = function(x, params) {
   a = params[1]
   b = params[2]
   C = params[3]
+  if(!(a > 0))
+    stop("a must be positive.", call. = FALSE)
   1 / (1 + abs((x - C) / a)^(2*b))
 }
 
@@ -231,6 +243,8 @@ z_mf = function(x, params) {
     stop("params must be a numeric vector of length 2.")
   a = params[1]
   b = params[2]
+  if(!(a < b))
+    stop("params must satisfy a < b.", call. = FALSE)
   y = rep(0, length(x))
   y[x <= a] = 1
   cond = x > a & x <= (a+b)/2
@@ -250,6 +264,8 @@ pi_mf = function(x, params) {
   b = params[2]
   C = params[3]
   d = params[4]
+  if(!(a < b && b <= C && C < d))
+    stop("params must satisfy a < b <= c < d.", call. = FALSE)
   y = rep(0, length(x))
   y[x >= b & x <= C] = 1
   cond = x > a & x <= (a+b)/2
@@ -271,6 +287,8 @@ s_mf = function(x, params) {
     stop("params must be a numeric vector of length 2.")
   a = params[1]
   b = params[2]
+  if(!(a < b))
+    stop("params must satisfy a < b.", call. = FALSE)
   y = rep(0, length(x))
   y[x >= b] = 1
   cond = x > a & x <= (a+b)/2
@@ -509,7 +527,7 @@ compute_mf = function(x, knots, .builder = "tri", ...) {
 #'
 #' @param w Numeric vector, factor weights (e.g., from `combine_weights`).
 #' @param R Numeric matrix, fuzzy evaluation matrix with columns as factors and rows
-#' as evaluation grades. Values should be in \code{[0, 1]}.
+#' as evaluation grades. Values must be in \code{[0, 1]} with no NA.
 #' @param type Integer or character (1-5), specifying the fuzzy composition operator:
 #' \itemize{
 #'   \item 1: Min-max (main factor decisive).
@@ -532,6 +550,8 @@ compute_mf = function(x, knots, .builder = "tri", ...) {
 #'   \item Type 4 (bounded sum): `min(1, sum(min(w, R[j,])))`, bounds the sum of mins.
 #'   \item Type 5 (normalized min-sum): `sum(min(w, R[j,]/sum(R[j,])))`, balanced average.
 #' }
+#' Note: type 5 is a weighted-sum variant (a normalized min-sum); it is not one
+#' of the classic Zadeh (min-max) operator pairs.
 #' The output `B` is normalized to sum to 1. If the sum is zero, an error is thrown.
 #' Uses base R for lightweight implementation.
 #'
@@ -549,10 +569,14 @@ compute_mf = function(x, knots, .builder = "tri", ...) {
 fuzzy_eval = function(w, R, type) {
   if(!is.numeric(w) || is.matrix(w))
     stop("w must be a numeric vector.")
-  if(!is.matrix(R))
-    stop("R must be a matrix.")
+  if(!is.matrix(R) || !is.numeric(R))
+    stop("R must be a numeric matrix.", call. = FALSE)
+  if(anyNA(R) || any(R < 0) || any(R > 1))
+    stop("R must contain only values between 0 and 1, with no NA.", call. = FALSE)
   if(length(w) != ncol(R))
     stop("Length of w must equal ncol(R).")
+  if(anyNA(w) || any(w < 0))
+    stop("w must be non-negative and contain no NA.", call. = FALSE)
   type = as.character(type)
   if(!type %in% as.character(1:5))
     stop("type must be 1, 2, 3, 4, or 5.")
@@ -603,6 +627,10 @@ fuzzy_eval = function(w, R, type) {
 #' @param method Character, defuzzification method: "weighted_average", "max_membership", "centroid".
 #' @return Numeric, defuzzified output value.
 #'
+#' @details
+#' For `max_membership`, when several levels tie for the maximum membership,
+#' the score of the first (lowest-index) maximum is returned.
+#'
 #' @examples
 #' # Example: Defuzzify fuzzy evaluation vectors for three schemes
 #' mu = c(0.318, 0.351, 0.203, 0.128)
@@ -621,7 +649,9 @@ defuzzify = function(mu, scores, method = "weighted_average") {
     stop("mu and scores must have the same length.")
   switch(method,
          weighted_average = sum(mu * scores),
-         max_membership = scores[mu == max(mu)],
-         centroid = sum(mu * scores) / sum(mu)
+         max_membership = scores[which.max(mu)],
+         centroid = sum(mu * scores) / sum(mu),
+         stop('method must be one of "weighted_average", "max_membership", "centroid"',
+              call. = FALSE)
   )
 }

@@ -42,20 +42,23 @@ globalVariables(c(".data", "x"))
   list(low = coef_vals - z * se, high = coef_vals + z * se)
 }
 
-# Build tidy coefficient tibble
+# Build tidy coefficient tibble.
+# Built from summary()$coefficients so aliased (rank-deficient) terms,
+# which only carry NA in coef(), are excluded consistently.
 ._tidy_coefs = function(model, level = 0.95) {
-  coefs = coef(model)
-  ci = ._ci95(model, level = level)
   s = summary(model)$coefficients
-  # s columns: Estimate, Std. Error, t value, Pr(>|t|)
+  # s columns: Estimate, Std. Error, t/z value, Pr(>|t/z|)
+  est = as.numeric(s[, 1])
+  se  = as.numeric(s[, 2])
+  crit = qt((1 - level) / 2, model$df.residual, lower.tail = FALSE)
   tibble::tibble(
-    term = names(coefs),
-    estimate = as.numeric(coefs),
-    std.error = s[, 2],
-    statistic = s[, 3],
-    p.value   = s[, 4],
-    conf.low  = ci$low,
-    conf.high = ci$high
+    term      = rownames(s),
+    estimate  = est,
+    std.error = se,
+    statistic = as.numeric(s[, 3]),
+    p.value   = as.numeric(s[, 4]),
+    conf.low  = est - crit * se,
+    conf.high = est + crit * se
   )
 }
 
@@ -99,18 +102,68 @@ globalVariables(c(".data", "x"))
   step(model, scope = scope, direction = direction, trace = 0)
 }
 
-# Generate new predictor data for prediction (draw from empirical distribution)
-.make_newdata = function(model, model_result, n_new) {
+# Generate new predictor data for prediction.
+# When newdata is supplied it is used directly; otherwise rows are drawn from
+# the empirical distributions of the predictors: normal approximation
+# (mean/sd) for numeric columns, levels sampled with observed proportions
+# for factor/character columns.
+.make_newdata = function(model, model_result, n_new, newdata = NULL) {
+  if (!is.null(newdata)) return(as.data.frame(newdata))
   resp_name = attr(terms(model), "variables")[[2]]
   pred_names = setdiff(colnames(model_result$input), as.character(resp_name))
   pred_cols = model_result$input[, pred_names, drop = FALSE]
-  mean_x = colMeans(pred_cols)
-  sd_x = apply(pred_cols, 2, sd)
-  newx = lapply(seq_along(sd_x), function(i)
-    rnorm(n_new, mean = mean_x[i], sd = max(sd_x[i], 1e-8)))
-  newdf = data.frame(newx)
-  names(newdf) = names(mean_x)
+  newdf = as.data.frame(lapply(pred_cols, function(col) {
+    if (is.factor(col) || is.character(col)) {
+      tab = table(col)
+      out = sample(names(tab), size = n_new, replace = TRUE,
+                   prob = as.numeric(tab))
+      if (is.factor(col)) factor(out, levels = levels(col)) else out
+    } else {
+      rnorm(n_new, mean = mean(col, na.rm = TRUE),
+            sd = max(sd(col, na.rm = TRUE), 1e-8))
+    }
+  }), stringsAsFactors = FALSE)
   newdf
+}
+
+# Hosmer-Lemeshow goodness-of-fit test for binary logistic models.
+# observed: 0/1 vector (1 = event); fitted_probs: predicted probabilities.
+# Groups observations by deciles of predicted probability (g = 10) and
+# computes the standard statistic sum_g (O_g - E_g)^2 / (E_g (1 - E_g/n_g)).
+.hosmer_lemeshow = function(observed, fitted_probs, g = 10) {
+  observed = as.numeric(observed)
+  fitted_probs = as.numeric(fitted_probs)
+  if (length(fitted_probs) < 5 || anyNA(fitted_probs) || anyNA(observed)) {
+    return(list(stat = NA_real_, df = NA_integer_, p.value = NA_real_,
+                n_groups = 0L))
+  }
+  g = min(g, length(fitted_probs))
+  grp_idx = tryCatch(
+    cut(fitted_probs,
+        breaks = quantile(fitted_probs, seq(0, 1, length.out = g + 1), na.rm = TRUE),
+        include.lowest = TRUE, labels = FALSE),
+    error = function(e) cut(fitted_probs, g, include.lowest = TRUE, labels = FALSE)
+  )
+  hl_groups = lapply(seq_len(g), function(k) {
+    sel = which(grp_idx == k)
+    if (length(sel) == 0) return(NULL)
+    list(n = length(sel),
+         obs = sum(observed[sel] == 1),
+         exp = sum(fitted_probs[sel]))
+  })
+  hl_groups = Filter(Negate(is.null), hl_groups)
+  # Skip groups with a degenerate denominator (E_g = 0 or n_g - E_g = 0)
+  hl_groups = Filter(function(x) x$exp > 0 && (x$n - x$exp) > 0, hl_groups)
+  n_groups = length(hl_groups)
+  if (n_groups < 3) {
+    return(list(stat = NA_real_, df = NA_integer_, p.value = NA_real_,
+                n_groups = n_groups))
+  }
+  stat = sum(vapply(hl_groups, function(x)
+    (x$obs - x$exp)^2 / (x$exp * (1 - x$exp / x$n)), numeric(1)))
+  df = n_groups - 2L
+  list(stat = stat, df = df,
+       p.value = pchisq(stat, df, lower.tail = FALSE), n_groups = n_groups)
 }
 
 
@@ -167,8 +220,6 @@ reg_lm = function(formula, data,
   }
 
   s = summary(model)
-  n = nrow(data)
-  p = length(coef(model))
 
   # Breusch-Pagan test
   bp_test = tryCatch(lmtest::bptest(model), error = function(e) NULL)
@@ -183,8 +234,10 @@ reg_lm = function(formula, data,
 
   # Residuals tibble
   resp_col = ._resp_col(model)
+  obs_vec = data[[resp_col]]
+  if (is.null(obs_vec)) obs_vec = as.numeric(stats::model.response(model$model))
   resid_tbl = tibble::tibble(
-    .observed = data[[resp_col]],
+    .observed = obs_vec,
     .fitted   = as.numeric(fitted(model)),
     .residual = as.numeric(residuals(model))
   )
@@ -221,7 +274,7 @@ reg_lm = function(formula, data,
 #' @return A named list analogous to \code{reg_lm()}, plus:
 #' \describe{
 #'   \item{odds_ratio}{Tibble with odds ratios and 95% CIs.}
-#'   \item{residuals}{DataFrame of observed, fitted probability, residual.}
+#'   \item{residuals}{Tibble of observed (0/1), fitted probability, Pearson residual.}
 #' }
 #'
 #' @details
@@ -263,44 +316,26 @@ reg_logistic = function(formula, data,
 
   resp_col = .reg_formula(formula)$response
   resp_raw = data[[resp_col]]
-  # If factor: convert to numeric (0/1)
-  if (is.factor(resp_raw)) resp_raw = as.numeric(as.character(resp_raw)) - 1L
-  fitted_probs = fitted(model)
-  resid_df = data.frame(
+  # Map the response to 0/1 (glm convention: success = second factor level)
+  if (is.factor(resp_raw)) resp_raw = as.integer(resp_raw == levels(resp_raw)[2])
+  fitted_probs = as.numeric(fitted(model))
+  resid_df = tibble::tibble(
     observed         = resp_raw,
     fitted_val       = fitted_probs,
-    pearson_residual = residuals(model, type = "pearson")
+    pearson_residual = as.numeric(residuals(model, type = "pearson"))
   )
 
-  # Hosmer-Lemeshow (robust to duplicate quantile breaks)
-  g = min(10, nrow(resid_df))
-  groups = tryCatch(
-    cut(fitted_probs,
-        breaks = quantile(fitted_probs, seq(0, 1, length.out = g), na.rm = TRUE),
-        include.lowest = TRUE),
-    error = function(e) cut(fitted_probs, g, include.lowest = TRUE)
-  )
-  hlr = lapply(levels(groups), function(glv) {
-    grp = resid_df[groups == glv, ]
-    list(n = nrow(grp), obs_su = sum(grp$observed == 1),
-         pred_su = sum(grp$fitted_prob))
-  })
-  Obs = sapply(hlr, `[[`, "obs_su")
-  Exp = sapply(hlr, `[[`, "pred_su")
-  HLR_stat = sum((Obs - Exp)^2 / (Exp + 1e-8) +
-                 (sum(resid_df$observed) - Exp)^2 /
-                 (sum(fitted_probs) + 1e-8))
-  HLR_df = g - 2
-  HLR_pval = pchisq(HLR_stat, HLR_df, lower.tail = FALSE)
+  # Hosmer-Lemeshow goodness-of-fit test
+  hl = .hosmer_lemeshow(resid_df$observed, fitted_probs)
 
   list(
     model       = model,
     coefficient = coefs_tidy,
     odds_ratio  = or_tbl,
     residuals   = resid_df,
-    diagnostics = ._tidy_diag(c(HLR_chisq = HLR_stat,
-                                HLR_df = HLR_df,
-                                HLR_pvalue = HLR_pval)),
+    diagnostics = ._tidy_diag(c(HLR_chisq = hl$stat,
+                                HLR_df = hl$df,
+                                HLR_pvalue = hl$p.value)),
     model_info  = tibble::tibble(aic = round(AIC(model), 4),
                                   bic = round(BIC(model), 4)),
     formula     = formula,
@@ -323,7 +358,7 @@ reg_logistic = function(formula, data,
 #' @return A named list analogous to \code{reg_lm()}, plus:
 #' \describe{
 #'   \item{dispersion}{Dispersion ratio (should be near 1).}
-#'   \item{residuals}{Data frame with observed, fitted, Pearson residual.}
+#'   \item{residuals}{Tibble with observed, fitted, Pearson residual.}
 #' }
 #'
 #' @details
@@ -357,10 +392,12 @@ reg_poisson = function(formula, data,
   dispersion = sum(pearson_resid^2) / model$df.residual
 
   resp_col = .reg_formula(formula)$response
-  resid_df = data.frame(
-    observed         = data[[resp_col]],
-    fitted_val       = fitted(model),
-    pearson_residual = pearson_resid
+  obs_vec = data[[resp_col]]
+  if (is.null(obs_vec)) obs_vec = as.numeric(stats::model.response(model$model))
+  resid_df = tibble::tibble(
+    observed         = obs_vec,
+    fitted_val       = as.numeric(fitted(model)),
+    pearson_residual = as.numeric(pearson_resid)
   )
 
   list(
@@ -398,12 +435,14 @@ reg_poisson = function(formula, data,
 #' @return A named list analogous to \code{reg_poisson()}, plus:
 #' \describe{
 #'   \item{theta}{Estimated dispersion parameter for the negative binomial distribution.}
-#'   \item{residuals}{DataFrame of observed, fitted, Pearson residual.}
+#'   \item{residuals}{Tibble of observed, fitted, Pearson residual.}
 #' }
 #'
 #' @details
-#' For comparison with Poisson, inspect the dispersion ratio.
-#' NB is appropriate when dispersion >> 1.
+#' Unlike \code{reg_poisson()}, the negative binomial model handles
+#' overdispersion through the estimated dispersion parameter \code{theta}
+#' (fitted by \code{MASS::glm.nb()}): a small \code{theta} indicates strong
+#' overdispersion, while \code{theta} growing large approaches the Poisson model.
 #'
 #' @examples
 #' set.seed(42)
@@ -427,10 +466,12 @@ reg_negbin = function(formula, data,
   theta = model$theta
 
   resp_col = .reg_formula(formula)$response
-  resid_df = data.frame(
-    observed         = data[[resp_col]],
-    fitted_val       = fitted(model),
-    pearson_residual = residuals(model, type = "pearson")
+  obs_vec = data[[resp_col]]
+  if (is.null(obs_vec)) obs_vec = as.numeric(stats::model.response(model$model))
+  resid_df = tibble::tibble(
+    observed         = obs_vec,
+    fitted_val       = as.numeric(fitted(model)),
+    pearson_residual = as.numeric(residuals(model, type = "pearson"))
   )
 
   list(
@@ -475,14 +516,14 @@ reg_diagnostics = function(model_result) {
     }
 
     if (family_type == "binomial") {
-      hlr_pval = tryCatch(
-        model_result$diagnostics$value[
-          model_result$diagnostics$metric == "HLR_pvalue"],
-        error = function(e) NA_real_
+      hl = tryCatch(
+        .hosmer_lemeshow(model_result$residuals$observed,
+                         model_result$residuals$fitted_val),
+        error = function(e) list(stat = NA_real_, df = NA_integer_,
+                                 p.value = NA_real_)
       )
       res$hosmer_lemeshow = tibble::tibble(
-        chi_sq = NA_real_, df = NA_integer_,
-        p.value = round(hlr_pval, 6))
+        chi_sq = round(hl$stat, 4), df = hl$df, p.value = round(hl$p.value, 6))
     } else {
       dispersion = tryCatch(
         sum(residuals(m, type = "pearson")^2) / m$df.residual,
@@ -511,10 +552,14 @@ reg_diagnostics = function(model_result) {
 
     # Shapiro-Wilk
     resid_vec = as.numeric(residuals(m))
-    sw = shapiro.test(resid_vec)
-    res$shapiro_wilk = tibble::tibble(
-      statistic = round(sw$statistic, 4),
-      p.value   = round(sw$p.value, 6))
+    sw = tryCatch(shapiro.test(resid_vec), error = function(e) NULL)
+    res$shapiro_wilk = if (!is.null(sw)) {
+      tibble::tibble(
+        statistic = round(sw$statistic, 4),
+        p.value   = round(sw$p.value, 6))
+    } else {
+      tibble::tibble(statistic = NA_real_, p.value = NA_real_)
+    }
 
     # Residual stats
     res$residual_stats = tibble::tibble(
@@ -553,29 +598,39 @@ reg_diagnostics = function(model_result) {
 #' Generates point predictions and confidence/ prediction intervals for new data.
 #'
 #' @param model_result A fitted result from any \code{reg_*()} function.
-#' @param n_new Number of new observations to predict. Random values drawn from
-#'   the fitted model's residuals are used for predictor data.
+#' @param n_new Number of new observations to generate when \code{newdata}
+#'   is not supplied. Predictor values are drawn from the empirical
+#'   distributions of the input columns (normal approximation by mean/sd for
+#'   numeric columns; levels sampled with observed proportions for
+#'   factor columns).
 #' @param level Confidence/interval level. Defaults to 0.95.
+#' @param newdata Optional data frame of new predictor values. When supplied,
+#'   predictions are made for exactly these rows and \code{n_new} is ignored.
 #'
 #' @return A named list with:
 #' \describe{
 #'   \item{predictions}{Tibble with predicted values.}
-#'   \item{confidence_interval}{Tibble with lower and upper bounds.}
+#'   \item{confidence_interval}{Tibble with lower and upper bounds of the confidence interval.}
+#'   \item{prediction_interval}{Tibble with lower and upper bounds of the prediction interval (linear models only).}
+#'   \item{newdata}{The data frame actually used for prediction.}
 #' }
 #' @export
-reg_predict = function(model_result, n_new = 10, level = 0.95) {
+reg_predict = function(model_result, n_new = 10, level = 0.95, newdata = NULL) {
   m = model_result$model
 
   if (inherits(m, "glm")) {
     fam = m$family
     if (fam$link == "logit") {
-      return(.predict_logistic(m, model_result, n_new = n_new, level = level))
+      return(.predict_logistic(m, model_result, n_new = n_new, level = level,
+                               newdata = newdata))
     } else if (fam$link == "log") {
-      return(.predict_count(m, model_result, n_new = n_new, level = level))
+      return(.predict_count(m, model_result, n_new = n_new, level = level,
+                            newdata = newdata))
     }
     stop("Unrecognized GLM family.", call. = FALSE)
   } else if (inherits(m, "lm")) {
-    return(.predict_lm(m, model_result, n_new = n_new, level = level))
+    return(.predict_lm(m, model_result, n_new = n_new, level = level,
+                       newdata = newdata))
   } else {
     stop("Unsupported model type.", call. = FALSE)
   }
@@ -586,42 +641,49 @@ reg_predict = function(model_result, n_new = 10, level = 0.95) {
 # Prediction helpers
 # -----------------------------------------------------------------------------
 
-#' @importFrom purrr map map_dbl map_dfr
-.predict_lm = function(model, model_result, n_new, level) {
-  newdf = .make_newdata(model, model_result, n_new)
-  pred = predict(model, newdata = newdf, interval = "prediction", level = level)
+.predict_lm = function(model, model_result, n_new, level, newdata = NULL) {
+  newdf = .make_newdata(model, model_result, n_new, newdata = newdata)
+  n_pred = nrow(newdf)
+  pred_ci = predict(model, newdata = newdf, interval = "confidence", level = level)
+  pred_pi = predict(model, newdata = newdf, interval = "prediction", level = level)
 
   list(
     predictions = tibble::tibble(
-      .new_id  = seq_len(n_new),
-      .predict = pred[, "fit"]),
+      .new_id  = seq_len(n_pred),
+      .predict = as.numeric(pred_ci[, "fit"])),
     confidence_interval = tibble::tibble(
-      lower = round(as.numeric(pred[, "lwr"]), 4),
-      upper = round(as.numeric(pred[, "upr"]), 4))
+      lower = round(as.numeric(pred_ci[, "lwr"]), 4),
+      upper = round(as.numeric(pred_ci[, "upr"]), 4)),
+    prediction_interval = tibble::tibble(
+      lower = round(as.numeric(pred_pi[, "lwr"]), 4),
+      upper = round(as.numeric(pred_pi[, "upr"]), 4)),
+    newdata = newdf
   )
 }
 
-#' @importFrom purrr map map_dbl map_dfr
-.predict_logistic = function(model, model_result, n_new, level) {
-  newdf = .make_newdata(model, model_result, n_new)
-  pred = predict(model, newdata = newdf, type = "response", se.fit = TRUE)
+.predict_logistic = function(model, model_result, n_new, level, newdata = NULL) {
+  newdf = .make_newdata(model, model_result, n_new, newdata = newdata)
+  n_pred = nrow(newdf)
+  pred = predict(model, newdata = newdf, type = "link", se.fit = TRUE)
   z = qnorm(1 - (1 - level) / 2)
-  ci_lower = plogis(log(pred$fit / (1 - pred$fit + 1e-8)) - z * pred$se.fit)
-  ci_upper = plogis(log(pred$fit / (1 - pred$fit + 1e-8)) + z * pred$se.fit)
+  fit_response = plogis(pred$fit)
+  ci_lower = plogis(pred$fit - z * pred$se.fit)
+  ci_upper = plogis(pred$fit + z * pred$se.fit)
 
   list(
     predictions = tibble::tibble(
-      .new_id  = seq_len(n_new),
-      .predict = round(pred$fit, 4)),
+      .new_id  = seq_len(n_pred),
+      .predict = round(as.numeric(fit_response), 4)),
     confidence_interval = tibble::tibble(
       lower = round(ci_lower, 4),
-      upper = round(ci_upper, 4))
+      upper = round(ci_upper, 4)),
+    newdata = newdf
   )
 }
 
-#' @importFrom purrr map map_dbl map_dfr
-.predict_count = function(model, model_result, n_new, level) {
-  newdf = .make_newdata(model, model_result, n_new)
+.predict_count = function(model, model_result, n_new, level, newdata = NULL) {
+  newdf = .make_newdata(model, model_result, n_new, newdata = newdata)
+  n_pred = nrow(newdf)
   pred = predict(model, newdata = newdf, type = "response", se.fit = TRUE)
   z = qnorm(1 - (1 - level) / 2)
   ci_lower = pmax(pred$fit - z * pred$se.fit, 0)
@@ -629,11 +691,12 @@ reg_predict = function(model_result, n_new = 10, level = 0.95) {
 
   list(
     predictions = tibble::tibble(
-      .new_id  = seq_len(n_new),
-      .predict = round(pred$fit, 4)),
+      .new_id  = seq_len(n_pred),
+      .predict = round(as.numeric(pred$fit), 4)),
     confidence_interval = tibble::tibble(
       lower = round(as.numeric(ci_lower), 4),
-      upper = round(as.numeric(ci_upper), 4))
+      upper = round(as.numeric(ci_upper), 4)),
+    newdata = newdf
   )
 }
 
@@ -720,7 +783,9 @@ reg_predict = function(model_result, n_new = 10, level = 0.95) {
 
   patchwork::wrap_plots(p1, p2, ncol = 2) +
     patchwork::plot_annotation(
-      title = paste(model_result$coefficients$term[1], "Model Diagnostics"),
+      title = paste(tryCatch(
+        .reg_formula(model_result$formula)$response,
+        error = function(e) "Model"), "Model Diagnostics"),
       theme = ggplot2::theme(plot.title = ggplot2::element_text(face = "bold", size = 14))
     )
 }

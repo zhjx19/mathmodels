@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">mathmodels</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.11</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.12</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -37,6 +37,81 @@
       <small>Source: <a href="https://github.com/zhjx19/mathmodels/blob/HEAD/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.12" id="mathmodels-0012">mathmodels 0.0.12<a class="anchor" aria-label="anchor" href="#mathmodels-0012"></a></h2>
+<div class="section level3">
+<h3 id="breaking-changes-0-0-12">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-0-12"></a></h3>
+<ul><li>
+<strong>Renamed</strong> the differential equation model functions from <code>model_*()</code> to <code>ode_*()</code> for a consistent prefix with <code><a href="../reference/ode_solver.html">ode_solver()</a></code>: <code>model_malthus()</code> → <code><a href="../reference/ode_malthus.html">ode_malthus()</a></code>, <code>model_logistic()</code> → <code><a href="../reference/ode_logistic.html">ode_logistic()</a></code>, <code>model_si()</code> → <code><a href="../reference/ode_si.html">ode_si()</a></code>, <code>model_sis()</code> → <code><a href="../reference/ode_sis.html">ode_sis()</a></code>, <code>model_sir()</code> → <code><a href="../reference/ode_sir.html">ode_sir()</a></code>, <code>model_seir()</code> → <code><a href="../reference/ode_seir.html">ode_seir()</a></code>, <code>model_lv()</code> → <code><a href="../reference/ode_lv.html">ode_lv()</a></code>.</li>
+<li>
+<strong>Removed</strong> the redundant <code>method</code> argument of <code><a href="../reference/plot_Rt_estimate.html">plot_Rt_estimate()</a></code> (the two methods were numerically identical); <code>R_t = beta * S / (gamma * N)</code> is now always used and <code>N</code> is inferred from the known compartments (S, E, I, R) only.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="bug-fixes-0-0-12">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-0-12"></a></h3>
+<ul><li>
+<strong>pred_reg</strong>: fixed the Hosmer-Lemeshow statistic (wrong column reference and missing variance term — previously reported absurd chi-squares); fixed the factor-response coding in <code><a href="../reference/reg_logistic.html">reg_logistic()</a></code> (events were mapped to -1/0); logistic prediction CIs now use the link scale (previous CIs were far too narrow); <code>.predict_lm()</code> returns both <code>confidence_interval</code> and <code>prediction_interval</code> (the prediction interval was mislabeled); <code><a href="../reference/reg_predict.html">reg_predict()</a></code> accepts a <code>newdata</code> argument and returns the data used; rank-deficient models no longer break the coefficient table; <code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code> is guarded for n &gt; 5000.</li>
+<li>
+<strong>eval_algorithms</strong>: <code><a href="../reference/topsis.html">topsis()</a></code> validates <code>index</code> and <code>w</code> and rejects all-zero columns; sample names default to <code>Sample1..n</code>; <code><a href="../reference/rank_sum_ratio.html">rank_sum_ratio()</a></code> rejects unknown <code>method</code>; <code><a href="../reference/grey_analysis.html">grey_corr()</a></code> guards the degenerate all-equal case and validates <code>w</code>.</li>
+<li>
+<strong>eval_dea</strong>: <code><a href="../reference/DEA.html">super_SBM()</a></code> now implements Tone (2002) super-efficiency (efficient DMUs get rho &gt;= 1 instead of NA); SBM undesirable-output weights follow Tone (2004) (1/s1, 1/s2); <code>basic_DEA(ud_outputs=)</code> now actually treats undesirable outputs as inputs (Hailu-Veeman) instead of silently ignoring them; <code>malmquist(type1 = "seq")</code> implements sequential reference sets (was identical to “cont”); character periods sort numerically; strictly positive inputs/outputs are enforced; SBM rejects the inapplicable <code>orientation</code> argument; malmquist warns on panel irregularities.</li>
+<li>
+<strong>eval_weights</strong>: <code><a href="../reference/critic_weight.html">critic_weight()</a></code> / <code><a href="../reference/entropy_weight.html">entropy_weight()</a></code> accept matrices again (matrix inputs previously errored element-wise); non-negative data is enforced for entropy paths; <code><a href="../reference/combine_weights.html">combine_weights()</a></code> rejects unknown <code>type</code>; <code>game_linear()</code> falls back to a pseudo-inverse for proportional weights; <code><a href="../reference/AHP.html">AHP()</a></code> returns CI = CR = 0 for n &lt;= 2 and rejects non-positive matrices; unknown <code>index</code> values are rejected instead of silently treated as “already normalized”.</li>
+<li>
+<strong>eval_fuzzy</strong>: <code><a href="../reference/defuzzify.html">defuzzify()</a></code> rejects unknown methods and returns the first maximum on ties; <code><a href="../reference/fuzzy_eval.html">fuzzy_eval()</a></code> validates R in [0, 1] with no NA; membership functions validate their parameters (strict ordering / positivity).</li>
+<li>
+<strong>pred_grey / pred_ts</strong>: <code><a href="../reference/combine_preds.html">combine_preds()</a></code> handles identical predictions (equal weights); GM models reject non-positive/NA data and near-constant series (a ~ 0) with informative errors; <code><a href="../reference/grey_models.html">GM1N()</a></code> returns <code>C</code>/<code>P</code> as documented; <code><a href="../reference/ts_back_transform.html">ts_back_transform()</a></code> applies Box-Cox bias adjustment to point forecasts (<code>bias_adj = TRUE</code> default); Ljung-Box diagnostics use ARMA-only fitdf and no longer produce NaN rows for short series; <code><a href="../reference/ts_transform.html">ts_transform()</a></code> / <code><a href="../reference/ts_forecast.html">ts_forecast()</a></code> validate differencing depth and duplicated levels.</li>
+<li>
+<strong>diffEq</strong>: <code><a href="../reference/ode_solver.html">ode_solver()</a></code> validates <code>times</code> (strictly increasing) and rejects unused compartments in <code>init</code>; equation parse errors name the offending variable; <code><a href="../reference/plot_incidence.html">plot_incidence()</a></code> warns on non-uniform time steps; <code><a href="../reference/epi_metrics.html">epi_metrics()</a></code> infers N from known compartments only and validates beta/gamma; the <code>b</code> parameter is documented as constant recruitment.</li>
+<li>
+<strong>eval_system / eval_regional / eval_preprocess / interp_fit</strong>: coupling degree validates <code>type</code> and unit-sum weights; <code>id_cols</code> typos are rejected; <code><a href="../reference/regional_economics.html">HHI()</a></code> handles single values and rejects negatives; entropy / CV weight functions reject NA; preprocessing helpers guard degenerate inputs (<code>rescale_middle</code>, <code>to_positive</code>, <code>rescale_extreme</code>, <code>normalize</code>, <code>standardize</code>); <code><a href="../reference/curve_fit.html">curve_fit()</a></code>/<code><a href="../reference/growth_fit.html">growth_fit()</a></code> report AIC/BIC on the original scale (fixes NaN at n = p) with non-finite start-value fallbacks; <code><a href="../reference/interp_poly.html">interp_poly()</a></code> validates <code>degree</code>.</li>
+<li>
+<strong>read_nbs</strong>: <code>range = "A1"</code> (version-robust header read).</li>
+<li>
+<strong>DESCRIPTION</strong>: <code>dplyr (&gt;= 1.1.0)</code> now declared (<code><a href="https://dplyr.tidyverse.org/reference/reframe.html" class="external-link">reframe()</a></code> requires it).</li>
+</ul></div>
+<div class="section level3">
+<h3 id="multivariate-statistics-toolkit-new-0-0-12">Multivariate statistics toolkit (new)<a class="anchor" aria-label="anchor" href="#multivariate-statistics-toolkit-new-0-0-12"></a></h3>
+<ul><li>
+<strong>Dimension reduction</strong> (<code>mv_stats.R</code>):
+<ul><li>
+<code><a href="../reference/mv_pca.html">mv_pca()</a></code>: Principal component analysis with tidy scores, loadings, and variance decomposition.</li>
+<li>
+<code><a href="../reference/mv_efa.html">mv_efa()</a></code>: Exploratory factor analysis (maximum likelihood) with loadings, uniquenesses, variance shares, and optional factor scores.</li>
+</ul></li>
+<li>
+<strong>Clustering</strong> (<code>mv_stats.R</code>):
+<ul><li>
+<code><a href="../reference/mv_hclust.html">mv_hclust()</a></code>: Hierarchical clustering with tidy cluster assignments, merge heights, and the raw <code>hclust</code> object for custom plots.</li>
+<li>
+<code><a href="../reference/mv_kmeans.html">mv_kmeans()</a></code>: K-means clustering with assignments, centers, and within-cluster sums of squares.</li>
+<li>
+<code><a href="../reference/mv_cluster_metrics.html">mv_cluster_metrics()</a></code>: Clustering validity metrics computed in base R: per-observation silhouette widths, average silhouette, Davies-Bouldin, Calinski-Harabasz, and Dunn indices.</li>
+<li>
+<code><a href="../reference/plot_mv_elbow.html">plot_mv_elbow()</a></code> and <code><a href="../reference/plot_mv_silhouette.html">plot_mv_silhouette()</a></code>: Elbow plot (k-means or hierarchical) and silhouette plot for both clustering types; <code><a href="../reference/plot_mv_dendrogram.html">plot_mv_dendrogram()</a></code> for hierarchical dendrograms.</li>
+</ul></li>
+<li>
+<strong>Discriminant analysis</strong> (<code>mv_stats.R</code>):
+<ul><li>
+<code><a href="../reference/mv_discrim.html">mv_discrim()</a></code>: LDA/QDA via <code>MASS</code> with training predictions, confusion matrix, accuracy, discriminant scores (LDA), and optional classification of new data.</li>
+</ul></li>
+<li>
+<strong>Other multivariate methods</strong> (<code>mv_stats.R</code>):
+<ul><li>
+<code><a href="../reference/mv_corresp.html">mv_corresp()</a></code>: Simple correspondence analysis with row/column coordinates and inertia decomposition.</li>
+<li>
+<code><a href="../reference/mv_mds.html">mv_mds()</a></code>: Metric (<code>cmdscale</code>) and non-metric (<code><a href="https://rdrr.io/pkg/MASS/man/isoMDS.html" class="external-link">MASS::isoMDS</a></code>) multidimensional scaling.</li>
+<li>
+<code><a href="../reference/mv_cancor.html">mv_cancor()</a></code>: Canonical correlation analysis with Wilks’ lambda significance tests, coefficients, and structure correlations.</li>
+<li>
+<code><a href="../reference/mv_pcor.html">mv_pcor()</a></code>: Partial correlation matrix with t-tests.</li>
+</ul></li>
+<li>
+<strong>Visualization</strong>: <code><a href="../reference/plot_mv_scree.html">plot_mv_scree()</a></code> and <code><a href="../reference/plot_mv_scores.html">plot_mv_scores()</a></code> for PCA/EFA scree and score plots, <code><a href="../reference/plot_mv_corresp.html">plot_mv_corresp()</a></code> and <code><a href="../reference/plot_mv_mds.html">plot_mv_mds()</a></code> for CA/MDS configuration maps.</li>
+<li>
+<strong>Dependencies</strong>: unchanged. Tidy-select column interfaces are implemented through the existing <code>dplyr</code> dependency.</li>
+<li>All functions follow a tidy interface: tidy-select columns in, tibble components out, and <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code> methods for compact summaries.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.11" id="mathmodels-0011">mathmodels 0.0.11<a class="anchor" aria-label="anchor" href="#mathmodels-0011"></a></h2>
 <ul><li>
@@ -170,7 +245,7 @@
 <ul><li>
 <code><a href="../reference/ode_solver.html">ode_solver()</a></code>: General-purpose string-formula ODE solver powered by <strong>deSolve</strong>.</li>
 <li>
-<code><a href="../reference/model_malthus.html">model_malthus()</a></code>, <code><a href="../reference/model_logistic.html">model_logistic()</a></code>, <code><a href="../reference/model_si.html">model_si()</a></code>, <code><a href="../reference/model_sis.html">model_sis()</a></code>, <code><a href="../reference/model_sir.html">model_sir()</a></code>, <code><a href="../reference/model_seir.html">model_seir()</a></code>, <code><a href="../reference/model_lv.html">model_lv()</a></code> — all using a unified <code>init</code> + <code>params</code> interface with physics-meaningful named parameters (e.g., <code>beta</code>, <code>gamma</code>, <code>sigma</code>).</li>
+<code>model_malthus()</code>, <code>model_logistic()</code>, <code>model_si()</code>, <code>model_sis()</code>, <code>model_sir()</code>, <code>model_seir()</code>, <code>model_lv()</code> — all using a unified <code>init</code> + <code>params</code> interface with physics-meaningful named parameters (e.g., <code>beta</code>, <code>gamma</code>, <code>sigma</code>).</li>
 </ul></li>
 <li>
 <strong>Epidemic visualization</strong> (<code>epidemic_plot.R</code>):

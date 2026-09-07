@@ -184,6 +184,71 @@ test_that("ts_back_transform() restores log-scale forecasts", {
   expect_equal(restored$forecast, c(500, 600), tolerance = 1e-8)
 })
 
+test_that("ts_back_transform() bias-adjusts Box-Cox point forecasts", {
+  set.seed(42)
+  y = exp(5 + cumsum(rnorm(80, sd = 0.05)) + rnorm(80, sd = 0.1))
+  x = as_ts_df(y)
+
+  tr = ts_transform(x, method = "boxcox")
+  fit = ts_sarima(tr$transformed, order = c(1, 0, 0))
+  fc = ts_forecast(fit, h = 5, level = c(80, 95))
+
+  naive = ts_back_transform(fc, tr$params, bias_adj = FALSE)
+  adj = ts_back_transform(fc, tr$params, bias_adj = TRUE)
+
+  # Bias-adjusted point forecasts are means, hence >= naive medians
+  expect_true(all(adj$forecast >= naive$forecast))
+  # Interval columns are quantiles: identical either way
+  expect_equal(adj$lo_95, naive$lo_95)
+  expect_equal(adj$hi_95, naive$hi_95)
+
+  # Without interval columns (historical rows) the round-trip is unchanged
+  hist_tbl = tibble::tibble(step = seq_len(nrow(tr$transformed)),
+                            forecast = tr$transformed$value)
+  back = ts_back_transform(hist_tbl, tr$params, bias_adj = TRUE)
+  expect_equal(back$forecast, x$value, tolerance = 1e-6)
+})
+
+test_that("ts_back_transform() bias-adjusts log-scale point forecasts", {
+  set.seed(7)
+  y = exp(4 + cumsum(rnorm(80, sd = 0.06)) + rnorm(80, sd = 0.15))
+  x = as_ts_df(y)
+
+  tr = ts_transform(x, method = "log")
+  fit = ts_sarima(tr$transformed, order = c(1, 0, 0))
+  fc = ts_forecast(fit, h = 5, level = c(80, 95))
+
+  naive = ts_back_transform(fc, tr$params, bias_adj = FALSE)
+  adj = ts_back_transform(fc, tr$params, bias_adj = TRUE)
+
+  expect_true(all(adj$forecast > naive$forecast))
+})
+
+test_that("ts_back_transform() round-trips differenced log data unchanged", {
+  x = as_ts_df(ap_ts)
+  tr = ts_transform(x, method = "log", diff = 1)
+
+  # params$last_pre_diff anchors forward forecasts at the series end; for a
+  # historical round-trip the undifferencing anchor is the first base value.
+  p = tr$params
+  p$last_pre_diff = log(as.numeric(ap_ts)[1])
+
+  hist_tbl = tibble::tibble(step = seq_len(nrow(tr$transformed)),
+                            forecast = tr$transformed$value)
+  back = ts_back_transform(hist_tbl, p, bias_adj = TRUE)
+
+  expect_equal(back$forecast, as.numeric(ap_ts)[-1], tolerance = 1e-6)
+})
+
+test_that("ts_transform() rejects over-differencing and non-integer frequency", {
+  x = as_ts_df(c(1, 2, 3, 4, 5))
+  expect_error(ts_transform(x, diff = 10), "series too short")
+
+  x_freq = as_ts_df(c(1, 2, 3, 4, 5, 6, 7, 8), frequency = 2.5)
+  expect_error(ts_transform(x_freq, seasonal_diff = 1),
+               "frequency must be a positive integer")
+})
+
 test_that("ts_ets() and ts_sarima() return fitted values tied to ts_df input", {
   x = as_ts_df(ap_log)
 
@@ -196,6 +261,33 @@ test_that("ts_ets() and ts_sarima() return fitted values tied to ts_df input", {
   expect_named(sarima$fitted, c("time", "observed", "fitted", "residual"))
   expect_s3_class(ets$input, "ts_df")
   expect_s3_class(sarima$input, "ts_df")
+})
+
+test_that("ts_sarima() Ljung-Box returns NA with note when lag <= ARMA terms", {
+  set.seed(1)
+  x = as_ts_df(cumsum(rnorm(10)))
+
+  fit = ts_sarima(x, order = c(1, 1, 1))
+  diag = fit$diagnostics
+
+  expect_equal(diag$test, "Ljung-Box")
+  expect_equal(diag$lag, 2)               # max(1, min(20, floor(10/5)))
+  expect_true(is.na(diag$p_value))
+  expect_false(is.nan(diag$p_value))
+  expect_match(diag$conclusion, "Not computed")
+})
+
+test_that("ts_sarima() Ljung-Box uses ARMA-only fitdf on a longer series", {
+  set.seed(2)
+  x = as_ts_df(cumsum(rnorm(60)))
+
+  fit = ts_sarima(x, order = c(1, 0, 0))
+  diag = fit$diagnostics
+
+  expect_equal(diag$lag, 12)              # max(1, min(20, floor(60/5)))
+  expect_false(is.na(diag$p_value))
+  expect_true(diag$conclusion %in%
+                c("No autocorrelation detected", "Autocorrelation detected"))
 })
 
 test_that("ts_arimax() fits ARIMAX with auto-selected order and xreg", {
@@ -252,6 +344,12 @@ test_that("ts_forecast() errors when newxreg is missing for ARIMAX", {
   fit = ts_arimax(x, xreg = xreg, order = c(1, 1, 1))
 
   expect_error(ts_forecast(fit, h = 3), "newxreg must be supplied")
+})
+
+test_that("ts_forecast() rejects duplicated confidence levels", {
+  fit = ts_ets(as_ts_df(ap_log))
+
+  expect_error(ts_forecast(fit, h = 3, level = c(80, 80)), "duplicat")
 })
 
 test_that("ts_forecast() forecasts ETS and SARIMA results", {

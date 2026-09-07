@@ -46,11 +46,12 @@ plot_mf(mf, xlim = c(0, 10), main = NULL)
 
   Numeric vector, parameters defining the membership function:
 
-  - For `tri_mf`: `c(a, b, c)`, where `a <= b <= c` (left base, peak,
+  - For `tri_mf`: `c(a, b, c)`, where `a < b < c` (left base, peak,
     right base).
 
-  - For `trap_mf`: `c(a, b, c, d)`, where `a <= b <= c <= d` (left base,
-    left top, right top, right base).
+  - For `trap_mf`: `c(a, b, c, d)`, where `a < b <= c < d` (left base,
+    left top, right top, right base); one-sided shoulders are supported
+    with `a = b = -Inf` (no rise) or `c = d = Inf` (no fall).
 
   - For `gauss_mf`: `c(sigma, c)`, where `sigma > 0` (spread, center).
 
@@ -71,8 +72,8 @@ plot_mf(mf, xlim = c(0, 10), main = NULL)
 
   - For `z_mf`: `c(a, b)`, where `a < b` (left base, right base).
 
-  - For `pi_mf`: `c(a, b, c, d)`, where `a < b < c < d` (left base, left
-    shoulder, right shoulder, right base).
+  - For `pi_mf`: `c(a, b, c, d)`, where `a < b <= c < d` (left base,
+    left shoulder, right shoulder, right base).
 
   - For `s_mf`: `c(a, b)`, where `a < b` (left base, right base).
 

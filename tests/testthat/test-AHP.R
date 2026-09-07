@@ -23,4 +23,12 @@ test_that("AHP input validation", {
   expect_error(AHP("not a matrix"), "must be a matrix")
   expect_error(AHP(matrix(1:6, nrow=2)), "must be a square matrix")
   expect_error(AHP(matrix(1, nrow=16, ncol=16)), "at most 15")
+  expect_error(AHP(matrix(c(1, -2, 0.5, 1), nrow=2)), "positive")
 })
+
+test_that("AHP 1x1 matrix has zero CI and CR", {
+  rlt = AHP(matrix(1))
+  expect_equal(rlt$CI, 0)
+  expect_equal(rlt$CR, 0)
+})
+

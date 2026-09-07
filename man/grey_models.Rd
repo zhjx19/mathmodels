@@ -25,7 +25,7 @@ verhulst(X)
 }
 \value{
 For \code{GM11}: List with fitted values (\code{fitted}), next prediction (\code{pnext}), prediction function (\code{f}), matrix (\code{mat}), parameters (\code{u}), level ratios (\code{lambda}), and range (\code{rng}).
-For \code{GM1N}: List with fitted values (\code{fitted}), posterior variance ratio (\code{C}), small error probability (\code{P}), and prediction function (\code{f}).
+For \code{GM1N}: List with fitted values (\code{fitted}), next prediction (\code{pred}, \code{NULL} unless \code{new_data} is supplied), posterior variance ratio (\code{C}), small error probability (\code{P}), and prediction function (\code{f}).
 For \code{DGM21}, \code{verhulst}: List with fitted values (\code{fitted}), next prediction (\code{pnext}), prediction function (\code{f}), matrix (\code{mat}), and parameters (\code{u}).
 }
 \description{
@@ -34,6 +34,11 @@ Implements grey prediction models for time series forecasting:
 \code{GM1N} applies the GM(1,N) model with multiple related factors.
 \code{DGM21} applies the DGM(2,1) model for second-order dynamics.
 \code{verhulst} applies the Verhulst model for logistic growth.
+}
+\details{
+For \code{GM11}, the returned prediction function \code{f(k)} implements the inverse
+accumulated generating operation (IAGO) formula and is valid for \code{k >= 2};
+\code{fitted[1]} always equals the first original value \code{X[1]}.
 }
 \examples{
 # Sample time series for GM11, DGM21, Verhulst

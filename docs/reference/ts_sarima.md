@@ -80,8 +80,8 @@ ts_sarima(as_ts_df(log(AirPassengers)), stepwise = TRUE, approximation = TRUE)
 #> $diagnostics
 #> # A tibble: 1 × 5
 #>   test        lag statistic p_value conclusion                 
-#>   <chr>     <int>     <dbl>   <dbl> <chr>                      
-#> 1 Ljung-Box    16      17.3   0.369 No autocorrelation detected
+#>   <chr>     <dbl>     <dbl>   <dbl> <chr>                      
+#> 1 Ljung-Box    20      17.3   0.369 No autocorrelation detected
 #> 
 #> $model
 #> Series: x_ts 

@@ -134,6 +134,13 @@ test_that("interp_poly() validates min_len based on degree", {
                "length >= 4")
 })
 
+test_that("interp_poly() validates degree", {
+  expect_error(interp_poly(c(1,2,3,4), c(1,4,9,16), xout = c(1,2), degree = 0),
+               "degree must be a single positive integer")
+  expect_error(interp_poly(c(1,2,3,4), c(1,4,9,16), xout = c(1,2), degree = 1.5),
+               "degree must be a single positive integer")
+})
+
 # --- interp_hermite ---
 
 test_that("interp_hermite() returns expected structure", {
@@ -365,4 +372,25 @@ test_that("growth_fit() rejects invalid type", {
 
 test_that("growth_fit() validates input", {
   expect_error(growth_fit(c(1,2), c(1,2), type = "logistic"), "length >= 3")
+})
+
+test_that("curve_fit() AIC/BIC are finite on the original scale", {
+  set.seed(42)
+  x = 1:20
+  y = 2 * exp(0.15 * x) * rlnorm(20, sdlog = 0.1)
+  res = curve_fit(x, y, type = "exp")
+  expect_true(is.finite(res$model_info$aic))
+  expect_true(is.finite(res$model_info$bic))
+  expect_true(is.finite(res$model_info$r.squared))
+  expect_gt(res$model_info$r.squared, 0.8)
+})
+
+test_that("growth_fit() with n = p has no NaN in AIC/BIC or CIs", {
+  x = c(0, 5, 10)
+  y = c(2, 50, 98)
+  res = growth_fit(x, y, type = "logistic")
+  expect_false(is.nan(res$model_info$aic))
+  expect_false(is.nan(res$model_info$bic))
+  expect_false(any(is.nan(res$coefficient$conf.low)))
+  expect_false(any(is.nan(res$coefficient$conf.high)))
 })

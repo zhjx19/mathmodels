@@ -9,7 +9,8 @@ topsis(X, w = NULL, index = NULL)
 \arguments{
 \item{X}{A numeric matrix or data frame where rows represent alternatives and columns represent criteria.}
 
-\item{w}{A numeric vector of weights for each criterion. Must be non-negative and sum to 1.
+\item{w}{A numeric vector of weights for each criterion. Must be non-negative
+with a positive total; only relative weights matter (they need not sum to 1).
 If not provided, equal weights are used.}
 
 \item{index}{A character vector indicating the direction of each indicator:

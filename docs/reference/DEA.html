@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">mathmodels</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.11</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.12</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -109,15 +109,26 @@ For output orientation: value = 1/\(\phi\), where \(\phi \ge 1\) is the Shephard
 
 
 <dt id="arg-period">period<a class="anchor" aria-label="anchor" href="#arg-period"></a></dt>
-<dd><p>Column name or index identifying the time period variable.</p></dd>
+<dd><p>Column name or index identifying the time period variable.
+Numeric periods are sorted numerically; character periods that all parse
+as numbers are sorted numerically as well.</p></dd>
 
 
 <dt id="arg-type-">type1<a class="anchor" aria-label="anchor" href="#arg-type-"></a></dt>
-<dd><p><code>"cont"</code> (contemporaneous), <code>"seq"</code> (sequential), or <code>"glob"</code> (global, default).</p></dd>
+<dd><p><code>"cont"</code> (contemporaneous), <code>"seq"</code> (sequential), or <code>"glob"</code>
+(global, default). With <code>"seq"</code>, the old-technology term of the
+technical-change component at transition t -&gt; t+1 is evaluated against
+the pooled frontier of periods 1..t (sequential frontier); no scale
+decomposition is defined (<code>sech = NA</code>).</p></dd>
 
 
 <dt id="arg-type-">type2<a class="anchor" aria-label="anchor" href="#arg-type-"></a></dt>
-<dd><p><code>"fgnz"</code> (Färe-Grosskopf-Norris-Zhang) or <code>"rd"</code> (Ray-Desli, default).</p></dd>
+<dd><p><code>"fgnz"</code> (Färe-Grosskopf-Norris-Zhang) or <code>"rd"</code> (default).
+<code>"rd"</code> reports a scale-efficiency component in the style of the <strong>deaR</strong>
+implementation (closest to Ray-Desli 1997: the scale term is measured at
+the period-t bundle relative to the mixed-period bundle); it is not the
+symmetric Ray-Desli decomposition, and <code>mi</code> is identical to the <code>"fgnz"</code>
+value.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -131,7 +142,8 @@ For output orientation: value = 1/\(\phi\), where \(\phi \ge 1\) is the Shephard
 <ul><li><p><code>basic_DEA()</code>: Standard radial DEA (CCR/BCC)</p></li>
 <li><p><code>super_DEA()</code>: Super-efficiency DEA (self excluded, radial only)</p></li>
 <li><p><code>basic_SBM()</code>: Standard Slacks-Based Measure (SBM, Tone 2001)</p></li>
-<li><p><code>super_SBM()</code>: Super-efficiency SBM (self excluded, no undesirable outputs)</p></li>
+<li><p><code>super_SBM()</code>: Super-efficiency SBM (Tone 2002; self excluded, no
+undesirable outputs)</p></li>
 <li><p><code>malmquist()</code>: Malmquist productivity index</p></li>
 </ul></div>
 
@@ -407,50 +419,50 @@ For output orientation: value = 1/\(\phi\), where \(\phi \ge 1\) is the Shephard
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">super_SBM</span><span class="op">(</span><span class="va">df</span>, inputs <span class="op">=</span> <span class="fl">2</span><span class="op">:</span><span class="fl">3</span>, outputs <span class="op">=</span> <span class="fl">4</span>, rts <span class="op">=</span> <span class="st">"crs"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $efficiencies</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      DMU1      DMU2      DMU3      DMU4      DMU5      DMU6      DMU7 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>        NA 0.6737500 0.7500000 0.8176471 0.5908571 0.4190476        NA </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     DMU1     DMU2     DMU3     DMU4     DMU5     DMU6     DMU7 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1.125000 1.000000 1.000000 1.000000 1.000000 1.000000 1.287037 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $lambdas</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      DMU1 DMU2 DMU3 DMU4 DMU5 DMU6 DMU7</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> DMU1   NA   NA   NA   NA   NA   NA   NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> DMU2    0   NA    0    0    0    0  1.2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> DMU3    0    0   NA    0    0    0  0.8</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> DMU4    0    0    0   NA    0    0  1.2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> DMU5    0    0    0    0   NA    0  1.4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> DMU6    0    0    0    0    0   NA  0.6</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> DMU7   NA   NA   NA   NA   NA   NA   NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      DMU1 DMU2 DMU3      DMU4 DMU5 DMU6 DMU7</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> DMU1   NA    0    0 0.4166667    0    0  0.0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> DMU2    0   NA    0 0.8750000    0    0  0.0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> DMU3    0    0   NA 0.6250000    0    0  0.0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> DMU4    0    0    0        NA    0    0  1.2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> DMU5    0    0    0 0.9166667   NA    0  0.0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> DMU6    0    0    0 0.3333333    0   NA  0.0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> DMU7    0    0    0 0.8333333    0    0   NA</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $slacks</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $slacks$inputs</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      x1  x2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> DMU1 NA  NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> DMU2  0  92</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> DMU3  0  48</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> DMU4  0  62</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> DMU5  0 124</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> DMU6  0 156</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> DMU7 NA  NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      x1       x2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> DMU1  5  0.00000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> DMU2  0  0.00000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> DMU3  0  0.00000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> DMU4  0  0.00000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> DMU5  0  0.00000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> DMU6  0  0.00000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> DMU7  0 51.66667</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $slacks$outputs</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      y1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> DMU1 NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> DMU2 30</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> DMU3 10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> DMU1  0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> DMU2  0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> DMU3  0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> DMU4  0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> DMU5 60</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> DMU6 40</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> DMU7 NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> DMU5  0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> DMU6  0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> DMU7  0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $targets</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $targets$inputs</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    [,1] [,2] [,3] [,4] [,5] [,6] [,7]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> x1   NA   60   40   60   70   30   NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> x2   NA  108   72  108  126   54   NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    [,1] [,2] [,3] [,4] [,5] [,6]     [,7]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> x1   15   60   40   60   70   30 50.00000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> x2  151  200  120  170  250  210 38.33333</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $targets$outputs</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    [,1] [,2] [,3] [,4] [,5] [,6] [,7]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> y1   NA  240  160  240  280  120   NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> y1  100  210  150  240  220   80  200</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $returns</span>

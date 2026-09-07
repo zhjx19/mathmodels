@@ -23,6 +23,10 @@ to \code{"poly"}.
 Fits a polynomial of specified degree via \code{lm()} and evaluates it at
 \code{xout}.
 }
+\details{
+The raw polynomial basis is exact when \code{degree = length(x) - 1}, but it
+becomes numerically ill-conditioned for high degrees or large \code{x} values.
+}
 \examples{
 x = c(1, 2, 3, 4, 5)
 y = c(2, 4, 1, 5, 3)

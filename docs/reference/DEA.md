@@ -70,16 +70,26 @@ malmquist(
 
 - period:
 
-  Column name or index identifying the time period variable.
+  Column name or index identifying the time period variable. Numeric
+  periods are sorted numerically; character periods that all parse as
+  numbers are sorted numerically as well.
 
 - type1:
 
   `"cont"` (contemporaneous), `"seq"` (sequential), or `"glob"` (global,
-  default).
+  default). With `"seq"`, the old-technology term of the
+  technical-change component at transition t -\> t+1 is evaluated
+  against the pooled frontier of periods 1..t (sequential frontier); no
+  scale decomposition is defined (`sech = NA`).
 
 - type2:
 
-  `"fgnz"` (Färe-Grosskopf-Norris-Zhang) or `"rd"` (Ray-Desli, default).
+  `"fgnz"` (Färe-Grosskopf-Norris-Zhang) or `"rd"` (default). `"rd"`
+  reports a scale-efficiency component in the style of the **deaR**
+  implementation (closest to Ray-Desli 1997: the scale term is measured
+  at the period-t bundle relative to the mixed-period bundle); it is not
+  the symmetric Ray-Desli decomposition, and `mi` is identical to the
+  `"fgnz"` value.
 
 ## Value
 
@@ -94,8 +104,8 @@ A list with components: `efficiencies`, `lambdas`, `slacks`, `targets`,
 
 - `basic_SBM()`: Standard Slacks-Based Measure (SBM, Tone 2001)
 
-- `super_SBM()`: Super-efficiency SBM (self excluded, no undesirable
-  outputs)
+- `super_SBM()`: Super-efficiency SBM (Tone 2002; self excluded, no
+  undesirable outputs)
 
 - `malmquist()`: Malmquist productivity index
 
@@ -372,50 +382,50 @@ df = data.frame(
 )
 super_SBM(df, inputs = 2:3, outputs = 4, rts = "crs")
 #> $efficiencies
-#>      DMU1      DMU2      DMU3      DMU4      DMU5      DMU6      DMU7 
-#>        NA 0.6737500 0.7500000 0.8176471 0.5908571 0.4190476        NA 
+#>     DMU1     DMU2     DMU3     DMU4     DMU5     DMU6     DMU7 
+#> 1.125000 1.000000 1.000000 1.000000 1.000000 1.000000 1.287037 
 #> 
 #> $lambdas
-#>      DMU1 DMU2 DMU3 DMU4 DMU5 DMU6 DMU7
-#> DMU1   NA   NA   NA   NA   NA   NA   NA
-#> DMU2    0   NA    0    0    0    0  1.2
-#> DMU3    0    0   NA    0    0    0  0.8
-#> DMU4    0    0    0   NA    0    0  1.2
-#> DMU5    0    0    0    0   NA    0  1.4
-#> DMU6    0    0    0    0    0   NA  0.6
-#> DMU7   NA   NA   NA   NA   NA   NA   NA
+#>      DMU1 DMU2 DMU3      DMU4 DMU5 DMU6 DMU7
+#> DMU1   NA    0    0 0.4166667    0    0  0.0
+#> DMU2    0   NA    0 0.8750000    0    0  0.0
+#> DMU3    0    0   NA 0.6250000    0    0  0.0
+#> DMU4    0    0    0        NA    0    0  1.2
+#> DMU5    0    0    0 0.9166667   NA    0  0.0
+#> DMU6    0    0    0 0.3333333    0   NA  0.0
+#> DMU7    0    0    0 0.8333333    0    0   NA
 #> 
 #> $slacks
 #> $slacks$inputs
-#>      x1  x2
-#> DMU1 NA  NA
-#> DMU2  0  92
-#> DMU3  0  48
-#> DMU4  0  62
-#> DMU5  0 124
-#> DMU6  0 156
-#> DMU7 NA  NA
+#>      x1       x2
+#> DMU1  5  0.00000
+#> DMU2  0  0.00000
+#> DMU3  0  0.00000
+#> DMU4  0  0.00000
+#> DMU5  0  0.00000
+#> DMU6  0  0.00000
+#> DMU7  0 51.66667
 #> 
 #> $slacks$outputs
 #>      y1
-#> DMU1 NA
-#> DMU2 30
-#> DMU3 10
+#> DMU1  0
+#> DMU2  0
+#> DMU3  0
 #> DMU4  0
-#> DMU5 60
-#> DMU6 40
-#> DMU7 NA
+#> DMU5  0
+#> DMU6  0
+#> DMU7  0
 #> 
 #> 
 #> $targets
 #> $targets$inputs
-#>    [,1] [,2] [,3] [,4] [,5] [,6] [,7]
-#> x1   NA   60   40   60   70   30   NA
-#> x2   NA  108   72  108  126   54   NA
+#>    [,1] [,2] [,3] [,4] [,5] [,6]     [,7]
+#> x1   15   60   40   60   70   30 50.00000
+#> x2  151  200  120  170  250  210 38.33333
 #> 
 #> $targets$outputs
 #>    [,1] [,2] [,3] [,4] [,5] [,6] [,7]
-#> y1   NA  240  160  240  280  120   NA
+#> y1  100  210  150  240  220   80  200
 #> 
 #> 
 #> $returns

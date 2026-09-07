@@ -21,6 +21,11 @@ to \code{"hermite"}.
 Shape-preserving (monotone) piecewise cubic Hermite interpolation using
 the Fritsch-Carlson method via \code{splinefun(method = "monoH.FC")}.
 }
+\details{
+Implements the Fritsch-Carlson monotone cubic method via
+\code{stats::splinefun(method = "monoH.FC")}: if the input data are monotone,
+the interpolant preserves that monotonicity.
+}
 \examples{
 x = c(1, 2, 3, 4, 5)
 y = c(1, 2, 4, 7, 11)

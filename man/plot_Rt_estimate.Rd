@@ -4,7 +4,7 @@
 \alias{plot_Rt_estimate}
 \title{Plot effective reproduction number R_t}
 \usage{
-plot_Rt_estimate(df, params, N = NULL, method = c("mechanistic", "normalized"))
+plot_Rt_estimate(df, params, N = NULL)
 }
 \arguments{
 \item{df}{A data frame with columns \code{time} and \code{S}.}
@@ -13,11 +13,8 @@ plot_Rt_estimate(df, params, N = NULL, method = c("mechanistic", "normalized"))
 \code{beta} and \code{gamma}.}
 
 \item{N}{Total population size.  If \code{NULL} (the default),
-it is estimated from the sum of all state columns at the first
-time step.}
-
-\item{method}{Estimation method: \code{"mechanistic"} (default) or
-\code{"normalized"}.}
+it is estimated from the sum of the known state columns (S, E, I, R)
+at the first time step.}
 }
 \value{
 A \link[ggplot2:ggplot]{ggplot} object with a dashed
@@ -25,18 +22,12 @@ horizontal line at \eqn{R_t = 1}.
 }
 \description{
 Estimates the time-varying effective reproduction number
-\eqn{R_t} directly from compartment data.  Two methods are
-available:
-\describe{
-\item{\code{"mechanistic"}}{Uses \eqn{R_t = \beta S(t) / (\gamma N)}.
-This is the standard formula for a frequency-dependent SIR-type model.}
-\item{\code{"normalized"}}{Uses \eqn{R_t = R_0 \, S(t) / N} with
-\eqn{R_0 = \beta / \gamma}.  Suitable when different
-normalisations are desired.}
-}
+\eqn{R_t = \beta S(t) / (\gamma N)} directly from compartment data
+(the standard formula for a frequency-dependent SIR-type model;
+equivalently \eqn{R_0 S(t)/N} with \eqn{R_0 = \beta / \gamma}).
 }
 \examples{
-sir = model_sir(
+sir = ode_sir(
   init   = c(S = 990, I = 10),
   params = c(beta = 0.002, gamma = 0.1),
   times  = seq(0, 50, by = 0.1)

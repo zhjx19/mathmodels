@@ -42,7 +42,11 @@ Each curve is transformed to a linear form:
 
 - `"hyperbolic"`: fits `y ~ 1/x`, gives `y = a + b / x`
 
-Fit statistics are computed on the original scale.
+Fit statistics (`r.squared`, `adj.r.squared`, `sigma`, `AIC`, `BIC`) are
+all computed on the original (data) scale. `AIC`/`BIC` use the Gaussian
+maximum-likelihood log-likelihood on the original scale, with \\\sigma^2
+= SSR/n\\ and \\k\\ = number of regression parameters + 1 (for
+`\sigma`), applied uniformly to all curve types.
 
 **Note on log-transform bias**: For `"exp"` and `"power"` types, fitted
 values are back-transformed directly (`a * exp(b * x)` or `a * x^b`),
@@ -86,7 +90,7 @@ curve_fit(x, y, type = "exp")
 #> # A tibble: 1 × 5
 #>   r.squared adj.r.squared   aic   bic sigma
 #>       <dbl>         <dbl> <dbl> <dbl> <dbl>
-#> 1     0.935         0.931 -22.2 -19.2  2.89
+#> 1     0.935         0.931  103.  106.  2.89
 #> 
 #> $residuals
 #> # A tibble: 20 × 3

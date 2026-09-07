@@ -59,7 +59,8 @@ Models and starting value strategies:
 
 - Lineweaver-Burk `lm(1/y ~ 1/x)` for `a, b` initials
 
-Falls back to heuristic defaults if linearized estimation fails.
+Falls back to heuristic defaults if the linearized estimation fails or
+yields non-finite starting values.
 
 ## Examples
 
@@ -92,7 +93,7 @@ growth_fit(x, y, type = "logistic")
 #> # A tibble: 1 × 5
 #>   r.squared adj.r.squared   aic   bic sigma
 #>       <dbl>         <dbl> <dbl> <dbl> <dbl>
-#> 1     0.997         0.997  140.  144.  2.37
+#> 1     0.997         0.997  142.  147.  2.37
 #> 
 #> $residuals
 #> # A tibble: 30 × 3

@@ -1,5 +1,188 @@
 # Changelog
 
+## mathmodels 0.0.12
+
+### Breaking changes
+
+- **Renamed** the differential equation model functions from `model_*()`
+  to `ode_*()` for a consistent prefix with
+  [`ode_solver()`](https://zhjx19.github.io/mathmodels/reference/ode_solver.md):
+  `model_malthus()` →
+  [`ode_malthus()`](https://zhjx19.github.io/mathmodels/reference/ode_malthus.md),
+  `model_logistic()` →
+  [`ode_logistic()`](https://zhjx19.github.io/mathmodels/reference/ode_logistic.md),
+  `model_si()` →
+  [`ode_si()`](https://zhjx19.github.io/mathmodels/reference/ode_si.md),
+  `model_sis()` →
+  [`ode_sis()`](https://zhjx19.github.io/mathmodels/reference/ode_sis.md),
+  `model_sir()` →
+  [`ode_sir()`](https://zhjx19.github.io/mathmodels/reference/ode_sir.md),
+  `model_seir()` →
+  [`ode_seir()`](https://zhjx19.github.io/mathmodels/reference/ode_seir.md),
+  `model_lv()` →
+  [`ode_lv()`](https://zhjx19.github.io/mathmodels/reference/ode_lv.md).
+- **Removed** the redundant `method` argument of
+  [`plot_Rt_estimate()`](https://zhjx19.github.io/mathmodels/reference/plot_Rt_estimate.md)
+  (the two methods were numerically identical);
+  `R_t = beta * S / (gamma * N)` is now always used and `N` is inferred
+  from the known compartments (S, E, I, R) only.
+
+### Bug fixes
+
+- **pred_reg**: fixed the Hosmer-Lemeshow statistic (wrong column
+  reference and missing variance term — previously reported absurd
+  chi-squares); fixed the factor-response coding in
+  [`reg_logistic()`](https://zhjx19.github.io/mathmodels/reference/reg_logistic.md)
+  (events were mapped to -1/0); logistic prediction CIs now use the link
+  scale (previous CIs were far too narrow); `.predict_lm()` returns both
+  `confidence_interval` and `prediction_interval` (the prediction
+  interval was mislabeled);
+  [`reg_predict()`](https://zhjx19.github.io/mathmodels/reference/reg_predict.md)
+  accepts a `newdata` argument and returns the data used; rank-deficient
+  models no longer break the coefficient table;
+  [`shapiro.test()`](https://rdrr.io/r/stats/shapiro.test.html) is
+  guarded for n \> 5000.
+- **eval_algorithms**:
+  [`topsis()`](https://zhjx19.github.io/mathmodels/reference/topsis.md)
+  validates `index` and `w` and rejects all-zero columns; sample names
+  default to `Sample1..n`;
+  [`rank_sum_ratio()`](https://zhjx19.github.io/mathmodels/reference/rank_sum_ratio.md)
+  rejects unknown `method`;
+  [`grey_corr()`](https://zhjx19.github.io/mathmodels/reference/grey_analysis.md)
+  guards the degenerate all-equal case and validates `w`.
+- **eval_dea**:
+  [`super_SBM()`](https://zhjx19.github.io/mathmodels/reference/DEA.md)
+  now implements Tone (2002) super-efficiency (efficient DMUs get rho
+  \>= 1 instead of NA); SBM undesirable-output weights follow
+  Tone (2004) (1/s1, 1/s2); `basic_DEA(ud_outputs=)` now actually treats
+  undesirable outputs as inputs (Hailu-Veeman) instead of silently
+  ignoring them; `malmquist(type1 = "seq")` implements sequential
+  reference sets (was identical to “cont”); character periods sort
+  numerically; strictly positive inputs/outputs are enforced; SBM
+  rejects the inapplicable `orientation` argument; malmquist warns on
+  panel irregularities.
+- **eval_weights**:
+  [`critic_weight()`](https://zhjx19.github.io/mathmodels/reference/critic_weight.md)
+  /
+  [`entropy_weight()`](https://zhjx19.github.io/mathmodels/reference/entropy_weight.md)
+  accept matrices again (matrix inputs previously errored element-wise);
+  non-negative data is enforced for entropy paths;
+  [`combine_weights()`](https://zhjx19.github.io/mathmodels/reference/combine_weights.md)
+  rejects unknown `type`; `game_linear()` falls back to a pseudo-inverse
+  for proportional weights;
+  [`AHP()`](https://zhjx19.github.io/mathmodels/reference/AHP.md)
+  returns CI = CR = 0 for n \<= 2 and rejects non-positive matrices;
+  unknown `index` values are rejected instead of silently treated as
+  “already normalized”.
+- **eval_fuzzy**:
+  [`defuzzify()`](https://zhjx19.github.io/mathmodels/reference/defuzzify.md)
+  rejects unknown methods and returns the first maximum on ties;
+  [`fuzzy_eval()`](https://zhjx19.github.io/mathmodels/reference/fuzzy_eval.md)
+  validates R in \[0, 1\] with no NA; membership functions validate
+  their parameters (strict ordering / positivity).
+- **pred_grey / pred_ts**:
+  [`combine_preds()`](https://zhjx19.github.io/mathmodels/reference/combine_preds.md)
+  handles identical predictions (equal weights); GM models reject
+  non-positive/NA data and near-constant series (a ~ 0) with informative
+  errors;
+  [`GM1N()`](https://zhjx19.github.io/mathmodels/reference/grey_models.md)
+  returns `C`/`P` as documented;
+  [`ts_back_transform()`](https://zhjx19.github.io/mathmodels/reference/ts_back_transform.md)
+  applies Box-Cox bias adjustment to point forecasts (`bias_adj = TRUE`
+  default); Ljung-Box diagnostics use ARMA-only fitdf and no longer
+  produce NaN rows for short series;
+  [`ts_transform()`](https://zhjx19.github.io/mathmodels/reference/ts_transform.md)
+  /
+  [`ts_forecast()`](https://zhjx19.github.io/mathmodels/reference/ts_forecast.md)
+  validate differencing depth and duplicated levels.
+- **diffEq**:
+  [`ode_solver()`](https://zhjx19.github.io/mathmodels/reference/ode_solver.md)
+  validates `times` (strictly increasing) and rejects unused
+  compartments in `init`; equation parse errors name the offending
+  variable;
+  [`plot_incidence()`](https://zhjx19.github.io/mathmodels/reference/plot_incidence.md)
+  warns on non-uniform time steps;
+  [`epi_metrics()`](https://zhjx19.github.io/mathmodels/reference/epi_metrics.md)
+  infers N from known compartments only and validates beta/gamma; the
+  `b` parameter is documented as constant recruitment.
+- **eval_system / eval_regional / eval_preprocess / interp_fit**:
+  coupling degree validates `type` and unit-sum weights; `id_cols` typos
+  are rejected;
+  [`HHI()`](https://zhjx19.github.io/mathmodels/reference/regional_economics.md)
+  handles single values and rejects negatives; entropy / CV weight
+  functions reject NA; preprocessing helpers guard degenerate inputs
+  (`rescale_middle`, `to_positive`, `rescale_extreme`, `normalize`,
+  `standardize`);
+  [`curve_fit()`](https://zhjx19.github.io/mathmodels/reference/curve_fit.md)/[`growth_fit()`](https://zhjx19.github.io/mathmodels/reference/growth_fit.md)
+  report AIC/BIC on the original scale (fixes NaN at n = p) with
+  non-finite start-value fallbacks;
+  [`interp_poly()`](https://zhjx19.github.io/mathmodels/reference/interp_poly.md)
+  validates `degree`.
+- **read_nbs**: `range = "A1"` (version-robust header read).
+- **DESCRIPTION**: `dplyr (>= 1.1.0)` now declared
+  ([`reframe()`](https://dplyr.tidyverse.org/reference/reframe.html)
+  requires it).
+
+### Multivariate statistics toolkit (new)
+
+- **Dimension reduction** (`mv_stats.R`):
+  - [`mv_pca()`](https://zhjx19.github.io/mathmodels/reference/mv_pca.md):
+    Principal component analysis with tidy scores, loadings, and
+    variance decomposition.
+  - [`mv_efa()`](https://zhjx19.github.io/mathmodels/reference/mv_efa.md):
+    Exploratory factor analysis (maximum likelihood) with loadings,
+    uniquenesses, variance shares, and optional factor scores.
+- **Clustering** (`mv_stats.R`):
+  - [`mv_hclust()`](https://zhjx19.github.io/mathmodels/reference/mv_hclust.md):
+    Hierarchical clustering with tidy cluster assignments, merge
+    heights, and the raw `hclust` object for custom plots.
+  - [`mv_kmeans()`](https://zhjx19.github.io/mathmodels/reference/mv_kmeans.md):
+    K-means clustering with assignments, centers, and within-cluster
+    sums of squares.
+  - [`mv_cluster_metrics()`](https://zhjx19.github.io/mathmodels/reference/mv_cluster_metrics.md):
+    Clustering validity metrics computed in base R: per-observation
+    silhouette widths, average silhouette, Davies-Bouldin,
+    Calinski-Harabasz, and Dunn indices.
+  - [`plot_mv_elbow()`](https://zhjx19.github.io/mathmodels/reference/plot_mv_elbow.md)
+    and
+    [`plot_mv_silhouette()`](https://zhjx19.github.io/mathmodels/reference/plot_mv_silhouette.md):
+    Elbow plot (k-means or hierarchical) and silhouette plot for both
+    clustering types;
+    [`plot_mv_dendrogram()`](https://zhjx19.github.io/mathmodels/reference/plot_mv_dendrogram.md)
+    for hierarchical dendrograms.
+- **Discriminant analysis** (`mv_stats.R`):
+  - [`mv_discrim()`](https://zhjx19.github.io/mathmodels/reference/mv_discrim.md):
+    LDA/QDA via `MASS` with training predictions, confusion matrix,
+    accuracy, discriminant scores (LDA), and optional classification of
+    new data.
+- **Other multivariate methods** (`mv_stats.R`):
+  - [`mv_corresp()`](https://zhjx19.github.io/mathmodels/reference/mv_corresp.md):
+    Simple correspondence analysis with row/column coordinates and
+    inertia decomposition.
+  - [`mv_mds()`](https://zhjx19.github.io/mathmodels/reference/mv_mds.md):
+    Metric (`cmdscale`) and non-metric
+    ([`MASS::isoMDS`](https://rdrr.io/pkg/MASS/man/isoMDS.html))
+    multidimensional scaling.
+  - [`mv_cancor()`](https://zhjx19.github.io/mathmodels/reference/mv_cancor.md):
+    Canonical correlation analysis with Wilks’ lambda significance
+    tests, coefficients, and structure correlations.
+  - [`mv_pcor()`](https://zhjx19.github.io/mathmodels/reference/mv_pcor.md):
+    Partial correlation matrix with t-tests.
+- **Visualization**:
+  [`plot_mv_scree()`](https://zhjx19.github.io/mathmodels/reference/plot_mv_scree.md)
+  and
+  [`plot_mv_scores()`](https://zhjx19.github.io/mathmodels/reference/plot_mv_scores.md)
+  for PCA/EFA scree and score plots,
+  [`plot_mv_corresp()`](https://zhjx19.github.io/mathmodels/reference/plot_mv_corresp.md)
+  and
+  [`plot_mv_mds()`](https://zhjx19.github.io/mathmodels/reference/plot_mv_mds.md)
+  for CA/MDS configuration maps.
+- **Dependencies**: unchanged. Tidy-select column interfaces are
+  implemented through the existing `dplyr` dependency.
+- All functions follow a tidy interface: tidy-select columns in, tibble
+  components out, and [`print()`](https://rdrr.io/r/base/print.html)
+  methods for compact summaries.
+
 ## mathmodels 0.0.11
 
 - **New function**
@@ -164,16 +347,10 @@
 - **Differential equation models** (`diffEq_models.R`):
   - [`ode_solver()`](https://zhjx19.github.io/mathmodels/reference/ode_solver.md):
     General-purpose string-formula ODE solver powered by **deSolve**.
-  - [`model_malthus()`](https://zhjx19.github.io/mathmodels/reference/model_malthus.md),
-    [`model_logistic()`](https://zhjx19.github.io/mathmodels/reference/model_logistic.md),
-    [`model_si()`](https://zhjx19.github.io/mathmodels/reference/model_si.md),
-    [`model_sis()`](https://zhjx19.github.io/mathmodels/reference/model_sis.md),
-    [`model_sir()`](https://zhjx19.github.io/mathmodels/reference/model_sir.md),
-    [`model_seir()`](https://zhjx19.github.io/mathmodels/reference/model_seir.md),
-    [`model_lv()`](https://zhjx19.github.io/mathmodels/reference/model_lv.md)
-    — all using a unified `init` + `params` interface with
-    physics-meaningful named parameters (e.g., `beta`, `gamma`,
-    `sigma`).
+  - `model_malthus()`, `model_logistic()`, `model_si()`, `model_sis()`,
+    `model_sir()`, `model_seir()`, `model_lv()` — all using a unified
+    `init` + `params` interface with physics-meaningful named parameters
+    (e.g., `beta`, `gamma`, `sigma`).
 - **Epidemic visualization** (`epidemic_plot.R`):
   - [`plot_compartments()`](https://zhjx19.github.io/mathmodels/reference/plot_compartments.md):
     Faceted/overlaid line plot of selected compartments.

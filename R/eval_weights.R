@@ -36,6 +36,7 @@ AHP = function(A) {
   n = nrow(A)
   if(n != ncol(A)) stop("A must be a square matrix.")
   if(n > 15) stop("A must have at most 15 rows/columns.")
+  if(any(A <= 0)) stop("A must contain only positive values.")
 
   for(i in 1:n) {
     for(j in i:n) {
@@ -50,14 +51,20 @@ AHP = function(A) {
   # Weight vector
   w = Re(rlt$vectors[,1]) / sum(Re(rlt$vectors[,1]))
 
-  # Consistency index
-  CI = (Lmax - n) / (n - 1)
-
   # Consistency ratio
   # Saaty's random Consistency indexes (extended to n=15)
   RI = c(0, 0, 0.58, 0.90, 1.12, 1.24, 1.32, 1.41, 1.45, 1.49,
          1.51, 1.48, 1.56, 1.57, 1.59)
-  CR = ifelse(n == 2, 0, CI / RI[n])
+  # For n <= 2 the comparison matrix cannot be inconsistent
+  if (n <= 2) {
+    CI = 0
+    CR = 0
+  } else {
+    # Consistency index
+    CI = (Lmax - n) / (n - 1)
+    # Consistency ratio
+    CR = CI / RI[n]
+  }
   list(w = w, CR = CR, Lmax = Lmax, CI = CI)
 }
 
@@ -72,13 +79,18 @@ AHP = function(A) {
 #' @param w_obj Numeric vector of objective weights.
 #' @param type Character string specifying the combination method: "linear", "multiplicative", "game", or "game_linear".
 #' @param alpha Numeric value between 0 and 1, used only for the linear method to weight subjective weights. Defaults to 0.5.
-#' @return A numeric vector of combined weights, normalized to sum to 1.
+#' @return A numeric vector of combined weights. For `multiplicative` and `game`,
+#' the result is normalized to sum to 1. For `linear` and `game_linear`, the
+#' theoretically-defined combination is returned as is: it sums to 1 when both
+#' input weight vectors do (only the two normalized methods are rescaled).
 #' @details
 #' The function supports four methods:
 #' - Linear: Combines weights as alpha * w_subj + (1 - alpha) * w_obj.
-#' - Multiplicative: Combines weights as w_subj * w_obj, requiring positive weights.
-#' - Game: Uses the geometric mean (sqrt(w_subj * w_obj)) to balance weights.
+#' - Multiplicative: Combines weights as w_subj * w_obj, requiring positive weights, then normalizes to sum to 1.
+#' - Game: Uses the geometric mean (sqrt(w_subj * w_obj)) to balance weights, then normalizes to sum to 1.
 #' - Game_linear: Uses a game-theoretic approach by solving a linear system based on the cross-product of weights.
+#' Inputs are expected to be weight vectors that each sum to 1.
+
 #' @examples
 #' w_subj = c(0.4, 0.3, 0.2, 0.1)
 #' w_obj = c(0.25, 0.2, 0.3, 0.25)
@@ -112,10 +124,13 @@ combine_weights = function(w_subj, w_obj, type = "linear", alpha = 0.5) {
                # Solve linear system for game theory-based weights
                w_mat = cbind(w_subj, w_obj)
                S = crossprod(w_mat)
-               alpha_vec = solve(S, diag(S))
+               alpha_vec = tryCatch(
+                 solve(S, diag(S)),
+                 error = function(e) MASS::ginv(S) %*% diag(S))
                alpha_vec = alpha_vec / sum(alpha_vec)
                as.vector(w_mat %*% alpha_vec)
-             }
+             },
+             stop('type must be one of "linear", "multiplicative", "game", "game_linear".')
   )
   # If needed, perform normalization
   if (type %in% c("multiplicative", "game")) {
@@ -171,14 +186,18 @@ critic_weight = function(X, index = NULL, method = "std",
                          cor_method = "pearson", epsilon = 0.002) {
   if(!is.data.frame(X) && !is.matrix(X))
     stop("X must be a data frame or matrix.")
+  if (is.matrix(X)) X = as.data.frame(X)
+  if (anyNA(X)) stop("X must not contain NA.")
   if(ncol(X) < 2)
     stop("X must have at least 2 columns.")
-  if(nrow(X) < 2)
-    stop("X must have at least 2 rows.")
+  if(nrow(X) < 3)
+    stop("X must have at least 3 rows (correlations are degenerate with 2 rows).")
   if(!is.null(index) && length(index) != ncol(X))
     stop("index must have length equal to ncol(X), or be NULL.")
 
   if(is.null(index)) index = rep(NA, ncol(X))
+  if(!all(is.na(index) | index %in% c("+", "-")))
+    stop('index must contain only "+", "-", or NA')
   pos = which(index == "+")
   neg = which(index == "-")
 
@@ -191,9 +210,12 @@ critic_weight = function(X, index = NULL, method = "std",
 
   # Compute standard deviation or entropy of each indicator
   S = switch (method,
-    "std" = apply(X, 2, sd),
+    "std" = apply(X, 2, stats::sd),
     "entropy" = {
+      if (any(X < 0))
+        stop("critic_weight() method = 'entropy' requires non-negative data.")
       X[X == 0] = epsilon
+
       X[X == 1] = 1 - epsilon
       P = data.frame(lapply(X, \(x) x / sum(x)))
       e = sapply(P, function(x) - sum(x * log(x)) /log(nrow(P)))
@@ -243,11 +265,12 @@ cv_weight = function(X) {
     stop("X must be a data frame or matrix.")
   if(ncol(X) < 2)
     stop("X must have at least 2 columns.")
+  if (anyNA(X)) stop("X must not contain NA.")
   if(any(apply(X, 2, function(x) any(x <= 0, na.rm = TRUE))))
     stop("All values in X must be positive for CV weighting.")
 
   means = apply(X, 2, mean, na.rm = TRUE)
-  sds = apply(X, 2, sd, na.rm = TRUE)
+  sds = apply(X, 2, stats::sd, na.rm = TRUE)
   cv = sds / means     # Compute coefficient of variation
   cv / sum(cv)
 }
@@ -296,6 +319,8 @@ cv_weight = function(X) {
 entropy_weight = function(X, index = NULL, epsilon = 0.002) {
   if(!is.data.frame(X) && !is.matrix(X))
     stop("X must be a data frame or matrix.")
+  if (is.matrix(X)) X = as.data.frame(X)
+  if (anyNA(X)) stop("X must not contain NA.")
   if(ncol(X) < 2)
     stop("X must have at least 2 columns.")
   if(nrow(X) < 2)
@@ -304,6 +329,8 @@ entropy_weight = function(X, index = NULL, epsilon = 0.002) {
     stop("index must have length equal to ncol(X), or be NULL.")
 
   if(is.null(index)) index = rep(NA, ncol(X))
+  if(!all(is.na(index) | index %in% c("+", "-")))
+    stop('index must contain only "+", "-", or NA')
   if(any(is.na(index))) {
     X_na = X[is.na(index)]
     X_na[X_na == 0] = epsilon
@@ -318,6 +345,7 @@ entropy_weight = function(X, index = NULL, epsilon = 0.002) {
   X[,neg] = lapply(X[,neg, drop = FALSE],
                     function(x) rescale(x, type = "-", a = epsilon, b = 1-epsilon))
   # Compute proportion p(i,j) of sample i in indicator j
+  if (any(X < 0)) stop("entropy_weight() requires non-negative data.")
   P = data.frame(lapply(X, function(x) x / sum(x)))
   # Compute entropy e(j) for each indicator j
   e = sapply(P, \(x) -sum(x * log(x)) / log(nrow(P)))

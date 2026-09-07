@@ -71,7 +71,7 @@ A = matrix(c(1,   1/2, 4, 3,   3,
 AHP(A)
 
 # --- Epidemic compartment modeling ---
-result = model_sir(
+result = ode_sir(
   init   = c(S = 990, I = 10, R = 0),
   params = c(beta = 0.15, gamma = 0.1),  # R0 = 1.5
   times  = seq(0, 100, by = 0.5))
@@ -98,7 +98,7 @@ For detailed documentation, tutorials, and in-depth examples on using the `mathm
 
 This online book is the definitive guide to the package's functionalities. Currently implemented modules include:
 
-- **Differential equation models**: Malthus, Logistic, SI, SIS, SIR, SEIR, Lotka–Volterra with `ode_solver()` and `model_*()` functions; epidemic visualization (`plot_compartments()`, `plot_incidence()`, `plot_phase_si()`, `plot_Rt_estimate()`) and metrics (`epi_metrics()`)
+- **Differential equation models**: Malthus, Logistic, SI, SIS, SIR, SEIR, Lotka–Volterra with `ode_solver()` and `ode_*()` functions; epidemic visualization (`plot_compartments()`, `plot_incidence()`, `plot_phase_si()`, `plot_Rt_estimate()`) and metrics (`epi_metrics()`)
 - **Time series**: `ts_df()`, `as_ts_df()`, `validate_ts_df()`, `complete_ts_df()`, `impute_ts_df()`, `drop_na_ts_df()`, `ts_transform()`, `ts_back_transform()`, `ts_ets()`, `ts_sarima()`, `ts_arimax()`, `ts_stl()`, `ts_test()`, `ts_forecast()`; visualization: `plot_ts()`, `plot_ts_acf()`, `plot_ts_pacf()`, `plot_ts_forecast()`, `plot_ts_stl()`, `plot_ts_residuals()`
 - **Regression prediction**: `reg_lm()`, `reg_logistic()`, `reg_poisson()`, `reg_negbin()` with stepwise selection; `reg_predict()`, `reg_diagnostics()`, `plot_reg_predict()`, `plot_reg_residuals()`
 - **Interpolation & curve fitting**: `interp_linear()`, `interp_spline()`, `interp_poly()`, `interp_hermite()` for interpolation; `poly_fit()`, `curve_fit()`, `growth_fit()` for curve fitting

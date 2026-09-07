@@ -49,7 +49,8 @@ Models and starting value strategies:
 \item Lineweaver-Burk \code{lm(1/y ~ 1/x)} for \verb{a, b} initials
 }
 
-Falls back to heuristic defaults if linearized estimation fails.
+Falls back to heuristic defaults if the linearized estimation fails or
+yields non-finite starting values.
 }
 \examples{
 \donttest{

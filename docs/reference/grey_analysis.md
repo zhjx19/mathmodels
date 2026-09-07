@@ -67,7 +67,8 @@ relationships between sequences or decision alternatives:
 
   Computes the grey correlation degree between a reference sequence
   (`ref`) and comparison sequences (`cmp`) using the distinguishing
-  coefficient (`rho`) and optional weights (`w`).
+  coefficient (`rho`) and optional weights (`w`), where `w` weights the
+  sampling points (rows of `cmp`).
 
 - grey_corr_topsis:
 

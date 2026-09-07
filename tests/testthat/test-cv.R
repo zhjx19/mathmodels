@@ -8,4 +8,6 @@ test_that("cv_weight works", {
 test_that("cv_weight input validation", {
   expect_error(cv_weight(data.frame(x=c(10,20))), "at least 2 columns")
   expect_error(cv_weight(data.frame(x=c(0,10), y=c(5,20))), "must be positive")
+  expect_error(cv_weight(data.frame(x=c(NA,10), y=c(5,20))), "NA")
 })
+

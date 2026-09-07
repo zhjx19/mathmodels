@@ -19,6 +19,10 @@ Numeric, defuzzified output value.
 \description{
 Implements defuzzification methods for fuzzy evaluation vectors, including weighted average and maximum membership methods.
 }
+\details{
+For \code{max_membership}, when several levels tie for the maximum membership,
+the score of the first (lowest-index) maximum is returned.
+}
 \examples{
 # Example: Defuzzify fuzzy evaluation vectors for three schemes
 mu = c(0.318, 0.351, 0.203, 0.128)

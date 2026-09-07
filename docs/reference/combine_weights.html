@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">mathmodels</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.11</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.12</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -69,14 +69,18 @@
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A numeric vector of combined weights, normalized to sum to 1.</p>
+    <p>A numeric vector of combined weights. For <code>multiplicative</code> and <code>game</code>,
+the result is normalized to sum to 1. For <code>linear</code> and <code>game_linear</code>, the
+theoretically-defined combination is returned as is: it sums to 1 when both
+input weight vectors do (only the two normalized methods are rescaled).</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>The function supports four methods:</p><ul><li><p>Linear: Combines weights as alpha * w_subj + (1 - alpha) * w_obj.</p></li>
-<li><p>Multiplicative: Combines weights as w_subj * w_obj, requiring positive weights.</p></li>
-<li><p>Game: Uses the geometric mean (sqrt(w_subj * w_obj)) to balance weights.</p></li>
-<li><p>Game_linear: Uses a game-theoretic approach by solving a linear system based on the cross-product of weights.</p></li>
+<li><p>Multiplicative: Combines weights as w_subj * w_obj, requiring positive weights, then normalizes to sum to 1.</p></li>
+<li><p>Game: Uses the geometric mean (sqrt(w_subj * w_obj)) to balance weights, then normalizes to sum to 1.</p></li>
+<li><p>Game_linear: Uses a game-theoretic approach by solving a linear system based on the cross-product of weights.
+Inputs are expected to be weight vectors that each sum to 1.</p></li>
 </ul></div>
 
     <div class="section level2">

@@ -94,8 +94,8 @@ ts_arimax(x, xreg = xreg)
 #> $diagnostics
 #> # A tibble: 1 × 5
 #>   test        lag statistic p_value conclusion              
-#>   <chr>     <int>     <dbl>   <dbl> <chr>                   
-#> 1 Ljung-Box    13      50.9       0 Autocorrelation detected
+#>   <chr>     <dbl>     <dbl>   <dbl> <chr>                   
+#> 1 Ljung-Box    20      50.9       0 Autocorrelation detected
 #> 
 #> $model
 #> Series: x_ts 

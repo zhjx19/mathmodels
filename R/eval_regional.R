@@ -28,13 +28,17 @@
 #' \describe{
 #'   \item{LQ}{Calculates the Location Quotient for multiple columns with optional grouping.
 #'     The LQ measures the relative concentration of an industry in a region compared to a national benchmark.
-#'     The function assumes the first row of `data` contains national totals, with the first two columns
-#'     specifying the region and total, and the remaining columns used for LQ calculation.}
+#'     The data must be arranged so that within each `region` value (and within each `.by` group)
+#'     the FIRST row is the national/total benchmark row, which is dropped by the function;
+#'     every remaining row is treated as a region. Rows must be pre-arranged accordingly
+#'     (e.g., with `dplyr::arrange()`), otherwise the results are silently wrong.}
 #'   \item{HHI}{Calculates the Herfindahl-Hirschman Index, a measure of market concentration based on
 #'     the squared sum of market shares. If `scaled = TRUE`, the HHI is normalized to account for the number of firms.}
 #'   \item{EG}{Calculates the Ellison-Glaeser Index, which measures the geographic concentration of an industry
 #'     while controlling for firm size distribution and random distribution effects. It requires data on regions,
-#'     industries, and an indicator (e.g., employment or output).}
+#'     industries, and an indicator (e.g., employment or output). The data must contain one row per
+#'     firm/establishment (multiple rows per region-industry combination); passing region-aggregated data
+#'     (one row per region-industry) silently produces wrong EG values.}
 #' }
 #'
 #' @return
@@ -102,9 +106,14 @@ HHI = function(x, scaled = FALSE) {
   if(!is.numeric(x) || is.matrix(x))
     stop("x must be a numeric vector.")
   x = x[!is.na(x)]
+  if (any(x < 0))
+    stop("x must not contain negative values.")
+  if (sum(x) <= 0)
+    stop("sum(x) must be positive.")
+  n = length(x)
+  if (n == 1) return(1)   # A single firm is a full monopoly
   hhi = sum((x / sum(x)) ^ 2)
   if(scaled) {
-    n = length(x)
     hhi = (hhi - 1/n) / (1 - 1/n)
   }
   hhi
@@ -117,6 +126,8 @@ EG = function(data, region, industry, y) {
   # region, industry, y: specify the region, industry, and indicator columns, respectively
   if(!is.data.frame(data))
     stop("data must be a data frame.")
+  if(anyNA(dplyr::pull(data, {{y}})))
+    stop("EG requires no missing values in y.")
   x = s = NULL
   cal_eg = function(s, x, h) {
     if(h == 1) 0

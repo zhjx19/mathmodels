@@ -110,8 +110,10 @@ A numeric vector of the same length as `x`, transformed as follows:
 
 - `rescale_mean`: Mean-based normalized values using `x/mean(x)`.
 
-- `to_positive`: Transformed values converting negative indicators to
-  positive using min-max or reciprocal transformation.
+- `to_positive`: Converts negative indicators to positive: `minmax`
+  returns `max(x) - x` (a reversal in the original units, not a rescale
+  to `[0, 1]`); `reciprocal` returns `1/x` and requires strictly
+  positive data.
 
 ## Details
 
@@ -143,8 +145,10 @@ These functions support various preprocessing needs in data analysis:
 - `rescale_mean`: Normalizes by dividing by the mean (`x/mean(x)`),
   commonly used in grey relational analysis.
 
-- `to_positive`: Converts negative indicators to positive using either
-  min-max (`max(x) - x`) or reciprocal (`1/x`) transformation.
+- `to_positive`: Converts negative indicators to positive: `minmax`
+  returns `max(x) - x` (a reversal in the original units, not a rescale
+  to `c(0,1)`), and `reciprocal` returns `1/x`, which requires strictly
+  positive data (no zeros or negatives).
 
 Missing values (`NA`) are preserved in the output. For `rescale_initial`
 and `rescale_mean`, the initial value or mean must be non-zero,

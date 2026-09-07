@@ -7,7 +7,7 @@
 epi_metrics(data, beta, gamma, N = NULL)
 }
 \arguments{
-\item{data}{A data frame returned by \verb{model_*()} functions. Must contain a column
+\item{data}{A data frame returned by \verb{ode_*()} functions. Must contain a column
 \code{time}, and at least \code{S} and \code{I}. Additional compartments
 such as \code{E} or \code{R} are allowed.}
 
@@ -16,7 +16,8 @@ such as \code{E} or \code{R} are allowed.}
 \item{gamma}{Recovery / removal rate (numeric).}
 
 \item{N}{Total population (numeric). If \code{NULL} (default), it is computed as
-the sum of all compartment values at the first time point.}
+the sum of the known compartment columns (S, E, I, R) at the first time
+point; extra user-added columns are ignored.}
 }
 \value{
 A named list with:
@@ -25,7 +26,8 @@ A named list with:
 \item{peak_infection}{Maximum number of infectious individuals.}
 \item{peak_time}{Time at which infectious peak occurs.}
 \item{attack_rate}{Proportion of population that transitioned out of S;
-defined only for models containing an R compartment (e.g., SIR/SEIR).}
+defined only for models containing an R compartment (e.g., SIR/SEIR)
+and meaningful only for CLOSED populations.}
 }
 }
 \description{
@@ -33,13 +35,13 @@ This function computes core epidemiological summary statistics from
 deterministic compartmental epidemic models (e.g., SIR, SIS, SEIR).
 }
 \details{
-The input data frame is expected to be the output of \verb{model_*()} functions,
+The input data frame is expected to be the output of \verb{ode_*()} functions,
 containing a time column and one or more compartment columns (e.g., S, I, R, E).
 All compartment values are assumed to be in absolute population counts,
 and the total population is assumed to be conserved unless otherwise specified.
 }
 \examples{
-sir = model_sir(
+sir = ode_sir(
   init   = c(S = 990, I = 10),
   params = c(beta = 0.002, gamma = 0.1),
   times  = seq(0, 50, by = 0.1)

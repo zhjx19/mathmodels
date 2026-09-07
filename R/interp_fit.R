@@ -51,14 +51,11 @@
     1 - (1 - r_sq) * (n - 1) / df_residual
   } else NA_real_
   sigma = if (df_residual > 0) sqrt(ss_res / df_residual) else 0
-  if (inherits(model, "lm")) {
-    aic = round(stats::AIC(model), 4)
-    bic = round(stats::BIC(model), 4)
-  } else {
-    nll = -sum(stats::dnorm(observed, mean = fitted, sd = sigma, log = TRUE))
-    aic = round(2 * p + 2 * nll, 4)
-    bic = round(log(n) * p + 2 * nll, 4)
-  }
+  sigma2_orig = ss_res / n
+  k = p + 1
+  loglik_orig = -n / 2 * (log(2 * pi * sigma2_orig) + 1)
+  aic = round(2 * k - 2 * loglik_orig, 4)
+  bic = round(log(n) * k - 2 * loglik_orig, 4)
   tibble::tibble(
     r.squared     = round(r_sq, 4),
     adj.r.squared = round(adj_r_sq, 4),
@@ -72,19 +69,37 @@
 ._tidy_fit_coefs = function(model, level = 0.95) {
   coefs = stats::coef(model)
   se    = sqrt(diag(stats::vcov(model)))
+  resid = stats::residuals(model)
   df_residual = if (inherits(model, "lm")) {
     model$df.residual
   } else {
-    length(stats::residuals(model)) - length(coefs)
+    length(resid) - length(coefs)
   }
-  t_crit = stats::qt((1 - level) / 2, df_residual, lower.tail = FALSE)
+  if (df_residual < 1 && anyNA(se)) {
+    cov_unscaled = if (inherits(model, "lm")) {
+      chol2inv(qr.R(model$qr))
+    } else {
+      chol2inv(model$m$Rmat())
+    }
+    se = sqrt(diag(cov_unscaled) * sum(resid^2) / length(resid))
+  }
+  t_crit = if (df_residual >= 1) {
+    stats::qt((1 - level) / 2, df_residual, lower.tail = FALSE)
+  } else {
+    stats::qnorm((1 - level) / 2, lower.tail = FALSE)
+  }
   tibble::tibble(
     term      = names(coefs),
     estimate  = as.numeric(coefs),
     std.error = as.numeric(se),
     statistic = as.numeric(coefs) / as.numeric(se),
-    p.value   = 2 * stats::pt(abs(as.numeric(coefs) / as.numeric(se)),
-                               df_residual, lower.tail = FALSE),
+    p.value   = if (df_residual >= 1) {
+      2 * stats::pt(abs(as.numeric(coefs) / as.numeric(se)),
+                    df_residual, lower.tail = FALSE)
+    } else {
+      2 * stats::pnorm(abs(as.numeric(coefs) / as.numeric(se)),
+                       lower.tail = FALSE)
+    },
     conf.low  = as.numeric(coefs) - t_crit * as.numeric(se),
     conf.high = as.numeric(coefs) + t_crit * as.numeric(se)
   )
@@ -191,6 +206,10 @@ interp_spline = function(x, y, xout, spar = NULL) {
 #' @param xout Numeric vector of x-values where interpolation is desired.
 #' @param degree Integer, degree of the polynomial. Minimum 1.
 #'
+#' @details
+#' The raw polynomial basis is exact when `degree = length(x) - 1`, but it
+#' becomes numerically ill-conditioned for high degrees or large `x` values.
+#'
 #' @return A tibble with columns `x` and `y`. The attribute `method` is set
 #'   to `"poly"`.
 #'
@@ -201,6 +220,9 @@ interp_spline = function(x, y, xout, spar = NULL) {
 #'
 #' @export
 interp_poly = function(x, y, xout, degree = 3) {
+  if (!is.numeric(degree) || length(degree) != 1 || !is.finite(degree) ||
+      degree < 1 || degree != floor(degree))
+    stop("degree must be a single positive integer.", call. = FALSE)
   ._validate_xy(x, y, min_len = degree + 1)
   fit = lm(y ~ poly(x, degree, raw = TRUE))
   yout = predict(fit, newdata = data.frame(x = xout))
@@ -217,6 +239,11 @@ interp_poly = function(x, y, xout, degree = 3) {
 #' @param x Numeric vector of observed x-values (no duplicates, length >= 2).
 #' @param y Numeric vector of observed y-values.
 #' @param xout Numeric vector of x-values where interpolation is desired.
+#'
+#' @details
+#' Implements the Fritsch-Carlson monotone cubic method via
+#' `stats::splinefun(method = "monoH.FC")`: if the input data are monotone,
+#' the interpolant preserves that monotonicity.
 #'
 #' @return A tibble with columns `x` and `y`. The attribute `method` is set
 #'   to `"hermite"`.
@@ -250,7 +277,8 @@ interp_hermite = function(x, y, xout) {
 #'
 #' @return A named list with elements: `model` (lm object), `coefficient`
 #'   (tibble with estimates, SE, t-value, p-value, 95% CI), `model_info`
-#'   (tibble with r.squared, adj.r.squared, AIC, BIC, sigma), `residuals`
+#'   (tibble with r.squared, adj.r.squared, AIC, BIC, sigma, all computed on
+#'   the original (data) scale), `residuals`
 #'   (tibble of .observed, .fitted, .residual), `formula` (character),
 #'   `type` (character), and `input` (tibble of x, y).
 #'
@@ -291,7 +319,11 @@ poly_fit = function(x, y, degree = 1) {
 #' - `"log"`: fits `y ~ log(x)`, gives `y = a + b * log(x)`
 #' - `"hyperbolic"`: fits `y ~ 1/x`, gives `y = a + b / x`
 #'
-#' Fit statistics are computed on the original scale.
+#' Fit statistics (`r.squared`, `adj.r.squared`, `sigma`, `AIC`, `BIC`) are all
+#' computed on the original (data) scale. `AIC`/`BIC` use the Gaussian
+#' maximum-likelihood log-likelihood on the original scale, with
+#' \eqn{\sigma^2 = SSR/n} and \eqn{k} = number of regression parameters + 1
+#' (for `\sigma`), applied uniformly to all curve types.
 #'
 #' **Note on log-transform bias**: For `"exp"` and `"power"` types,
 #' fitted values are back-transformed directly (`a * exp(b * x)` or
@@ -388,7 +420,8 @@ curve_fit = function(x, y, type = c("exp", "power", "log", "hyperbolic")) {
 #' - `a0 = max(y) * 1.1`
 #' - Lineweaver-Burk `lm(1/y ~ 1/x)` for `a, b` initials
 #'
-#' Falls back to heuristic defaults if linearized estimation fails.
+#' Falls back to heuristic defaults if the linearized estimation fails or
+#' yields non-finite starting values.
 #'
 #' @return A named list, see [poly_fit()] for details. `model` contains
 #'   the `nls` object.
@@ -414,14 +447,16 @@ growth_fit = function(x, y, type = c("logistic", "gompertz", "saturation", "mm")
 
   if (type == "logistic") {
     L0  = max(y) * 1.05
+    fallback_start = c(L = L0, k = 1/diff(range(x)), x0 = mean(x))
     start_vals = tryCatch({
       y_adj = pmax(y, 1e-8)
       y_adj = pmin(y_adj, L0 - 1e-8)
       ratio = log((L0 - y_adj) / y_adj)
       lin = stats::lm(ratio ~ x)
       co = unname(stats::coef(lin))
-      c(L = L0, k = -co[2], x0 = co[1] / (-co[2]))
-    }, error = function(e) c(L = L0, k = 1/diff(range(x)), x0 = mean(x)))
+      sv = c(L = L0, k = -co[2], x0 = co[1] / (-co[2]))
+      if (all(is.finite(sv))) sv else fallback_start
+    }, error = function(e) fallback_start)
     fit = nlsLM(y ~ L / (1 + exp(-k * (x - x0))),
                 start = list(L = start_vals[["L"]], k = start_vals[["k"]], x0 = start_vals[["x0"]]))
     fitted_vals = stats::fitted(fit)
@@ -431,14 +466,16 @@ growth_fit = function(x, y, type = c("logistic", "gompertz", "saturation", "mm")
 
   } else if (type == "gompertz") {
     L0  = max(y) * 1.05
+    fallback_start = c(L = L0, k = 1/diff(range(x)), x0 = mean(x))
     start_vals = tryCatch({
       y_adj = pmax(y / L0, 1e-8)
       y_adj = pmin(y_adj, 1 - 1e-8)
       dublog = log(-log(y_adj))
       lin = stats::lm(dublog ~ x)
       co = unname(stats::coef(lin))
-      c(L = L0, k = -co[2], x0 = co[1] / (-co[2]))
-    }, error = function(e) c(L = L0, k = 1/diff(range(x)), x0 = mean(x)))
+      sv = c(L = L0, k = -co[2], x0 = co[1] / (-co[2]))
+      if (all(is.finite(sv))) sv else fallback_start
+    }, error = function(e) fallback_start)
     fit = nlsLM(y ~ L * exp(-exp(-k * (x - x0))),
                 start = list(L = start_vals[["L"]], k = start_vals[["k"]], x0 = start_vals[["x0"]]))
     fitted_vals = stats::fitted(fit)
@@ -448,12 +485,14 @@ growth_fit = function(x, y, type = c("logistic", "gompertz", "saturation", "mm")
 
   } else if (type == "saturation") {
     a0  = max(y) * 1.1
+    fallback_start = c(a = a0, b = 1/diff(range(x)))
     start_vals = tryCatch({
       diff_y = pmax(a0 - y, 1e-8)
       lin = stats::lm(log(diff_y) ~ x)
       co = unname(stats::coef(lin))
-      c(a = a0, b = -co[2])
-    }, error = function(e) c(a = a0, b = 1/diff(range(x))))
+      sv = c(a = a0, b = -co[2])
+      if (all(is.finite(sv))) sv else fallback_start
+    }, error = function(e) fallback_start)
     fit = nlsLM(y ~ a * (1 - exp(-b * x)),
                 start = list(a = start_vals[["a"]], b = start_vals[["b"]]))
     fitted_vals = stats::fitted(fit)
@@ -462,12 +501,17 @@ growth_fit = function(x, y, type = c("logistic", "gompertz", "saturation", "mm")
 
   } else if (type == "mm") {
     a0  = max(y) * 1.1
+    fallback_start = c(a = a0, b = stats::median(x))
     start_vals = tryCatch({
       pos = x > 0 & y > 0
+      if (sum(pos) < 2)
+        stop("Lineweaver-Burk start needs at least 2 positive (x, y) points.",
+             call. = FALSE)
       lin = stats::lm(I(1/y[pos]) ~ I(1/x[pos]))
       co = unname(stats::coef(lin))
-      c(a = 1/co[1], b = co[2]/co[1])
-    }, error = function(e) c(a = a0, b = stats::median(x)))
+      sv = c(a = 1/co[1], b = co[2]/co[1])
+      if (all(is.finite(sv))) sv else fallback_start
+    }, error = function(e) fallback_start)
     fit = nlsLM(y ~ a * x / (b + x),
                 start = list(a = start_vals[["a"]], b = start_vals[["b"]]))
     fitted_vals = stats::fitted(fit)

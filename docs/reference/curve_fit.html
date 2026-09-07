@@ -9,7 +9,7 @@ Supported types: exponential, power-law, logarithmic, and hyperbolic."></head><b
 
     <a class="navbar-brand me-2" href="../index.html">mathmodels</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.11</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.12</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -76,7 +76,11 @@ Supported types: exponential, power-law, logarithmic, and hyperbolic.</p>
 <li><p><code>"power"</code>: fits <code>log(y) ~ log(x)</code>, back-transforms to <code>y = a * x^b</code></p></li>
 <li><p><code>"log"</code>: fits <code>y ~ log(x)</code>, gives <code>y = a + b * log(x)</code></p></li>
 <li><p><code>"hyperbolic"</code>: fits <code>y ~ 1/x</code>, gives <code>y = a + b / x</code></p></li>
-</ul><p>Fit statistics are computed on the original scale.</p>
+</ul><p>Fit statistics (<code>r.squared</code>, <code>adj.r.squared</code>, <code>sigma</code>, <code>AIC</code>, <code>BIC</code>) are all
+computed on the original (data) scale. <code>AIC</code>/<code>BIC</code> use the Gaussian
+maximum-likelihood log-likelihood on the original scale, with
+\(\sigma^2 = SSR/n\) and \(k\) = number of regression parameters + 1
+(for <code>\sigma</code>), applied uniformly to all curve types.</p>
 <p><strong>Note on log-transform bias</strong>: For <code>"exp"</code> and <code>"power"</code> types,
 fitted values are back-transformed directly (<code>a * exp(b * x)</code> or
 <code>a * x^b</code>), which yields the geometric-mean prediction. As a result,
@@ -117,7 +121,7 @@ back-transformed parameters on the original scale.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 1 × 5</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   r.squared adj.r.squared   aic   bic sigma</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span>     0.935         0.931 -<span style="color: #BB0000;">22.2</span> -<span style="color: #BB0000;">19.2</span>  2.89</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span>     0.935         0.931  103.  106.  2.89</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $residuals</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 20 × 3</span></span>

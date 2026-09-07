@@ -21,7 +21,9 @@ ode_solver(init, times, equations, params = NULL, method = "lsoda", ...)
 
 - times:
 
-  A numeric vector of output times.
+  A strictly increasing numeric vector of output times. Note that `init`
+  is the state AT `times[1]` (deSolve convention) — it does not have to
+  be time 0.
 
 - equations:
 
@@ -31,7 +33,8 @@ ode_solver(init, times, equations, params = NULL, method = "lsoda", ...)
 - params:
 
   A named numeric vector or list of parameters referenced inside
-  `equations`.
+  `equations`. Parameters named `t` or sharing a name with a state
+  variable are shadowed inside the equations (a warning is issued).
 
 - method:
 
@@ -61,7 +64,7 @@ collection.
 
 ``` r
 # Built-in wrapper (one-liner)
-sir = model_sir(
+sir = ode_sir(
   init   = c(S = 990, I = 10),
   params = c(beta = 0.002, gamma = 0.1),
   times  = seq(0, 50, by = 0.1)

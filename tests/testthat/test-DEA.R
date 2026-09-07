@@ -85,7 +85,7 @@ test_that("basic_SBM returns valid efficiency values", {
   expect_true(all(r$efficiencies <= r_ccr$efficiencies + 1e-10))
 })
 
-test_that("super_SBM handles super-efficient DMUs gracefully", {
+test_that("super_SBM implements Tone (2002) super-efficiency", {
   df = data.frame(
     DMU = paste0("DMU", 1:7),
     x1  = c(20, 60, 40, 60, 70, 30, 50),
@@ -96,8 +96,117 @@ test_that("super_SBM handles super-efficient DMUs gracefully", {
   r = super_SBM(df, inputs = 2:3, outputs = 4, rts = "crs")
 
   expect_length(r$efficiencies, 7L)
-  # DMU1 and DMU7 may be NA if LP infeasible
-  expect_true(is.na(r$efficiencies[1]) || r$efficiencies[1] >= 1)
+  # No NA: efficient DMUs get rho >= 1, inefficient ones get exactly 1
+  expect_true(all(!is.na(r$efficiencies)))
+  expect_true(all(r$efficiencies >= 1 - 1e-10))
+  # Inefficient DMUs (basic_SBM < 1) must have super-SBM exactly 1
+  sbm = basic_SBM(df, inputs = 2:3, outputs = 4, rts = "crs")
+  ineff = sbm$efficiencies < 1 - 1e-10
+  expect_true(all(abs(r$efficiencies[ineff] - 1) < 1e-8))
+})
+
+test_that("super_SBM hand-check: Tone (2002) example", {
+  # 1 input, 1 output, CRS: A(1,1) efficient, B(2,0.5).
+  # Super-efficiency of A against {B}: rho = 4 (hand-derived in review).
+  df = data.frame(
+    DMU = c("A", "B"),
+    x   = c(1, 2),
+    y   = c(1, 0.5)
+  )
+  r = super_SBM(df, inputs = 2, outputs = 3, rts = "crs")
+  expect_equal(unname(r$efficiencies["A"]), 4, tolerance = 1e-8)
+  # B is inefficient: super-SBM = 1
+  expect_equal(unname(r$efficiencies["B"]), 1, tolerance = 1e-8)
+})
+
+test_that("SBM with undesirable outputs uses Tone (2004) weights", {
+  # CRS, A(x=1, yg=1, yb=1), B(x=2, yg=1, yb=2): SBM-UD score of B = 1/3.
+  # Derivation: rho = (1 - s-/x0) / (1 + sg/yg0 + sb/(2*yb0/2)) with
+  # x0 = 2 - s- = lambda, yg0 = 1 = lambda - sg, yb0 = 2 = lambda + sb;
+  # optimum at lambda = 1: s- = 1, sg = 0, sb = 1 ->
+  # rho = (1 - 1/2) / (1 + 0/1 + 1/2) = (1/2)/(3/2) = 1/3.
+  df = data.frame(
+    DMU = c("A", "B"),
+    x   = c(1, 2),
+    yg  = c(1, 1),
+    yb  = c(1, 2)
+  )
+  r = basic_SBM(df, inputs = 2, outputs = 3:4, ud_outputs = 2, rts = "crs")
+  expect_equal(unname(r$efficiencies["B"]), 1 / 3, tolerance = 1e-8)
+  # Targets now include undesirable outputs (Y_b - s_b)
+  expect_equal(nrow(r$targets$outputs), 2L)
+})
+
+test_that("basic_DEA ud_outputs changes efficiencies (treat-as-input)", {
+  df = data.frame(
+    DMU  = paste0("DMU", 1:5),
+    x1   = c(4, 7, 8, 4, 2),
+    x2   = c(3, 5, 2, 8, 7),
+    y_g  = c(2, 5, 6, 3, 1),
+    y_b  = c(1, 2, 2.5, 1.5, 0.5)
+  )
+  r_no = basic_DEA(df, inputs = 2:3, outputs = 4, rts = "crs")
+  r_ud = basic_DEA(df, inputs = 2:3, outputs = 4:5, ud_outputs = 2, rts = "crs")
+  expect_false(isTRUE(all.equal(r_no$efficiencies, r_ud$efficiencies)))
+  # UD slacks are reported (not NA)
+  expect_true(all(!is.na(r_ud$slacks$outputs[, 2])))
+})
+
+test_that("SBM rejects orientation argument", {
+  df = data.frame(DMU = paste0("DMU", 1:3), x = c(1, 2, 3), y = c(1, 1, 2))
+  expect_error(basic_SBM(df, inputs = 2, outputs = 3, orientation = "oo"),
+               "non-oriented")
+  expect_error(super_SBM(df, inputs = 2, outputs = 3, orientation = "oo"),
+               "non-oriented")
+})
+
+test_that("DEA rejects non-positive data", {
+  df = data.frame(DMU = paste0("DMU", 1:3), x = c(1, 0, 3), y = c(1, 1, 2))
+  expect_error(basic_DEA(df, inputs = 2, outputs = 3), "strictly positive")
+  expect_error(basic_SBM(df, inputs = 2, outputs = 3), "strictly positive")
+  df2 = data.frame(DMU = paste0("DMU", 1:3), x = c(1, 2, 3), y = c(1, 1, 2))
+  panel_bad = rbind(
+    data.frame(DMU = df2$DMU, Period = 1, x = df2$x, y = df2$y),
+    data.frame(DMU = df2$DMU, Period = 2, x = c(1, 0, 3), y = df2$y)
+  )
+  expect_error(malmquist(panel_bad, period = "Period", inputs = 3, outputs = 4,
+                         rts = "crs"), "strictly positive")
+})
+
+test_that("malmquist sequential differs from contemporaneous", {
+  panel = data.frame(
+    DMU    = rep(paste0("DMU", 1:5), 3),
+    Period = rep(1:3, each = 5),
+    x1     = c(10, 20, 15, 25, 30, 12, 22, 17, 27, 32, 14, 24, 19, 29, 34),
+    y1     = c(100, 150, 120, 180, 200, 110, 160, 130, 190, 210, 120, 170, 140, 200, 220)
+  )
+  r_cont = malmquist(panel, period = "Period", inputs = 3, outputs = 4,
+    rts = "crs", type1 = "cont", type2 = "fgnz")
+  r_seq = malmquist(panel, period = "Period", inputs = 3, outputs = 4,
+    rts = "crs", type1 = "seq", type2 = "fgnz")
+  # nt = 3: transitions 2->3 use the cumulative frontier, so seq differs
+  expect_false(isTRUE(all.equal(r_cont$tc, r_seq$tc)))
+  # mi consistency: mi = ec * tc for seq
+  expect_equal(r_seq$mi, r_seq$ec * r_seq$tc, tolerance = 1e-10)
+})
+
+test_that("malmquist sorts numeric-looking character periods numerically", {
+  panel_chr = data.frame(
+    DMU    = rep(paste0("DMU", 1:3), 2),
+    Period = rep(c("2", "10"), each = 3),
+    x1     = c(10, 20, 15, 12, 22, 17),
+    y1     = c(100, 150, 120, 110, 160, 130)
+  )
+  panel_num = panel_chr
+  panel_num$Period = rep(c(2, 10), each = 3)
+
+  r_chr = malmquist(panel_chr, period = "Period", inputs = 3, outputs = 4,
+    rts = "crs", type1 = "cont", type2 = "fgnz")
+  r_num = malmquist(panel_num, period = "Period", inputs = 3, outputs = 4,
+    rts = "crs", type1 = "cont", type2 = "fgnz")
+  # Numeric sorting: character periods must give identical results to numeric
+  expect_equal(as.data.frame(r_chr), as.data.frame(r_num))
+  expect_true(all(r_chr$Period == "2~10"))  # not "10~2"
 })
 
 test_that("malmquist returns correct structure", {

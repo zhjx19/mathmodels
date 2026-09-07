@@ -9,7 +9,7 @@ deterministic compartmental epidemic models (e.g., SIR, SIS, SEIR)."></head><bod
 
     <a class="navbar-brand me-2" href="../index.html">mathmodels</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.11</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.12</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -55,7 +55,7 @@ deterministic compartmental epidemic models (e.g., SIR, SIS, SEIR).</p>
 
 
 <dl><dt id="arg-data">data<a class="anchor" aria-label="anchor" href="#arg-data"></a></dt>
-<dd><p>A data frame returned by <code>model_*()</code> functions. Must contain a column
+<dd><p>A data frame returned by <code>ode_*()</code> functions. Must contain a column
 <code>time</code>, and at least <code>S</code> and <code>I</code>. Additional compartments
 such as <code>E</code> or <code>R</code> are allowed.</p></dd>
 
@@ -70,7 +70,8 @@ such as <code>E</code> or <code>R</code> are allowed.</p></dd>
 
 <dt id="arg-n">N<a class="anchor" aria-label="anchor" href="#arg-n"></a></dt>
 <dd><p>Total population (numeric). If <code>NULL</code> (default), it is computed as
-the sum of all compartment values at the first time point.</p></dd>
+the sum of the known compartment columns (S, E, I, R) at the first time
+point; extra user-added columns are ignored.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -86,13 +87,14 @@ the sum of all compartment values at the first time point.</p></dd>
 
 <dt>attack_rate</dt>
 <dd><p>Proportion of population that transitioned out of S;
-defined only for models containing an R compartment (e.g., SIR/SEIR).</p></dd>
+defined only for models containing an R compartment (e.g., SIR/SEIR)
+and meaningful only for CLOSED populations.</p></dd>
 
 
 </dl></div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>The input data frame is expected to be the output of <code>model_*()</code> functions,
+    <p>The input data frame is expected to be the output of <code>ode_*()</code> functions,
 containing a time column and one or more compartment columns (e.g., S, I, R, E).
 All compartment values are assumed to be in absolute population counts,
 and the total population is assumed to be conserved unless otherwise specified.</p>
@@ -100,7 +102,7 @@ and the total population is assumed to be conserved unless otherwise specified.<
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">sir</span> <span class="op">=</span> <span class="fu"><a href="model_sir.html">model_sir</a></span><span class="op">(</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">sir</span> <span class="op">=</span> <span class="fu"><a href="ode_sir.html">ode_sir</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  init   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>S <span class="op">=</span> <span class="fl">990</span>, I <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>beta <span class="op">=</span> <span class="fl">0.002</span>, gamma <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  times  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">50</span>, by <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></span></span>

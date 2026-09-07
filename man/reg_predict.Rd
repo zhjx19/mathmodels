@@ -4,21 +4,29 @@
 \alias{reg_predict}
 \title{Predictions}
 \usage{
-reg_predict(model_result, n_new = 10, level = 0.95)
+reg_predict(model_result, n_new = 10, level = 0.95, newdata = NULL)
 }
 \arguments{
 \item{model_result}{A fitted result from any \code{reg_*()} function.}
 
-\item{n_new}{Number of new observations to predict. Random values drawn from
-the fitted model's residuals are used for predictor data.}
+\item{n_new}{Number of new observations to generate when \code{newdata}
+is not supplied. Predictor values are drawn from the empirical
+distributions of the input columns (normal approximation by mean/sd for
+numeric columns; levels sampled with observed proportions for
+factor columns).}
 
 \item{level}{Confidence/interval level. Defaults to 0.95.}
+
+\item{newdata}{Optional data frame of new predictor values. When supplied,
+predictions are made for exactly these rows and \code{n_new} is ignored.}
 }
 \value{
 A named list with:
 \describe{
 \item{predictions}{Tibble with predicted values.}
-\item{confidence_interval}{Tibble with lower and upper bounds.}
+\item{confidence_interval}{Tibble with lower and upper bounds of the confidence interval.}
+\item{prediction_interval}{Tibble with lower and upper bounds of the prediction interval (linear models only).}
+\item{newdata}{The data frame actually used for prediction.}
 }
 }
 \description{

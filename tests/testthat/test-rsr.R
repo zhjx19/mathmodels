@@ -17,3 +17,8 @@ test_that("rank_sum_ratio input validation", {
   data = data.frame(ID=c("A"), X1=c(10))
   expect_error(rank_sum_ratio(1:5), "must be a data frame")
 })
+
+test_that("rank_sum_ratio rejects invalid method", {
+  data = data.frame(ID=c("A","B","C"), X1=c(10,20,15), X2=c(5,10,8))
+  expect_error(rank_sum_ratio(data, method="bogus"), 'method must be "int" or "non-int"', fixed=TRUE)
+})

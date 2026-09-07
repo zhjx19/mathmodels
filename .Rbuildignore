@@ -16,6 +16,7 @@
 ^vignettes/*_files$
 ^\.positai$
 ^\.claude$
+^\.zcode$
 ^docs$
 ^vignettes/welcome\.html$
 ^vignettes/welcome\.md$

@@ -29,6 +29,11 @@ defuzzify(mu, scores, method = "weighted_average")
 
 Numeric, defuzzified output value.
 
+## Details
+
+For `max_membership`, when several levels tie for the maximum
+membership, the score of the first (lowest-index) maximum is returned.
+
 ## Examples
 
 ``` r

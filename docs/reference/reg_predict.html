@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">mathmodels</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.11</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.12</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -44,7 +44,7 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">reg_predict</span><span class="op">(</span><span class="va">model_result</span>, n_new <span class="op">=</span> <span class="fl">10</span>, level <span class="op">=</span> <span class="fl">0.95</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">reg_predict</span><span class="op">(</span><span class="va">model_result</span>, n_new <span class="op">=</span> <span class="fl">10</span>, level <span class="op">=</span> <span class="fl">0.95</span>, newdata <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -56,12 +56,20 @@
 
 
 <dt id="arg-n-new">n_new<a class="anchor" aria-label="anchor" href="#arg-n-new"></a></dt>
-<dd><p>Number of new observations to predict. Random values drawn from
-the fitted model's residuals are used for predictor data.</p></dd>
+<dd><p>Number of new observations to generate when <code>newdata</code>
+is not supplied. Predictor values are drawn from the empirical
+distributions of the input columns (normal approximation by mean/sd for
+numeric columns; levels sampled with observed proportions for
+factor columns).</p></dd>
 
 
 <dt id="arg-level">level<a class="anchor" aria-label="anchor" href="#arg-level"></a></dt>
 <dd><p>Confidence/interval level. Defaults to 0.95.</p></dd>
+
+
+<dt id="arg-newdata">newdata<a class="anchor" aria-label="anchor" href="#arg-newdata"></a></dt>
+<dd><p>Optional data frame of new predictor values. When supplied,
+predictions are made for exactly these rows and <code>n_new</code> is ignored.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -70,7 +78,13 @@ the fitted model's residuals are used for predictor data.</p></dd>
 <dd><p>Tibble with predicted values.</p></dd>
 
 <dt>confidence_interval</dt>
-<dd><p>Tibble with lower and upper bounds.</p></dd>
+<dd><p>Tibble with lower and upper bounds of the confidence interval.</p></dd>
+
+<dt>prediction_interval</dt>
+<dd><p>Tibble with lower and upper bounds of the prediction interval (linear models only).</p></dd>
+
+<dt>newdata</dt>
+<dd><p>The data frame actually used for prediction.</p></dd>
 
 
 </dl></div>

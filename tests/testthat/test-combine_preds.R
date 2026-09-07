@@ -10,6 +10,12 @@ test_that("combine_preds works with 3 values", {
   expect_type(r$a, "double")
 })
 
+test_that("combine_preds returns equal weights for identical predictions", {
+  r = combine_preds(c(100, 100, 100))
+  expect_equal(r$w, rep(1/3, 3), tolerance = 1e-8)
+  expect_equal(r$a, 100)
+})
+
 test_that("combine_preds input validation", {
   expect_error(combine_preds(c(1)), "length >= 2")
 })

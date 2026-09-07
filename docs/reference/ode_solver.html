@@ -15,7 +15,7 @@ function."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">mathmodels</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.11</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.12</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -69,7 +69,9 @@ variables.</p></dd>
 
 
 <dt id="arg-times">times<a class="anchor" aria-label="anchor" href="#arg-times"></a></dt>
-<dd><p>A numeric vector of output times.</p></dd>
+<dd><p>A strictly increasing numeric vector of output times.
+Note that <code>init</code> is the state AT <code>times[1]</code> (deSolve
+convention) — it does not have to be time 0.</p></dd>
 
 
 <dt id="arg-equations">equations<a class="anchor" aria-label="anchor" href="#arg-equations"></a></dt>
@@ -79,7 +81,9 @@ are derivative expressions (e.g. <code>c(S = "-beta*S*I")</code>).</p></dd>
 
 <dt id="arg-params">params<a class="anchor" aria-label="anchor" href="#arg-params"></a></dt>
 <dd><p>A named numeric vector or list of parameters referenced
-inside <code>equations</code>.</p></dd>
+inside <code>equations</code>. Parameters named <code>t</code> or sharing a name
+with a state variable are shadowed inside the equations (a warning is
+issued).</p></dd>
 
 
 <dt id="arg-method">method<a class="anchor" aria-label="anchor" href="#arg-method"></a></dt>
@@ -107,7 +111,7 @@ collection.</p>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Built-in wrapper (one-liner)</span></span></span>
-<span class="r-in"><span><span class="va">sir</span> <span class="op">=</span> <span class="fu"><a href="model_sir.html">model_sir</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span><span class="va">sir</span> <span class="op">=</span> <span class="fu"><a href="ode_sir.html">ode_sir</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  init   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>S <span class="op">=</span> <span class="fl">990</span>, I <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>beta <span class="op">=</span> <span class="fl">0.002</span>, gamma <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  times  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">50</span>, by <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></span></span>

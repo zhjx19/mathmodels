@@ -11,7 +11,7 @@ applies weights, and computes relative closeness to the ideal solution."></head>
 
     <a class="navbar-brand me-2" href="../index.html">mathmodels</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.11</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.12</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -62,7 +62,8 @@ applies weights, and computes relative closeness to the ideal solution.</p>
 
 
 <dt id="arg-w">w<a class="anchor" aria-label="anchor" href="#arg-w"></a></dt>
-<dd><p>A numeric vector of weights for each criterion. Must be non-negative and sum to 1.
+<dd><p>A numeric vector of weights for each criterion. Must be non-negative
+with a positive total; only relative weights matter (they need not sum to 1).
 If not provided, equal weights are used.</p></dd>
 
 
@@ -99,7 +100,8 @@ is the distance to the negative ideal and <code>Sstar</code> is the distance to 
 <span class="r-in"><span><span class="va">w</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.6</span>, <span class="fl">0.4</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">idx</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"+"</span>,<span class="st">"-"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">topsis</span><span class="op">(</span><span class="va">A</span>, <span class="va">w</span>, <span class="va">idx</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.0000000 1.0000000 0.3111391</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         1         2         3 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 0.0000000 1.0000000 0.3111391 </span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

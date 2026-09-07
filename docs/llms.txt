@@ -123,7 +123,7 @@ A = matrix(c(1,   1/2, 4, 3,   3,
 AHP(A)
 
 # --- Epidemic compartment modeling ---
-result = model_sir(
+result = ode_sir(
   init   = c(S = 990, I = 10, R = 0),
   params = c(beta = 0.15, gamma = 0.1),  # R0 = 1.5
   times  = seq(0, 100, by = 0.5))
@@ -157,7 +157,7 @@ functionalities. Currently implemented modules include:
 - **Differential equation models**: Malthus, Logistic, SI, SIS, SIR,
   SEIR, Lotka–Volterra with
   [`ode_solver()`](https://zhjx19.github.io/mathmodels/reference/ode_solver.md)
-  and `model_*()` functions; epidemic visualization
+  and `ode_*()` functions; epidemic visualization
   ([`plot_compartments()`](https://zhjx19.github.io/mathmodels/reference/plot_compartments.md),
   [`plot_incidence()`](https://zhjx19.github.io/mathmodels/reference/plot_incidence.md),
   [`plot_phase_si()`](https://zhjx19.github.io/mathmodels/reference/plot_phase_si.md),
@@ -472,6 +472,71 @@ stepwise selection, diagnostics, and visualization.
 - [`plot_reg_predict()`](https://zhjx19.github.io/mathmodels/reference/plot_reg_predict.md)
   : Prediction Plot
 
+## Multivariate Statistics
+
+Dimension reduction, clustering, discrimination, and correlation
+structure analysis.
+
+## Dimension Reduction
+
+Principal component and exploratory factor analysis.
+
+- [`mv_pca()`](https://zhjx19.github.io/mathmodels/reference/mv_pca.md)
+  : Principal Component Analysis
+- [`mv_efa()`](https://zhjx19.github.io/mathmodels/reference/mv_efa.md)
+  : Exploratory Factor Analysis
+- [`plot_mv_scree()`](https://zhjx19.github.io/mathmodels/reference/plot_mv_scree.md)
+  : Scree Plot
+- [`plot_mv_scores()`](https://zhjx19.github.io/mathmodels/reference/plot_mv_scores.md)
+  : Scores Plot
+
+## Clustering Analysis
+
+Hierarchical clustering, k-means, validity metrics, and diagnostic
+plots.
+
+- [`mv_hclust()`](https://zhjx19.github.io/mathmodels/reference/mv_hclust.md)
+  : Hierarchical Clustering
+- [`mv_kmeans()`](https://zhjx19.github.io/mathmodels/reference/mv_kmeans.md)
+  : K-means Clustering
+- [`mv_cluster_metrics()`](https://zhjx19.github.io/mathmodels/reference/mv_cluster_metrics.md)
+  : Clustering Validity Metrics
+- [`plot_mv_elbow()`](https://zhjx19.github.io/mathmodels/reference/plot_mv_elbow.md)
+  : Elbow Plot
+- [`plot_mv_silhouette()`](https://zhjx19.github.io/mathmodels/reference/plot_mv_silhouette.md)
+  : Silhouette Plot
+- [`plot_mv_dendrogram()`](https://zhjx19.github.io/mathmodels/reference/plot_mv_dendrogram.md)
+  : Dendrogram Plot
+
+## Discriminant Analysis
+
+Linear and quadratic discriminant analysis.
+
+- [`mv_discrim()`](https://zhjx19.github.io/mathmodels/reference/mv_discrim.md)
+  : Linear and Quadratic Discriminant Analysis
+
+## Correspondence Analysis and Scaling
+
+Correspondence analysis and multidimensional scaling.
+
+- [`mv_corresp()`](https://zhjx19.github.io/mathmodels/reference/mv_corresp.md)
+  : Simple Correspondence Analysis
+- [`mv_mds()`](https://zhjx19.github.io/mathmodels/reference/mv_mds.md)
+  : Multidimensional Scaling
+- [`plot_mv_corresp()`](https://zhjx19.github.io/mathmodels/reference/plot_mv_corresp.md)
+  : Correspondence Analysis Map
+- [`plot_mv_mds()`](https://zhjx19.github.io/mathmodels/reference/plot_mv_mds.md)
+  : MDS Configuration Plot
+
+## Correlation Structure
+
+Canonical and partial correlation analysis.
+
+- [`mv_cancor()`](https://zhjx19.github.io/mathmodels/reference/mv_cancor.md)
+  : Canonical Correlation Analysis
+- [`mv_pcor()`](https://zhjx19.github.io/mathmodels/reference/mv_pcor.md)
+  : Partial Correlation Matrix
+
 ## Curve Fitting & Interpolation
 
 Polynomial fitting, linearizable curve fitting, growth models, and
@@ -504,19 +569,19 @@ visualizations.
 
 - [`ode_solver()`](https://zhjx19.github.io/mathmodels/reference/ode_solver.md)
   : General ODE Solver
-- [`model_malthus()`](https://zhjx19.github.io/mathmodels/reference/model_malthus.md)
+- [`ode_malthus()`](https://zhjx19.github.io/mathmodels/reference/ode_malthus.md)
   : Malthusian (Exponential) Growth Model
-- [`model_logistic()`](https://zhjx19.github.io/mathmodels/reference/model_logistic.md)
+- [`ode_logistic()`](https://zhjx19.github.io/mathmodels/reference/ode_logistic.md)
   : Logistic Population Growth Model
-- [`model_si()`](https://zhjx19.github.io/mathmodels/reference/model_si.md)
+- [`ode_si()`](https://zhjx19.github.io/mathmodels/reference/ode_si.md)
   : SI Epidemic Model
-- [`model_sis()`](https://zhjx19.github.io/mathmodels/reference/model_sis.md)
+- [`ode_sis()`](https://zhjx19.github.io/mathmodels/reference/ode_sis.md)
   : SIS Epidemic Model
-- [`model_sir()`](https://zhjx19.github.io/mathmodels/reference/model_sir.md)
+- [`ode_sir()`](https://zhjx19.github.io/mathmodels/reference/ode_sir.md)
   : SIR Epidemic Model
-- [`model_seir()`](https://zhjx19.github.io/mathmodels/reference/model_seir.md)
+- [`ode_seir()`](https://zhjx19.github.io/mathmodels/reference/ode_seir.md)
   : SEIR Epidemic Model
-- [`model_lv()`](https://zhjx19.github.io/mathmodels/reference/model_lv.md)
+- [`ode_lv()`](https://zhjx19.github.io/mathmodels/reference/ode_lv.md)
   : Lotka-Volterra Predator-Prey Model
 - [`epi_metrics()`](https://zhjx19.github.io/mathmodels/reference/epi_metrics.md)
   : Extract key epidemic metrics from ODE simulation output

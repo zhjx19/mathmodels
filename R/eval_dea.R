@@ -23,6 +23,8 @@ extract_dea_data = function(data, inputs, outputs, ud_outputs = NULL) {
   Y_all = t(as.matrix(data[, outputs, drop = FALSE]))   # s × n
 
   if (anyNA(X) || anyNA(Y_all)) stop("Input/output columns must not contain NA values.")
+  if (any(X <= 0) || any(Y_all <= 0))
+    stop("DEA requires strictly positive inputs and outputs.", call. = FALSE)
 
   if (!is.null(ud_outputs)) {
     ud_idx = ud_outputs
@@ -57,13 +59,19 @@ extract_dea_data = function(data, inputs, outputs, ud_outputs = NULL) {
 #' @param y0 Target DMU desirable output vector (length s1)
 #' @param orientation "io" or "oo"
 #' @param rts "crs" or "vrs"
-#' @return list(theta, phi, lambda, s_in, s_out)
+#' @param Y_b Undesirable output matrix (s2 \eqn{\times} n_ref), NULL if none.
+#'   Treated as an input (Hailu & Veeman 2001): io — bad outputs contract with
+#'   \eqn{\theta}; oo — bad outputs held fixed while good outputs expand.
+#' @param y0_b Target DMU undesirable output vector (length s2), NULL if none.
+#' @return list(theta, phi, lambda, s_in, s_out, s_b)
 #'   theta = Farrell efficiency (0~1); phi = Shephard output distance (\eqn{\ge 1}, NA for io)
 #' @noRd
-solve_radial_lp = function(X, Y, x0, y0, orientation = "io", rts = "vrs") {
+solve_radial_lp = function(X, Y, x0, y0, orientation = "io", rts = "vrs",
+                           Y_b = NULL, y0_b = NULL) {
   n_ref = ncol(X)
   m = length(x0)
   q = length(y0)
+  s2 = if (is.null(Y_b)) 0L else nrow(Y_b)
 
   lp = lpSolveAPI::make.lp(0, n_ref + 1)
 
@@ -73,12 +81,16 @@ solve_radial_lp = function(X, Y, x0, y0, orientation = "io", rts = "vrs") {
       lpSolveAPI::add.constraint(lp, c(X[k, ], -x0[k]), "<=", 0)
     for (k in seq_len(q))
       lpSolveAPI::add.constraint(lp, c(-Y[k, ], 0), "<=", -y0[k])
+    for (k in seq_len(s2))
+      lpSolveAPI::add.constraint(lp, c(Y_b[k, ], -y0_b[k]), "<=", 0)
   } else {
     lpSolveAPI::set.objfn(lp, c(rep(0, n_ref), -1))  # min -φ ≡ max φ
     for (k in seq_len(m))
       lpSolveAPI::add.constraint(lp, c(X[k, ], 0), "<=", x0[k])
     for (k in seq_len(q))
       lpSolveAPI::add.constraint(lp, c(-Y[k, ], y0[k]), "<=", 0)
+    for (k in seq_len(s2))
+      lpSolveAPI::add.constraint(lp, c(Y_b[k, ], 0), "<=", y0_b[k])
   }
 
   if (rts == "vrs")
@@ -90,7 +102,8 @@ solve_radial_lp = function(X, Y, x0, y0, orientation = "io", rts = "vrs") {
   if (status != 0) {
     return(list(theta = NA_real_, phi = NA_real_,
                 lambda = rep(NA_real_, n_ref),
-                s_in = rep(NA_real_, m), s_out = rep(NA_real_, q)))
+                s_in = rep(NA_real_, m), s_out = rep(NA_real_, q),
+                s_b = rep(NA_real_, s2)))
   }
 
   sol = lpSolveAPI::get.variables(lp)
@@ -100,17 +113,19 @@ solve_radial_lp = function(X, Y, x0, y0, orientation = "io", rts = "vrs") {
   if (orientation == "io") {
     s_in  = pmax(0, theta_raw * x0 - as.vector(X %*% lambda))
     s_out = pmax(0, as.vector(Y %*% lambda) - y0)
+    s_b   = if (s2 > 0) pmax(0, theta_raw * y0_b - as.vector(Y_b %*% lambda)) else numeric(0)
     eff = theta_raw
     phi = NA_real_
   } else {
     phi = theta_raw
     s_in  = pmax(0, x0 - as.vector(X %*% lambda))
     s_out = pmax(0, as.vector(Y %*% lambda) - phi * y0)
+    s_b   = if (s2 > 0) pmax(0, y0_b - as.vector(Y_b %*% lambda)) else numeric(0)
     eff = 1 / phi
   }
 
   list(theta = eff, phi = phi,
-       lambda = lambda, s_in = s_in, s_out = s_out)
+       lambda = lambda, s_in = s_in, s_out = s_out, s_b = s_b)
 }
 
 #' Solve SBM LP (Tone 2001, Charnes-Cooper transformed) for a single DMU
@@ -131,7 +146,10 @@ solve_sbm_lp = function(X, Y_g, Y_b, x0, y0_g, y0_b, rts = "vrs") {
   s2 = if (is.null(Y_b)) 0L else nrow(Y_b)
 
   nvar = m + s1 + s2 + n_ref + 1
-  c_val = 1 / max(s1 + s2, 1)
+  # Tone (2004) normalization weights: desirable slacks 1/s1, undesirable 1/s2.
+  # With no undesirable outputs (s2 = 0) this reduces to the plain SBM 1/s1.
+  c_g = 1 / s1
+  c_b = if (s2 > 0) 1 / s2 else 0
 
   lp = lpSolveAPI::make.lp(0, nvar)
 
@@ -142,8 +160,8 @@ solve_sbm_lp = function(X, Y_g, Y_b, x0, y0_g, y0_b, rts = "vrs") {
 
   # Constraint 1: output slack weighted sum + t = 1
   con1 = numeric(nvar)
-  con1[(m + 1):(m + s1)] = c_val / y0_g
-  if (s2 > 0) con1[(m + s1 + 1):(m + s1 + s2)] = c_val / y0_b
+  con1[(m + 1):(m + s1)] = c_g / y0_g
+  if (s2 > 0) con1[(m + s1 + 1):(m + s1 + s2)] = c_b / y0_b
   con1[nvar] = 1
   lpSolveAPI::add.constraint(lp, con1, "=", 1)
 
@@ -216,6 +234,14 @@ solve_sbm_lp = function(X, Y_g, Y_b, x0, y0_g, y0_b, rts = "vrs") {
 build_result = function(dd, theta_vec, lambda_mat, s_in_mat, s_out_mat, rts) {
   rts_label = toupper(rts)
 
+  targets_out = dd$Y_g + t(s_out_mat[, seq_len(dd$s1), drop = FALSE])
+  if (dd$s2 > 0) {
+    targets_out = rbind(
+      targets_out,
+      dd$Y_b - t(s_out_mat[, (dd$s1 + 1):(dd$s1 + dd$s2), drop = FALSE])
+    )
+  }
+
   list(
     efficiencies = theta_vec,
     lambdas = lambda_mat,
@@ -225,11 +251,11 @@ build_result = function(dd, theta_vec, lambda_mat, s_in_mat, s_out_mat, rts) {
     ),
     targets = list(
       inputs   = dd$X - t(s_in_mat),
-      outputs  = dd$Y_g + t(s_out_mat[, seq_len(dd$s1), drop = FALSE])
+      outputs  = targets_out
     ),
     returns = structure(rep(rts_label, dd$n), names = dd$dmu),
     model = "DEA",
-    orientation = attr(dd, "orientation") %||% "io",
+    orientation = rlang::`%||%`(attr(dd, "orientation"), "io"),
     dmu = dd$dmu
   )
 }
@@ -287,13 +313,14 @@ basic_DEA = function(data, inputs, outputs, ud_outputs = NULL,
     y_b = if (s2 > 0) dd$Y_b[, i] else NULL
     res = solve_radial_lp(X = dd$X, Y = dd$Y_g,
                           x0 = dd$X[, i], y0 = y_g,
-                          orientation = orientation, rts = rts)
+                          orientation = orientation, rts = rts,
+                          Y_b = dd$Y_b, y0_b = y_b)
     if (!is.na(res$theta)) {
       theta_vec[i] = res$theta
       lambda_mat[i, ] = res$lambda
       s_in_mat[i, ] = res$s_in
       s_out_mat[i, seq_len(s1)] = res$s_out
-      if (s2 > 0) s_out_mat[i, (s1 + 1):(s1 + s2)] = rep(NA_real_, s2)
+      if (s2 > 0) s_out_mat[i, (s1 + 1):(s1 + s2)] = res$s_b
     }
   }
 
@@ -318,6 +345,8 @@ super_DEA = function(data, inputs, outputs,
 
   dd = extract_dea_data(data, inputs, outputs, ud_outputs = NULL)
   n = dd$n; m = dd$m; s1 = dd$s1
+  if (n <= 1)
+    warning("super_DEA needs at least 2 DMUs; the result is NA.", call. = FALSE)
 
   theta_vec = setNames(rep(NA_real_, n), dd$dmu)
   lambda_mat = matrix(NA_real_, n, n,
@@ -359,6 +388,9 @@ super_DEA = function(data, inputs, outputs,
 #' @export
 basic_SBM = function(data, inputs, outputs, ud_outputs = NULL,
                      orientation = "io", rts = "vrs") {
+  if (!identical(orientation, "io"))
+    stop("SBM models are non-oriented; `orientation` is not applicable.",
+         call. = FALSE)
   rts = match.arg(rts, c("vrs", "crs"))
 
   dd = extract_dea_data(data, inputs, outputs, ud_outputs)
@@ -392,7 +424,94 @@ basic_SBM = function(data, inputs, outputs, ud_outputs = NULL,
   build_result(dd, rho_vec, lambda_mat, s_in_mat, s_out_mat, rts)
 }
 
-#' @describeIn DEA Super-efficiency SBM (self excluded, no undesirable outputs)
+#' Solve super-efficiency SBM LP (Tone 2002, Charnes-Cooper transformed)
+#' for a single DMU with the DMU excluded from the reference set.
+#'
+#' LP: min tau = t + (1/m) sum_i S_i^- / x_i0
+#'     s.t. t x_i0 + S_i^- >= sum_{j!=0} lambda_j x_ij      (inputs)
+#'          t y_r0 - S_r^+ <= sum_{j!=0} lambda_j y_rj      (desirable outputs)
+#'          t - (1/s1) sum_r S_r^+ / y_r0 = 1               (normalization)
+#'          VRS: sum_{j!=0} lambda_j = 1
+#'
+#' Returns tau >= 1 for SBM-efficient DMUs and exactly 1 for SBM-inefficient
+#' ones (a dominating combination always exists in the remaining set).
+#'
+#' @param X Input matrix (m \eqn{\times} n_ref), DMU0 column already removed
+#' @param Y_g Desirable output matrix (s1 \eqn{\times} n_ref), DMU0 removed
+#' @param x0 Target DMU input vector (length m)
+#' @param y0_g Target DMU desirable output vector (length s1)
+#' @param rts "crs" or "vrs"
+#' @return list(rho, s_in, s_g, lambda) with slacks/lambda in original units
+#' @noRd
+solve_super_sbm_lp = function(X, Y_g, x0, y0_g, rts = "vrs") {
+  n_ref = ncol(X)
+  m = length(x0)
+  s1 = length(y0_g)
+
+  nvar = n_ref + m + s1 + 1
+  ii_lambda = 1:n_ref
+  ii_sin = n_ref + (1:m)
+  ii_sout = n_ref + m + (1:s1)
+  ii_t = nvar
+
+  lp = lpSolveAPI::make.lp(0, nvar)
+
+  obj = numeric(nvar)
+  obj[ii_sin] = 1 / (m * x0)
+  obj[ii_t] = 1
+  lpSolveAPI::set.objfn(lp, obj)
+
+  # Normalization: t - (1/s1) * sum_r S_r^+ / y_r0 = 1
+  row = numeric(nvar)
+  row[ii_sout] = -1 / (s1 * y0_g)
+  row[ii_t] = 1
+  lpSolveAPI::add.constraint(lp, row, "=", 1)
+
+  # Input rows: t * x_i0 + S_i^- >= sum_j lambda_j x_ij
+  for (k in seq_len(m)) {
+    row = numeric(nvar)
+    row[ii_lambda] = -X[k, ]
+    row[ii_sin[k]] = 1
+    row[ii_t] = x0[k]
+    lpSolveAPI::add.constraint(lp, row, ">=", 0)
+  }
+
+  # Desirable output rows: t * y_r0 - S_r^+ <= sum_j lambda_j y_rj
+  for (k in seq_len(s1)) {
+    row = numeric(nvar)
+    row[ii_lambda] = Y_g[k, ]
+    row[ii_sout[k]] = -1
+    row[ii_t] = -y0_g[k]
+    lpSolveAPI::add.constraint(lp, row, ">=", 0)
+  }
+
+  # VRS: sum lambda = 1
+  if (rts == "vrs") {
+    row = numeric(nvar)
+    row[ii_lambda] = 1
+    lpSolveAPI::add.constraint(lp, row, "=", 1)
+  }
+
+  lpSolveAPI::set.bounds(lp, lower = rep(0, nvar))
+
+  status = lpSolveAPI::solve.lpExtPtr(lp)
+  if (status != 0) {
+    return(list(rho = NA_real_, s_in = rep(NA_real_, m),
+                s_g = rep(NA_real_, s1), lambda = rep(NA_real_, n_ref)))
+  }
+
+  sol = lpSolveAPI::get.variables(lp)
+  t_val = sol[ii_t]
+  rho = lpSolveAPI::get.objective(lp)
+
+  list(rho = rho,
+       s_in = sol[ii_sin] / t_val,
+       s_g = sol[ii_sout] / t_val,
+       lambda = sol[ii_lambda] / t_val)
+}
+
+#' @describeIn DEA Super-efficiency SBM (Tone 2002; self excluded, no
+#'   undesirable outputs)
 #' @examples
 #' df = data.frame(
 #'   DMU = paste0("DMU", 1:7),
@@ -404,10 +523,15 @@ basic_SBM = function(data, inputs, outputs, ud_outputs = NULL,
 #' @export
 super_SBM = function(data, inputs, outputs,
                      orientation = "io", rts = "vrs") {
+  if (!identical(orientation, "io"))
+    stop("SBM models are non-oriented; `orientation` is not applicable.",
+         call. = FALSE)
   rts = match.arg(rts, c("vrs", "crs"))
 
   dd = extract_dea_data(data, inputs, outputs, ud_outputs = NULL)
   n = dd$n; m = dd$m; s1 = dd$s1
+  if (n <= 1)
+    warning("super_SBM needs at least 2 DMUs; the result is NA.", call. = FALSE)
 
   rho_vec = setNames(rep(NA_real_, n), dd$dmu)
   lambda_mat = matrix(NA_real_, n, n,
@@ -420,11 +544,10 @@ super_SBM = function(data, inputs, outputs,
   for (i in seq_len(n)) {
     if (n <= 1) next
     idx_ref = setdiff(seq_len(n), i)
-    res = solve_sbm_lp(
+    res = solve_super_sbm_lp(
       X = dd$X[, idx_ref, drop = FALSE],
       Y_g = dd$Y_g[, idx_ref, drop = FALSE],
-      Y_b = NULL,
-      x0 = dd$X[, i], y0_g = dd$Y_g[, i], y0_b = NULL,
+      x0 = dd$X[, i], y0_g = dd$Y_g[, i],
       rts = rts)
     if (!is.na(res$rho)) {
       rho_vec[i] = res$rho
@@ -444,8 +567,19 @@ super_SBM = function(data, inputs, outputs,
 
 #' @describeIn DEA Malmquist productivity index
 #' @param period Column name or index identifying the time period variable.
-#' @param type1 `"cont"` (contemporaneous), `"seq"` (sequential), or `"glob"` (global, default).
-#' @param type2 `"fgnz"` (Färe-Grosskopf-Norris-Zhang) or `"rd"` (Ray-Desli, default).
+#'   Numeric periods are sorted numerically; character periods that all parse
+#'   as numbers are sorted numerically as well.
+#' @param type1 `"cont"` (contemporaneous), `"seq"` (sequential), or `"glob"`
+#'   (global, default). With `"seq"`, the old-technology term of the
+#'   technical-change component at transition t -> t+1 is evaluated against
+#'   the pooled frontier of periods 1..t (sequential frontier); no scale
+#'   decomposition is defined (`sech = NA`).
+#' @param type2 `"fgnz"` (Färe-Grosskopf-Norris-Zhang) or `"rd"` (default).
+#'   `"rd"` reports a scale-efficiency component in the style of the **deaR**
+#'   implementation (closest to Ray-Desli 1997: the scale term is measured at
+#'   the period-t bundle relative to the mixed-period bundle); it is not the
+#'   symmetric Ray-Desli decomposition, and `mi` is identical to the `"fgnz"`
+#'   value.
 #' @examples
 #' panel = data.frame(
 #'   DMU    = rep(paste0("DMU", 1:5), 3),
@@ -468,9 +602,27 @@ malmquist = function(data, period, inputs, outputs,
   if (ncol(data) < 4)       stop("data must have >= 4 columns.")
 
   dmu_vec    = data[[1]]
-  period_vec = data[[period]]
+  period_raw = data[[period]]
   X_all = t(as.matrix(data[, inputs,  drop = FALSE]))
   Y_all = t(as.matrix(data[, outputs, drop = FALSE]))
+  if (anyNA(X_all) || anyNA(Y_all))
+    stop("Input/output columns must not contain NA values.", call. = FALSE)
+  if (any(X_all <= 0) || any(Y_all <= 0))
+    stop("DEA requires strictly positive inputs and outputs.", call. = FALSE)
+
+  # Sort periods numerically when the column is character but numeric-looking
+  # (lexicographic sorting would put "10" before "2" and invert the index).
+  if (is.factor(period_raw)) period_raw = as.character(period_raw)
+  if (is.character(period_raw)) {
+    pv = suppressWarnings(as.numeric(period_raw))
+    if (anyNA(pv)) {
+      warning("period values are non-numeric; sorting lexicographically.",
+              call. = FALSE)
+    } else {
+      period_raw = pv
+    }
+  }
+  period_vec = period_raw
 
   periods = sort(unique(period_vec))
   nt = length(periods)
@@ -478,6 +630,19 @@ malmquist = function(data, period, inputs, outputs,
 
   dmu0 = dmu_vec[period_vec == periods[1]]
   nd   = length(dmu0)
+
+  # Panel hygiene warnings
+  for (p in periods) {
+    if (anyDuplicated(dmu_vec[period_vec == p]))
+      warning("Duplicate DMU names in period ", p, "; first occurrence used.",
+              call. = FALSE)
+  }
+  missing_dmu = sum(vapply(periods[-1], function(p) {
+    sum(!dmu0 %in% dmu_vec[period_vec == p])
+  }, numeric(1)))
+  if (missing_dmu > 0)
+    warning(missing_dmu, " DMU-period combination(s) missing; ",
+            "affected indices are NA.", call. = FALSE)
 
   # ---- 1. Contemporaneous Shephard distances ----
   D_crs = matrix(NA_real_, nt, nd, dimnames = list(periods, dmu0))
@@ -544,6 +709,29 @@ malmquist = function(data, period, inputs, outputs,
     }
   }
 
+  # ---- 3b. Sequential distances (type1 = "seq") ----
+  # Reference technology at transition t -> t+1 pools all DMUs of periods
+  # 1..t (Grosskopf-style sequential frontier). Only the "old technology"
+  # side of the technical-change term becomes cumulative; the contemporaneous
+  # terms stay period-specific, so no self-reference occurs.
+  D12cum_crs = matrix(NA_real_, nt - 1, nd, dimnames = list(periods[-1], dmu0))
+  if (type1 == "seq") {
+    for (t_idx in seq_len(nt - 1)) {
+      idx_cum = which(period_vec %in% periods[seq_len(t_idx)])
+      X_cum = X_all[, idx_cum, drop = FALSE]
+      Y_cum = Y_all[, idx_cum, drop = FALSE]
+      idx_t1 = which(period_vec == periods[t_idx + 1])
+      dmu_t1 = dmu_vec[idx_t1]
+      for (j in seq_len(nd)) {
+        ii_t1 = match(dmu0[j], dmu_t1)
+        if (is.na(ii_t1)) next
+        D12cum_crs[t_idx, j] = dist_shephard(
+          X_all[, idx_t1[ii_t1]], Y_all[, idx_t1[ii_t1]],
+          X_cum, Y_cum, orientation, "crs")
+      }
+    }
+  }
+
   # ---- 4. Convert Shephard → Farrell ----
   # deaR uses Farrell efficiencies internally to compute indices.
   # Input: Farrell = θ. Output: Farrell = 1/φ.
@@ -553,6 +741,7 @@ malmquist = function(data, period, inputs, outputs,
   Eg   = to_farrell(Dg_crs);   Egv  = to_farrell(Dg_vrs)
   E12  = to_farrell(D12_crs);  Ev12 = to_farrell(D12_vrs)
   E21  = to_farrell(D21_crs)
+  E12cum = to_farrell(D12cum_crs)
 
   # ---- 5. Compute indices (deaR formulas) ----
   out = vector("list", (nt - 1) * nd)
@@ -584,8 +773,23 @@ malmquist = function(data, period, inputs, outputs,
           ec_i = pech_i * sech_i
         }
 
+      } else if (type1 == "seq") {
+        # Sequential: TC uses the cumulative frontier of periods 1..t for the
+        # old-technology evaluation; EC stays contemporaneous. No scale
+        # decomposition is defined for the sequential index.
+        tc_i = (E12cum[t_idx, j] / E[t_idx + 1, j]) *
+               (E[t_idx, j] / E21[t_idx, j])
+        ec_i = E[t_idx + 1, j] / E[t_idx, j]
+        mi_i = ec_i * tc_i
+        if (rts == "crs") {
+          pech_i = NA_real_; sech_i = NA_real_
+        } else {
+          pech_i = Ev[t_idx + 1, j] / Ev[t_idx, j]  # reference only
+          sech_i = NA_real_
+        }
+
       } else {
-        # cont / seq: Färe et al. (1994) geometric mean
+        # cont: Färe et al. (1994) geometric mean
         tc_i = sqrt((E12[t_idx, j] / E[t_idx + 1, j]) *
                     (E[t_idx, j]    / E21[t_idx, j]))
         if (rts == "crs") {

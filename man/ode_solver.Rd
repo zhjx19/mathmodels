@@ -10,13 +10,17 @@ ode_solver(init, times, equations, params = NULL, method = "lsoda", ...)
 \item{init}{A named numeric vector of initial values for all state
 variables.}
 
-\item{times}{A numeric vector of output times.}
+\item{times}{A strictly increasing numeric vector of output times.
+Note that \code{init} is the state AT \code{times[1]} (deSolve
+convention) — it does not have to be time 0.}
 
 \item{equations}{A named character vector; names are variable names, values
 are derivative expressions (e.g. \code{c(S = "-beta*S*I")}).}
 
 \item{params}{A named numeric vector or list of parameters referenced
-inside \code{equations}.}
+inside \code{equations}. Parameters named \code{t} or sharing a name
+with a state variable are shadowed inside the equations (a warning is
+issued).}
 
 \item{method}{Integration method passed to \code{deSolve::ode}.
 Default \code{"lsoda"}.}
@@ -42,7 +46,7 @@ collection.
 }
 \examples{
 # Built-in wrapper (one-liner)
-sir = model_sir(
+sir = ode_sir(
   init   = c(S = 990, I = 10),
   params = c(beta = 0.002, gamma = 0.1),
   times  = seq(0, 50, by = 0.1)

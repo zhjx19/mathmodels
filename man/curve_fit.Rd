@@ -29,7 +29,11 @@ Each curve is transformed to a linear form:
 \item \code{"hyperbolic"}: fits \code{y ~ 1/x}, gives \code{y = a + b / x}
 }
 
-Fit statistics are computed on the original scale.
+Fit statistics (\code{r.squared}, \code{adj.r.squared}, \code{sigma}, \code{AIC}, \code{BIC}) are all
+computed on the original (data) scale. \code{AIC}/\code{BIC} use the Gaussian
+maximum-likelihood log-likelihood on the original scale, with
+\eqn{\sigma^2 = SSR/n} and \eqn{k} = number of regression parameters + 1
+(for \verb{\\sigma}), applied uniformly to all curve types.
 
 \strong{Note on log-transform bias}: For \code{"exp"} and \code{"power"} types,
 fitted values are back-transformed directly (\code{a * exp(b * x)} or

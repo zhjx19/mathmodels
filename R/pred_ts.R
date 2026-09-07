@@ -435,6 +435,14 @@ ts_transform = function(x,
   x = validate_ts_df(x, require_complete = TRUE, require_no_na = TRUE)
   freq = attr(x, "frequency")
 
+  if (seasonal_diff > 0L && (freq < 1 || freq != floor(freq))) {
+    stop("frequency must be a positive integer for seasonal differencing.",
+         call. = FALSE)
+  }
+  if (diff + seasonal_diff * freq + 1L > nrow(x)) {
+    stop("series too short for the requested differencing order.", call. = FALSE)
+  }
+
   values = x$value
   steps = character(0)
   lambda_used = NA_real_
@@ -501,6 +509,14 @@ ts_transform = function(x,
 #'
 #' @param forecast_tbl Forecast tibble from `ts_forecast()`.
 #' @param params The `params` element from `ts_transform()`.
+#' @param bias_adj Logical; if `TRUE` (default), the point-forecast column is
+#'   back-transformed with a bias adjustment so that forecasts on the
+#'   log/Box-Cox scale represent means rather than medians. The forecast
+#'   variance required by the adjustment is derived per horizon from the widest
+#'   stored prediction interval, so it applies only to genuine forecast rows:
+#'   when the tibble has no `lo_*`/`hi_*` interval columns the plain transform
+#'   is used (historical/fitted values round-trip unchanged). Interval columns
+#'   are quantiles and are always transformed with the plain transform.
 #'
 #' @return The forecast tibble with numeric forecast columns restored.
 #' @examples
@@ -509,7 +525,7 @@ ts_transform = function(x,
 #' fc = tibble::tibble(step = 1:2, forecast = log(c(500, 600)))
 #' ts_back_transform(fc, tr$params)
 #' @export
-ts_back_transform = function(forecast_tbl, params) {
+ts_back_transform = function(forecast_tbl, params, bias_adj = TRUE) {
   tbl = forecast_tbl
   num_cols = setdiff(names(tbl)[vapply(tbl, is.numeric, logical(1))], "step")
 
@@ -536,10 +552,36 @@ ts_back_transform = function(forecast_tbl, params) {
     }
   }
 
+  # Per-horizon forecast variance derived from the widest stored interval
+  # level; only available when interval columns are present (forecast rows).
+  fvar = NULL
+  if (bias_adj && "forecast" %in% names(tbl)) {
+    lo_cols = grep("^lo_", names(tbl), value = TRUE)
+    if (length(lo_cols) > 0) {
+      lo_col = paste0("lo_", max(as.numeric(sub("^lo_", "", lo_cols))))
+      hi_col = paste0("hi_", sub("^lo_", "", lo_col))
+      if (hi_col %in% names(tbl)) {
+        z = stats::qnorm(0.5 + as.numeric(sub("^lo_", "", lo_col)) / 200)
+        fvar = ((tbl[[hi_col]] - tbl[[lo_col]]) / (2 * z))^2
+        fvar[!is.finite(fvar)] = 0
+      }
+    }
+  }
+
   if (params$method == "log") {
-    for (col in num_cols) tbl[[col]] = exp(tbl[[col]])
+    for (col in num_cols) {
+      adj = if (!is.null(fvar) && col == "forecast") fvar / 2 else 0
+      tbl[[col]] = exp(tbl[[col]] + adj)
+    }
   } else if (params$method == "boxcox") {
-    for (col in num_cols) tbl[[col]] = forecast::InvBoxCox(tbl[[col]], params$lambda)
+    for (col in num_cols) {
+      if (!is.null(fvar) && col == "forecast") {
+        tbl[[col]] = forecast::InvBoxCox(tbl[[col]], lambda = params$lambda,
+                                         biasadj = TRUE, fvar = fvar)
+      } else {
+        tbl[[col]] = forecast::InvBoxCox(tbl[[col]], params$lambda)
+      }
+    }
   }
 
   tbl
@@ -591,12 +633,28 @@ ts_ets = function(x, model = "ZZZ", ...) {
     rep(NA_real_, length(coef_vec))
   }
 
-  lb = stats::Box.test(
-    fit$residuals,
-    lag = min(20, floor(nrow(x) / 5)),
-    type = "Ljung-Box",
-    fitdf = length(coef_vec)
-  )
+  # Ljung-Box: count only ARMA terms (p + q + P + Q, from fit$arma =
+  # c(p, q, P, Q, season, d, D)); intercept and xreg coefficients must not
+  # inflate fitdf. If the usable lag does not exceed fitdf, report NA values
+  # with a note instead of letting Box.test produce NaN.
+  fitdf = sum(fit$arma[1:4])
+  lag = max(1L, min(20L, floor(nrow(x) / 5)))
+
+  if (lag > fitdf) {
+    lb = stats::Box.test(fit$residuals, lag = lag, type = "Ljung-Box",
+                         fitdf = fitdf)
+    lb_stat = unname(lb$statistic)
+    lb_p = lb$p.value
+    lb_conclusion = ifelse(lb_p > 0.05,
+                           "No autocorrelation detected",
+                           "Autocorrelation detected")
+  } else {
+    lb_stat = NA_real_
+    lb_p = NA_real_
+    lb_conclusion = paste0("Not computed: requested lag (", lag,
+                           ") is not greater than the number of ARMA terms (",
+                           fitdf, ")")
+  }
 
   list(
     model_info = tibble::tibble(
@@ -615,12 +673,10 @@ ts_ets = function(x, model = "ZZZ", ...) {
     fitted = .ts_tidy_fitted(x, fit$fitted, fit$residuals),
     diagnostics = tibble::tibble(
       test = "Ljung-Box",
-      lag = unname(lb$parameter),
-      statistic = round(unname(lb$statistic), 4),
-      p_value = round(lb$p.value, 4),
-      conclusion = ifelse(lb$p.value > 0.05,
-                          "No autocorrelation detected",
-                          "Autocorrelation detected")
+      lag = lag,
+      statistic = round(lb_stat, 4),
+      p_value = round(lb_p, 4),
+      conclusion = lb_conclusion
     ),
     model = fit,
     input = x
@@ -753,6 +809,9 @@ ts_forecast = function(model_result, h = 12, level = c(80, 95),
   if (!inherits(model_result$model, c("ets", "ARIMA", "Arima"))) {
     stop("model_result must be returned by ts_ets(), ts_sarima(), or ts_arimax().",
          call. = FALSE)
+  }
+  if (anyDuplicated(level)) {
+    stop("level must not contain duplicated values.", call. = FALSE)
   }
 
   is_arimax = inherits(model_result$model, "Arima") &&

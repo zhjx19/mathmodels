@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">mathmodels</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.11</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.12</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -78,8 +78,10 @@
 
 
 <dt id="arg-params">params<a class="anchor" aria-label="anchor" href="#arg-params"></a></dt>
-<dd><p>Numeric vector, parameters defining the membership function:</p><ul><li><p>For <code>tri_mf</code>: <code>c(a, b, c)</code>, where <code>a &lt;= b &lt;= c</code> (left base, peak, right base).</p></li>
-<li><p>For <code>trap_mf</code>: <code>c(a, b, c, d)</code>, where <code>a &lt;= b &lt;= c &lt;= d</code> (left base, left top, right top, right base).</p></li>
+<dd><p>Numeric vector, parameters defining the membership function:</p><ul><li><p>For <code>tri_mf</code>: <code>c(a, b, c)</code>, where <code>a &lt; b &lt; c</code> (left base, peak, right base).</p></li>
+<li><p>For <code>trap_mf</code>: <code>c(a, b, c, d)</code>, where <code>a &lt; b &lt;= c &lt; d</code> (left base, left top,
+right top, right base); one-sided shoulders are supported with
+<code>a = b = -Inf</code> (no rise) or <code>c = d = Inf</code> (no fall).</p></li>
 <li><p>For <code>gauss_mf</code>: <code>c(sigma, c)</code>, where <code>sigma &gt; 0</code> (spread, center).</p></li>
 <li><p>For <code>gbell_mf</code>: <code>c(a, b, c)</code>, where <code>a &gt; 0</code>, <code>b &gt; 0</code> (width, shape, center).</p></li>
 <li><p>For <code>gauss2mf</code>: <code>c(s1, c1, s2, c2)</code>, where <code>s1 &gt; 0</code>, <code>s2 &gt; 0</code> (left spread, left center, right spread, right center).</p></li>
@@ -87,7 +89,7 @@
 <li><p>For <code>dsigmoid_mf</code>: <code>c(a1, c1, a2, c2)</code>, where <code>a1 &gt; 0</code>, <code>a2 &gt; 0</code> (slopes and inflection points for two sigmoids).</p></li>
 <li><p>For <code>psigmoid_mf</code>: <code>c(a1, c1, a2, c2)</code>, where <code>a1 &gt; 0</code>, <code>a2 &gt; 0</code> (slopes and inflection points for two sigmoids).</p></li>
 <li><p>For <code>z_mf</code>: <code>c(a, b)</code>, where <code>a &lt; b</code> (left base, right base).</p></li>
-<li><p>For <code>pi_mf</code>: <code>c(a, b, c, d)</code>, where <code>a &lt; b &lt; c &lt; d</code> (left base, left shoulder, right shoulder, right base).</p></li>
+<li><p>For <code>pi_mf</code>: <code>c(a, b, c, d)</code>, where <code>a &lt; b &lt;= c &lt; d</code> (left base, left shoulder, right shoulder, right base).</p></li>
 <li><p>For <code>s_mf</code>: <code>c(a, b)</code>, where <code>a &lt; b</code> (left base, right base).</p></li>
 </ul></dd>
 

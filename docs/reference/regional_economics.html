@@ -13,7 +13,7 @@ spatial concentration and market structure."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">mathmodels</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.11</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.12</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -124,8 +124,10 @@ optionally grouped by <code>.by</code>.</p></dd>
 <dl><dt>LQ</dt>
 <dd><p>Calculates the Location Quotient for multiple columns with optional grouping.
 The LQ measures the relative concentration of an industry in a region compared to a national benchmark.
-The function assumes the first row of <code>data</code> contains national totals, with the first two columns
-specifying the region and total, and the remaining columns used for LQ calculation.</p></dd>
+The data must be arranged so that within each <code>region</code> value (and within each <code>.by</code> group)
+the FIRST row is the national/total benchmark row, which is dropped by the function;
+every remaining row is treated as a region. Rows must be pre-arranged accordingly
+(e.g., with <code><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">dplyr::arrange()</a></code>), otherwise the results are silently wrong.</p></dd>
 
 <dt>HHI</dt>
 <dd><p>Calculates the Herfindahl-Hirschman Index, a measure of market concentration based on
@@ -134,7 +136,9 @@ the squared sum of market shares. If <code>scaled = TRUE</code>, the HHI is norm
 <dt>EG</dt>
 <dd><p>Calculates the Ellison-Glaeser Index, which measures the geographic concentration of an industry
 while controlling for firm size distribution and random distribution effects. It requires data on regions,
-industries, and an indicator (e.g., employment or output).</p></dd>
+industries, and an indicator (e.g., employment or output). The data must contain one row per
+firm/establishment (multiple rows per region-industry combination); passing region-aggregated data
+(one row per region-industry) silently produces wrong EG values.</p></dd>
 
 
 </dl></div>

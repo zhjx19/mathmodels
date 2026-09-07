@@ -32,6 +32,12 @@ interp_poly(x, y, xout, degree = 3)
 A tibble with columns `x` and `y`. The attribute `method` is set to
 `"poly"`.
 
+## Details
+
+The raw polynomial basis is exact when `degree = length(x) - 1`, but it
+becomes numerically ill-conditioned for high degrees or large `x`
+values.
+
 ## Examples
 
 ``` r

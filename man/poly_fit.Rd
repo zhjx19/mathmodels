@@ -16,7 +16,8 @@ poly_fit(x, y, degree = 1)
 \value{
 A named list with elements: \code{model} (lm object), \code{coefficient}
 (tibble with estimates, SE, t-value, p-value, 95\% CI), \code{model_info}
-(tibble with r.squared, adj.r.squared, AIC, BIC, sigma), \code{residuals}
+(tibble with r.squared, adj.r.squared, AIC, BIC, sigma, all computed on
+the original (data) scale), \code{residuals}
 (tibble of .observed, .fitted, .residual), \code{formula} (character),
 \code{type} (character), and \code{input} (tibble of x, y).
 }

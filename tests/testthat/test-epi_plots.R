@@ -1,12 +1,12 @@
 # 传染病可视化与指标函数单元测试 -------------------------------------------
 
-sir = model_sir(
+sir = ode_sir(
   init   = c(S = 990, I = 10),
   params = c(beta = 0.002, gamma = 0.1),
   times  = seq(0, 50, by = 0.5)
 )
 
-seir = model_seir(
+seir = ode_seir(
   init   = c(S = 980, E = 10, I = 10),
   params = c(beta = 0.3, alpha = 0.2, gamma = 0.1),
   times  = seq(0, 30, by = 0.5)
@@ -126,15 +126,17 @@ test_that("plot_phase_si rejects data without S or I", {
 
 # =========================== plot_Rt_estimate ============================
 
-test_that("plot_Rt_estimate returns ggplot (mechanistic)", {
+test_that("plot_Rt_estimate returns ggplot", {
   p = plot_Rt_estimate(sir, params = c(beta = 0.002, gamma = 0.1))
   expect_s3_class(p, "ggplot")
 })
 
-test_that("plot_Rt_estimate returns ggplot (normalized)", {
-  p = plot_Rt_estimate(sir, params = c(beta = 0.002, gamma = 0.1),
-                       method = "normalized")
-  expect_s3_class(p, "ggplot")
+test_that("plot_Rt_estimate rejects the removed method argument", {
+  expect_error(
+    plot_Rt_estimate(sir, params = c(beta = 0.002, gamma = 0.1),
+                     method = "normalized"),
+    "unused argument"
+  )
 })
 
 test_that("plot_Rt_estimate rejects missing params", {

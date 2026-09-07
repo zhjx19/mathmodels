@@ -15,7 +15,7 @@ verhulst applies the Verhulst model for logistic growth."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">mathmodels</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.11</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.12</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -84,8 +84,14 @@ verhulst applies the Verhulst model for logistic growth."></head><body>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>For <code>GM11</code>: List with fitted values (<code>fitted</code>), next prediction (<code>pnext</code>), prediction function (<code>f</code>), matrix (<code>mat</code>), parameters (<code>u</code>), level ratios (<code>lambda</code>), and range (<code>rng</code>).
-For <code>GM1N</code>: List with fitted values (<code>fitted</code>), posterior variance ratio (<code>C</code>), small error probability (<code>P</code>), and prediction function (<code>f</code>).
+For <code>GM1N</code>: List with fitted values (<code>fitted</code>), next prediction (<code>pred</code>, <code>NULL</code> unless <code>new_data</code> is supplied), posterior variance ratio (<code>C</code>), small error probability (<code>P</code>), and prediction function (<code>f</code>).
 For <code>DGM21</code>, <code>verhulst</code>: List with fitted values (<code>fitted</code>), next prediction (<code>pnext</code>), prediction function (<code>f</code>), matrix (<code>mat</code>), and parameters (<code>u</code>).</p>
+    </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>For <code>GM11</code>, the returned prediction function <code>f(k)</code> implements the inverse
+accumulated generating operation (IAGO) formula and is valid for <code>k &gt;= 2</code>;
+<code>fitted[1]</code> always equals the first original value <code>X[1]</code>.</p>
     </div>
 
     <div class="section level2">
