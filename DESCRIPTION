@@ -16,6 +16,7 @@ Imports:
     flextable,
     lpSolveAPI,
     minpack.lm,
+    nnet,
     dplyr (>= 1.1.0),
     forecast,
     ggplot2 (>= 3.5.0),
@@ -35,6 +36,7 @@ Depends:
     R (>= 4.1)
 Suggests:
     knitr,
+    mice,
     rmarkdown,
     scales,
     testthat (>= 3.0.0),

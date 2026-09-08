@@ -25,12 +25,15 @@
 }
 
 # Initial fill for the chain start: column mean (numeric) / mode
-# (categorical). Character columns are coerced to factor in the working
-# copy the chain iterates on.
+# (categorical). Character and logical columns are coerced to factor
+# in the working copy the chain iterates on (logicals must become
+# factors before the logreg path's unclass() indexing).
 .fcs_init = function(data, col_nms) {
   out = data
   for (nm in col_nms) {
-    if (is.character(out[[nm]])) out[[nm]] = factor(out[[nm]])
+    if (is.character(out[[nm]]) || is.logical(out[[nm]])) {
+      out[[nm]] = factor(out[[nm]])
+    }
   }
   for (nm in col_nms) {
     x = out[[nm]]
@@ -182,7 +185,11 @@
   if (is.null(fit) || anyNA(as.numeric(stats::coef(fit)))) {
     return(df_cur[[nm]])
   }
-  beta_hat = as.numeric(stats::coef(fit))  # (L-1) x p, column-major
+  # coef(fit) is (L-1) x p with rows = levels; unwinding it directly
+  # (as.numeric(coef)) is PREDICTOR-major, but stats::vcov(fit) orders
+  # coefficients LEVEL-major. Stack beta_hat level-major (via t()) so
+  # each coefficient's perturbation draws from its own variance slot.
+  beta_hat = as.numeric(t(stats::coef(fit)))  # level-major, matches vcov
   V = tryCatch(stats::vcov(fit), error = function(e) NULL)
   beta = if (is.null(V)) {
     .warn_singular(rng_warn, "polyreg", nm)
@@ -198,7 +205,10 @@
     )
   }
   Xna = des$X[des$na_idx, , drop = FALSE]
-  B = matrix(beta, nrow = length(lvs) - 1L, ncol = ncol(Xna))
+  # beta is level-major: matrix(beta, nrow = p) fills predictor-major
+  # (p x (L-1)) from it, so t() gives (L-1) x p with rows = levels in
+  # vcov order; cbind(0, .) puts the baseline level's eta at 0.
+  B = t(matrix(beta, nrow = ncol(Xna)))
   eta = cbind(0, Xna %*% t(B))          # baseline level gets eta = 0
   mx = apply(eta, 1, max)               # numerically stable softmax
   prob = exp(eta - mx)
@@ -210,4 +220,155 @@
   x = df_cur[[nm]]
   x[des$na_idx] = fill
   x
+}
+
+# ----------------------------------------------------------------------------
+# Exported interface
+# ----------------------------------------------------------------------------
+
+#' Multiple Imputation via FCS
+#'
+#' Generates `m` completed data sets by fully conditional specification
+#' (chained equations). Numeric columns use proper Bayesian linear-model
+#' draws with predicted-mean matching (`"pmm"`, default) or normal noise
+#' (`"norm"`); binary and polytomous columns use parameter-perturbed
+#' logistic (`"logreg"`) / multinomial (`"polyreg"`) models — approximately
+#' proper, following the same spirit as `mice`.
+#'
+#' @param data A data frame.
+#' @param .cols <[`tidy-select`][tidyselect::language]> Columns to impute;
+#'   defaults to all columns. Columns without missing values are left as is.
+#' @param m Number of imputations (at least 2).
+#' @param maxit Number of chain iterations per imputation.
+#' @param seed Random seed for reproducibility.
+#' @param methods Optional named vector/list overriding the automatic
+#'   method choice per column, e.g. `methods = c(x = "norm")`.
+#'
+#' @return An object of class `mi_impute`: a list of `m` completed data
+#'   frames. Attributes: `methods`, `iterations`, `trace` (tibble with
+#'   imputation / iteration / variable / mean / sd of the imputed cells;
+#'   mean/sd are NA for categorical columns), `seed`, `n_imputed`.
+#'
+#' @details
+#' Logical and character columns are treated as categorical and come back
+#' as factors. Convergence can be inspected via the `trace` attribute
+#' (plotting is planned for a later version).
+#'
+#' @examples
+#' set.seed(1)
+#' d = data.frame(x = rnorm(30), z = rnorm(30),
+#'                g = factor(sample(c("a", "b"), 30, replace = TRUE)))
+#' d$x[c(2, 8)] = NA
+#' d$g[5] = NA
+#' imps = impute_multiple(d, m = 3, maxit = 3, seed = 11)
+#' imps
+#' @export
+impute_multiple = function(data, .cols = dplyr::everything(),
+                           m = 5, maxit = 5, seed = NULL, methods = NULL) {
+  .mv_frame(data)
+  if (!is.numeric(m) || length(m) != 1L || m < 2 || m != floor(m)) {
+    stop("m must be an integer >= 2.", call. = FALSE)
+  }
+  if (!is.numeric(maxit) || length(maxit) != 1L || maxit < 1 ||
+      maxit != floor(maxit)) {
+    stop("maxit must be an integer >= 1.", call. = FALSE)
+  }
+  if (!is.null(seed)) {
+    if (!is.numeric(seed) || length(seed) != 1L) {
+      stop("seed must be a single number.", call. = FALSE)
+    }
+    set.seed(seed)
+  }
+
+  cols_df = tryCatch(
+    dplyr::select(data, {{ .cols }}),
+    error = function(e) NULL
+  )
+  if (is.null(cols_df)) {
+    stop("`.cols` selected no existing column(s).", call. = FALSE)
+  }
+  col_nms = names(cols_df)
+  # only columns that actually need imputation
+  n_na_col = vapply(data[col_nms], \(x) sum(is.na(x)), integer(1))
+  col_nms = col_nms[n_na_col > 0]
+  if (length(col_nms) == 0L) {
+    res = unclass(rep(list(data), m))
+    class(res) = c("mi_impute", "list")
+    attr(res, "methods") = setNames(character(), character())
+    attr(res, "iterations") = 0L
+    attr(res, "trace") = tibble::tibble(
+      imputation = integer(), iteration = integer(),
+      variable = character(), mean = numeric(), sd = numeric()
+    )
+    attr(res, "seed") = seed
+    attr(res, "n_imputed") = setNames(integer(), character())
+    return(res)
+  }
+
+  # resolve methods: automatic per type, then user overrides
+  auto = .fcs_methods(data, col_nms)
+  if (!is.null(methods)) {
+    if (!is.list(methods)) methods = as.list(methods)
+    unknown = setdiff(unlist(methods, use.names = FALSE),
+                      c("pmm", "norm", "logreg", "polyreg"))
+    if (length(unknown) > 0) {
+      stop("unknown imputation method(s): ",
+           paste(unknown, collapse = ", "), ".", call. = FALSE)
+    }
+    for (nm in names(methods)) {
+      if (!(nm %in% col_nms)) {
+        stop("methods names a column that is not imputed: ", nm,
+             ".", call. = FALSE)
+      }
+      auto[[nm]] = methods[[nm]]
+    }
+  }
+
+  out_sets = vector("list", m)
+  trace_rows = vector("list", m * maxit * length(col_nms))
+  pos = 1L
+  for (mi in seq_len(m)) {
+    rng_warn = new.env(parent = emptyenv())
+    df_cur = .fcs_init(data, col_nms)
+    for (it in seq_len(maxit)) {
+      for (nm in col_nms) {
+        df_cur[[nm]] = .fcs_impute_col(df_cur, data, nm,
+                                       method = auto[[nm]], rng_warn)
+      }
+      for (nm in col_nms) {
+        vals = df_cur[[nm]][is.na(data[[nm]])]
+        trace_rows[[pos]] = tibble::tibble(
+          imputation = mi, iteration = it, variable = nm,
+          mean = if (is.numeric(vals)) mean(vals) else NA_real_,
+          sd = if (is.numeric(vals)) stats::sd(vals) else NA_real_
+        )
+        pos = pos + 1L
+      }
+    }
+    out_sets[[mi]] = df_cur
+  }
+  trace = dplyr::bind_rows(trace_rows)
+
+  res = out_sets
+  class(res) = c("mi_impute", "list")
+  attr(res, "methods") = auto
+  attr(res, "iterations") = maxit
+  attr(res, "trace") = trace
+  attr(res, "seed") = seed
+  attr(res, "n_imputed") = n_na_col[col_nms]
+  res
+}
+
+#' @export
+print.mi_impute = function(x, ...) {
+  m = length(x)
+  mth = attr(x, "methods")
+  cat("Multiple imputation (mi_impute):", m, "imputation(s) of",
+      length(mth), "column(s)\n")
+  if (length(mth) > 0) {
+    cat("  methods:",
+        paste(sprintf("%s=%s", names(mth), mth), collapse = ", "), "\n")
+  }
+  cat("  iterations:", attr(x, "iterations"), "\n")
+  invisible(x)
 }
