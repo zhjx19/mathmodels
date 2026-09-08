@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">mathmodels</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.12</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.13</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -38,6 +38,35 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.13" id="mathmodels-0013">mathmodels 0.0.13<a class="anchor" aria-label="anchor" href="#mathmodels-0013"></a></h2>
+<div class="section level3">
+<h3 id="statistical-inference-toolkit-new-0-0-13">Statistical inference toolkit (new)<a class="anchor" aria-label="anchor" href="#statistical-inference-toolkit-new-0-0-13"></a></h3>
+<ul><li>
+<strong>Hypothesis tests</strong> (<code>stat_infer.R</code>): tidy data frames in, tidy tibbles out (one row per test, <code>stat_infer</code> class with a labelled print).
+<ul><li>
+<code><a href="../reference/stat_t_test.html">stat_t_test()</a></code> / <code><a href="../reference/stat_wilcox_test.html">stat_wilcox_test()</a></code>: one-sample, two-sample (Welch or pooled), and paired tests with Cohen’s d / rank-biserial effects; Wilcoxon signed-rank and Mann-Whitney U as the nonparametric counterparts.</li>
+<li>
+<code><a href="../reference/stat_anova.html">stat_anova()</a></code> (multi-factor with interactions, partial eta-squared), <code><a href="../reference/stat_kruskal.html">stat_kruskal()</a></code> (epsilon-squared), <code><a href="../reference/stat_ancova.html">stat_ancova()</a></code> (with an optional parallel-slopes check), <code><a href="../reference/stat_cor.html">stat_cor()</a></code> (Pearson/Spearman/Kendall with p-adjustment), <code><a href="../reference/stat_chisq.html">stat_chisq()</a></code> (Cramer’s V, low-expected-frequency warning, Fisher exact option), <code><a href="../reference/stat_normality.html">stat_normality()</a></code> (Shapiro-Wilk plus skewness/kurtosis), <code><a href="../reference/stat_hov_test.html">stat_hov_test()</a></code> (Levene/Bartlett/F).</li>
+<li>All tests support <code>.by</code> slice grouping (repeat the test within each slice) and multi-column loops with <code>p_adjust</code>.</li>
+<li>
+<code><a href="../reference/stat_describe.html">stat_describe()</a></code>: grouped descriptive statistics.</li>
+</ul></li>
+<li>
+<strong>Generic frameworks</strong>: <code><a href="../reference/stat_bootstrap.html">stat_bootstrap()</a></code> built on <code><a href="https://rdrr.io/pkg/boot/man/boot.html" class="external-link">boot::boot()</a></code> / <code><a href="https://rdrr.io/pkg/boot/man/boot.ci.html" class="external-link">boot::boot.ci()</a></code> (BCa / percentile / basic CIs, parallel support) and <code><a href="../reference/stat_perm_test.html">stat_perm_test()</a></code> (label / sign-flip / shuffle permutations with +1 corrected p-values; custom <code>function(data, indices)</code> statistics).</li>
+<li>
+<strong><code><a href="../reference/export_table.html">export_table()</a></code></strong>: three-line (booktabs) table export to Word (<code>flextable</code>) and LaTeX from descriptive statistics, <code>stat_*</code> results, and <code>reg_*()</code> regression results.</li>
+<li>
+<strong>Dependencies</strong> (new): <code>boot</code>, <code>flextable</code>.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="breaking-changes-0-0-13">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-0-13"></a></h3>
+<ul><li>
+<strong>Renamed</strong> the weighting functions to a <code>weight_*</code> prefix: <code>critic_weight()</code> → <code><a href="../reference/weight_critic.html">weight_critic()</a></code>, <code>cv_weight()</code> → <code><a href="../reference/weight_cv.html">weight_cv()</a></code>, <code>entropy_weight()</code> → <code><a href="../reference/weight_entropy.html">weight_entropy()</a></code>, <code>pca_weight()</code> → <code><a href="../reference/weight_pca.html">weight_pca()</a></code>. <strong>New</strong>: <code><a href="../reference/weight_fa.html">weight_fa()</a></code> — factor-analysis-based objective weighting (<code><a href="https://rdrr.io/r/stats/factanal.html" class="external-link">stats::factanal</a></code> loadings combined with per-factor variance shares; counterpart of <code><a href="../reference/weight_pca.html">weight_pca()</a></code>).</li>
+<li>
+<strong>Renamed</strong> the membership functions to an <code>mf_*</code> prefix: <code>tri_mf()</code> → <code><a href="../reference/membership.html">mf_tri()</a></code>, <code>trap_mf()</code> → <code><a href="../reference/membership.html">mf_trap()</a></code>, <code>gauss_mf()</code> → <code><a href="../reference/membership.html">mf_gauss()</a></code>, <code>gbell_mf()</code> → <code><a href="../reference/membership.html">mf_gbell()</a></code>, <code>gauss2mf()</code> → <code><a href="../reference/membership.html">mf_gauss2()</a></code>, <code>sigmoid_mf()</code> → <code><a href="../reference/membership.html">mf_sigmoid()</a></code>, <code>dsigmoid_mf()</code> → <code><a href="../reference/membership.html">mf_dsigmoid()</a></code>, <code>psigmoid_mf()</code> → <code><a href="../reference/membership.html">mf_psigmoid()</a></code>, <code>z_mf()</code> → <code><a href="../reference/membership.html">mf_z()</a></code>, <code>pi_mf()</code> → <code><a href="../reference/membership.html">mf_pi()</a></code>, <code>s_mf()</code> → <code><a href="../reference/membership.html">mf_s()</a></code>.</li>
+</ul></div>
+</div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.12" id="mathmodels-0012">mathmodels 0.0.12<a class="anchor" aria-label="anchor" href="#mathmodels-0012"></a></h2>
 <div class="section level3">
 <h3 id="breaking-changes-0-0-12">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-0-12"></a></h3>
@@ -55,7 +84,7 @@
 <li>
 <strong>eval_dea</strong>: <code><a href="../reference/DEA.html">super_SBM()</a></code> now implements Tone (2002) super-efficiency (efficient DMUs get rho &gt;= 1 instead of NA); SBM undesirable-output weights follow Tone (2004) (1/s1, 1/s2); <code>basic_DEA(ud_outputs=)</code> now actually treats undesirable outputs as inputs (Hailu-Veeman) instead of silently ignoring them; <code>malmquist(type1 = "seq")</code> implements sequential reference sets (was identical to “cont”); character periods sort numerically; strictly positive inputs/outputs are enforced; SBM rejects the inapplicable <code>orientation</code> argument; malmquist warns on panel irregularities.</li>
 <li>
-<strong>eval_weights</strong>: <code><a href="../reference/critic_weight.html">critic_weight()</a></code> / <code><a href="../reference/entropy_weight.html">entropy_weight()</a></code> accept matrices again (matrix inputs previously errored element-wise); non-negative data is enforced for entropy paths; <code><a href="../reference/combine_weights.html">combine_weights()</a></code> rejects unknown <code>type</code>; <code>game_linear()</code> falls back to a pseudo-inverse for proportional weights; <code><a href="../reference/AHP.html">AHP()</a></code> returns CI = CR = 0 for n &lt;= 2 and rejects non-positive matrices; unknown <code>index</code> values are rejected instead of silently treated as “already normalized”.</li>
+<strong>eval_weights</strong>: <code>critic_weight()</code> / <code>entropy_weight()</code> accept matrices again (matrix inputs previously errored element-wise); non-negative data is enforced for entropy paths; <code><a href="../reference/combine_weights.html">combine_weights()</a></code> rejects unknown <code>type</code>; <code>game_linear()</code> falls back to a pseudo-inverse for proportional weights; <code><a href="../reference/AHP.html">AHP()</a></code> returns CI = CR = 0 for n &lt;= 2 and rejects non-positive matrices; unknown <code>index</code> values are rejected instead of silently treated as “already normalized”.</li>
 <li>
 <strong>eval_fuzzy</strong>: <code><a href="../reference/defuzzify.html">defuzzify()</a></code> rejects unknown methods and returns the first maximum on ties; <code><a href="../reference/fuzzy_eval.html">fuzzy_eval()</a></code> validates R in [0, 1] with no NA; membership functions validate their parameters (strict ordering / positivity).</li>
 <li>
@@ -343,7 +372,7 @@
 <li>
 <strong><code><a href="../reference/grey_analysis.html">grey_corr_topsis()</a></code></strong>: Fixed an internal transpose error in the call to <code><a href="../reference/grey_analysis.html">grey_corr()</a></code> that caused dimension mismatch in non-square matrices.</li>
 <li>
-<strong><code><a href="../reference/membership.html">z_mf()</a></code>, <code><a href="../reference/membership.html">pi_mf()</a></code>, <code><a href="../reference/membership.html">s_mf()</a></code></strong>: Rewrote the two-stage spline algorithm for all three membership functions. The original implementation used a single-stage approximation with logically unreachable second-phase conditions, causing values to fall outside the valid [0, 1] range for certain parameter configurations. The fix ensures proper two-stage spline behavior with exact midpoint values of 0.5.</li>
+<strong><code>z_mf()</code>, <code>pi_mf()</code>, <code>s_mf()</code></strong>: Rewrote the two-stage spline algorithm for all three membership functions. The original implementation used a single-stage approximation with logically unreachable second-phase conditions, causing values to fall outside the valid [0, 1] range for certain parameter configurations. The fix ensures proper two-stage spline behavior with exact midpoint values of 0.5.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="dependencies-0-0-6">Dependencies<a class="anchor" aria-label="anchor" href="#dependencies-0-0-6"></a></h3>

@@ -1,6 +1,3 @@
-
-<!-- README.md is generated from README.Rmd. Please edit that file -->
-
 # mathmodels:  A Powerful R Toolkit for Mathematical Modeling
 
 <!-- badges: start -->
@@ -11,17 +8,37 @@
 
 An R package providing a versatile toolkit for mathematical modeling, developed as a companion to the book *Mathematical Modeling: Algorithms and Programming Implementation* (China Machine Press). It focuses on implementing rigorous algorithms in a user-friendly manner.
 
-**Current Version (0.0.11)** introduces an interpolation and curve fitting toolkit (`interp_linear`,
-`interp_spline`, `interp_poly`, `interp_hermite`, `poly_fit`, `curve_fit`, `growth_fit`)
-— on top of the regression prediction toolkit, time-series workflow, epidemic modeling,
-differential equation models, grey prediction, Markov chain models, and a rich
-suite of evaluation methods (AHP, Entropy, CRITIC, PCA, TOPSIS, Fuzzy, RSR, DEA).
+**Current Version (0.0.13)** introduces a tidy statistical inference toolkit —
+tidy-in/tidy-out hypothesis tests (`stat_t_test()`, `stat_anova()`, `stat_cor()`,
+`stat_chisq()`, ...), generic bootstrap and permutation frameworks
+(`stat_bootstrap()`, `stat_perm_test()`), and Word/LaTeX three-line table export
+(`export_table()`) — plus the multivariate statistics toolkit (`mv_pca()` to
+`mv_pcor()` with `plot_mv_*()` visuals), the factor-analysis weighting method
+`weight_fa()`, and the renamed `weight_*` / `mf_*` families. All this builds on
+the regression prediction toolkit, time-series workflow, epidemic modeling,
+differential equation models, grey prediction, Markov chain models, interpolation
+and curve fitting, and a rich suite of evaluation methods (AHP, Entropy, CRITIC,
+PCA, TOPSIS, Fuzzy, RSR, DEA).
 
 ## Key Features
 
-*   **Evaluation Models** — AHP, Entropy weighting, CRITIC, PCA weighting, TOPSIS, Grey Relational Analysis (GRA),
-    Rank Sum Ratio (RSR), Fuzzy Comprehensive Evaluation (FCE), Data Envelopment Analysis (CCR/BCC/SBM, Malmquist),
-    plus inequality measures (Gini, Theil Index), coupling coordination degree, and obstacle degree models.
+*   **Statistical Inference (new)** — tidy hypothesis tests: t-test / Wilcoxon,
+    ANOVA / Kruskal-Wallis, ANCOVA, correlation, chi-square, normality and
+    variance-homogeneity tests (`stat_*()`), each returning one tidy row per
+    test with effect sizes; generic **bootstrap** and **permutation** frameworks;
+    `export_table()` renders results as Word/LaTeX three-line tables.
+*   **Multivariate Statistics (new)** — PCA (`mv_pca()`), EFA (`mv_efa()`),
+    hierarchical and k-means clustering with validity metrics (`mv_hclust()`,
+    `mv_kmeans()`, `mv_cluster_metrics()`), discriminant analysis (`mv_discrim()`),
+    correspondence analysis (`mv_corresp()`), MDS (`mv_mds()`), canonical and
+    partial correlation (`mv_cancor()`, `mv_pcor()`), all with tidy components
+    and `plot_mv_*()` visuals.
+*   **Evaluation Models** — AHP, Entropy weighting, CRITIC, CV, PCA and factor-analysis
+    weighting, TOPSIS, Grey Relational Analysis (GRA),
+    Rank Sum Ratio (RSR), Fuzzy Comprehensive Evaluation (FCE) with the `mf_*` family
+    of membership functions, Data Envelopment Analysis (CCR/BCC/SBM, Malmquist),
+    plus inequality measures (Gini, Theil Index), coupling coordination degree, and
+    obstacle degree models.
 *   **Prediction Models** — 
     - **Grey prediction** (GM(1,1), GM(1,N), Verhulst), Markov chain prediction (`markov_chain()`,`GM11_markov()`), 
     - **regression prediction** toolkit (`reg_lm()`, `reg_logistic()`, `reg_poisson()`,
@@ -88,6 +105,15 @@ x = as_ts_df(log(AirPassengers))
 fit = ts_sarima(x)
 fc  = ts_forecast(fit, h = 12)
 plot_ts_forecast(x, fc)           # forecast with CIs
+
+# --- Statistical inference (tidy in, tidy out) ---
+res = stat_t_test(sleep, .cols = extra, group = group)
+res                               # one tidy row: statistic, p, CI, Cohen's d
+export_table(res, output = "latex", caption = "Two-sample t-test")
+
+# --- Multivariate statistics ---
+r = mv_pca(mtcars, cyl:carb)
+plot_mv_scree(r, type = "cum")    # cumulative variance scree
 ```
 
 ## Learning More
@@ -99,15 +125,17 @@ For detailed documentation, tutorials, and in-depth examples on using the `mathm
 This online book is the definitive guide to the package's functionalities. Currently implemented modules include:
 
 - **Differential equation models**: Malthus, Logistic, SI, SIS, SIR, SEIR, Lotka–Volterra with `ode_solver()` and `ode_*()` functions; epidemic visualization (`plot_compartments()`, `plot_incidence()`, `plot_phase_si()`, `plot_Rt_estimate()`) and metrics (`epi_metrics()`)
+- **Statistical inference** (0.0.13): tidy tests — `stat_describe()`, `stat_t_test()`, `stat_wilcox_test()`, `stat_anova()`, `stat_kruskal()`, `stat_ancova()`, `stat_cor()`, `stat_chisq()`, `stat_normality()`, `stat_hov_test()` — all with `.by` slice grouping and effect sizes; generic frameworks `stat_bootstrap()`, `stat_perm_test()`; `export_table()` for Word/LaTeX three-line tables
+- **Multivariate statistics** (0.0.12): `mv_pca()`, `mv_efa()`, `mv_hclust()`, `mv_kmeans()`, `mv_cluster_metrics()`, `mv_discrim()`, `mv_corresp()`, `mv_mds()`, `mv_cancor()`, `mv_pcor()` with `plot_mv_*()` visuals
 - **Time series**: `ts_df()`, `as_ts_df()`, `validate_ts_df()`, `complete_ts_df()`, `impute_ts_df()`, `drop_na_ts_df()`, `ts_transform()`, `ts_back_transform()`, `ts_ets()`, `ts_sarima()`, `ts_arimax()`, `ts_stl()`, `ts_test()`, `ts_forecast()`; visualization: `plot_ts()`, `plot_ts_acf()`, `plot_ts_pacf()`, `plot_ts_forecast()`, `plot_ts_stl()`, `plot_ts_residuals()`
 - **Regression prediction**: `reg_lm()`, `reg_logistic()`, `reg_poisson()`, `reg_negbin()` with stepwise selection; `reg_predict()`, `reg_diagnostics()`, `plot_reg_predict()`, `plot_reg_residuals()`
 - **Interpolation & curve fitting**: `interp_linear()`, `interp_spline()`, `interp_poly()`, `interp_hermite()` for interpolation; `poly_fit()`, `curve_fit()`, `growth_fit()` for curve fitting
 - **Markov chain prediction**: `markov_chain()` and `GM11_markov()`
 - Indicator data preprocessing
-- AHP, Entropy weighting, CRITIC, PCA weighting
-- Weight combination techniques
+- AHP, Entropy weighting, CRITIC, CV, PCA and factor analysis weighting (`weight_*()` family, incl. `weight_fa()`)
+- Weight combination techniques (`combine_weights()`)
 - TOPSIS, Grey Relational Analysis (GRA)
-- Rank Sum Ratio (RSR), Fuzzy Comprehensive Evaluation (FCE)
+- Rank Sum Ratio (RSR), Fuzzy Comprehensive Evaluation (FCE) with the `mf_*` membership-function family
 - Data Envelopment Analysis (CCR/BCC/SBM, Malmquist)
 - Inequality Measures (Gini, Theil Index)
 - Regional Economics (LQ/HHI/EG Index)

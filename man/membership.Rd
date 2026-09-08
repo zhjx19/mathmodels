@@ -2,41 +2,41 @@
 % Please edit documentation in R/eval_fuzzy.R
 \name{membership}
 \alias{membership}
-\alias{tri_mf}
-\alias{trap_mf}
-\alias{gauss_mf}
-\alias{gbell_mf}
-\alias{gauss2mf}
-\alias{sigmoid_mf}
-\alias{dsigmoid_mf}
-\alias{psigmoid_mf}
-\alias{z_mf}
-\alias{pi_mf}
-\alias{s_mf}
+\alias{mf_tri}
+\alias{mf_trap}
+\alias{mf_gauss}
+\alias{mf_gbell}
+\alias{mf_gauss2}
+\alias{mf_sigmoid}
+\alias{mf_dsigmoid}
+\alias{mf_psigmoid}
+\alias{mf_z}
+\alias{mf_pi}
+\alias{mf_s}
 \alias{plot_mf}
 \title{Membership Functions for Fuzzy Logic}
 \usage{
-tri_mf(x, params)
+mf_tri(x, params)
 
-trap_mf(x, params)
+mf_trap(x, params)
 
-gauss_mf(x, params)
+mf_gauss(x, params)
 
-gbell_mf(x, params)
+mf_gbell(x, params)
 
-gauss2mf(x, params)
+mf_gauss2(x, params)
 
-sigmoid_mf(x, params)
+mf_sigmoid(x, params)
 
-dsigmoid_mf(x, params)
+mf_dsigmoid(x, params)
 
-psigmoid_mf(x, params)
+mf_psigmoid(x, params)
 
-z_mf(x, params)
+mf_z(x, params)
 
-pi_mf(x, params)
+mf_pi(x, params)
 
-s_mf(x, params)
+mf_s(x, params)
 
 plot_mf(mf, xlim = c(0, 10), main = NULL)
 }
@@ -45,22 +45,22 @@ plot_mf(mf, xlim = c(0, 10), main = NULL)
 
 \item{params}{Numeric vector, parameters defining the membership function:
 \itemize{
-\item For \code{tri_mf}: \code{c(a, b, c)}, where \verb{a < b < c} (left base, peak, right base).
-\item For \code{trap_mf}: \code{c(a, b, c, d)}, where \verb{a < b <= c < d} (left base, left top,
+\item For \code{mf_tri}: \code{c(a, b, c)}, where \verb{a < b < c} (left base, peak, right base).
+\item For \code{mf_trap}: \code{c(a, b, c, d)}, where \verb{a < b <= c < d} (left base, left top,
 right top, right base); one-sided shoulders are supported with
 \code{a = b = -Inf} (no rise) or \code{c = d = Inf} (no fall).
-\item For \code{gauss_mf}: \code{c(sigma, c)}, where \code{sigma > 0} (spread, center).
-\item For \code{gbell_mf}: \code{c(a, b, c)}, where \code{a > 0}, \code{b > 0} (width, shape, center).
-\item For \code{gauss2mf}: \code{c(s1, c1, s2, c2)}, where \code{s1 > 0}, \code{s2 > 0} (left spread, left center, right spread, right center).
-\item For \code{sigmoid_mf}: \code{c(a, b)}, where \code{a > 0} (slope, inflection point).
-\item For \code{dsigmoid_mf}: \code{c(a1, c1, a2, c2)}, where \code{a1 > 0}, \code{a2 > 0} (slopes and inflection points for two sigmoids).
-\item For \code{psigmoid_mf}: \code{c(a1, c1, a2, c2)}, where \code{a1 > 0}, \code{a2 > 0} (slopes and inflection points for two sigmoids).
-\item For \code{z_mf}: \code{c(a, b)}, where \code{a < b} (left base, right base).
-\item For \code{pi_mf}: \code{c(a, b, c, d)}, where \verb{a < b <= c < d} (left base, left shoulder, right shoulder, right base).
-\item For \code{s_mf}: \code{c(a, b)}, where \code{a < b} (left base, right base).
+\item For \code{mf_gauss}: \code{c(sigma, c)}, where \code{sigma > 0} (spread, center).
+\item For \code{mf_gbell}: \code{c(a, b, c)}, where \code{a > 0}, \code{b > 0} (width, shape, center).
+\item For \code{mf_gauss2}: \code{c(s1, c1, s2, c2)}, where \code{s1 > 0}, \code{s2 > 0} (left spread, left center, right spread, right center).
+\item For \code{mf_sigmoid}: \code{c(a, b)}, where \code{a > 0} (slope, inflection point).
+\item For \code{mf_dsigmoid}: \code{c(a1, c1, a2, c2)}, where \code{a1 > 0}, \code{a2 > 0} (slopes and inflection points for two sigmoids).
+\item For \code{mf_psigmoid}: \code{c(a1, c1, a2, c2)}, where \code{a1 > 0}, \code{a2 > 0} (slopes and inflection points for two sigmoids).
+\item For \code{mf_z}: \code{c(a, b)}, where \code{a < b} (left base, right base).
+\item For \code{mf_pi}: \code{c(a, b, c, d)}, where \verb{a < b <= c < d} (left base, left shoulder, right shoulder, right base).
+\item For \code{mf_s}: \code{c(a, b)}, where \code{a < b} (left base, right base).
 }}
 
-\item{mf}{Function, a membership function with fixed parameters (e.g., \code{function(x) tri_mf(x, c(2, 5, 8))}).}
+\item{mf}{Function, a membership function with fixed parameters (e.g., \code{function(x) mf_tri(x, c(2, 5, 8))}).}
 
 \item{xlim}{Numeric vector of length 2, x-axis limits for plotting (default \code{c(0, 10)}).}
 
@@ -68,7 +68,7 @@ right top, right base); one-sided shoulders are supported with
 }
 \value{
 \itemize{
-\item For membership functions (\code{tri_mf}, \code{trap_mf}, \code{gauss_mf}, \code{gbell_mf}, \code{gauss2mf}, \code{sigmoid_mf}, \code{dsigmoid_mf}, \code{psigmoid_mf}, \code{z_mf}, \code{pi_mf}, \code{s_mf}): A numeric vector of membership values in \code{[0, 1]}, same length as \code{x}.
+\item For membership functions (\code{mf_tri}, \code{mf_trap}, \code{mf_gauss}, \code{mf_gbell}, \code{mf_gauss2}, \code{mf_sigmoid}, \code{mf_dsigmoid}, \code{mf_psigmoid}, \code{mf_z}, \code{mf_pi}, \code{mf_s}): A numeric vector of membership values in \code{[0, 1]}, same length as \code{x}.
 \item For \code{plot_mf}: A ggplot2 object, plotting the membership function.
 }
 }
@@ -78,17 +78,17 @@ A collection of functions to compute membership values for various fuzzy sets, i
 \details{
 These functions support evaluation models in mathematical modeling:
 \itemize{
-\item \code{tri_mf}: Triangular membership, linear rise from \code{a} to \code{b} (peak) and fall to \code{c}.
-\item \code{trap_mf}: Trapezoidal membership, linear rise from \code{a} to \code{b}, plateau from \code{b} to \code{c}, fall to \code{d}.
-\item \code{gauss_mf}: Gaussian membership, bell-shaped curve centered at \code{c} with spread \code{sigma}.
-\item \code{gbell_mf}: Generalized bell membership, bell-shaped curve with width \code{a}, shape \code{b}, and center \code{c}.
-\item \code{gauss2mf}: Two-parameter Gaussian membership, combining two Gaussians with spreads \code{s1}, \code{s2} and centers \code{c1}, \code{c2}.
-\item \code{sigmoid_mf}: Sigmoid membership, S-shaped curve with slope \code{a} and inflection point \code{b}.
-\item \code{dsigmoid_mf}: Difference of two sigmoids, combining slopes \code{a1}, \code{a2} and inflection points \code{c1}, \code{c2}.
-\item \code{psigmoid_mf}: Product of two sigmoids, combining slopes \code{a1}, \code{a2} and inflection points \code{c1}, \code{c2}.
-\item \code{z_mf}: Z-shaped membership, decreasing from 1 at \code{a} to 0 at \code{b}.
-\item \code{pi_mf}: PI-shaped membership, rising from \code{a} to \code{b}, plateau from \code{b} to \code{c}, falling to \code{d}.
-\item \code{s_mf}: S-shaped membership, increasing from 0 at \code{a} to 1 at \code{b}.
+\item \code{mf_tri}: Triangular membership, linear rise from \code{a} to \code{b} (peak) and fall to \code{c}.
+\item \code{mf_trap}: Trapezoidal membership, linear rise from \code{a} to \code{b}, plateau from \code{b} to \code{c}, fall to \code{d}.
+\item \code{mf_gauss}: Gaussian membership, bell-shaped curve centered at \code{c} with spread \code{sigma}.
+\item \code{mf_gbell}: Generalized bell membership, bell-shaped curve with width \code{a}, shape \code{b}, and center \code{c}.
+\item \code{mf_gauss2}: Two-parameter Gaussian membership, combining two Gaussians with spreads \code{s1}, \code{s2} and centers \code{c1}, \code{c2}.
+\item \code{mf_sigmoid}: Sigmoid membership, S-shaped curve with slope \code{a} and inflection point \code{b}.
+\item \code{mf_dsigmoid}: Difference of two sigmoids, combining slopes \code{a1}, \code{a2} and inflection points \code{c1}, \code{c2}.
+\item \code{mf_psigmoid}: Product of two sigmoids, combining slopes \code{a1}, \code{a2} and inflection points \code{c1}, \code{c2}.
+\item \code{mf_z}: Z-shaped membership, decreasing from 1 at \code{a} to 0 at \code{b}.
+\item \code{mf_pi}: PI-shaped membership, rising from \code{a} to \code{b}, plateau from \code{b} to \code{c}, falling to \code{d}.
+\item \code{mf_s}: S-shaped membership, increasing from 0 at \code{a} to 1 at \code{b}.
 \item \code{plot_mf}: Plots a membership function over \code{xlim} using ggplot2, suitable for tidyverse workflows.
 }
 Membership values can be used to construct fuzzy evaluation matrices for \code{fuzzy_eval}.
@@ -99,51 +99,51 @@ Implemented in base R, except \code{plot_mf}, which requires ggplot2.
 x = 0:10
 
 # Triangular membership
-tri_mf(x, params = c(3, 6, 8))
+mf_tri(x, params = c(3, 6, 8))
 
 # Trapezoidal membership
-trap_mf(x, params = c(1, 5, 7, 8))
+mf_trap(x, params = c(1, 5, 7, 8))
 
 # Gaussian membership
-gauss_mf(x, params = c(2, 5))
+mf_gauss(x, params = c(2, 5))
 
 # Generalized bell membership
-gbell_mf(x, params = c(2, 4, 6))
+mf_gbell(x, params = c(2, 4, 6))
 
 # Two-parameter Gaussian membership
-gauss2mf(x, params = c(1, 3, 3, 4))
+mf_gauss2(x, params = c(1, 3, 3, 4))
 
 # Sigmoid membership
-sigmoid_mf(x, params = c(2, 4))
+mf_sigmoid(x, params = c(2, 4))
 
 # Difference of sigmoids membership
-dsigmoid_y = dsigmoid_mf(x, params = c(5, 2, 5, 7))
+dsigmoid_y = mf_dsigmoid(x, params = c(5, 2, 5, 7))
 
 # Product of sigmoids membership
-psigmoid_mf(x, params = c(2, 3, -5, 8))
+mf_psigmoid(x, params = c(2, 3, -5, 8))
 
 # Z-shaped membership
-z_mf(x, params = c(3, 7))
+mf_z(x, params = c(3, 7))
 
 # PI-shaped membership
-pi_mf(x, params = c(1, 4, 5, 10))
+mf_pi(x, params = c(1, 4, 5, 10))
 
 # S-shaped membership
-s_mf(x, params = c(1, 8))
+mf_s(x, params = c(1, 8))
 
 \dontrun{
 # Visualize membership functions
-plot_mf(\(x) tri_mf(x, c(3, 6, 8)), main = "Triangular MF")
-plot_mf(\(x) trap_mf(x, c(1, 5, 7, 8)), main = "Trapezoidal MF")
-plot_mf(\(x) gauss_mf(x, c(2, 5)), main = "Gaussian MF")
-plot_mf(\(x) gbell_mf(x, c(2, 4, 6)), main = "Generalized Bell MF")
-plot_mf(\(x) gauss2mf(x, c(1, 3, 3, 4)), main = "Two-Parameter Gaussian MF")
-plot_mf(\(x) sigmoid_mf(x, c(2, 4)), main = "Sigmoid MF")
-plot_mf(\(x) dsigmoid_mf(x, c(5, 2, 5, 7)), main = "Difference of Sigmoids MF")
-plot_mf(\(x) psigmoid_mf(x, c(2, 3, -5, 8)), main = "Product of Sigmoids MF")
-plot_mf(\(x) z_mf(x, c(3, 7)), main = "Z-Shaped MF")
-plot_mf(\(x) pi_mf(x, c(1, 4, 5, 10)), main = "PI-Shaped MF")
-plot_mf(\(x) s_mf(x, c(1, 8)), main = "S-Shaped MF")
+plot_mf(\(x) mf_tri(x, c(3, 6, 8)), main = "Triangular MF")
+plot_mf(\(x) mf_trap(x, c(1, 5, 7, 8)), main = "Trapezoidal MF")
+plot_mf(\(x) mf_gauss(x, c(2, 5)), main = "Gaussian MF")
+plot_mf(\(x) mf_gbell(x, c(2, 4, 6)), main = "Generalized Bell MF")
+plot_mf(\(x) mf_gauss2(x, c(1, 3, 3, 4)), main = "Two-Parameter Gaussian MF")
+plot_mf(\(x) mf_sigmoid(x, c(2, 4)), main = "Sigmoid MF")
+plot_mf(\(x) mf_dsigmoid(x, c(5, 2, 5, 7)), main = "Difference of Sigmoids MF")
+plot_mf(\(x) mf_psigmoid(x, c(2, 3, -5, 8)), main = "Product of Sigmoids MF")
+plot_mf(\(x) mf_z(x, c(3, 7)), main = "Z-Shaped MF")
+plot_mf(\(x) mf_pi(x, c(1, 4, 5, 10)), main = "PI-Shaped MF")
+plot_mf(\(x) mf_s(x, c(1, 8)), main = "S-Shaped MF")
 }
 
 }

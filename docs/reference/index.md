@@ -29,15 +29,17 @@ multi-indicator evaluation.
   Analytic Hierarchy Process
 - [`combine_weights()`](https://zhjx19.github.io/mathmodels/reference/combine_weights.md)
   : Combine Subjective and Objective Weights
-- [`critic_weight()`](https://zhjx19.github.io/mathmodels/reference/critic_weight.md)
+- [`weight_critic()`](https://zhjx19.github.io/mathmodels/reference/weight_critic.md)
   : CRITIC Weight Method
-- [`cv_weight()`](https://zhjx19.github.io/mathmodels/reference/cv_weight.md)
+- [`weight_cv()`](https://zhjx19.github.io/mathmodels/reference/weight_cv.md)
   : Coefficient of Variation Weighting
-- [`entropy_weight()`](https://zhjx19.github.io/mathmodels/reference/entropy_weight.md)
+- [`weight_entropy()`](https://zhjx19.github.io/mathmodels/reference/weight_entropy.md)
   : Entropy Weight Method
+- [`weight_fa()`](https://zhjx19.github.io/mathmodels/reference/weight_fa.md)
+  : Factor-Analysis-Based Weighting Method
 - [`linear_sum()`](https://zhjx19.github.io/mathmodels/reference/linear_sum.md)
   : Linear weighted synthesis
-- [`pca_weight()`](https://zhjx19.github.io/mathmodels/reference/pca_weight.md)
+- [`weight_pca()`](https://zhjx19.github.io/mathmodels/reference/weight_pca.md)
   : PCA-Based Weighting Method
 
 ## Evaluation Models
@@ -57,17 +59,17 @@ Multi-criteria ranking and grey relational evaluation methods.
 Membership functions, fuzzy comprehensive evaluation, and
 defuzzification.
 
-- [`tri_mf()`](https://zhjx19.github.io/mathmodels/reference/membership.md)
-  [`trap_mf()`](https://zhjx19.github.io/mathmodels/reference/membership.md)
-  [`gauss_mf()`](https://zhjx19.github.io/mathmodels/reference/membership.md)
-  [`gbell_mf()`](https://zhjx19.github.io/mathmodels/reference/membership.md)
-  [`gauss2mf()`](https://zhjx19.github.io/mathmodels/reference/membership.md)
-  [`sigmoid_mf()`](https://zhjx19.github.io/mathmodels/reference/membership.md)
-  [`dsigmoid_mf()`](https://zhjx19.github.io/mathmodels/reference/membership.md)
-  [`psigmoid_mf()`](https://zhjx19.github.io/mathmodels/reference/membership.md)
-  [`z_mf()`](https://zhjx19.github.io/mathmodels/reference/membership.md)
-  [`pi_mf()`](https://zhjx19.github.io/mathmodels/reference/membership.md)
-  [`s_mf()`](https://zhjx19.github.io/mathmodels/reference/membership.md)
+- [`mf_tri()`](https://zhjx19.github.io/mathmodels/reference/membership.md)
+  [`mf_trap()`](https://zhjx19.github.io/mathmodels/reference/membership.md)
+  [`mf_gauss()`](https://zhjx19.github.io/mathmodels/reference/membership.md)
+  [`mf_gbell()`](https://zhjx19.github.io/mathmodels/reference/membership.md)
+  [`mf_gauss2()`](https://zhjx19.github.io/mathmodels/reference/membership.md)
+  [`mf_sigmoid()`](https://zhjx19.github.io/mathmodels/reference/membership.md)
+  [`mf_dsigmoid()`](https://zhjx19.github.io/mathmodels/reference/membership.md)
+  [`mf_psigmoid()`](https://zhjx19.github.io/mathmodels/reference/membership.md)
+  [`mf_z()`](https://zhjx19.github.io/mathmodels/reference/membership.md)
+  [`mf_pi()`](https://zhjx19.github.io/mathmodels/reference/membership.md)
+  [`mf_s()`](https://zhjx19.github.io/mathmodels/reference/membership.md)
   [`plot_mf()`](https://zhjx19.github.io/mathmodels/reference/membership.md)
   : Membership Functions for Fuzzy Logic
 - [`compute_mf_funs()`](https://zhjx19.github.io/mathmodels/reference/compute_mf.md)
@@ -375,6 +377,38 @@ visualizations.
 ## Data and Utilities
 
 Built-in datasets and data import utilities.
+
+## Statistical Inference
+
+Tidy hypothesis tests, bootstrap and permutation frameworks, and
+three-line table export.
+
+- [`stat_describe()`](https://zhjx19.github.io/mathmodels/reference/stat_describe.md)
+  : Descriptive Statistics
+- [`stat_t_test()`](https://zhjx19.github.io/mathmodels/reference/stat_t_test.md)
+  : t-test (one-sample, two-sample, Welch, paired)
+- [`stat_wilcox_test()`](https://zhjx19.github.io/mathmodels/reference/stat_wilcox_test.md)
+  : Wilcoxon / Mann-Whitney Tests
+- [`stat_anova()`](https://zhjx19.github.io/mathmodels/reference/stat_anova.md)
+  : Analysis of Variance (ANOVA)
+- [`stat_kruskal()`](https://zhjx19.github.io/mathmodels/reference/stat_kruskal.md)
+  : Kruskal-Wallis Rank Sum Test
+- [`stat_ancova()`](https://zhjx19.github.io/mathmodels/reference/stat_ancova.md)
+  : Analysis of Covariance (ANCOVA)
+- [`stat_cor()`](https://zhjx19.github.io/mathmodels/reference/stat_cor.md)
+  : Correlation Analysis
+- [`stat_chisq()`](https://zhjx19.github.io/mathmodels/reference/stat_chisq.md)
+  : Chi-square Test of Independence
+- [`stat_normality()`](https://zhjx19.github.io/mathmodels/reference/stat_normality.md)
+  : Normality Tests
+- [`stat_hov_test()`](https://zhjx19.github.io/mathmodels/reference/stat_hov_test.md)
+  : Variance Homogeneity Tests
+- [`stat_bootstrap()`](https://zhjx19.github.io/mathmodels/reference/stat_bootstrap.md)
+  : Bootstrap Estimation and Confidence Intervals
+- [`stat_perm_test()`](https://zhjx19.github.io/mathmodels/reference/stat_perm_test.md)
+  : Permutation Test
+- [`export_table()`](https://zhjx19.github.io/mathmodels/reference/export_table.md)
+  : Three-line Table Export (Word / LaTeX)
 
 ## Datasets
 

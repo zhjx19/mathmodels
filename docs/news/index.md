@@ -1,5 +1,90 @@
 # Changelog
 
+## mathmodels 0.0.13
+
+### Statistical inference toolkit (new)
+
+- **Hypothesis tests** (`stat_infer.R`): tidy data frames in, tidy
+  tibbles out (one row per test, `stat_infer` class with a labelled
+  print).
+  - [`stat_t_test()`](https://zhjx19.github.io/mathmodels/reference/stat_t_test.md)
+    /
+    [`stat_wilcox_test()`](https://zhjx19.github.io/mathmodels/reference/stat_wilcox_test.md):
+    one-sample, two-sample (Welch or pooled), and paired tests with
+    Cohen’s d / rank-biserial effects; Wilcoxon signed-rank and
+    Mann-Whitney U as the nonparametric counterparts.
+  - [`stat_anova()`](https://zhjx19.github.io/mathmodels/reference/stat_anova.md)
+    (multi-factor with interactions, partial eta-squared),
+    [`stat_kruskal()`](https://zhjx19.github.io/mathmodels/reference/stat_kruskal.md)
+    (epsilon-squared),
+    [`stat_ancova()`](https://zhjx19.github.io/mathmodels/reference/stat_ancova.md)
+    (with an optional parallel-slopes check),
+    [`stat_cor()`](https://zhjx19.github.io/mathmodels/reference/stat_cor.md)
+    (Pearson/Spearman/Kendall with p-adjustment),
+    [`stat_chisq()`](https://zhjx19.github.io/mathmodels/reference/stat_chisq.md)
+    (Cramer’s V, low-expected-frequency warning, Fisher exact option),
+    [`stat_normality()`](https://zhjx19.github.io/mathmodels/reference/stat_normality.md)
+    (Shapiro-Wilk plus skewness/kurtosis),
+    [`stat_hov_test()`](https://zhjx19.github.io/mathmodels/reference/stat_hov_test.md)
+    (Levene/Bartlett/F).
+  - All tests support `.by` slice grouping (repeat the test within each
+    slice) and multi-column loops with `p_adjust`.
+  - [`stat_describe()`](https://zhjx19.github.io/mathmodels/reference/stat_describe.md):
+    grouped descriptive statistics.
+- **Generic frameworks**:
+  [`stat_bootstrap()`](https://zhjx19.github.io/mathmodels/reference/stat_bootstrap.md)
+  built on [`boot::boot()`](https://rdrr.io/pkg/boot/man/boot.html) /
+  [`boot::boot.ci()`](https://rdrr.io/pkg/boot/man/boot.ci.html) (BCa /
+  percentile / basic CIs, parallel support) and
+  [`stat_perm_test()`](https://zhjx19.github.io/mathmodels/reference/stat_perm_test.md)
+  (label / sign-flip / shuffle permutations with +1 corrected p-values;
+  custom `function(data, indices)` statistics).
+- **[`export_table()`](https://zhjx19.github.io/mathmodels/reference/export_table.md)**:
+  three-line (booktabs) table export to Word (`flextable`) and LaTeX
+  from descriptive statistics, `stat_*` results, and `reg_*()`
+  regression results.
+- **Dependencies** (new): `boot`, `flextable`.
+
+### Breaking changes
+
+- **Renamed** the weighting functions to a `weight_*` prefix:
+  `critic_weight()` →
+  [`weight_critic()`](https://zhjx19.github.io/mathmodels/reference/weight_critic.md),
+  `cv_weight()` →
+  [`weight_cv()`](https://zhjx19.github.io/mathmodels/reference/weight_cv.md),
+  `entropy_weight()` →
+  [`weight_entropy()`](https://zhjx19.github.io/mathmodels/reference/weight_entropy.md),
+  `pca_weight()` →
+  [`weight_pca()`](https://zhjx19.github.io/mathmodels/reference/weight_pca.md).
+  **New**:
+  [`weight_fa()`](https://zhjx19.github.io/mathmodels/reference/weight_fa.md)
+  — factor-analysis-based objective weighting
+  ([`stats::factanal`](https://rdrr.io/r/stats/factanal.html) loadings
+  combined with per-factor variance shares; counterpart of
+  [`weight_pca()`](https://zhjx19.github.io/mathmodels/reference/weight_pca.md)).
+- **Renamed** the membership functions to an `mf_*` prefix: `tri_mf()` →
+  [`mf_tri()`](https://zhjx19.github.io/mathmodels/reference/membership.md),
+  `trap_mf()` →
+  [`mf_trap()`](https://zhjx19.github.io/mathmodels/reference/membership.md),
+  `gauss_mf()` →
+  [`mf_gauss()`](https://zhjx19.github.io/mathmodels/reference/membership.md),
+  `gbell_mf()` →
+  [`mf_gbell()`](https://zhjx19.github.io/mathmodels/reference/membership.md),
+  `gauss2mf()` →
+  [`mf_gauss2()`](https://zhjx19.github.io/mathmodels/reference/membership.md),
+  `sigmoid_mf()` →
+  [`mf_sigmoid()`](https://zhjx19.github.io/mathmodels/reference/membership.md),
+  `dsigmoid_mf()` →
+  [`mf_dsigmoid()`](https://zhjx19.github.io/mathmodels/reference/membership.md),
+  `psigmoid_mf()` →
+  [`mf_psigmoid()`](https://zhjx19.github.io/mathmodels/reference/membership.md),
+  `z_mf()` →
+  [`mf_z()`](https://zhjx19.github.io/mathmodels/reference/membership.md),
+  `pi_mf()` →
+  [`mf_pi()`](https://zhjx19.github.io/mathmodels/reference/membership.md),
+  `s_mf()` →
+  [`mf_s()`](https://zhjx19.github.io/mathmodels/reference/membership.md).
+
 ## mathmodels 0.0.12
 
 ### Breaking changes
@@ -61,11 +146,8 @@
   numerically; strictly positive inputs/outputs are enforced; SBM
   rejects the inapplicable `orientation` argument; malmquist warns on
   panel irregularities.
-- **eval_weights**:
-  [`critic_weight()`](https://zhjx19.github.io/mathmodels/reference/critic_weight.md)
-  /
-  [`entropy_weight()`](https://zhjx19.github.io/mathmodels/reference/entropy_weight.md)
-  accept matrices again (matrix inputs previously errored element-wise);
+- **eval_weights**: `critic_weight()` / `entropy_weight()` accept
+  matrices again (matrix inputs previously errored element-wise);
   non-negative data is enforced for entropy paths;
   [`combine_weights()`](https://zhjx19.github.io/mathmodels/reference/combine_weights.md)
   rejects unknown `type`; `game_linear()` falls back to a pseudo-inverse
@@ -457,15 +539,13 @@
   Fixed an internal transpose error in the call to
   [`grey_corr()`](https://zhjx19.github.io/mathmodels/reference/grey_analysis.md)
   that caused dimension mismatch in non-square matrices.
-- **[`z_mf()`](https://zhjx19.github.io/mathmodels/reference/membership.md),
-  [`pi_mf()`](https://zhjx19.github.io/mathmodels/reference/membership.md),
-  [`s_mf()`](https://zhjx19.github.io/mathmodels/reference/membership.md)**:
-  Rewrote the two-stage spline algorithm for all three membership
-  functions. The original implementation used a single-stage
-  approximation with logically unreachable second-phase conditions,
-  causing values to fall outside the valid \[0, 1\] range for certain
-  parameter configurations. The fix ensures proper two-stage spline
-  behavior with exact midpoint values of 0.5.
+- **`z_mf()`, `pi_mf()`, `s_mf()`**: Rewrote the two-stage spline
+  algorithm for all three membership functions. The original
+  implementation used a single-stage approximation with logically
+  unreachable second-phase conditions, causing values to fall outside
+  the valid \[0, 1\] range for certain parameter configurations. The fix
+  ensures proper two-stage spline behavior with exact midpoint values of
+  0.5.
 
 ### Dependencies
 

@@ -4,19 +4,23 @@
 \alias{plot_mv_scree}
 \title{Scree Plot}
 \usage{
-plot_mv_scree(x)
+plot_mv_scree(x, type = c("prop", "cum"))
 }
 \arguments{
 \item{x}{An \code{mv_pca} or \code{mv_efa} result.}
+
+\item{type}{\code{"prop"} (default) draws only the per-component proportion of
+variance; \code{"cum"} draws only the cumulative proportion.}
 }
 \value{
 A \code{ggplot} object.
 }
 \description{
-Plots the proportion and cumulative proportion of variance explained by
+Plots the proportion or cumulative proportion of variance explained by
 each component (PCA) or factor (EFA).
 }
 \examples{
 r = mv_pca(mtcars, cyl:carb)
 plot_mv_scree(r)
+plot_mv_scree(r, type = "cum")
 }

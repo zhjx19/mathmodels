@@ -60,7 +60,7 @@ Calculate weights using the Entropy Method (normalization is handled internally)
 
 ```{r}
 idx = c("+", NA, "-", NA)     # 
-res = entropy_weight(df[-1], idx) 
+res = weight_entropy(df[-1], idx) 
 res$w                         # View calculated weights
 ```
 

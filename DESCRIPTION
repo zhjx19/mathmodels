@@ -1,16 +1,19 @@
 Package: mathmodels
 Type: Package
 Title: Mathematical Modeling Algorithms
-Version: 0.0.12
+Version: 0.0.13
 Authors@R: person("Jingxin", "Zhang", email = "zhjx_19@163.com", role = c("aut", "cre", "cph"))
-Description: Implements algorithms for mathematical modeling across evaluation, prediction, and differential equation systems. It supports indicator preprocessing, weighting, TOPSIS, fuzzy comprehensive evaluation, grey relational analysis, rank sum ratio, data envelopment analysis (DEA), regional economics, inequality measures, grey prediction, Markov prediction, and time series modeling. It also provides ordinary differential equation solvers for compartmental epidemic models together with visualization and summary metrics. It additionally offers multivariate statistics tools covering principal component and exploratory factor analysis, hierarchical and k-means clustering with validity metrics, linear and quadratic discriminant analysis, correspondence analysis, multidimensional scaling, and canonical and partial correlation analysis.
+Description: Implements algorithms for mathematical modeling across evaluation, prediction, and differential equation systems. It supports indicator preprocessing, weighting, TOPSIS, fuzzy comprehensive evaluation, grey relational analysis, rank sum ratio, data envelopment analysis (DEA), regional economics, inequality measures, grey prediction, Markov prediction, and time series modeling. It also provides ordinary differential equation solvers for compartmental epidemic models together with visualization and summary metrics. It additionally offers multivariate statistics tools covering principal component and exploratory factor analysis, hierarchical and k-means clustering with validity metrics, linear and quadratic discriminant analysis, correspondence analysis, multidimensional scaling, and canonical and partial correlation analysis, plus a tidy statistical-inference toolkit (t-test, ANOVA, ANCOVA, correlation, chi-square, normality and variance-homogeneity tests, bootstrap and permutation frameworks) with Word/LaTeX three-line table export.
 License: AGPL (>= 3)
 URL: https://github.com/zhjx19/mathmodels, https://zhjx19.github.io/mathmodels/
 BugReports: https://github.com/zhjx19/mathmodels/issues
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-Imports: 
+Imports:
+    boot,
+    car,
+    flextable,
     lpSolveAPI,
     minpack.lm,
     dplyr (>= 1.1.0),
@@ -27,9 +30,8 @@ Imports:
     tseries,
     deSolve,
     patchwork,
-    car,
     lmtest
-Depends: 
+Depends:
     R (>= 4.1)
 Suggests:
     knitr,

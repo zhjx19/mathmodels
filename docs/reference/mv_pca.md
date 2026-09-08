@@ -56,4 +56,6 @@ r$variance
 #>  9 PC9   0.232   0.0537  0.00537   0.998
 #> 10 PC10  0.154   0.0238  0.00238   1    
 plot_mv_scree(r)
+#> `geom_line()`: Each group consists of only one observation.
+#> ℹ Do you need to adjust the group aesthetic?
 ```

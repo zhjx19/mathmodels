@@ -47,11 +47,12 @@ reference:
   contents:
   - AHP
   - combine_weights
-  - critic_weight
-  - cv_weight
-  - entropy_weight
+  - weight_critic
+  - weight_cv
+  - weight_entropy
+  - weight_fa
   - linear_sum
-  - pca_weight
+  - weight_pca
 
 - title: "Evaluation Models"
   desc: "Multi-criteria ranking and grey relational evaluation methods."
@@ -64,17 +65,17 @@ reference:
 - title: "Fuzzy Evaluation"
   desc: "Membership functions, fuzzy comprehensive evaluation, and defuzzification."
   contents:
-  - tri_mf
-  - trap_mf
-  - gauss_mf
-  - gbell_mf
-  - gauss2mf
-  - sigmoid_mf
-  - dsigmoid_mf
-  - psigmoid_mf
-  - z_mf
-  - pi_mf
-  - s_mf
+  - mf_tri
+  - mf_trap
+  - mf_gauss
+  - mf_gbell
+  - mf_gauss2
+  - mf_sigmoid
+  - mf_dsigmoid
+  - mf_psigmoid
+  - mf_z
+  - mf_pi
+  - mf_s
   - plot_mf
   - compute_mf_funs
   - compute_mf
@@ -244,6 +245,23 @@ reference:
 
 - title: "Data and Utilities"
   desc: "Built-in datasets and data import utilities."
+
+- title: "Statistical Inference"
+  desc: "Tidy hypothesis tests, bootstrap and permutation frameworks, and three-line table export."
+  contents:
+  - stat_describe
+  - stat_t_test
+  - stat_wilcox_test
+  - stat_anova
+  - stat_kruskal
+  - stat_ancova
+  - stat_cor
+  - stat_chisq
+  - stat_normality
+  - stat_hov_test
+  - stat_bootstrap
+  - stat_perm_test
+  - export_table
 
 - title: "Datasets"
   contents:

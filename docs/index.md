@@ -5,19 +5,60 @@ developed as a companion to the book *Mathematical Modeling: Algorithms
 and Programming Implementation* (China Machine Press). It focuses on
 implementing rigorous algorithms in a user-friendly manner.
 
-**Current Version (0.0.11)** introduces an interpolation and curve
-fitting toolkit (`interp_linear`, `interp_spline`, `interp_poly`,
-`interp_hermite`, `poly_fit`, `curve_fit`, `growth_fit`) — on top of the
+**Current Version (0.0.13)** introduces a tidy statistical inference
+toolkit — tidy-in/tidy-out hypothesis tests
+([`stat_t_test()`](https://zhjx19.github.io/mathmodels/reference/stat_t_test.md),
+[`stat_anova()`](https://zhjx19.github.io/mathmodels/reference/stat_anova.md),
+[`stat_cor()`](https://zhjx19.github.io/mathmodels/reference/stat_cor.md),
+[`stat_chisq()`](https://zhjx19.github.io/mathmodels/reference/stat_chisq.md),
+…), generic bootstrap and permutation frameworks
+([`stat_bootstrap()`](https://zhjx19.github.io/mathmodels/reference/stat_bootstrap.md),
+[`stat_perm_test()`](https://zhjx19.github.io/mathmodels/reference/stat_perm_test.md)),
+and Word/LaTeX three-line table export
+([`export_table()`](https://zhjx19.github.io/mathmodels/reference/export_table.md))
+— plus the multivariate statistics toolkit
+([`mv_pca()`](https://zhjx19.github.io/mathmodels/reference/mv_pca.md)
+to
+[`mv_pcor()`](https://zhjx19.github.io/mathmodels/reference/mv_pcor.md)
+with `plot_mv_*()` visuals), the factor-analysis weighting method
+[`weight_fa()`](https://zhjx19.github.io/mathmodels/reference/weight_fa.md),
+and the renamed `weight_*` / `mf_*` families. All this builds on the
 regression prediction toolkit, time-series workflow, epidemic modeling,
-differential equation models, grey prediction, Markov chain models, and
-a rich suite of evaluation methods (AHP, Entropy, CRITIC, PCA, TOPSIS,
-Fuzzy, RSR, DEA).
+differential equation models, grey prediction, Markov chain models,
+interpolation and curve fitting, and a rich suite of evaluation methods
+(AHP, Entropy, CRITIC, PCA, TOPSIS, Fuzzy, RSR, DEA).
 
 ## Key Features
 
-- **Evaluation Models** — AHP, Entropy weighting, CRITIC, PCA weighting,
-  TOPSIS, Grey Relational Analysis (GRA), Rank Sum Ratio (RSR), Fuzzy
-  Comprehensive Evaluation (FCE), Data Envelopment Analysis
+- **Statistical Inference (new)** — tidy hypothesis tests: t-test /
+  Wilcoxon, ANOVA / Kruskal-Wallis, ANCOVA, correlation, chi-square,
+  normality and variance-homogeneity tests (`stat_*()`), each returning
+  one tidy row per test with effect sizes; generic **bootstrap** and
+  **permutation** frameworks;
+  [`export_table()`](https://zhjx19.github.io/mathmodels/reference/export_table.md)
+  renders results as Word/LaTeX three-line tables.
+- **Multivariate Statistics (new)** — PCA
+  ([`mv_pca()`](https://zhjx19.github.io/mathmodels/reference/mv_pca.md)),
+  EFA
+  ([`mv_efa()`](https://zhjx19.github.io/mathmodels/reference/mv_efa.md)),
+  hierarchical and k-means clustering with validity metrics
+  ([`mv_hclust()`](https://zhjx19.github.io/mathmodels/reference/mv_hclust.md),
+  [`mv_kmeans()`](https://zhjx19.github.io/mathmodels/reference/mv_kmeans.md),
+  [`mv_cluster_metrics()`](https://zhjx19.github.io/mathmodels/reference/mv_cluster_metrics.md)),
+  discriminant analysis
+  ([`mv_discrim()`](https://zhjx19.github.io/mathmodels/reference/mv_discrim.md)),
+  correspondence analysis
+  ([`mv_corresp()`](https://zhjx19.github.io/mathmodels/reference/mv_corresp.md)),
+  MDS
+  ([`mv_mds()`](https://zhjx19.github.io/mathmodels/reference/mv_mds.md)),
+  canonical and partial correlation
+  ([`mv_cancor()`](https://zhjx19.github.io/mathmodels/reference/mv_cancor.md),
+  [`mv_pcor()`](https://zhjx19.github.io/mathmodels/reference/mv_pcor.md)),
+  all with tidy components and `plot_mv_*()` visuals.
+- **Evaluation Models** — AHP, Entropy weighting, CRITIC, CV, PCA and
+  factor-analysis weighting, TOPSIS, Grey Relational Analysis (GRA),
+  Rank Sum Ratio (RSR), Fuzzy Comprehensive Evaluation (FCE) with the
+  `mf_*` family of membership functions, Data Envelopment Analysis
   (CCR/BCC/SBM, Malmquist), plus inequality measures (Gini, Theil
   Index), coupling coordination degree, and obstacle degree models.
 - **Prediction Models** —
@@ -140,6 +181,15 @@ x = as_ts_df(log(AirPassengers))
 fit = ts_sarima(x)
 fc  = ts_forecast(fit, h = 12)
 plot_ts_forecast(x, fc)           # forecast with CIs
+
+# --- Statistical inference (tidy in, tidy out) ---
+res = stat_t_test(sleep, .cols = extra, group = group)
+res                               # one tidy row: statistic, p, CI, Cohen's d
+export_table(res, output = "latex", caption = "Two-sample t-test")
+
+# --- Multivariate statistics ---
+r = mv_pca(mtcars, cyl:carb)
+plot_mv_scree(r, type = "cum")    # cumulative variance scree
 ```
 
 ## Learning More
@@ -164,6 +214,34 @@ functionalities. Currently implemented modules include:
   [`plot_Rt_estimate()`](https://zhjx19.github.io/mathmodels/reference/plot_Rt_estimate.md))
   and metrics
   ([`epi_metrics()`](https://zhjx19.github.io/mathmodels/reference/epi_metrics.md))
+- **Statistical inference** (0.0.13): tidy tests —
+  [`stat_describe()`](https://zhjx19.github.io/mathmodels/reference/stat_describe.md),
+  [`stat_t_test()`](https://zhjx19.github.io/mathmodels/reference/stat_t_test.md),
+  [`stat_wilcox_test()`](https://zhjx19.github.io/mathmodels/reference/stat_wilcox_test.md),
+  [`stat_anova()`](https://zhjx19.github.io/mathmodels/reference/stat_anova.md),
+  [`stat_kruskal()`](https://zhjx19.github.io/mathmodels/reference/stat_kruskal.md),
+  [`stat_ancova()`](https://zhjx19.github.io/mathmodels/reference/stat_ancova.md),
+  [`stat_cor()`](https://zhjx19.github.io/mathmodels/reference/stat_cor.md),
+  [`stat_chisq()`](https://zhjx19.github.io/mathmodels/reference/stat_chisq.md),
+  [`stat_normality()`](https://zhjx19.github.io/mathmodels/reference/stat_normality.md),
+  [`stat_hov_test()`](https://zhjx19.github.io/mathmodels/reference/stat_hov_test.md)
+  — all with `.by` slice grouping and effect sizes; generic frameworks
+  [`stat_bootstrap()`](https://zhjx19.github.io/mathmodels/reference/stat_bootstrap.md),
+  [`stat_perm_test()`](https://zhjx19.github.io/mathmodels/reference/stat_perm_test.md);
+  [`export_table()`](https://zhjx19.github.io/mathmodels/reference/export_table.md)
+  for Word/LaTeX three-line tables
+- **Multivariate statistics** (0.0.12):
+  [`mv_pca()`](https://zhjx19.github.io/mathmodels/reference/mv_pca.md),
+  [`mv_efa()`](https://zhjx19.github.io/mathmodels/reference/mv_efa.md),
+  [`mv_hclust()`](https://zhjx19.github.io/mathmodels/reference/mv_hclust.md),
+  [`mv_kmeans()`](https://zhjx19.github.io/mathmodels/reference/mv_kmeans.md),
+  [`mv_cluster_metrics()`](https://zhjx19.github.io/mathmodels/reference/mv_cluster_metrics.md),
+  [`mv_discrim()`](https://zhjx19.github.io/mathmodels/reference/mv_discrim.md),
+  [`mv_corresp()`](https://zhjx19.github.io/mathmodels/reference/mv_corresp.md),
+  [`mv_mds()`](https://zhjx19.github.io/mathmodels/reference/mv_mds.md),
+  [`mv_cancor()`](https://zhjx19.github.io/mathmodels/reference/mv_cancor.md),
+  [`mv_pcor()`](https://zhjx19.github.io/mathmodels/reference/mv_pcor.md)
+  with `plot_mv_*()` visuals
 - **Time series**:
   [`ts_df()`](https://zhjx19.github.io/mathmodels/reference/ts_df.md),
   [`as_ts_df()`](https://zhjx19.github.io/mathmodels/reference/as_ts_df.md),
@@ -211,10 +289,14 @@ functionalities. Currently implemented modules include:
   and
   [`GM11_markov()`](https://zhjx19.github.io/mathmodels/reference/GM11_markov.md)
 - Indicator data preprocessing
-- AHP, Entropy weighting, CRITIC, PCA weighting
+- AHP, Entropy weighting, CRITIC, CV, PCA and factor analysis weighting
+  (`weight_*()` family,
+  incl. [`weight_fa()`](https://zhjx19.github.io/mathmodels/reference/weight_fa.md))
 - Weight combination techniques
+  ([`combine_weights()`](https://zhjx19.github.io/mathmodels/reference/combine_weights.md))
 - TOPSIS, Grey Relational Analysis (GRA)
-- Rank Sum Ratio (RSR), Fuzzy Comprehensive Evaluation (FCE)
+- Rank Sum Ratio (RSR), Fuzzy Comprehensive Evaluation (FCE) with the
+  `mf_*` membership-function family
 - Data Envelopment Analysis (CCR/BCC/SBM, Malmquist)
 - Inequality Measures (Gini, Theil Index)
 - Regional Economics (LQ/HHI/EG Index)

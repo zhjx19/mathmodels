@@ -1,7 +1,7 @@
 # Evaluation Algorithms — Weighting Methods
 #
-# Includes: AHP, combine_weights, critic_weight, cv_weight,
-# entropy_weight, linear_sum, and pca_weight
+# Includes: AHP, combine_weights, weight_critic, weight_cv,
+# weight_entropy, linear_sum, and weight_pca
 #
 
 
@@ -141,7 +141,7 @@ combine_weights = function(w_subj, w_obj, type = "linear", alpha = 0.5) {
 
 
 # ============================================================================
-# critic_weight — CRITIC 权重法
+# weight_critic — CRITIC 权重法
 # ============================================================================
 
 #' @title CRITIC Weight Method
@@ -179,10 +179,10 @@ combine_weights = function(w_subj, w_obj, type = "linear", alpha = 0.5) {
 #'   x2 = c(10, 20, 15, 25)
 #' )
 #' index = c("+", "-")
-#' critic_weight(X, index)
-#' critic_weight(X, index, method = "entropy")
+#' weight_critic(X, index)
+#' weight_critic(X, index, method = "entropy")
 
-critic_weight = function(X, index = NULL, method = "std",
+weight_critic = function(X, index = NULL, method = "std",
                          cor_method = "pearson", epsilon = 0.002) {
   if(!is.data.frame(X) && !is.matrix(X))
     stop("X must be a data frame or matrix.")
@@ -213,7 +213,7 @@ critic_weight = function(X, index = NULL, method = "std",
     "std" = apply(X, 2, stats::sd),
     "entropy" = {
       if (any(X < 0))
-        stop("critic_weight() method = 'entropy' requires non-negative data.")
+        stop("weight_critic() method = 'entropy' requires non-negative data.")
       X[X == 0] = epsilon
 
       X[X == 1] = 1 - epsilon
@@ -234,7 +234,7 @@ critic_weight = function(X, index = NULL, method = "std",
 
 
 # ============================================================================
-# cv_weight — 变异系数权重法
+# weight_cv — 变异系数权重法
 # ============================================================================
 
 #' Coefficient of Variation Weighting
@@ -249,7 +249,7 @@ critic_weight = function(X, index = NULL, method = "std",
 #' @return Numeric vector of weights for the indicators, summing to 1.
 #'
 #' @details
-#' The `cv_weight` function calculates weights using the CV method.
+#' The `weight_cv` function calculates weights using the CV method.
 #' For each column in `data`, the CV is computed as the standard deviation
 #' divided by the mean. Weights are obtained by normalizing the CVs to sum to 1.
 #' This lightweight implementation uses base R and assumes all columns are numeric
@@ -257,10 +257,10 @@ critic_weight = function(X, index = NULL, method = "std",
 #'
 #' @examples
 #' X = data.frame(x1 = c(10, 20, 15), x2 = c(5, 10, 8))
-#' cv_weight(X)
+#' weight_cv(X)
 #'
 #' @export
-cv_weight = function(X) {
+weight_cv = function(X) {
   if(!is.data.frame(X) && !is.matrix(X))
     stop("X must be a data frame or matrix.")
   if(ncol(X) < 2)
@@ -277,7 +277,7 @@ cv_weight = function(X) {
 
 
 # ============================================================================
-# entropy_weight — 熵权法
+# weight_entropy — 熵权法
 # ============================================================================
 
 #' @title Entropy Weight Method
@@ -313,10 +313,10 @@ cv_weight = function(X) {
 #'   x2 = c(10, 20, 15, 25)
 #' )
 #' index = c("+", "-")
-#' entropy_weight(X, index)
+#' weight_entropy(X, index)
 #'
 
-entropy_weight = function(X, index = NULL, epsilon = 0.002) {
+weight_entropy = function(X, index = NULL, epsilon = 0.002) {
   if(!is.data.frame(X) && !is.matrix(X))
     stop("X must be a data frame or matrix.")
   if (is.matrix(X)) X = as.data.frame(X)
@@ -345,7 +345,7 @@ entropy_weight = function(X, index = NULL, epsilon = 0.002) {
   X[,neg] = lapply(X[,neg, drop = FALSE],
                     function(x) rescale(x, type = "-", a = epsilon, b = 1-epsilon))
   # Compute proportion p(i,j) of sample i in indicator j
-  if (any(X < 0)) stop("entropy_weight() requires non-negative data.")
+  if (any(X < 0)) stop("weight_entropy() requires non-negative data.")
   P = data.frame(lapply(X, function(x) x / sum(x)))
   # Compute entropy e(j) for each indicator j
   e = sapply(P, \(x) -sum(x * log(x)) / log(nrow(P)))
@@ -354,6 +354,122 @@ entropy_weight = function(X, index = NULL, epsilon = 0.002) {
   # Compute sample scores
   s = as.vector(100 * as.matrix(X) %*% w)
   list(w = w, s = s)
+}
+
+
+# ============================================================================
+# weight_fa — 因子分析权重法
+# ============================================================================
+
+#' @title Factor-Analysis-Based Weighting Method
+#'
+#' @description Computes indicator weights via exploratory factor analysis
+#' (`stats::factanal`). The (optionally rotated) loading matrix is combined
+#' with the variance share of each factor to derive objective weights:
+#' \deqn{w_j \propto \sum_i \mathrm{share}_i \cdot |a_{ji}|}
+#' where \eqn{a_{ji}} is the loading of indicator \eqn{j} on factor \eqn{i}
+#' and \code{share_i} is the proportion of total variance explained by
+#' factor \eqn{i}. Optionally handles positive/negative indicator directions
+#' and supports pre-standardized data.
+#'
+#' @param X A numeric data frame or matrix where rows represent samples and
+#'          columns represent indicators.
+#' @param index A character vector indicating the direction of each indicator.
+#'              Use `"+"` for positive indicators (higher is better),
+#'              `"-"` for negative indicators (lower is better),
+#'              and `NA` for already standardized indicators (no
+#'              standardization will be applied).
+#'              If `index = NULL` (default), all indicators are treated as
+#'              `NA`, meaning no standardization is performed.
+#' @param nfs Number of common factors to extract; must be at least 1 and
+#'        smaller than the number of indicators (default 1).
+#' @param rotation Rotation passed to `stats::factanal`: `"varimax"`
+#'        (default), `"promax"`, `"none"`, or the name of any available
+#'        rotation function.
+#' @param method Weighting method: `"abs"` uses absolute loadings
+#'        \eqn{|a_{ji}|} (default), `"squared"` uses \eqn{a_{ji}^2}.
+#'
+#' @return A list containing:
+#' \item{w}{Numeric vector of normalized weights for each indicator.}
+#' \item{s}{Numeric vector of scores for each sample.}
+#' \item{loading}{The (rotated) loading matrix.}
+#' \item{share}{Variance share of each retained factor.}
+#' \item{uniqueness}{Uniquenesses of the indicators.}
+#'
+#' @examples
+#' set.seed(1)
+#' X = data.frame(x1 = rnorm(50), x2 = rnorm(50), x3 = rnorm(50))
+#' weight_fa(X, nfs = 1)
+#'
+#' @export
+weight_fa = function(X, index = NULL, nfs = 1, rotation = "varimax",
+                     method = "abs") {
+  if (!is.data.frame(X) && !is.matrix(X))
+    stop("X must be a data frame or matrix.")
+  X = as.data.frame(X)
+  if (anyNA(X))
+    stop("X must not contain NA.")
+  if (ncol(X) < 2)
+    stop("X must have at least 2 columns.")
+  if (nrow(X) < 2)
+    stop("X must have at least 2 rows.")
+  if (!all(vapply(X, is.numeric, logical(1))))
+    stop("X must be all numeric.")
+  if (!is.null(index) && length(index) != ncol(X))
+    stop("index must have length equal to ncol(X), or be NULL.")
+  if (is.null(index)) index = rep(NA, ncol(X))
+  if (!all(is.na(index) | index %in% c("+", "-")))
+    stop('index must contain only "+", "-", or NA')
+  if (!is.numeric(nfs) || length(nfs) != 1 || nfs < 1 ||
+      nfs != floor(nfs)) {
+    stop("nfs must be a positive integer.", call. = FALSE)
+  }
+  if (nfs >= ncol(X)) {
+    stop("nfs must be smaller than the number of indicators.",
+         call. = FALSE)
+  }
+  if (nrow(X) <= ncol(X)) {
+    stop("X must have more rows than columns for factor analysis.",
+         call. = FALSE)
+  }
+  if (!method %in% c("abs", "squared")) {
+    stop('method must be "abs" or "squared".', call. = FALSE)
+  }
+  if (!is.character(rotation) || length(rotation) != 1) {
+    stop("rotation must be a single character value.", call. = FALSE)
+  }
+  if (!rotation %in% c("varimax", "promax", "none") &&
+      !exists(rotation, mode = "function", envir = .GlobalEnv)) {
+    stop("rotation must be 'varimax', 'promax', 'none', or the name of ",
+         "an available rotation function.", call. = FALSE)
+  }
+  if (any(vapply(X, function(x) stats::sd(x) == 0, logical(1)))) {
+    stop("X must not contain constant columns.", call. = FALSE)
+  }
+
+  # Standardize (directional) columns
+  idx_std = which(!is.na(index))
+  X[idx_std] = lapply(X[idx_std], function(x) as.vector(scale(x)))
+  neg = which(index == "-")
+  if (length(neg) > 0) {
+    X[, neg] = lapply(X[, neg, drop = FALSE], `*`, -1)
+  }
+
+  fit = stats::factanal(X, factors = nfs, rotation = rotation,
+    scores = "none")
+  A = unclass(fit$loadings)
+  # Variance share of each retained factor (standardized total variance = p)
+  share = colSums(A^2) / ncol(X)
+
+  beta = switch(method,
+    "abs" = abs(A) %*% share,
+    "squared" = (A^2) %*% share)
+  w = as.vector(beta / sum(beta))
+
+  s = as.vector(as.matrix(X) %*% w)
+
+  list(w = w, s = s, loading = A, share = as.vector(share),
+       uniqueness = as.numeric(fit$uniquenesses))
 }
 
 
@@ -391,7 +507,7 @@ linear_sum = function(data, w) {
 
 
 # ============================================================================
-# pca_weight — PCA 权重法
+# weight_pca — PCA 权重法
 # ============================================================================
 
 #' @title PCA-Based Weighting Method
@@ -432,9 +548,9 @@ linear_sum = function(data, w) {
 #' @examples
 #' # Example: Using PCA to compute indicator weights
 #' ind = c("+","+","-","-")
-#' pca_weight(iris[1:10, 1:4], ind, nfs = 2)
+#' weight_pca(iris[1:10, 1:4], ind, nfs = 2)
 
-pca_weight = function(X, index = NULL, nfs = NULL, varimax = TRUE,
+weight_pca = function(X, index = NULL, nfs = NULL, varimax = TRUE,
                       method = "abs") {
   if(!is.data.frame(X) && !is.matrix(X))
     stop("X must be a data frame or matrix.")

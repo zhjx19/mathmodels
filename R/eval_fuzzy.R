@@ -16,44 +16,44 @@
 #' @param x Numeric vector, input values for which to compute membership.
 #' @param params Numeric vector, parameters defining the membership function:
 #' \itemize{
-#'   \item For `tri_mf`: `c(a, b, c)`, where `a < b < c` (left base, peak, right base).
-#'   \item For `trap_mf`: `c(a, b, c, d)`, where `a < b <= c < d` (left base, left top,
+#'   \item For `mf_tri`: `c(a, b, c)`, where `a < b < c` (left base, peak, right base).
+#'   \item For `mf_trap`: `c(a, b, c, d)`, where `a < b <= c < d` (left base, left top,
 #'     right top, right base); one-sided shoulders are supported with
 #'     `a = b = -Inf` (no rise) or `c = d = Inf` (no fall).
-#'   \item For `gauss_mf`: `c(sigma, c)`, where `sigma > 0` (spread, center).
-#'   \item For `gbell_mf`: `c(a, b, c)`, where `a > 0`, `b > 0` (width, shape, center).
-#'   \item For `gauss2mf`: `c(s1, c1, s2, c2)`, where `s1 > 0`, `s2 > 0` (left spread, left center, right spread, right center).
-#'   \item For `sigmoid_mf`: `c(a, b)`, where `a > 0` (slope, inflection point).
-#'   \item For `dsigmoid_mf`: `c(a1, c1, a2, c2)`, where `a1 > 0`, `a2 > 0` (slopes and inflection points for two sigmoids).
-#'   \item For `psigmoid_mf`: `c(a1, c1, a2, c2)`, where `a1 > 0`, `a2 > 0` (slopes and inflection points for two sigmoids).
-#'   \item For `z_mf`: `c(a, b)`, where `a < b` (left base, right base).
-#'   \item For `pi_mf`: `c(a, b, c, d)`, where `a < b <= c < d` (left base, left shoulder, right shoulder, right base).
-#'   \item For `s_mf`: `c(a, b)`, where `a < b` (left base, right base).
+#'   \item For `mf_gauss`: `c(sigma, c)`, where `sigma > 0` (spread, center).
+#'   \item For `mf_gbell`: `c(a, b, c)`, where `a > 0`, `b > 0` (width, shape, center).
+#'   \item For `mf_gauss2`: `c(s1, c1, s2, c2)`, where `s1 > 0`, `s2 > 0` (left spread, left center, right spread, right center).
+#'   \item For `mf_sigmoid`: `c(a, b)`, where `a > 0` (slope, inflection point).
+#'   \item For `mf_dsigmoid`: `c(a1, c1, a2, c2)`, where `a1 > 0`, `a2 > 0` (slopes and inflection points for two sigmoids).
+#'   \item For `mf_psigmoid`: `c(a1, c1, a2, c2)`, where `a1 > 0`, `a2 > 0` (slopes and inflection points for two sigmoids).
+#'   \item For `mf_z`: `c(a, b)`, where `a < b` (left base, right base).
+#'   \item For `mf_pi`: `c(a, b, c, d)`, where `a < b <= c < d` (left base, left shoulder, right shoulder, right base).
+#'   \item For `mf_s`: `c(a, b)`, where `a < b` (left base, right base).
 #' }
-#' @param mf Function, a membership function with fixed parameters (e.g., `function(x) tri_mf(x, c(2, 5, 8))`).
+#' @param mf Function, a membership function with fixed parameters (e.g., `function(x) mf_tri(x, c(2, 5, 8))`).
 #' @param xlim Numeric vector of length 2, x-axis limits for plotting (default `c(0, 10)`).
 #' @param main Character, plot title (default `NULL`, no title).
 #'
 #' @return
 #' \itemize{
-#'   \item For membership functions (`tri_mf`, `trap_mf`, `gauss_mf`, `gbell_mf`, `gauss2mf`, `sigmoid_mf`, `dsigmoid_mf`, `psigmoid_mf`, `z_mf`, `pi_mf`, `s_mf`): A numeric vector of membership values in \code{[0, 1]}, same length as `x`.
+#'   \item For membership functions (`mf_tri`, `mf_trap`, `mf_gauss`, `mf_gbell`, `mf_gauss2`, `mf_sigmoid`, `mf_dsigmoid`, `mf_psigmoid`, `mf_z`, `mf_pi`, `mf_s`): A numeric vector of membership values in \code{[0, 1]}, same length as `x`.
 #'   \item For `plot_mf`: A ggplot2 object, plotting the membership function.
 #' }
 #'
 #' @details
 #' These functions support evaluation models in mathematical modeling:
 #' \itemize{
-#'   \item `tri_mf`: Triangular membership, linear rise from `a` to `b` (peak) and fall to `c`.
-#'   \item `trap_mf`: Trapezoidal membership, linear rise from `a` to `b`, plateau from `b` to `c`, fall to `d`.
-#'   \item `gauss_mf`: Gaussian membership, bell-shaped curve centered at `c` with spread `sigma`.
-#'   \item `gbell_mf`: Generalized bell membership, bell-shaped curve with width `a`, shape `b`, and center `c`.
-#'   \item `gauss2mf`: Two-parameter Gaussian membership, combining two Gaussians with spreads `s1`, `s2` and centers `c1`, `c2`.
-#'   \item `sigmoid_mf`: Sigmoid membership, S-shaped curve with slope `a` and inflection point `b`.
-#'   \item `dsigmoid_mf`: Difference of two sigmoids, combining slopes `a1`, `a2` and inflection points `c1`, `c2`.
-#'   \item `psigmoid_mf`: Product of two sigmoids, combining slopes `a1`, `a2` and inflection points `c1`, `c2`.
-#'   \item `z_mf`: Z-shaped membership, decreasing from 1 at `a` to 0 at `b`.
-#'   \item `pi_mf`: PI-shaped membership, rising from `a` to `b`, plateau from `b` to `c`, falling to `d`.
-#'   \item `s_mf`: S-shaped membership, increasing from 0 at `a` to 1 at `b`.
+#'   \item `mf_tri`: Triangular membership, linear rise from `a` to `b` (peak) and fall to `c`.
+#'   \item `mf_trap`: Trapezoidal membership, linear rise from `a` to `b`, plateau from `b` to `c`, fall to `d`.
+#'   \item `mf_gauss`: Gaussian membership, bell-shaped curve centered at `c` with spread `sigma`.
+#'   \item `mf_gbell`: Generalized bell membership, bell-shaped curve with width `a`, shape `b`, and center `c`.
+#'   \item `mf_gauss2`: Two-parameter Gaussian membership, combining two Gaussians with spreads `s1`, `s2` and centers `c1`, `c2`.
+#'   \item `mf_sigmoid`: Sigmoid membership, S-shaped curve with slope `a` and inflection point `b`.
+#'   \item `mf_dsigmoid`: Difference of two sigmoids, combining slopes `a1`, `a2` and inflection points `c1`, `c2`.
+#'   \item `mf_psigmoid`: Product of two sigmoids, combining slopes `a1`, `a2` and inflection points `c1`, `c2`.
+#'   \item `mf_z`: Z-shaped membership, decreasing from 1 at `a` to 0 at `b`.
+#'   \item `mf_pi`: PI-shaped membership, rising from `a` to `b`, plateau from `b` to `c`, falling to `d`.
+#'   \item `mf_s`: S-shaped membership, increasing from 0 at `a` to 1 at `b`.
 #'   \item `plot_mf`: Plots a membership function over `xlim` using ggplot2, suitable for tidyverse workflows.
 #' }
 #' Membership values can be used to construct fuzzy evaluation matrices for `fuzzy_eval`.
@@ -64,51 +64,51 @@
 #' x = 0:10
 #'
 #' # Triangular membership
-#' tri_mf(x, params = c(3, 6, 8))
+#' mf_tri(x, params = c(3, 6, 8))
 #'
 #' # Trapezoidal membership
-#' trap_mf(x, params = c(1, 5, 7, 8))
+#' mf_trap(x, params = c(1, 5, 7, 8))
 #'
 #' # Gaussian membership
-#' gauss_mf(x, params = c(2, 5))
+#' mf_gauss(x, params = c(2, 5))
 #'
 #' # Generalized bell membership
-#' gbell_mf(x, params = c(2, 4, 6))
+#' mf_gbell(x, params = c(2, 4, 6))
 #'
 #' # Two-parameter Gaussian membership
-#' gauss2mf(x, params = c(1, 3, 3, 4))
+#' mf_gauss2(x, params = c(1, 3, 3, 4))
 #'
 #' # Sigmoid membership
-#' sigmoid_mf(x, params = c(2, 4))
+#' mf_sigmoid(x, params = c(2, 4))
 #'
 #' # Difference of sigmoids membership
-#' dsigmoid_y = dsigmoid_mf(x, params = c(5, 2, 5, 7))
+#' dsigmoid_y = mf_dsigmoid(x, params = c(5, 2, 5, 7))
 #'
 #' # Product of sigmoids membership
-#' psigmoid_mf(x, params = c(2, 3, -5, 8))
+#' mf_psigmoid(x, params = c(2, 3, -5, 8))
 #'
 #' # Z-shaped membership
-#' z_mf(x, params = c(3, 7))
+#' mf_z(x, params = c(3, 7))
 #'
 #' # PI-shaped membership
-#' pi_mf(x, params = c(1, 4, 5, 10))
+#' mf_pi(x, params = c(1, 4, 5, 10))
 #'
 #' # S-shaped membership
-#' s_mf(x, params = c(1, 8))
+#' mf_s(x, params = c(1, 8))
 #'
 #' \dontrun{
 #' # Visualize membership functions
-#' plot_mf(\(x) tri_mf(x, c(3, 6, 8)), main = "Triangular MF")
-#' plot_mf(\(x) trap_mf(x, c(1, 5, 7, 8)), main = "Trapezoidal MF")
-#' plot_mf(\(x) gauss_mf(x, c(2, 5)), main = "Gaussian MF")
-#' plot_mf(\(x) gbell_mf(x, c(2, 4, 6)), main = "Generalized Bell MF")
-#' plot_mf(\(x) gauss2mf(x, c(1, 3, 3, 4)), main = "Two-Parameter Gaussian MF")
-#' plot_mf(\(x) sigmoid_mf(x, c(2, 4)), main = "Sigmoid MF")
-#' plot_mf(\(x) dsigmoid_mf(x, c(5, 2, 5, 7)), main = "Difference of Sigmoids MF")
-#' plot_mf(\(x) psigmoid_mf(x, c(2, 3, -5, 8)), main = "Product of Sigmoids MF")
-#' plot_mf(\(x) z_mf(x, c(3, 7)), main = "Z-Shaped MF")
-#' plot_mf(\(x) pi_mf(x, c(1, 4, 5, 10)), main = "PI-Shaped MF")
-#' plot_mf(\(x) s_mf(x, c(1, 8)), main = "S-Shaped MF")
+#' plot_mf(\(x) mf_tri(x, c(3, 6, 8)), main = "Triangular MF")
+#' plot_mf(\(x) mf_trap(x, c(1, 5, 7, 8)), main = "Trapezoidal MF")
+#' plot_mf(\(x) mf_gauss(x, c(2, 5)), main = "Gaussian MF")
+#' plot_mf(\(x) mf_gbell(x, c(2, 4, 6)), main = "Generalized Bell MF")
+#' plot_mf(\(x) mf_gauss2(x, c(1, 3, 3, 4)), main = "Two-Parameter Gaussian MF")
+#' plot_mf(\(x) mf_sigmoid(x, c(2, 4)), main = "Sigmoid MF")
+#' plot_mf(\(x) mf_dsigmoid(x, c(5, 2, 5, 7)), main = "Difference of Sigmoids MF")
+#' plot_mf(\(x) mf_psigmoid(x, c(2, 3, -5, 8)), main = "Product of Sigmoids MF")
+#' plot_mf(\(x) mf_z(x, c(3, 7)), main = "Z-Shaped MF")
+#' plot_mf(\(x) mf_pi(x, c(1, 4, 5, 10)), main = "PI-Shaped MF")
+#' plot_mf(\(x) mf_s(x, c(1, 8)), main = "S-Shaped MF")
 #' }
 #'
 #' @name membership
@@ -116,7 +116,7 @@ NULL
 
 #' @rdname membership
 #' @export
-tri_mf = function(x, params) {
+mf_tri = function(x, params) {
   if(!is.numeric(x)) stop("x must be a numeric vector.")
   if(!is.numeric(params) || length(params) != 3)
     stop("params must be a numeric vector of length 3.")
@@ -133,7 +133,7 @@ tri_mf = function(x, params) {
 
 #' @rdname membership
 #' @export
-trap_mf = function(x, params) {
+mf_trap = function(x, params) {
   if(!is.numeric(x)) stop("x must be a numeric vector.")
   if(!is.numeric(params) || length(params) != 4)
     stop("params must be a numeric vector of length 4.")
@@ -154,7 +154,7 @@ trap_mf = function(x, params) {
 
 #' @rdname membership
 #' @export
-gauss_mf = function(x, params) {
+mf_gauss = function(x, params) {
   if(!is.numeric(x)) stop("x must be a numeric vector.")
   if(!is.numeric(params) || length(params) != 2)
     stop("params must be a numeric vector of length 2.")
@@ -167,7 +167,7 @@ gauss_mf = function(x, params) {
 
 #' @rdname membership
 #' @export
-gbell_mf = function(x, params) {
+mf_gbell = function(x, params) {
   if(!is.numeric(x)) stop("x must be a numeric vector.")
   if(!is.numeric(params) || length(params) != 3)
     stop("params must be a numeric vector of length 3.")
@@ -181,7 +181,7 @@ gbell_mf = function(x, params) {
 
 #' @rdname membership
 #' @export
-gauss2mf = function(x, params) {
+mf_gauss2 = function(x, params) {
   if(!is.numeric(x)) stop("x must be a numeric vector.")
   if(!is.numeric(params) || length(params) != 4)
     stop("params must be a numeric vector of length 4.")
@@ -200,7 +200,7 @@ sigmoid = function(x, a, b) 1 / (1 + exp(-a * (x - b)))
 
 #' @rdname membership
 #' @export
-sigmoid_mf = function(x, params) {
+mf_sigmoid = function(x, params) {
   if(!is.numeric(x)) stop("x must be a numeric vector.")
   if(!is.numeric(params) || length(params) != 2)
     stop("params must be a numeric vector of length 2.")
@@ -211,7 +211,7 @@ sigmoid_mf = function(x, params) {
 
 #' @rdname membership
 #' @export
-dsigmoid_mf = function(x, params) {
+mf_dsigmoid = function(x, params) {
   if(!is.numeric(x)) stop("x must be a numeric vector.")
   if(!is.numeric(params) || length(params) != 4)
     stop("params must be a numeric vector of length 4.")
@@ -224,7 +224,7 @@ dsigmoid_mf = function(x, params) {
 
 #' @rdname membership
 #' @export
-psigmoid_mf = function(x, params) {
+mf_psigmoid = function(x, params) {
   if(!is.numeric(x)) stop("x must be a numeric vector.")
   if(!is.numeric(params) || length(params) != 4)
     stop("params must be a numeric vector of length 4.")
@@ -237,7 +237,7 @@ psigmoid_mf = function(x, params) {
 
 #' @rdname membership
 #' @export
-z_mf = function(x, params) {
+mf_z = function(x, params) {
   if(!is.numeric(x)) stop("x must be a numeric vector.")
   if(!is.numeric(params) || length(params) != 2)
     stop("params must be a numeric vector of length 2.")
@@ -256,7 +256,7 @@ z_mf = function(x, params) {
 
 #' @rdname membership
 #' @export
-pi_mf = function(x, params) {
+mf_pi = function(x, params) {
   if(!is.numeric(x)) stop("x must be a numeric vector.")
   if(!is.numeric(params) || length(params) != 4)
     stop("params must be a numeric vector of length 4.")
@@ -281,7 +281,7 @@ pi_mf = function(x, params) {
 
 #' @rdname membership
 #' @export
-s_mf = function(x, params) {
+mf_s = function(x, params) {
   if(!is.numeric(x)) stop("x must be a numeric vector.")
   if(!is.numeric(params) || length(params) != 2)
     stop("params must be a numeric vector of length 2.")
@@ -323,15 +323,15 @@ build_mf_tri = function(knots, ...) {
   n = length(knots)
   mfs = vector("list", n)
 
-  mfs[[1]] = function(x) trap_mf(x, c(-Inf, -Inf, knots[1], knots[2]))
+  mfs[[1]] = function(x) mf_trap(x, c(-Inf, -Inf, knots[1], knots[2]))
 
-  mfs[[n]] = function(x) trap_mf(x, c(knots[n - 1], knots[n], Inf, Inf))
+  mfs[[n]] = function(x) mf_trap(x, c(knots[n - 1], knots[n], Inf, Inf))
 
   if (n > 2) {
     i = seq_len(n - 2)
     mfs[2:(n-1)] = lapply(i, function(i) {
       t = knots[i + 0:2]
-      function(x) tri_mf(x, t)
+      function(x) mf_tri(x, t)
     })
   }
 
@@ -358,7 +358,7 @@ build_mf_gauss = function(knots, sigma = NULL, ...) {
   if (n > 2) {
     i = seq_len(n - 2)
     mfs[2:(n-1)] = lapply(i, function(i) {
-      function(x) gauss_mf(x, c(sigma, knots[i + 1]))
+      function(x) mf_gauss(x, c(sigma, knots[i + 1]))
     })
   }
 
@@ -382,18 +382,18 @@ build_mf_sigmoid = function(knots, slope = NULL, ...) {
 
   mfs = vector("list", n)
 
-  mfs[[1]] = function(x) sigmoid_mf(x, c(-slope, knots[1]))
+  mfs[[1]] = function(x) mf_sigmoid(x, c(-slope, knots[1]))
 
   if (n > 2) {
     i = seq_len(n - 2)
     mfs[2:(n-1)] = lapply(i, function(i) {
       cen = knots[i + 1]
       delta = min(cen - knots[i], knots[i + 2] - cen) / 3
-      function(x) dsigmoid_mf(x, c(slope, cen - delta, slope, cen + delta))
+      function(x) mf_dsigmoid(x, c(slope, cen - delta, slope, cen + delta))
     })
   }
 
-  mfs[[n]] = function(x) sigmoid_mf(x, c(slope, knots[n]))
+  mfs[[n]] = function(x) mf_sigmoid(x, c(slope, knots[n]))
 
   mfs
 }

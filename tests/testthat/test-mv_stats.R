@@ -462,6 +462,20 @@ test_that("plot functions validate inputs", {
     plot_mv_scores(mv_pca(mtcars, cyl:carb), group = 1:3),
     "one value per row"
   )
+  expect_error(plot_mv_scree(mv_pca(mtcars, cyl:carb), type = "both"),
+    "should be one of")
+})
+
+test_that("plot_mv_scree draws the requested measure only", {
+  pca = mv_pca(mtcars, cyl:carb)
+  p1 = plot_mv_scree(pca, type = "prop")
+  p2 = plot_mv_scree(pca, type = "cum")
+  d1 = ggplot2::ggplot_build(p1)$data[[1]]$y
+  d2 = ggplot2::ggplot_build(p2)$data[[1]]$y
+  # prop: last point is < 1; cum: monotonically increasing ending at 1
+  expect_lt(max(d1), 1)
+  expect_equal(d2[length(d2)], 1, tolerance = 1e-10)
+  expect_true(all(diff(d2) >= 0))
 })
 
 # ---------------------------------------------------------------------------

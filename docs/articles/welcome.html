@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">mathmodels</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.12</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.13</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -172,7 +172,7 @@ directions are set to <code>NA</code> to avoid repeating the
 normalization process.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">idx</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"+"</span>, <span class="cn">NA</span>, <span class="st">"-"</span>, <span class="cn">NA</span><span class="op">)</span>     <span class="co"># </span></span>
-<span><span class="va">res</span> <span class="op">=</span> <span class="fu"><a href="../reference/entropy_weight.html">entropy_weight</a></span><span class="op">(</span><span class="va">df</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span>, <span class="va">idx</span><span class="op">)</span> </span>
+<span><span class="va">res</span> <span class="op">=</span> <span class="fu"><a href="../reference/weight_entropy.html">weight_entropy</a></span><span class="op">(</span><span class="va">df</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span>, <span class="va">idx</span><span class="op">)</span> </span>
 <span><span class="va">res</span><span class="op">$</span><span class="va">w</span>                         <span class="co"># View calculated weights</span></span></code></pre></div>
 <pre><code><span><span class="co">##        O2        PH      germ  nutrient </span></span>
 <span><span class="co">## 0.3153202 0.1813149 0.3506929 0.1526721</span></span></code></pre>

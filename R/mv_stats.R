@@ -14,11 +14,13 @@
   invisible(TRUE)
 }
 
-# Build the numeric analysis matrix from an already tidy-selected data frame,
-# checking column types and dropping NA rows with bookkeeping. Inputs without
-# meaningful row names (e.g. tibbles) get automatic numeric row labels so that
-# downstream outputs (dendrograms, distance-based plots) stay labelled.
-.mv_matrix = function(sub, arg = "cols", min_cols = 1L) {
+# Tidy-select numeric columns (LQ-style `{{ }}` entry) and build the analysis
+# matrix, checking column types and dropping NA rows with bookkeeping.
+# Inputs without meaningful row names (e.g. tibbles) get automatic numeric row
+# labels so that downstream outputs (dendrograms, distance plots) stay
+# labelled.
+.mv_matrix = function(data, cols, arg = "cols", min_cols = 1L) {
+  sub = dplyr::select(data, {{ cols }})
   nm = names(sub)
   if (length(nm) < min_cols) {
     stop(arg, " must select at least ", min_cols, " column(s).", call. = FALSE)
@@ -246,7 +248,7 @@
 #' @export
 mv_pca = function(data, cols, scale = TRUE, center = TRUE) {
   .mv_frame(data)
-  prep = .mv_matrix(dplyr::select(data, {{ cols }}))
+  prep = .mv_matrix(data, {{ cols }})
   mat = prep$mat
   if (!is.logical(scale) || length(scale) != 1 || !is.logical(center) ||
       length(center) != 1) {
@@ -336,7 +338,7 @@ mv_efa = function(data, cols, factors, rotation = "varimax",
     )
   }
   .mv_frame(data)
-  prep = .mv_matrix(dplyr::select(data, {{ cols }}))
+  prep = .mv_matrix(data, {{ cols }})
   p = length(prep$names)
   if (!is.numeric(factors) || length(factors) != 1 || factors < 1 ||
       factors != floor(factors)) {
@@ -450,7 +452,7 @@ print.mv_efa = function(x, ...) {
 mv_hclust = function(data, cols, k = 3, dist_method = "euclidean",
                      method = "ward.D2", scale = TRUE) {
   .mv_frame(data)
-  prep = .mv_matrix(dplyr::select(data, {{ cols }}))
+  prep = .mv_matrix(data, {{ cols }})
   dist_method = match.arg(dist_method, c(
     "euclidean", "maximum", "manhattan", "canberra", "binary", "minkowski"
   ))
@@ -545,7 +547,7 @@ print.mv_hclust = function(x, ...) {
 mv_kmeans = function(data, cols, centers, nstart = 25, scale = TRUE,
                      iter.max = 100) {
   .mv_frame(data)
-  prep = .mv_matrix(dplyr::select(data, {{ cols }}))
+  prep = .mv_matrix(data, {{ cols }})
   if (!is.numeric(nstart) || length(nstart) != 1 || nstart < 1) {
     stop("nstart must be a positive integer.", call. = FALSE)
   }
@@ -676,7 +678,7 @@ print.mv_kmeans = function(x, ...) {
 mv_cluster_metrics = function(data, cols, cluster, dist_method = "euclidean",
                               scale = TRUE) {
   .mv_frame(data)
-  prep = .mv_matrix(dplyr::select(data, {{ cols }}))
+  prep = .mv_matrix(data, {{ cols }})
   dist_method = match.arg(dist_method, c(
     "euclidean", "maximum", "manhattan", "canberra", "binary", "minkowski"
   ))
@@ -784,21 +786,20 @@ mv_discrim = function(data, group, cols, method = c("lda", "qda"),
                       prior = NULL, newdata = NULL) {
   method = match.arg(method)
   .mv_frame(data)
-  gsub = dplyr::select(data, {{ group }})
-  if (ncol(gsub) != 1) {
+  grp_df = dplyr::select(data, {{ group }})
+  if (ncol(grp_df) != 1) {
     stop("group must select exactly one column.", call. = FALSE)
   }
-  gname = names(gsub)
-  sub = dplyr::select(data, {{ cols }})
-  if (gname %in% names(sub)) {
+  gname = names(grp_df)
+  if (gname %in% names(dplyr::select(data, {{ cols }}))) {
     stop(
       "The grouping column '", gname, "' must not be among the predictors; ",
       "exclude it from cols, e.g. cols = -", gname, ".",
       call. = FALSE
     )
   }
-  prep = .mv_matrix(sub)
-  gv = gsub[[1]]
+  prep = .mv_matrix(data, {{ cols }})
+  gv = grp_df[[1]]
   if (anyNA(gv)) {
     stop("group must not contain NA.", call. = FALSE)
   }
@@ -1068,7 +1069,7 @@ print.mv_corresp = function(x, ...) {
 mv_mds = function(data, cols, k = 2, metric = TRUE,
                   dist_method = "euclidean", scale = TRUE, maxit = 50) {
   .mv_frame(data)
-  prep = .mv_matrix(dplyr::select(data, {{ cols }}))
+  prep = .mv_matrix(data, {{ cols }})
   dist_method = match.arg(dist_method, c(
     "euclidean", "maximum", "manhattan", "canberra", "binary", "minkowski"
   ))
@@ -1168,8 +1169,8 @@ print.mv_mds = function(x, ...) {
 #' @export
 mv_cancor = function(data, x_cols, y_cols, scale = TRUE) {
   .mv_frame(data)
-  px = .mv_matrix(dplyr::select(data, {{ x_cols }}), arg = "x_cols")
-  py = .mv_matrix(dplyr::select(data, {{ y_cols }}), arg = "y_cols")
+  px = .mv_matrix(data, {{ x_cols }}, arg = "x_cols")
+  py = .mv_matrix(data, {{ y_cols }}, arg = "y_cols")
   overlap = intersect(px$names, py$names)
   if (length(overlap) > 0) {
     stop(
@@ -1296,7 +1297,7 @@ print.mv_cancor = function(x, ...) {
 #' @export
 mv_pcor = function(data, cols) {
   .mv_frame(data)
-  prep = .mv_matrix(dplyr::select(data, {{ cols }}))
+  prep = .mv_matrix(data, {{ cols }})
   n = prep$n_used
   p = ncol(prep$mat)
   if (p < 3) {
@@ -1377,38 +1378,42 @@ print.mv_pcor = function(x, ...) {
 
 #' Scree Plot
 #'
-#' Plots the proportion and cumulative proportion of variance explained by
+#' Plots the proportion or cumulative proportion of variance explained by
 #' each component (PCA) or factor (EFA).
 #'
 #' @param x An `mv_pca` or `mv_efa` result.
+#' @param type `"prop"` (default) draws only the per-component proportion of
+#'   variance; `"cum"` draws only the cumulative proportion.
 #'
 #' @return A `ggplot` object.
 #'
 #' @examples
 #' r = mv_pca(mtcars, cyl:carb)
 #' plot_mv_scree(r)
+#' plot_mv_scree(r, type = "cum")
 #' @export
-plot_mv_scree = function(x) {
+plot_mv_scree = function(x, type = c("prop", "cum")) {
   if (!inherits(x, c("mv_pca", "mv_efa"))) {
     stop("x must be an mv_pca or mv_efa result.", call. = FALSE)
   }
+  type = match.arg(type)
   v = x$variance
   comp_name = names(v)[1]
+  value = if (type == "prop") v$prop_var else v$cum_var
+  y_lab = if (type == "prop") "Proportion of variance"
+    else "Cumulative proportion of variance"
   long = tibble::tibble(
-    component = rep(factor(v[[1]], levels = v[[1]]), 2),
-    measure = rep(c("Proportion", "Cumulative"), each = nrow(v)),
-    value = c(v$prop_var, v$cum_var)
+    component = factor(v[[1]], levels = v[[1]]),
+    value = value
   )
   ggplot2::ggplot(long, ggplot2::aes(
-    x = .data$component, y = .data$value,
-    group = .data$measure, color = .data$measure
+    x = .data$component, y = .data$value
   )) +
-    ggplot2::geom_line() +
-    ggplot2::geom_point() +
+    ggplot2::geom_line(color = "steelblue") +
+    ggplot2::geom_point(color = "steelblue") +
     ggplot2::labs(
       x = comp_name,
-      y = "Proportion of variance",
-      color = NULL
+      y = y_lab
     ) +
     ggplot2::theme_minimal()
 }
@@ -1601,7 +1606,7 @@ plot_mv_elbow = function(data, cols, max_k = 10,
                          hclust_method = "ward.D2", scale = TRUE) {
   method = match.arg(method)
   .mv_frame(data)
-  prep = .mv_matrix(dplyr::select(data, {{ cols }}))
+  prep = .mv_matrix(data, {{ cols }})
   if (scale) .mv_check_constant(prep$mat)
   mat = if (scale) .mv_scale(prep$mat) else prep$mat
   n = nrow(mat)

@@ -1,3 +1,45 @@
+# mathmodels 0.0.13
+
+## Statistical inference toolkit (new)
+
+- **Hypothesis tests** (`stat_infer.R`): tidy data frames in, tidy tibbles
+  out (one row per test, `stat_infer` class with a labelled print).
+  - `stat_t_test()` / `stat_wilcox_test()`: one-sample, two-sample (Welch or
+    pooled), and paired tests with Cohen's d / rank-biserial effects;
+    Wilcoxon signed-rank and Mann-Whitney U as the nonparametric counterparts.
+  - `stat_anova()` (multi-factor with interactions, partial eta-squared),
+    `stat_kruskal()` (epsilon-squared), `stat_ancova()` (with an optional
+    parallel-slopes check), `stat_cor()` (Pearson/Spearman/Kendall with
+    p-adjustment), `stat_chisq()` (Cramer's V, low-expected-frequency
+    warning, Fisher exact option), `stat_normality()` (Shapiro-Wilk plus
+    skewness/kurtosis), `stat_hov_test()` (Levene/Bartlett/F).
+  - All tests support `.by` slice grouping (repeat the test within each
+    slice) and multi-column loops with `p_adjust`.
+  - `stat_describe()`: grouped descriptive statistics.
+- **Generic frameworks**: `stat_bootstrap()` built on `boot::boot()` /
+  `boot::boot.ci()` (BCa / percentile / basic CIs, parallel support) and
+  `stat_perm_test()` (label / sign-flip / shuffle permutations with +1
+  corrected p-values; custom `function(data, indices)` statistics).
+- **`export_table()`**: three-line (booktabs) table export to Word
+  (`flextable`) and LaTeX from descriptive statistics, `stat_*` results,
+  and `reg_*()` regression results.
+- **Dependencies** (new): `boot`, `flextable`.
+
+## Breaking changes
+
+- **Renamed** the weighting functions to a `weight_*` prefix:
+  `critic_weight()` → `weight_critic()`, `cv_weight()` → `weight_cv()`,
+  `entropy_weight()` → `weight_entropy()`, `pca_weight()` → `weight_pca()`.
+  **New**: `weight_fa()` — factor-analysis-based objective weighting
+  (`stats::factanal` loadings combined with per-factor variance shares;
+  counterpart of `weight_pca()`).
+- **Renamed** the membership functions to an `mf_*` prefix:
+  `tri_mf()` → `mf_tri()`, `trap_mf()` → `mf_trap()`,
+  `gauss_mf()` → `mf_gauss()`, `gbell_mf()` → `mf_gbell()`,
+  `gauss2mf()` → `mf_gauss2()`, `sigmoid_mf()` → `mf_sigmoid()`,
+  `dsigmoid_mf()` → `mf_dsigmoid()`, `psigmoid_mf()` → `mf_psigmoid()`,
+  `z_mf()` → `mf_z()`, `pi_mf()` → `mf_pi()`, `s_mf()` → `mf_s()`.
+
 # mathmodels 0.0.12
 
 ## Breaking changes

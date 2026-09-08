@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">mathmodels</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.12</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.13</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -44,27 +44,27 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">tri_mf</span><span class="op">(</span><span class="va">x</span>, <span class="va">params</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">mf_tri</span><span class="op">(</span><span class="va">x</span>, <span class="va">params</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">trap_mf</span><span class="op">(</span><span class="va">x</span>, <span class="va">params</span><span class="op">)</span></span>
+<span><span class="fu">mf_trap</span><span class="op">(</span><span class="va">x</span>, <span class="va">params</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">gauss_mf</span><span class="op">(</span><span class="va">x</span>, <span class="va">params</span><span class="op">)</span></span>
+<span><span class="fu">mf_gauss</span><span class="op">(</span><span class="va">x</span>, <span class="va">params</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">gbell_mf</span><span class="op">(</span><span class="va">x</span>, <span class="va">params</span><span class="op">)</span></span>
+<span><span class="fu">mf_gbell</span><span class="op">(</span><span class="va">x</span>, <span class="va">params</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">gauss2mf</span><span class="op">(</span><span class="va">x</span>, <span class="va">params</span><span class="op">)</span></span>
+<span><span class="fu">mf_gauss2</span><span class="op">(</span><span class="va">x</span>, <span class="va">params</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">sigmoid_mf</span><span class="op">(</span><span class="va">x</span>, <span class="va">params</span><span class="op">)</span></span>
+<span><span class="fu">mf_sigmoid</span><span class="op">(</span><span class="va">x</span>, <span class="va">params</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">dsigmoid_mf</span><span class="op">(</span><span class="va">x</span>, <span class="va">params</span><span class="op">)</span></span>
+<span><span class="fu">mf_dsigmoid</span><span class="op">(</span><span class="va">x</span>, <span class="va">params</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">psigmoid_mf</span><span class="op">(</span><span class="va">x</span>, <span class="va">params</span><span class="op">)</span></span>
+<span><span class="fu">mf_psigmoid</span><span class="op">(</span><span class="va">x</span>, <span class="va">params</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">z_mf</span><span class="op">(</span><span class="va">x</span>, <span class="va">params</span><span class="op">)</span></span>
+<span><span class="fu">mf_z</span><span class="op">(</span><span class="va">x</span>, <span class="va">params</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">pi_mf</span><span class="op">(</span><span class="va">x</span>, <span class="va">params</span><span class="op">)</span></span>
+<span><span class="fu">mf_pi</span><span class="op">(</span><span class="va">x</span>, <span class="va">params</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">s_mf</span><span class="op">(</span><span class="va">x</span>, <span class="va">params</span><span class="op">)</span></span>
+<span><span class="fu">mf_s</span><span class="op">(</span><span class="va">x</span>, <span class="va">params</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">plot_mf</span><span class="op">(</span><span class="va">mf</span>, xlim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">10</span><span class="op">)</span>, main <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -78,24 +78,24 @@
 
 
 <dt id="arg-params">params<a class="anchor" aria-label="anchor" href="#arg-params"></a></dt>
-<dd><p>Numeric vector, parameters defining the membership function:</p><ul><li><p>For <code>tri_mf</code>: <code>c(a, b, c)</code>, where <code>a &lt; b &lt; c</code> (left base, peak, right base).</p></li>
-<li><p>For <code>trap_mf</code>: <code>c(a, b, c, d)</code>, where <code>a &lt; b &lt;= c &lt; d</code> (left base, left top,
+<dd><p>Numeric vector, parameters defining the membership function:</p><ul><li><p>For <code>mf_tri</code>: <code>c(a, b, c)</code>, where <code>a &lt; b &lt; c</code> (left base, peak, right base).</p></li>
+<li><p>For <code>mf_trap</code>: <code>c(a, b, c, d)</code>, where <code>a &lt; b &lt;= c &lt; d</code> (left base, left top,
 right top, right base); one-sided shoulders are supported with
 <code>a = b = -Inf</code> (no rise) or <code>c = d = Inf</code> (no fall).</p></li>
-<li><p>For <code>gauss_mf</code>: <code>c(sigma, c)</code>, where <code>sigma &gt; 0</code> (spread, center).</p></li>
-<li><p>For <code>gbell_mf</code>: <code>c(a, b, c)</code>, where <code>a &gt; 0</code>, <code>b &gt; 0</code> (width, shape, center).</p></li>
-<li><p>For <code>gauss2mf</code>: <code>c(s1, c1, s2, c2)</code>, where <code>s1 &gt; 0</code>, <code>s2 &gt; 0</code> (left spread, left center, right spread, right center).</p></li>
-<li><p>For <code>sigmoid_mf</code>: <code>c(a, b)</code>, where <code>a &gt; 0</code> (slope, inflection point).</p></li>
-<li><p>For <code>dsigmoid_mf</code>: <code>c(a1, c1, a2, c2)</code>, where <code>a1 &gt; 0</code>, <code>a2 &gt; 0</code> (slopes and inflection points for two sigmoids).</p></li>
-<li><p>For <code>psigmoid_mf</code>: <code>c(a1, c1, a2, c2)</code>, where <code>a1 &gt; 0</code>, <code>a2 &gt; 0</code> (slopes and inflection points for two sigmoids).</p></li>
-<li><p>For <code>z_mf</code>: <code>c(a, b)</code>, where <code>a &lt; b</code> (left base, right base).</p></li>
-<li><p>For <code>pi_mf</code>: <code>c(a, b, c, d)</code>, where <code>a &lt; b &lt;= c &lt; d</code> (left base, left shoulder, right shoulder, right base).</p></li>
-<li><p>For <code>s_mf</code>: <code>c(a, b)</code>, where <code>a &lt; b</code> (left base, right base).</p></li>
+<li><p>For <code>mf_gauss</code>: <code>c(sigma, c)</code>, where <code>sigma &gt; 0</code> (spread, center).</p></li>
+<li><p>For <code>mf_gbell</code>: <code>c(a, b, c)</code>, where <code>a &gt; 0</code>, <code>b &gt; 0</code> (width, shape, center).</p></li>
+<li><p>For <code>mf_gauss2</code>: <code>c(s1, c1, s2, c2)</code>, where <code>s1 &gt; 0</code>, <code>s2 &gt; 0</code> (left spread, left center, right spread, right center).</p></li>
+<li><p>For <code>mf_sigmoid</code>: <code>c(a, b)</code>, where <code>a &gt; 0</code> (slope, inflection point).</p></li>
+<li><p>For <code>mf_dsigmoid</code>: <code>c(a1, c1, a2, c2)</code>, where <code>a1 &gt; 0</code>, <code>a2 &gt; 0</code> (slopes and inflection points for two sigmoids).</p></li>
+<li><p>For <code>mf_psigmoid</code>: <code>c(a1, c1, a2, c2)</code>, where <code>a1 &gt; 0</code>, <code>a2 &gt; 0</code> (slopes and inflection points for two sigmoids).</p></li>
+<li><p>For <code>mf_z</code>: <code>c(a, b)</code>, where <code>a &lt; b</code> (left base, right base).</p></li>
+<li><p>For <code>mf_pi</code>: <code>c(a, b, c, d)</code>, where <code>a &lt; b &lt;= c &lt; d</code> (left base, left shoulder, right shoulder, right base).</p></li>
+<li><p>For <code>mf_s</code>: <code>c(a, b)</code>, where <code>a &lt; b</code> (left base, right base).</p></li>
 </ul></dd>
 
 
 <dt id="arg-mf">mf<a class="anchor" aria-label="anchor" href="#arg-mf"></a></dt>
-<dd><p>Function, a membership function with fixed parameters (e.g., <code>function(x) tri_mf(x, c(2, 5, 8))</code>).</p></dd>
+<dd><p>Function, a membership function with fixed parameters (e.g., <code>function(x) mf_tri(x, c(2, 5, 8))</code>).</p></dd>
 
 
 <dt id="arg-xlim">xlim<a class="anchor" aria-label="anchor" href="#arg-xlim"></a></dt>
@@ -109,22 +109,22 @@ right top, right base); one-sided shoulders are supported with
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
 
-<ul><li><p>For membership functions (<code>tri_mf</code>, <code>trap_mf</code>, <code>gauss_mf</code>, <code>gbell_mf</code>, <code>gauss2mf</code>, <code>sigmoid_mf</code>, <code>dsigmoid_mf</code>, <code>psigmoid_mf</code>, <code>z_mf</code>, <code>pi_mf</code>, <code>s_mf</code>): A numeric vector of membership values in <code>[0, 1]</code>, same length as <code>x</code>.</p></li>
+<ul><li><p>For membership functions (<code>mf_tri</code>, <code>mf_trap</code>, <code>mf_gauss</code>, <code>mf_gbell</code>, <code>mf_gauss2</code>, <code>mf_sigmoid</code>, <code>mf_dsigmoid</code>, <code>mf_psigmoid</code>, <code>mf_z</code>, <code>mf_pi</code>, <code>mf_s</code>): A numeric vector of membership values in <code>[0, 1]</code>, same length as <code>x</code>.</p></li>
 <li><p>For <code>plot_mf</code>: A ggplot2 object, plotting the membership function.</p></li>
 </ul></div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>These functions support evaluation models in mathematical modeling:</p><ul><li><p><code>tri_mf</code>: Triangular membership, linear rise from <code>a</code> to <code>b</code> (peak) and fall to <code>c</code>.</p></li>
-<li><p><code>trap_mf</code>: Trapezoidal membership, linear rise from <code>a</code> to <code>b</code>, plateau from <code>b</code> to <code>c</code>, fall to <code>d</code>.</p></li>
-<li><p><code>gauss_mf</code>: Gaussian membership, bell-shaped curve centered at <code>c</code> with spread <code>sigma</code>.</p></li>
-<li><p><code>gbell_mf</code>: Generalized bell membership, bell-shaped curve with width <code>a</code>, shape <code>b</code>, and center <code>c</code>.</p></li>
-<li><p><code>gauss2mf</code>: Two-parameter Gaussian membership, combining two Gaussians with spreads <code>s1</code>, <code>s2</code> and centers <code>c1</code>, <code>c2</code>.</p></li>
-<li><p><code>sigmoid_mf</code>: Sigmoid membership, S-shaped curve with slope <code>a</code> and inflection point <code>b</code>.</p></li>
-<li><p><code>dsigmoid_mf</code>: Difference of two sigmoids, combining slopes <code>a1</code>, <code>a2</code> and inflection points <code>c1</code>, <code>c2</code>.</p></li>
-<li><p><code>psigmoid_mf</code>: Product of two sigmoids, combining slopes <code>a1</code>, <code>a2</code> and inflection points <code>c1</code>, <code>c2</code>.</p></li>
-<li><p><code>z_mf</code>: Z-shaped membership, decreasing from 1 at <code>a</code> to 0 at <code>b</code>.</p></li>
-<li><p><code>pi_mf</code>: PI-shaped membership, rising from <code>a</code> to <code>b</code>, plateau from <code>b</code> to <code>c</code>, falling to <code>d</code>.</p></li>
-<li><p><code>s_mf</code>: S-shaped membership, increasing from 0 at <code>a</code> to 1 at <code>b</code>.</p></li>
+    <p>These functions support evaluation models in mathematical modeling:</p><ul><li><p><code>mf_tri</code>: Triangular membership, linear rise from <code>a</code> to <code>b</code> (peak) and fall to <code>c</code>.</p></li>
+<li><p><code>mf_trap</code>: Trapezoidal membership, linear rise from <code>a</code> to <code>b</code>, plateau from <code>b</code> to <code>c</code>, fall to <code>d</code>.</p></li>
+<li><p><code>mf_gauss</code>: Gaussian membership, bell-shaped curve centered at <code>c</code> with spread <code>sigma</code>.</p></li>
+<li><p><code>mf_gbell</code>: Generalized bell membership, bell-shaped curve with width <code>a</code>, shape <code>b</code>, and center <code>c</code>.</p></li>
+<li><p><code>mf_gauss2</code>: Two-parameter Gaussian membership, combining two Gaussians with spreads <code>s1</code>, <code>s2</code> and centers <code>c1</code>, <code>c2</code>.</p></li>
+<li><p><code>mf_sigmoid</code>: Sigmoid membership, S-shaped curve with slope <code>a</code> and inflection point <code>b</code>.</p></li>
+<li><p><code>mf_dsigmoid</code>: Difference of two sigmoids, combining slopes <code>a1</code>, <code>a2</code> and inflection points <code>c1</code>, <code>c2</code>.</p></li>
+<li><p><code>mf_psigmoid</code>: Product of two sigmoids, combining slopes <code>a1</code>, <code>a2</code> and inflection points <code>c1</code>, <code>c2</code>.</p></li>
+<li><p><code>mf_z</code>: Z-shaped membership, decreasing from 1 at <code>a</code> to 0 at <code>b</code>.</p></li>
+<li><p><code>mf_pi</code>: PI-shaped membership, rising from <code>a</code> to <code>b</code>, plateau from <code>b</code> to <code>c</code>, falling to <code>d</code>.</p></li>
+<li><p><code>mf_s</code>: S-shaped membership, increasing from 0 at <code>a</code> to 1 at <code>b</code>.</p></li>
 <li><p><code>plot_mf</code>: Plots a membership function over <code>xlim</code> using ggplot2, suitable for tidyverse workflows.</p></li>
 </ul><p>Membership values can be used to construct fuzzy evaluation matrices for <code>fuzzy_eval</code>.
 Implemented in base R, except <code>plot_mf</code>, which requires ggplot2.</p>
@@ -136,72 +136,72 @@ Implemented in base R, except <code>plot_mf</code>, which requires ggplot2.</p>
 <span class="r-in"><span><span class="va">x</span> <span class="op">=</span> <span class="fl">0</span><span class="op">:</span><span class="fl">10</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Triangular membership</span></span></span>
-<span class="r-in"><span><span class="fu">tri_mf</span><span class="op">(</span><span class="va">x</span>, params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">6</span>, <span class="fl">8</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">mf_tri</span><span class="op">(</span><span class="va">x</span>, params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">6</span>, <span class="fl">8</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [1] 0.0000000 0.0000000 0.0000000 0.0000000 0.3333333 0.6666667 1.0000000</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [8] 0.5000000 0.0000000 0.0000000 0.0000000</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Trapezoidal membership</span></span></span>
-<span class="r-in"><span><span class="fu">trap_mf</span><span class="op">(</span><span class="va">x</span>, params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">5</span>, <span class="fl">7</span>, <span class="fl">8</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">mf_trap</span><span class="op">(</span><span class="va">x</span>, params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">5</span>, <span class="fl">7</span>, <span class="fl">8</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [1] 0.00 0.00 0.25 0.50 0.75 1.00 1.00 1.00 0.00 0.00 0.00</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Gaussian membership</span></span></span>
-<span class="r-in"><span><span class="fu">gauss_mf</span><span class="op">(</span><span class="va">x</span>, params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">5</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">mf_gauss</span><span class="op">(</span><span class="va">x</span>, params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">5</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [1] 0.04393693 0.13533528 0.32465247 0.60653066 0.88249690 1.00000000</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [7] 0.88249690 0.60653066 0.32465247 0.13533528 0.04393693</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Generalized bell membership</span></span></span>
-<span class="r-in"><span><span class="fu">gbell_mf</span><span class="op">(</span><span class="va">x</span>, params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">4</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">mf_gbell</span><span class="op">(</span><span class="va">x</span>, params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">4</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [1] 0.0001523926 0.0006549308 0.0038910506 0.0375531759 0.5000000000</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [6] 0.9961089494 1.0000000000 0.9961089494 0.5000000000 0.0375531759</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [11] 0.0038910506</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Two-parameter Gaussian membership</span></span></span>
-<span class="r-in"><span><span class="fu">gauss2mf</span><span class="op">(</span><span class="va">x</span>, params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">3</span>, <span class="fl">3</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">mf_gauss2</span><span class="op">(</span><span class="va">x</span>, params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">3</span>, <span class="fl">3</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [1] 0.0111090 0.1353353 0.6065307 1.0000000 1.0000000 0.9459595 0.8007374</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [8] 0.6065307 0.4111123 0.2493522 0.1353353</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Sigmoid membership</span></span></span>
-<span class="r-in"><span><span class="fu">sigmoid_mf</span><span class="op">(</span><span class="va">x</span>, params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">mf_sigmoid</span><span class="op">(</span><span class="va">x</span>, params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [1] 0.0003353501 0.0024726232 0.0179862100 0.1192029220 0.5000000000</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [6] 0.8807970780 0.9820137900 0.9975273768 0.9996646499 0.9999546021</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [11] 0.9999938558</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Difference of sigmoids membership</span></span></span>
-<span class="r-in"><span><span class="va">dsigmoid_y</span> <span class="op">=</span> <span class="fu">dsigmoid_mf</span><span class="op">(</span><span class="va">x</span>, params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">2</span>, <span class="fl">5</span>, <span class="fl">7</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">dsigmoid_y</span> <span class="op">=</span> <span class="fu">mf_dsigmoid</span><span class="op">(</span><span class="va">x</span>, params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">2</span>, <span class="fl">5</span>, <span class="fl">7</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Product of sigmoids membership</span></span></span>
-<span class="r-in"><span><span class="fu">psigmoid_mf</span><span class="op">(</span><span class="va">x</span>, params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">3</span>, <span class="op">-</span><span class="fl">5</span>, <span class="fl">8</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">mf_psigmoid</span><span class="op">(</span><span class="va">x</span>, params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">3</span>, <span class="op">-</span><span class="fl">5</span>, <span class="fl">8</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [1] 2.472623e-03 1.798621e-02 1.192029e-01 5.000000e-01 8.807971e-01</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [6] 9.820135e-01 9.974821e-01 9.929740e-01 4.999773e-01 6.692810e-03</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [11] 4.539783e-05</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Z-shaped membership</span></span></span>
-<span class="r-in"><span><span class="fu">z_mf</span><span class="op">(</span><span class="va">x</span>, params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">7</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">mf_z</span><span class="op">(</span><span class="va">x</span>, params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">7</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [1] 1.000 1.000 1.000 1.000 0.875 0.500 0.125 0.000 0.000 0.000 0.000</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># PI-shaped membership</span></span></span>
-<span class="r-in"><span><span class="fu">pi_mf</span><span class="op">(</span><span class="va">x</span>, params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">4</span>, <span class="fl">5</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">mf_pi</span><span class="op">(</span><span class="va">x</span>, params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">4</span>, <span class="fl">5</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [1] 0.0000000 0.0000000 0.2222222 0.7777778 1.0000000 1.0000000 0.9200000</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [8] 0.6800000 0.3200000 0.0800000 0.0000000</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># S-shaped membership</span></span></span>
-<span class="r-in"><span><span class="fu">s_mf</span><span class="op">(</span><span class="va">x</span>, params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">8</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">mf_s</span><span class="op">(</span><span class="va">x</span>, params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">8</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [1] 0.00000000 0.00000000 0.04081633 0.16326531 0.36734694 0.63265306</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [7] 0.83673469 0.95918367 1.00000000 1.00000000 1.00000000</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
 <span class="r-in"><span><span class="co"># Visualize membership functions</span></span></span>
-<span class="r-in"><span><span class="fu">plot_mf</span><span class="op">(</span>\<span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu">tri_mf</span><span class="op">(</span><span class="va">x</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">6</span>, <span class="fl">8</span><span class="op">)</span><span class="op">)</span>, main <span class="op">=</span> <span class="st">"Triangular MF"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">plot_mf</span><span class="op">(</span>\<span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu">trap_mf</span><span class="op">(</span><span class="va">x</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">5</span>, <span class="fl">7</span>, <span class="fl">8</span><span class="op">)</span><span class="op">)</span>, main <span class="op">=</span> <span class="st">"Trapezoidal MF"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">plot_mf</span><span class="op">(</span>\<span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu">gauss_mf</span><span class="op">(</span><span class="va">x</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">5</span><span class="op">)</span><span class="op">)</span>, main <span class="op">=</span> <span class="st">"Gaussian MF"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">plot_mf</span><span class="op">(</span>\<span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu">gbell_mf</span><span class="op">(</span><span class="va">x</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">4</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span>, main <span class="op">=</span> <span class="st">"Generalized Bell MF"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">plot_mf</span><span class="op">(</span>\<span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu">gauss2mf</span><span class="op">(</span><span class="va">x</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">3</span>, <span class="fl">3</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span>, main <span class="op">=</span> <span class="st">"Two-Parameter Gaussian MF"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">plot_mf</span><span class="op">(</span>\<span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu">sigmoid_mf</span><span class="op">(</span><span class="va">x</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span>, main <span class="op">=</span> <span class="st">"Sigmoid MF"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">plot_mf</span><span class="op">(</span>\<span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu">dsigmoid_mf</span><span class="op">(</span><span class="va">x</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">2</span>, <span class="fl">5</span>, <span class="fl">7</span><span class="op">)</span><span class="op">)</span>, main <span class="op">=</span> <span class="st">"Difference of Sigmoids MF"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">plot_mf</span><span class="op">(</span>\<span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu">psigmoid_mf</span><span class="op">(</span><span class="va">x</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">3</span>, <span class="op">-</span><span class="fl">5</span>, <span class="fl">8</span><span class="op">)</span><span class="op">)</span>, main <span class="op">=</span> <span class="st">"Product of Sigmoids MF"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">plot_mf</span><span class="op">(</span>\<span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu">z_mf</span><span class="op">(</span><span class="va">x</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">7</span><span class="op">)</span><span class="op">)</span>, main <span class="op">=</span> <span class="st">"Z-Shaped MF"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">plot_mf</span><span class="op">(</span>\<span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu">pi_mf</span><span class="op">(</span><span class="va">x</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">4</span>, <span class="fl">5</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span>, main <span class="op">=</span> <span class="st">"PI-Shaped MF"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">plot_mf</span><span class="op">(</span>\<span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu">s_mf</span><span class="op">(</span><span class="va">x</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">8</span><span class="op">)</span><span class="op">)</span>, main <span class="op">=</span> <span class="st">"S-Shaped MF"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">plot_mf</span><span class="op">(</span>\<span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu">mf_tri</span><span class="op">(</span><span class="va">x</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">6</span>, <span class="fl">8</span><span class="op">)</span><span class="op">)</span>, main <span class="op">=</span> <span class="st">"Triangular MF"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">plot_mf</span><span class="op">(</span>\<span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu">mf_trap</span><span class="op">(</span><span class="va">x</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">5</span>, <span class="fl">7</span>, <span class="fl">8</span><span class="op">)</span><span class="op">)</span>, main <span class="op">=</span> <span class="st">"Trapezoidal MF"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">plot_mf</span><span class="op">(</span>\<span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu">mf_gauss</span><span class="op">(</span><span class="va">x</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">5</span><span class="op">)</span><span class="op">)</span>, main <span class="op">=</span> <span class="st">"Gaussian MF"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">plot_mf</span><span class="op">(</span>\<span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu">mf_gbell</span><span class="op">(</span><span class="va">x</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">4</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span>, main <span class="op">=</span> <span class="st">"Generalized Bell MF"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">plot_mf</span><span class="op">(</span>\<span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu">mf_gauss2</span><span class="op">(</span><span class="va">x</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">3</span>, <span class="fl">3</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span>, main <span class="op">=</span> <span class="st">"Two-Parameter Gaussian MF"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">plot_mf</span><span class="op">(</span>\<span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu">mf_sigmoid</span><span class="op">(</span><span class="va">x</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span>, main <span class="op">=</span> <span class="st">"Sigmoid MF"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">plot_mf</span><span class="op">(</span>\<span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu">mf_dsigmoid</span><span class="op">(</span><span class="va">x</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">2</span>, <span class="fl">5</span>, <span class="fl">7</span><span class="op">)</span><span class="op">)</span>, main <span class="op">=</span> <span class="st">"Difference of Sigmoids MF"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">plot_mf</span><span class="op">(</span>\<span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu">mf_psigmoid</span><span class="op">(</span><span class="va">x</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">3</span>, <span class="op">-</span><span class="fl">5</span>, <span class="fl">8</span><span class="op">)</span><span class="op">)</span>, main <span class="op">=</span> <span class="st">"Product of Sigmoids MF"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">plot_mf</span><span class="op">(</span>\<span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu">mf_z</span><span class="op">(</span><span class="va">x</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">7</span><span class="op">)</span><span class="op">)</span>, main <span class="op">=</span> <span class="st">"Z-Shaped MF"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">plot_mf</span><span class="op">(</span>\<span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu">mf_pi</span><span class="op">(</span><span class="va">x</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">4</span>, <span class="fl">5</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span>, main <span class="op">=</span> <span class="st">"PI-Shaped MF"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">plot_mf</span><span class="op">(</span>\<span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu">mf_s</span><span class="op">(</span><span class="va">x</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">8</span><span class="op">)</span><span class="op">)</span>, main <span class="op">=</span> <span class="st">"S-Shaped MF"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>

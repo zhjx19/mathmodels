@@ -112,7 +112,7 @@ directions are set to `NA` to avoid repeating the normalization process.
 ``` r
 
 idx = c("+", NA, "-", NA)     # 
-res = entropy_weight(df[-1], idx) 
+res = weight_entropy(df[-1], idx) 
 res$w                         # View calculated weights
 ```
 

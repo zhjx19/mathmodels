@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">mathmodels</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.12</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.13</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -83,24 +83,31 @@
 
         <dt>
 
-          <code><a href="critic_weight.html">critic_weight()</a></code>
+          <code><a href="weight_critic.html">weight_critic()</a></code>
 
         </dt>
         <dd>CRITIC Weight Method</dd>
 
         <dt>
 
-          <code><a href="cv_weight.html">cv_weight()</a></code>
+          <code><a href="weight_cv.html">weight_cv()</a></code>
 
         </dt>
         <dd>Coefficient of Variation Weighting</dd>
 
         <dt>
 
-          <code><a href="entropy_weight.html">entropy_weight()</a></code>
+          <code><a href="weight_entropy.html">weight_entropy()</a></code>
 
         </dt>
         <dd>Entropy Weight Method</dd>
+
+        <dt>
+
+          <code><a href="weight_fa.html">weight_fa()</a></code>
+
+        </dt>
+        <dd>Factor-Analysis-Based Weighting Method</dd>
 
         <dt>
 
@@ -111,7 +118,7 @@
 
         <dt>
 
-          <code><a href="pca_weight.html">pca_weight()</a></code>
+          <code><a href="weight_pca.html">weight_pca()</a></code>
 
         </dt>
         <dd>PCA-Based Weighting Method</dd>
@@ -157,7 +164,7 @@
 
       <dl><dt>
 
-          <code><a href="membership.html">tri_mf()</a></code> <code><a href="membership.html">trap_mf()</a></code> <code><a href="membership.html">gauss_mf()</a></code> <code><a href="membership.html">gbell_mf()</a></code> <code><a href="membership.html">gauss2mf()</a></code> <code><a href="membership.html">sigmoid_mf()</a></code> <code><a href="membership.html">dsigmoid_mf()</a></code> <code><a href="membership.html">psigmoid_mf()</a></code> <code><a href="membership.html">z_mf()</a></code> <code><a href="membership.html">pi_mf()</a></code> <code><a href="membership.html">s_mf()</a></code> <code><a href="membership.html">plot_mf()</a></code>
+          <code><a href="membership.html">mf_tri()</a></code> <code><a href="membership.html">mf_trap()</a></code> <code><a href="membership.html">mf_gauss()</a></code> <code><a href="membership.html">mf_gbell()</a></code> <code><a href="membership.html">mf_gauss2()</a></code> <code><a href="membership.html">mf_sigmoid()</a></code> <code><a href="membership.html">mf_dsigmoid()</a></code> <code><a href="membership.html">mf_psigmoid()</a></code> <code><a href="membership.html">mf_z()</a></code> <code><a href="membership.html">mf_pi()</a></code> <code><a href="membership.html">mf_s()</a></code> <code><a href="membership.html">plot_mf()</a></code>
 
         </dt>
         <dd>Membership Functions for Fuzzy Logic</dd>
@@ -856,6 +863,106 @@
       <div class="section-desc"><p>Built-in datasets and data import utilities.</p></div>
 
       <dl></dl></div><div class="section level2">
+      <h2 id="statistical-inference">Statistical Inference<a class="anchor" aria-label="anchor" href="#statistical-inference"></a></h2>
+
+      <div class="section-desc"><p>Tidy hypothesis tests, bootstrap and permutation frameworks, and three-line table export.</p></div>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="stat_describe.html">stat_describe()</a></code>
+
+        </dt>
+        <dd>Descriptive Statistics</dd>
+
+        <dt>
+
+          <code><a href="stat_t_test.html">stat_t_test()</a></code>
+
+        </dt>
+        <dd>t-test (one-sample, two-sample, Welch, paired)</dd>
+
+        <dt>
+
+          <code><a href="stat_wilcox_test.html">stat_wilcox_test()</a></code>
+
+        </dt>
+        <dd>Wilcoxon / Mann-Whitney Tests</dd>
+
+        <dt>
+
+          <code><a href="stat_anova.html">stat_anova()</a></code>
+
+        </dt>
+        <dd>Analysis of Variance (ANOVA)</dd>
+
+        <dt>
+
+          <code><a href="stat_kruskal.html">stat_kruskal()</a></code>
+
+        </dt>
+        <dd>Kruskal-Wallis Rank Sum Test</dd>
+
+        <dt>
+
+          <code><a href="stat_ancova.html">stat_ancova()</a></code>
+
+        </dt>
+        <dd>Analysis of Covariance (ANCOVA)</dd>
+
+        <dt>
+
+          <code><a href="stat_cor.html">stat_cor()</a></code>
+
+        </dt>
+        <dd>Correlation Analysis</dd>
+
+        <dt>
+
+          <code><a href="stat_chisq.html">stat_chisq()</a></code>
+
+        </dt>
+        <dd>Chi-square Test of Independence</dd>
+
+        <dt>
+
+          <code><a href="stat_normality.html">stat_normality()</a></code>
+
+        </dt>
+        <dd>Normality Tests</dd>
+
+        <dt>
+
+          <code><a href="stat_hov_test.html">stat_hov_test()</a></code>
+
+        </dt>
+        <dd>Variance Homogeneity Tests</dd>
+
+        <dt>
+
+          <code><a href="stat_bootstrap.html">stat_bootstrap()</a></code>
+
+        </dt>
+        <dd>Bootstrap Estimation and Confidence Intervals</dd>
+
+        <dt>
+
+          <code><a href="stat_perm_test.html">stat_perm_test()</a></code>
+
+        </dt>
+        <dd>Permutation Test</dd>
+
+        <dt>
+
+          <code><a href="export_table.html">export_table()</a></code>
+
+        </dt>
+        <dd>Three-line Table Export (Word / LaTeX)</dd>
+      </dl></div><div class="section level2">
       <h2 id="datasets">Datasets<a class="anchor" aria-label="anchor" href="#datasets"></a></h2>
 
 
