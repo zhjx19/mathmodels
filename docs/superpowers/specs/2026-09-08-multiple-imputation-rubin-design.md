@@ -54,8 +54,9 @@ impute_multiple(data, .cols = dplyr::everything(),
 1. **初始化**：数值列均值、分类列众数填充（仅链式迭代起步用）。
 2. **迭代**：每轮按列序依次，目标列当前缺失位置用其余列作回归元重填：
    - `pmm`：贝叶斯 lm 抽参（β|σ² ~ N(β̂, σ²(X'X)⁻¹)，σ² ~ scale × Inv-χ²）
-     → 线性预测 → 预测均值匹配（donor pool 默认 3，从观测值中取预测最接近的
-     3 个的均值——mice 同款简化）。
+     → 线性预测 → 预测均值匹配（从观测值中取预测最接近的 3 个 donor 的
+     均值；mice 默认是从近邻随机抽一个 donor，此处为确定性均值变体，
+     有助于 seed 复现与测试稳定性）。
    - `norm`：同参数抽取 + N(0, σ²) 残差噪声。
    - `logreg`：glm(binomial) → β ~ N(β̂, V̂) → 逆 logit → rbinom 抽类别。
    - `polyreg`：nnet::multinom → β ~ N(β̂, V̂)（V̂ 经 tryCatch 奇异保护，
