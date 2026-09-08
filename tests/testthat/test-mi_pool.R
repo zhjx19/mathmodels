@@ -53,6 +53,8 @@ test_that("rubin_pool: Barnard-Rubin adjusted df", {
   expect_equal(r$df, df_star, tolerance = 1e-12)
   expect_equal(r$edf, 120)
   expect_lt(r$df, v_obs)  # adjusted df never exceeds the v_obs ceiling
+  expect_equal(r$fmi, (0.6 + 2 / (df_star + 3)) / 1.6, tolerance = 1e-12)
+  expect_equal(r$rel_eff, 1 / (1 + r$fmi / 2), tolerance = 1e-12)
 })
 
 test_that("rubin_pool: edf = Inf is the default (no adjustment)", {

@@ -78,18 +78,18 @@ rubin_pool = function(est, err, alpha = 0.05, edf = Inf) {
       (m - 1) * (1 + var_within / (var_between + var_between / m))^2
   }
 
+  gamma = if (var_total == 0) 0 else (1 + 1 / m) * var_between / var_total
+  if (is.finite(edf)) {
+    v_obs = (1 - gamma) * edf * (edf + 1) / (edf + 3)
+    df = if (is.infinite(df)) v_obs else 1 / (1 / df + 1 / v_obs)
+  }
+
   fmi = if (is.infinite(r)) {
     1
   } else if (is.infinite(df)) {
     r / (r + 1)
   } else {
     (r + 2 / (df + 3)) / (r + 1)
-  }
-
-  gamma = if (var_total == 0) 0 else (1 + 1 / m) * var_between / var_total
-  if (is.finite(edf)) {
-    v_obs = (1 - gamma) * edf * (edf + 1) / (edf + 3)
-    df = if (is.infinite(df)) v_obs else 1 / (1 / df + 1 / v_obs)
   }
 
   std_error = sqrt(var_total)
