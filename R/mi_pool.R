@@ -135,3 +135,99 @@ print.rubin_pool = function(x, ...) {
     100 * (1 - x$alpha), x$lcl, x$ucl, x$t, x$p_value, x$fmi))
   invisible(x)
 }
+
+# ----------------------------------------------------------------------------
+# Convenience pooling for lm/glm fits
+# ----------------------------------------------------------------------------
+
+#' Pool lm/glm Fits Across Imputations
+#'
+#' Extracts coefficients and standard errors from a list of `lm`/`glm`
+#' fits (one per imputation, usually built with [impute_multiple()]) and
+#' pools each coefficient via [rubin_pool()], automatically passing the
+#' complete-data residual degrees of freedom so the Barnard-Rubin
+#' small-sample adjustment applies.
+#'
+#' @param fits A list of `lm`/`glm` fits, same model on the imputed data.
+#' @param alpha Significance level. Default 0.05.
+#'
+#' @return A tibble with one row per coefficient: `term, estimate,
+#'   std_error, lcl, ucl, df, t, p_value, fmi, r, rel_eff`.
+#'
+#' @examples
+#' set.seed(1)
+#' d = data.frame(x = rnorm(40), z = rnorm(40))
+#' d$y = 0.5 * d$x + rnorm(40)
+#' d$x[c(4, 9)] = NA
+#' imps = impute_multiple(d, .cols = x, m = 5, maxit = 3, seed = 2)
+#' fits = lapply(imps, \(dat) lm(y ~ x, dat))
+#' pool_fit(fits)
+#' @export
+pool_fit = function(fits, alpha = 0.05) {
+  if (!is.list(fits) || length(fits) < 1L ||
+      !all(vapply(fits, \(f) inherits(f, "lm"), logical(1)))) {
+    stop("fits must be a non-empty list of lm/glm fits.", call. = FALSE)
+  }
+  coefs = lapply(fits, stats::coef)
+  term_names = names(coefs[[1]])
+  same = all(vapply(coefs[-1], \(cn) identical(names(cn), term_names),
+                    logical(1)))
+  if (!same) {
+    stop("coefficient names differ across fits.", call. = FALSE)
+  }
+  edf = stats::df.residual(fits[[1]])
+  if (!is.finite(edf)) edf = Inf
+
+  # name-based extraction survives aliased fits (NA coefficients)
+  est = vapply(fits, \(f) {
+    unname(stats::coef(f)[term_names])
+  }, numeric(length(term_names)))
+  err = vapply(fits, \(f) {
+    se = tryCatch(sqrt(diag(stats::vcov(f))),
+                  error = function(e) rep(NA_real_, length(term_names)))
+    unname(se[term_names])
+  }, numeric(length(term_names)))
+  est = t(est)  # m x p
+  err = t(err)
+
+  rows = vector("list", length(term_names))
+  dropped = character(0)
+  for (j in seq_along(term_names)) {
+    ok = !is.na(est[, j]) & !is.na(err[, j])
+    if (!all(ok)) {
+      dropped = c(dropped, term_names[j])
+      next
+    }
+    pooled = rubin_pool(est[ok, j], err[ok, j], alpha = alpha, edf = edf)
+    rows[[j]] = tibble::tibble(
+      term = term_names[j],
+      estimate = pooled$estimate,
+      std_error = pooled$std_error,
+      lcl = pooled$lcl,
+      ucl = pooled$ucl,
+      df = pooled$df,
+      t = pooled$t,
+      p_value = pooled$p_value,
+      fmi = pooled$fmi,
+      r = pooled$r,
+      rel_eff = pooled$rel_eff
+    )
+  }
+  if (length(dropped) > 0) {
+    warning("NA coefficient(s) dropped: ", paste(dropped, collapse = ", "),
+            ".", call. = FALSE)
+  }
+  out = dplyr::bind_rows(rows)
+  class(out) = c("pool_fit", class(out))
+  out
+}
+
+#' @export
+print.pool_fit = function(x, ...) {
+  cat("Pooled estimates (Rubin's rules)\n")
+  y = x[, c("term", "estimate", "std_error", "lcl", "ucl", "p_value",
+            "fmi")]
+  class(y) = setdiff(class(y), "pool_fit")
+  print(y)
+  invisible(x)
+}

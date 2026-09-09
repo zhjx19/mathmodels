@@ -92,3 +92,80 @@ test_that("rubin_pool: input validation", {
   expect_error(rubin_pool(1:2, 1:2, edf = -5), "edf")
   expect_error(rubin_pool(1:2, 1:2, edf = 0), "edf")
 })
+
+# ---------------------------------------------------------------------------
+# pool_fit
+# ---------------------------------------------------------------------------
+
+test_that("pool_fit: pools lm coefficients across imputations", {
+  set.seed(2)
+  d = data.frame(x = rnorm(50), z = rnorm(50))
+  d$y = 1 + 2 * d$x + 0.5 * d$z + rnorm(50)
+  d$x[c(3, 17)] = NA
+  imps = impute_multiple(d, m = 5, maxit = 3, seed = 21)
+  fits = lapply(imps, \(dat) lm(y ~ x + z, dat))
+  pooled = pool_fit(fits)
+  expect_s3_class(pooled, "tbl_df")
+  expect_equal(names(pooled),
+    c("term", "estimate", "std_error", "lcl", "ucl", "df",
+      "t", "p_value", "fmi", "r", "rel_eff"))
+  expect_setequal(pooled$term, c("(Intercept)", "x", "z"))
+  # cross-check the x row against a manual rubin_pool call
+  manual = rubin_pool(
+    est = vapply(fits, \(f) unname(coef(f)[2]), numeric(1)),
+    err = vapply(fits, \(f) unname(sqrt(diag(vcov(f)))[2]), numeric(1)),
+    edf = fits[[1]]$df.residual
+  )
+  row_x = pooled[pooled$term == "x", ]
+  expect_equal(row_x$estimate, manual$estimate, tolerance = 1e-10)
+  expect_equal(row_x$std_error, manual$std_error, tolerance = 1e-10)
+  expect_equal(row_x$df, manual$df, tolerance = 1e-10)
+  # true beta = 2 should fall inside the CI (sanity, not exact)
+  expect_lt(row_x$lcl, 2)
+  expect_gt(row_x$ucl, 2)
+})
+
+test_that("pool_fit: glm works and passes df.residual", {
+  set.seed(3)
+  n = 80
+  x = rnorm(n)
+  d = data.frame(x = x)
+  d$y = rbinom(n, 1, plogis(-1 + 2 * x))
+  d$x[c(5, 33)] = NA
+  imps = impute_multiple(d, .cols = x, m = 4, maxit = 3, seed = 8)
+  fits = lapply(imps, \(dat) glm(y ~ x, binomial(), dat))
+  pooled = pool_fit(fits)
+  expect_s3_class(pooled, "tbl_df")
+  row_x = pooled[pooled$term == "x", ]
+  manual = rubin_pool(
+    est = vapply(fits, \(f) unname(coef(f)[2]), numeric(1)),
+    err = vapply(fits, \(f) unname(sqrt(diag(vcov(f)))[2]), numeric(1)),
+    edf = fits[[1]]$df.residual
+  )
+  expect_equal(row_x$df, manual$df, tolerance = 1e-10)
+})
+
+test_that("pool_fit: NA coefficients are dropped with a warning", {
+  d = data.frame(y = 1:6 + rnorm(6), x1 = 1:6, x2 = 2:7)  # collinear
+  fits = list(lm(y ~ x1 + x2, d), lm(y ~ x1 + x2, d))
+  expect_warning(pooled <- pool_fit(fits), "NA coefficient")
+  expect_true(all(c("x1", "(Intercept)") %in% pooled$term))
+  expect_false("x2" %in% pooled$term)
+})
+
+test_that("pool_fit: mismatched coefficient names error", {
+  f1 = lm(mpg ~ wt, mtcars)
+  f2 = lm(mpg ~ cyl, mtcars)
+  expect_error(pool_fit(list(f1, f2)), "coefficient")
+})
+
+test_that("pool_fit: print method runs", {
+  set.seed(4)
+  d = data.frame(x = rnorm(40), z = rnorm(40))
+  d$y = 0.5 * d$x + rnorm(40)
+  d$x[7] = NA
+  imps = impute_multiple(d, .cols = x, m = 3, maxit = 3, seed = 5)
+  fits = lapply(imps, \(dat) lm(y ~ x, dat))
+  out = capture.output(print(pool_fit(fits)))
+  expect_true(any(grepl("term", out)))
+})
