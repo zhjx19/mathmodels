@@ -187,8 +187,9 @@ pool_fit = function(fits, alpha = 0.05) {
                   error = function(e) rep(NA_real_, length(term_names)))
     unname(se[term_names])
   }, numeric(length(term_names)))
-  est = t(est)  # m x p
-  err = t(err)
+  # vapply simplifies to a plain m-vector when p = 1; orient to m x p
+  est = if (is.matrix(est)) t(est) else matrix(est, ncol = 1)
+  err = if (is.matrix(err)) t(err) else matrix(err, ncol = 1)
 
   rows = vector("list", length(term_names))
   dropped = character(0)
