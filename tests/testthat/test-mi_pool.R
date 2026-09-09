@@ -191,3 +191,38 @@ test_that("pool_fit: single-coefficient model pools across all fits", {
   expect_equal(pooled$std_error, manual$std_error, tolerance = 1e-10)
   expect_equal(pooled$df, manual$df, tolerance = 1e-10)
 })
+
+# ---------------------------------------------------------------------------
+# mice cross-validation (proper-ness evidence)
+# ---------------------------------------------------------------------------
+
+test_that("rubin_pool matches mice::pool on identical inputs", {
+  skip_if_not_installed("mice")
+  set.seed(42)
+  n = 100
+  d = data.frame(x = rnorm(n), z = rnorm(n))
+  d$y = 1 + 2 * d$x - 0.5 * d$z + rnorm(n)
+  d$x[sample(n, 15)] = NA
+  d$z[sample(n, 10)] = NA
+
+  # our engine
+  imps = impute_multiple(d, .cols = c(x, z), m = 10, maxit = 5, seed = 7)
+  fits = lapply(imps, \(dat) lm(y ~ x + z, dat))
+  ours = pool_fit(fits)
+
+  # mice with matching setup
+  mids = mice::mice(d, m = 10, maxit = 5, seed = 7, printFlag = FALSE)
+  fits_mice = lapply(seq_len(10), \(i)
+    lm(y ~ x + z, mice::complete(mids, i)))
+  ref = mice::pool(fits_mice)
+
+  # pooled estimate must be close (both proper MI of the same data)
+  cmp = merge(ours[, c("term", "estimate", "std_error")],
+              summary(ref)[, c("term", "estimate", "std.error")],
+              by = "term")
+  for (trm in cmp$term) {
+    row = cmp[cmp$term == trm, ]
+    expect_equal(row$estimate.x, row$estimate.y, tolerance = 0.15)
+    expect_equal(row$std_error, row$std.error, tolerance = 0.15)
+  }
+})

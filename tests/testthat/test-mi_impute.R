@@ -210,3 +210,34 @@ test_that("impute_multiple: print method runs", {
   out = capture.output(print(imps))
   expect_true(any(grepl("2 imputation", out)))
 })
+
+test_that("impute_multiple norm agrees with mice norm in pooled inference", {
+  skip_if_not_installed("mice")
+  set.seed(11)
+  n = 120
+  x = rnorm(n)
+  z = 0.7 * x + rnorm(n)
+  d = data.frame(x = x, z = z)
+  d$y = 0.5 * x + 0.3 * z + rnorm(n)
+  d$x[sample(n, 20)] = NA
+  d$z[sample(n, 15)] = NA
+
+  imps = impute_multiple(d, .cols = c(x, z), m = 10, maxit = 5, seed = 3,
+                         methods = c(x = "norm", z = "norm"))
+  fits = lapply(imps, \(dat) lm(y ~ x + z, dat))
+  ours = pool_fit(fits)
+
+  mids = mice::mice(d, m = 10, maxit = 5, seed = 3, printFlag = FALSE,
+                    method = c(x = "norm", z = "norm", y = ""))
+  fits_mice = lapply(seq_len(10), \(i) lm(y ~ x + z, mice::complete(mids, i)))
+  ref = mice::pool(fits_mice)
+
+  cmp = merge(ours[, c("term", "estimate", "std_error")],
+              summary(ref)[, c("term", "estimate", "std.error")],
+              by = "term")
+  for (trm in cmp$term) {
+    row = cmp[cmp$term == trm, ]
+    expect_equal(row$estimate.x, row$estimate.y, tolerance = 0.15)
+    expect_equal(row$std_error, row$std.error, tolerance = 0.15)
+  }
+})
