@@ -172,15 +172,16 @@ test_that("pool_fit: print method runs", {
 
 test_that("pool_fit: single-coefficient model pools across all fits", {
   # three fits with DIFFERENT estimates: y ~ 0 + x means term = x only
-  d1 = data.frame(x = 1:5,     y = 1:5 * 1.0)
-  d2 = data.frame(x = 1:5,     y = 1:5 * 2.0)
-  d3 = data.frame(x = 1:5,     y = 1:5 * 3.0)
+  noise = c(0.02, -0.01, 0.03, -0.02, 0.01)
+  d1 = data.frame(x = 1:5, y = 1:5 * 1.0 + noise)
+  d2 = data.frame(x = 1:5, y = 1:5 * 2.0 + noise)
+  d3 = data.frame(x = 1:5, y = 1:5 * 3.0 + noise)
   fits = list(lm(y ~ 0 + x, d1), lm(y ~ 0 + x, d2), lm(y ~ 0 + x, d3))
   pooled = pool_fit(fits)
   expect_equal(nrow(pooled), 1)
   expect_equal(pooled$term, "x")
-  # pooled estimate must be the mean of (1, 2, 3) = 2, not the first fit's 1
-  expect_equal(pooled$estimate, 2, tolerance = 1e-10)
+  # pooled estimate must be the mean of (~1, ~2, ~3) = ~2, not fit 1's ~1
+  expect_equal(pooled$estimate, 2, tolerance = 0.1)
   # and matches manual rubin_pool on the same est/err vectors
   manual = rubin_pool(
     est = vapply(fits, \(f) unname(coef(f)[1]), numeric(1)),
