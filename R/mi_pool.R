@@ -30,6 +30,8 @@
 #' where Ubar is the mean variance and B the between-imputation variance.
 #' The fraction of missing information uses the standard Rubin definition
 #' (r + 2/(df+3))/(r+1); the relative efficiency is (1 + lambda/m)^-1.
+#' The fraction of missing information and relative efficiency use the
+#' final (Barnard-Rubin adjusted) degrees of freedom when `edf` is finite.
 #'
 #' @examples
 #' est = c(0.345, 0.303, 0.298, 0.378)

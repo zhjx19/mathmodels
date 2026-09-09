@@ -85,6 +85,11 @@
   df_res = max(n - p, 1L)
   ss = sum(resid^2) / df_res
   sigma2 = ss * df_res / stats::rchisq(1, df_res)
+  if (!(sigma2 > 0)) {
+    # degenerate fit (n <= p or zero residuals): sigma2 -> 0 would make
+    # chol() see a zero matrix; fall back to the unperturbed OLS draw
+    return(list(beta = beta_hat, sigma2 = 0))
+  }
   beta = beta_hat + as.numeric(
     t(chol(sigma2 * XTX_inv)) %*% matrix(stats::rnorm(p), p, 1))
   list(beta = beta, sigma2 = sigma2)
@@ -291,6 +296,14 @@ impute_multiple = function(data, .cols = dplyr::everything(),
   # only columns that actually need imputation
   n_na_col = vapply(data[col_nms], \(x) sum(is.na(x)), integer(1))
   col_nms = col_nms[n_na_col > 0]
+  # fully missing columns have no observed values to model from: leave
+  # them NA with a warning (same convention as impute())
+  full_miss = col_nms[n_na_col[col_nms] == nrow(data)]
+  if (length(full_miss) > 0) {
+    warning("fully missing column(s) left as NA: ",
+            paste(full_miss, collapse = ", "), ".", call. = FALSE)
+    col_nms = setdiff(col_nms, full_miss)
+  }
   if (length(col_nms) == 0L) {
     res = unclass(rep(list(data), m))
     class(res) = c("mi_impute", "list")
@@ -368,6 +381,11 @@ print.mi_impute = function(x, ...) {
   if (length(mth) > 0) {
     cat("  methods:",
         paste(sprintf("%s=%s", names(mth), mth), collapse = ", "), "\n")
+  }
+  ni = attr(x, "n_imputed")
+  if (length(ni) > 0) {
+    cat("  cells imputed:",
+        paste(sprintf("%s=%d", names(ni), ni), collapse = ", "), "\n")
   }
   cat("  iterations:", attr(x, "iterations"), "\n")
   invisible(x)

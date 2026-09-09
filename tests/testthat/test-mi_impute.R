@@ -209,6 +209,27 @@ test_that("impute_multiple: print method runs", {
   imps = impute_multiple(d, m = 2, maxit = 2, seed = 1)
   out = capture.output(print(imps))
   expect_true(any(grepl("2 imputation", out)))
+  expect_true(any(grepl("cells imputed", out)))
+})
+
+test_that("impute_multiple: fully missing columns are left as NA with a warning", {
+  d = data.frame(x = c(1, NA, 3, 4), z = c(NA_real_, NA_real_, NA_real_, NA_real_))
+  expect_warning(imps <- impute_multiple(d, m = 2, maxit = 2, seed = 1),
+                 "fully missing")
+  expect_true(all(is.na(imps[[1]]$z)))
+  expect_false(anyNA(imps[[1]]$x))
+  expect_equal(names(attr(imps, "methods")), "x")
+})
+
+test_that("impute_multiple: degenerate sigma2 falls back to point prediction", {
+  # complete cases == predictors: exact 2-point fit leaves zero residuals,
+  # so sigma2 -> 0 and the guard must return the unperturbed point fit
+  # (y = 1 + 2x through (x=0,y=1) and (x=1,y=3); spec's y=c(2,4,6) /
+  # x=c(1,2,NA) leaves 1.8e-15 FP dust and does NOT hit the path)
+  d = data.frame(x = c(0, 1, NA), y = c(1, 3, 5))
+  imps = impute_multiple(d, .cols = x, m = 2, maxit = 2, seed = 2)
+  expect_false(anyNA(imps[[1]]$x))
+  expect_true(is.finite(imps[[1]]$x[3]))
 })
 
 test_that("impute_multiple norm agrees with mice norm in pooled inference", {
