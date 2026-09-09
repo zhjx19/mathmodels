@@ -22,13 +22,15 @@ stat_perm_test(
 \item{data}{A data frame.}
 
 \item{.cols}{Numeric test column(s) (required when \code{statistic = NULL}):
-one column for one-/two-sample, two columns for paired/independence.}
+one column for one-/two-sample, two columns for paired/independence.
+With a custom statistic, \code{independence} requires exactly two \code{.cols}
+columns (the second one is shuffled).}
 
-\item{group}{Two-level factor column (required for \code{two.sample} when
-\code{statistic = NULL}).}
+\item{group}{Two-level factor column. Required for \code{two.sample} (also
+with a custom statistic: its labels are permuted).}
 
 \item{statistic}{Optional custom function \verb{function(data, indices, ...)}
-returning a scalar; observed value uses \code{indices = seq_len(n)}.}
+returning a scalar; the observed value uses \code{indices = seq_len(n)}.}
 
 \item{...}{Additional arguments passed to \code{statistic}.}
 
@@ -55,9 +57,20 @@ Generic permutation-test framework. With \code{statistic = NULL} the default
 statistic is chosen by \code{type}: group mean difference (\code{two.sample}),
 mean of differences (\code{paired}), mean around \code{mu} (\code{one.sample}), or
 Pearson correlation (\code{independence}). A custom \code{statistic} of the form
-\verb{function(data, indices, ...)} is supported for \code{two.sample} (indices =
-randomly re-ordered row indices, free permutation) and \code{independence}
-(indices = the re-ordered rows used to shuffle the second column).
+\verb{function(data, indices, ...)} is supported for \code{two.sample} and
+\code{independence}; see Details for the permutation semantics.
+}
+\details{
+Custom-statistic semantics: for \code{type = "two.sample"} the null
+distribution is built by permuting the GROUP LABELS — for every
+permutation the \code{group} column of the data handed to \code{statistic} is
+re-assigned at random (\code{indices = seq_len(n)}), so any group-contrast
+statistic varies across permutations. For \code{type = "independence"} the
+SECOND \code{.cols} column is shuffled (within each \code{.by} slice; slice
+columns are never touched) before \code{statistic} sees the data. If the
+permuted statistic is (near-)constant — for example a statistic that
+does not depend on the permuted labels — a warning is issued instead
+of silently reporting a meaningless p = 1.
 }
 \examples{
 set.seed(1)

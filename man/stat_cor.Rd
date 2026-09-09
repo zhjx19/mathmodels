@@ -34,11 +34,15 @@ intervals are only available for Pearson (\code{NA} otherwise).}
 \value{
 A tibble with class \code{stat_infer}: \code{.by} identifiers, \code{var1},
 \code{var2}, \code{n_used}, \code{estimate}, \code{statistic}, \code{df}, \code{p.value},
-\code{p.adjusted}, \code{sig}, \code{conf_low}, \code{conf_high}, \code{method}.
+\code{p.adjusted}, \code{sig}, \code{conf_low}, \code{conf_high}, \code{method}. Each row is
+computed on the pairwise-complete rows of its two variables
+(\code{n_used} = that pair's complete-row count).
 }
 \description{
 Pairwise correlations among numeric columns with test statistics,
-p-values and (Pearson) confidence intervals.
+p-values and (Pearson) confidence intervals. Each pair uses its own
+pairwise-complete rows (rows where both variables are observed, the
+\code{\link[stats:cor.test]{stats::cor.test()}} convention); \code{n_used} is the per-pair complete count.
 }
 \examples{
 stat_cor(mtcars, .cols = mpg:wt)

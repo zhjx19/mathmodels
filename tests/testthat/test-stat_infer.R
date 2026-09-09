@@ -35,6 +35,25 @@ test_that("stat_describe slices via .by", {
   expect_equal(r$mean[r$region == "e"], mean(e), tolerance = 1e-12)
 })
 
+test_that("stat_describe uses per-variable deletion and own NA counts", {
+  # column z's NA must not change x's stats (F7)
+  d = data.frame(x = c(1:4, NA, 6:10), z = c(NA, 2:6, NA, 8:10))
+  stopifnot(nrow(d) == 10)
+  r1 = stat_describe(d, .cols = x)
+  r2 = stat_describe(d, .cols = c(x, z))
+  expect_equal(r2$mean[r2$variable == "x"], r1$mean[1], tolerance = 1e-12)
+  expect_equal(r2$n_used[r2$variable == "x"], 9)
+  expect_equal(r2$n_used[r2$variable == "z"], 8)
+  expect_equal(r2$n_missing[r2$variable == "z"], 2)  # z's own NAs only
+  expect_equal(r2$n_missing[r2$variable == "x"], 1) # x's own NA only
+  # slice with no own NAs reports n_missing = 0
+  dg = data.frame(x = c(1:4, NA, 6:10), g = rep(c("a", "b"), each = 5))
+  rg = stat_describe(dg, .cols = x, .by = g)
+  expect_equal(rg$n_missing[rg$g == "a"], 1)
+  expect_equal(rg$n_missing[rg$g == "b"], 0)
+  expect_equal(rg$n_used[rg$g == "b"], 5)
+})
+
 # ---------------------------------------------------------------------------
 # stat_t_test
 # ---------------------------------------------------------------------------
@@ -45,11 +64,14 @@ test_that("stat_t_test two-sample Welch matches stats::t.test", {
   expect_equal(r$statistic, unname(fit$statistic), tolerance = 1e-10)
   expect_equal(r$df, unname(fit$parameter), tolerance = 1e-10)
   expect_equal(r$p.value, unname(fit$p.value), tolerance = 1e-12)
-  expect_equal(r$estimate, unname(fit$estimate[2] - fit$estimate[1]),
-    tolerance = 1e-10)
+  # estimate follows the group1 - group2 direction (rstatix convention),
+  # consistent with statistic / CI / effect in the same row
+  x1 = d_two$y[d_two$g == "a"]; x2 = d_two$y[d_two$g == "b"]
+  expect_equal(r$estimate, mean(x1) - mean(x2), tolerance = 1e-10)
+  expect_equal(r$estimate1, mean(x1), tolerance = 1e-10)
+  expect_equal(r$estimate2, mean(x2), tolerance = 1e-10)
   expect_equal(r$conf_low, unname(fit$conf.int[1]), tolerance = 1e-10)
   # Cohen's d hand check
-  x1 = d_two$y[d_two$g == "a"]; x2 = d_two$y[d_two$g == "b"]
   sp = sqrt(((19) * stats::var(x1) + (19) * stats::var(x2)) / 38)
   expect_equal(r$effect, (mean(x1) - mean(x2)) / sp, tolerance = 1e-10)
 })
@@ -132,6 +154,26 @@ test_that("stat_wilcox_test matches stats::wilcox.test", {
   expect_equal(rp$p.value, unname(fitp$p.value), tolerance = 1e-12)
 })
 
+test_that("stat_wilcox_test one-sample effect is the signed-rank rbc", {
+  # rank-biserial from the signed ranks versus mu (F8)
+  fit = stats::wilcox.test(mtcars$mpg, mu = 20)
+  r = stat_wilcox_test(mtcars, .cols = mpg, mu = 20)
+  expect_equal(r$p.value, unname(fit$p.value), tolerance = 1e-12)
+  expect_equal(r$statistic, unname(fit$statistic), tolerance = 1e-10)
+  expect_false(is.na(r$effect))
+  # hand check: 2W/(n0(n0+1)/2) - 1 with zeros dropped
+  dv = mtcars$mpg - 20
+  dv = dv[dv != 0]
+  n0 = length(dv)
+  s_tot = n0 * (n0 + 1) / 2
+  expect_equal(r$effect,
+    (2 * unname(fit$statistic) - s_tot) / s_tot, tolerance = 1e-10)
+  # all-zero deviations -> undefined, NA without crash
+  dz = data.frame(y = rep(5, 10))
+  rz = stat_wilcox_test(dz, .cols = y, mu = 5)
+  expect_true(is.na(rz$effect))
+})
+
 # ---------------------------------------------------------------------------
 # stat_anova / stat_kruskal
 # ---------------------------------------------------------------------------
@@ -184,23 +226,54 @@ test_that("stat_kruskal matches stats::kruskal.test", {
 # stat_ancova
 # ---------------------------------------------------------------------------
 
-test_that("stat_ancova matches aov with covariate", {
+test_that("stat_ancova uses Type II sums of squares (car::Anova)", {
   d = data.frame(
     y = c(10 + 2 * (1:15), 12 + 2 * (1:15)) + rnorm(30, 0, 0.5),
     g = rep(c("a", "b"), each = 15),
     x = 1:30
   )
   fit = stats::aov(y ~ g + x, data = d)
-  tab = stats::anova(fit)
+  tab = car::Anova(fit, type = 2)
   r = stat_ancova(d, resp = y, group = g, covariates = x)
   i_g = which(r$term == "g")
   expect_equal(r$sumsq[i_g], unname(tab["g", "Sum Sq"]), tolerance = 1e-8)
   expect_equal(r$p.value[i_g], unname(tab["g", "Pr(>F)"]), tolerance = 1e-12)
+  # Type II: group SS is covariate-adjusted (differs from Type I when
+  # group sizes are unbalanced)
+  du = data.frame(
+    y = c(rnorm(10, 0), rnorm(4, 3)),
+    g = rep(c("a", "b"), c(10, 4)),
+    x = c(rnorm(10, 0), rnorm(4, 2))
+  )
+  fitu = stats::aov(y ~ g + x, data = du)
+  tabu = car::Anova(fitu, type = 2)
+  tab1 = stats::anova(fitu)
+  expect_true(unname(tab1["g", "Sum Sq"]) != unname(tabu["g", "Sum Sq"]))
+  ru = stat_ancova(du, resp = y, group = g, covariates = x)
+  expect_equal(ru$sumsq[ru$term == "g"], unname(tabu["g", "Sum Sq"]),
+    tolerance = 1e-8)
   # parallel test warns on a strong interaction
   d2 = d
   d2$y = d$y + ifelse(d$g == "b", 0.6 * d$x, 0)
   expect_warning(stat_ancova(d2, resp = y, group = g, covariates = x,
     test_parallel = TRUE), "parallel-slopes")
+})
+
+test_that("stat_ancova test_parallel checks every response", {
+  # only the second response has a strong interaction; the warning must
+  # still fire (F4)
+  d = data.frame(
+    y1 = rnorm(30, 5),
+    y2 = c(rnorm(15, 0), rnorm(15, 3) + (1:15) * 0.5),
+    g = rep(c("a", "b"), each = 15),
+    x = rep(1:15, 2)
+  )
+  w = testthat::capture_warnings(
+    stat_ancova(d, resp = c(y1, y2), group = g, covariates = x,
+      test_parallel = TRUE))
+  expect_true(any(grepl("parallel-slopes", w)))
+  # the warning names the violating response
+  expect_true(any(grepl("y2", w)))
 })
 
 # ---------------------------------------------------------------------------
@@ -220,6 +293,34 @@ test_that("stat_cor matches stats::cor.test (pearson and spearman)", {
   fit2 = stats::cor.test(mtcars$mpg, mtcars$wt, method = "spearman")
   expect_equal(r2$estimate, unname(fit2$estimate), tolerance = 1e-12)
   expect_true(all(is.na(r2$conf_low)))  # no CI for spearman
+})
+
+test_that("stat_cor uses pairwise-complete rows per pair", {
+  # an NA in an unrelated third column must not affect the (a, b) pair
+  d = data.frame(
+    a = 1:10,
+    b = c(NA, 2:10 + rnorm(9)),
+    cc = c(2, 4, 6, 8, 10, 1, 3, 5, 7, NA)
+  )
+  r = stat_cor(d, .cols = a:cc)
+  i_ab = which(r$var1 == "a" & r$var2 == "b")
+  fit = stats::cor.test(d$a, d$b)   # 9 pairwise-complete rows
+  expect_equal(r$n_used[i_ab], 9)
+  expect_equal(r$estimate[i_ab], unname(fit$estimate), tolerance = 1e-12)
+  expect_equal(r$p.value[i_ab], unname(fit$p.value), tolerance = 1e-12)
+  # pairs against cc exclude its NA row; (a, cc) has 9 complete rows too
+  i_ac = which(r$var1 == "a" & r$var2 == "cc")
+  expect_equal(r$n_used[i_ac], 9)
+})
+
+test_that("stat_cor kendall with ties warns once and matches stats", {
+  d = data.frame(x = c(1, 2, 2, 3, 4, 5, 5, 6), y = c(2, 1, 4, 3, 6, 5, 7, 8))
+  w = testthat::capture_warnings(
+    r <- stat_cor(d, .cols = x:y, method = "kendall"))
+  expect_true(any(grepl("ties present", w)))
+  fit = suppressWarnings(stats::cor.test(d$x, d$y, method = "kendall"))
+  expect_equal(r$estimate, unname(fit$estimate), tolerance = 1e-12)
+  expect_equal(r$p.value, unname(fit$p.value), tolerance = 1e-12)
 })
 
 # ---------------------------------------------------------------------------
@@ -289,6 +390,10 @@ test_that("stat_hov_test matches car/stats references", {
   rf = stat_hov_test(ToothGrowth, .cols = len, group = supp, method = "f")
   fitf = stats::var.test(len ~ supp, data = ToothGrowth)
   expect_equal(rf$statistic, unname(fitf$statistic), tolerance = 1e-10)
+  # denominator df is kept (F10)
+  expect_equal(rf$df, unname(fitf$parameter[1]))
+  expect_equal(rf$df2, unname(fitf$parameter[2]))
+  expect_equal(rf$p.value, unname(fitf$p.value), tolerance = 1e-12)
 })
 
 # ---------------------------------------------------------------------------
@@ -366,21 +471,48 @@ test_that("stat_perm_test independence shuffles the second column", {
   expect_lt(r$p.value, 1)
 })
 
-test_that("stat_perm_test custom statistic (two.sample) works", {
-  # custom statistic: re-ordered rows carry both y and g, so the free
-  # permutation re-assigns group labels; the statistic is the group
-  # median difference computed from the re-ordered data
+test_that("stat_perm_test custom statistic (two.sample) permutes group labels", {
+  # custom statistic: the framework permutes the GROUP LABELS, so a
+  # group-contrast statistic varies across permutations (F5)
   f = function(d, i) {
-    y = d$y[i]
-    lab = factor(d$g[i], levels = c("a", "b"))
-    stats::median(y[lab == "a"]) - stats::median(y[lab == "b"])
+    lab = factor(d$g, levels = c("a", "b"))
+    stats::median(d$y[lab == "a"]) - stats::median(d$y[lab == "b"])
   }
-  r = stat_perm_test(d_two, statistic = f, type = "two.sample",
-    permutations = 300, seed = 9)
+  r = suppressWarnings(stat_perm_test(d_two, statistic = f, group = g,
+    type = "two.sample", permutations = 400, seed = 9))
   expect_equal(r$observed,
     stats::median(d_two$y[d_two$g == "a"]) - stats::median(d_two$y[d_two$g == "b"]),
     tolerance = 1e-12)
-  expect_true(r$p.value <= 1)
+  # null now has real spread: p is meaningful, not identically 1
+  expect_gt(r$null_sd, 0)
+  expect_lt(r$p.value, 1)
+
+  # statistic that ignores the labels entirely -> invariant null -> warning
+  f_bad = function(d, i) stats::median(d$y)
+  expect_warning(
+    stat_perm_test(d_two, statistic = f_bad, group = g,
+      type = "two.sample", permutations = 200, seed = 10),
+    "invariant"
+  )
+})
+
+test_that("stat_perm_test custom statistic (independence) shuffles the second .cols column", {
+  set.seed(2)
+  dind = data.frame(x = rnorm(40), z = rnorm(40), junk = rnorm(40))
+  # statistic uses x and z; junk is a trailing column and must NOT be the
+  # shuffle target (F6)
+  f = function(d, i) stats::cor(d$x, d$z)
+  r = stat_perm_test(dind, .cols = c(x, z, junk), statistic = f,
+    type = "independence", permutations = 400, seed = 21)
+  expect_equal(r$observed, stats::cor(dind$x, dind$z), tolerance = 1e-12)
+  expect_gt(r$null_sd, 0)
+  expect_lt(r$p.value, 1)
+
+  # fewer than two .cols columns -> clear error
+  expect_error(
+    stat_perm_test(dind, .cols = x, statistic = f, type = "independence"),
+    "two"
+  )
 })
 
 test_that("stat_perm_test .by slices and validation", {

@@ -45,7 +45,10 @@ the returned rows.}
 \value{
 A tibble with class \code{stat_infer} in the same layout as
 \code{\link[=stat_t_test]{stat_t_test()}}, with \code{statistic}, \code{p.value}, \code{effect} (rank-biserial
-correlation) and no \code{df} column (NA).
+correlation) and no \code{df} column (NA). For one-sample tests the effect
+is the rank-biserial correlation of the signed ranks versus \code{mu}
+(positive proportion minus negative proportion); it is \code{NA} when all
+deviations from \code{mu} are zero.
 }
 \description{
 Nonparametric counterparts of the t-test: Wilcoxon signed-rank (one-sample

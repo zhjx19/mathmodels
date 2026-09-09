@@ -49,7 +49,10 @@ the returned rows.}
 A tibble with class \code{stat_infer}: \code{variable}, \code{.by} identifiers,
 \code{n_used}, \code{n_dropped}, \code{estimate}, \code{estimate1}, \code{estimate2}, \code{statistic},
 \code{df}, \code{p.value}, \code{p.adjusted}, \code{sig}, \code{conf_low}, \code{conf_high},
-\code{effect} (Cohen's d), \code{method}, \code{alternative}.
+\code{effect} (Cohen's d), \code{method}, \code{alternative}. For two-sample tests all
+difference quantities (\code{estimate}, \code{statistic}, CI, \code{effect}) follow the
+group1 − group2 direction (first level minus second level, rstatix
+convention).
 }
 \description{
 Performs t-tests on numeric columns of a tidy data frame. Each test returns

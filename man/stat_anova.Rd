@@ -19,14 +19,21 @@ several columns are entered with interactions (\code{g1 * g2}).}
 }
 \value{
 A tibble with class \code{stat_infer}: \code{resp}, \code{.by} identifiers,
-\code{term}, \code{df}, \code{sumsq}, \code{meansq}, \code{statistic}, \code{p.value}, \code{p.adjusted},
-\code{sig}, \code{effect} (partial eta-squared), \code{method}.
+\code{term}, \code{df}, \code{sumsq}, \code{meansq}, \code{statistic}, \code{p.value}, \code{sig},
+\code{effect} (partial eta-squared), \code{method}.
 }
 \description{
 Fits an ANOVA on a tidy data frame: \code{group} columns become factors and are
 entered with full interactions when several are supplied. One row per
 model term (plus a \code{Residuals} row); \code{resp} and \code{.by} are repeated
 (row-per-response and row-per-slice).
+}
+\details{
+The table is the sequential decomposition from
+\code{\link[stats:anova]{stats::anova()}} — Type I (sequential) sums of squares. With unbalanced
+designs the early terms therefore differ from the Type II/III
+decompositions of \code{car::Anova()} or \code{rstatix::anova_test()} (see
+\code{\link[=stat_ancova]{stat_ancova()}} for a Type II ANCOVA table).
 }
 \examples{
 stat_anova(ToothGrowth, resp = len, group = supp)

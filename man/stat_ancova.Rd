@@ -20,18 +20,32 @@ covariate column(s).}
 \item{.by}{<\code{\link[tidyselect:language]{tidy-select}}> Optional slice columns.}
 
 \item{test_parallel}{Logical; if \code{TRUE}, the group-by-covariate
-interactions are tested and a warning is issued when any is significant
-at 0.05 (parallel-slopes assumption in doubt).}
+interactions are tested for every response and a warning (listing all
+violating responses) is issued when any is significant at 0.05
+(parallel-slopes assumption in doubt).}
 }
 \value{
 A tibble with class \code{stat_infer}: \code{resp}, \code{.by} identifiers,
 \code{term}, \code{df}, \code{sumsq}, \code{meansq}, \code{statistic}, \code{p.value}, \code{sig},
-\code{effect} (partial eta-squared), \code{method}.
+\code{effect} (partial eta-squared), \code{method}. Sums of squares are Type II
+(covariate-adjusted group term).
 }
 \description{
 Fits \code{resp ~ group + covariates} (group as factor, covariates numeric)
-and returns the ANOVA table with partial eta-squared. Optionally checks
-the parallel-slopes assumption (group-by-covariate interactions).
+and returns the ANOVA table with partial eta-squared. The table uses
+Type II sums of squares (via \code{\link[car:Anova]{car::Anova()}}) so the group term is
+covariate-adjusted — the ANCOVA question proper. Optionally checks
+the parallel-slopes assumption (group-by-covariate interactions) for
+every response.
+}
+\details{
+The model is fitted with \code{\link[stats:aov]{stats::aov()}} and decomposed with
+\code{car::Anova(fit, type = 2)}, so each term is adjusted for all other
+terms — for unbalanced group sizes the group sum of squares differs
+from the sequential (Type I) decomposition of \code{stats::anova()}.
+\code{test_parallel} refits \code{resp ~ group * covariates} per response and
+covariate and warns once, listing every response whose interaction
+is significant.
 }
 \examples{
 d = data.frame(y = c(1:10, 2:11), g = rep(c("a", "b"), each = 10),

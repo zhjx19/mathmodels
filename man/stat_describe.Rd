@@ -20,11 +20,18 @@ statistics are computed separately for each slice.}
 A tibble with one row per variable (per slice) and class
 \code{stat_infer}: \code{variable}, \code{.by} identifiers, \code{n_used}, \code{n_missing},
 \code{mean}, \code{sd}, \code{median}, \code{iqr}, \code{ci_low}, \code{ci_high}, \code{skew}, \code{kurt}.
+\code{n_used} / \code{n_missing} are per-variable within-slice counts (other
+variables' missing values do not affect them).
 }
 \description{
 Computes per-variable descriptive statistics (optionally grouped by
 slices of \code{.by}): counts, mean, sd, median, IQR, t-based confidence
 interval for the mean, and moment skewness / excess kurtosis.
+Statistics for each variable use only that variable's own non-missing
+values (per-variable deletion); rows where other selected variables are
+missing do not affect a variable's results.
+\code{n_missing} counts the missing values of the variable itself within the
+slice.
 }
 \examples{
 stat_describe(mtcars, .cols = mpg:hp)

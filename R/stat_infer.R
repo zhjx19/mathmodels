@@ -55,7 +55,8 @@
   }
   keys = interaction(slice_df, drop = TRUE, sep = ".")
   idx = split(seq_len(n), keys)
-  keys_df = do.call(rbind, lapply(idx, function(i) slice_df[i[1], , drop = FALSE]))
+  keys_df = tibble::as_tibble(dplyr::bind_rows(
+    lapply(idx, function(i) slice_df[i[1], , drop = FALSE])))
   list(idx = idx, keys = keys_df)
 }
 
@@ -119,6 +120,11 @@
 #' Computes per-variable descriptive statistics (optionally grouped by
 #' slices of `.by`): counts, mean, sd, median, IQR, t-based confidence
 #' interval for the mean, and moment skewness / excess kurtosis.
+#' Statistics for each variable use only that variable's own non-missing
+#' values (per-variable deletion); rows where other selected variables are
+#' missing do not affect a variable's results.
+#' `n_missing` counts the missing values of the variable itself within the
+#' slice.
 #'
 #' @param data A data frame.
 #' @param .cols <[`tidy-select`][tidyselect::language]> Numeric columns.
@@ -129,6 +135,8 @@
 #' @return A tibble with one row per variable (per slice) and class
 #'   `stat_infer`: `variable`, `.by` identifiers, `n_used`, `n_missing`,
 #'   `mean`, `sd`, `median`, `iqr`, `ci_low`, `ci_high`, `skew`, `kurt`.
+#'   `n_used` / `n_missing` are per-variable within-slice counts (other
+#'   variables' missing values do not affect them).
 #'
 #' @examples
 #' stat_describe(mtcars, .cols = mpg:hp)
@@ -141,15 +149,18 @@ stat_describe = function(data, .cols, .by = NULL, conf_level = 0.95) {
   slice_df = dplyr::select(data, {{ .by }})
   .check_numeric_cols(cols_df)
   slice_nms = names(slice_df)
-  keep = stats::complete.cases(cbind(cols_df, slice_df))
+  # Rows with missing slice keys cannot be assigned to a slice; other rows
+  # are kept so that each variable uses its own non-missing values (F7).
+  keep = if (ncol(slice_df) == 0) rep(TRUE, nrow(data)) else
+    stats::complete.cases(slice_df)
   cols_df = cols_df[keep, , drop = FALSE]
   slice_df = slice_df[keep, , drop = FALSE]
-  n_drop = nrow(data) - sum(keep)
 
   sl = .slice_index(slice_df)
   alpha = 1 - conf_level
   rows = lapply(seq_along(sl$idx), function(k) {
     d = cols_df[sl$idx[[k]], , drop = FALSE]
+    n_slice = nrow(d)
     do.call(rbind, lapply(names(d), function(nm) {
       x = d[[nm]][!is.na(d[[nm]])]
       n = length(x)
@@ -163,7 +174,7 @@ stat_describe = function(data, .cols, .by = NULL, conf_level = 0.95) {
       row = tibble::tibble(
         variable = nm,
         n_used = n,
-        n_missing = nrow(data) - n,
+        n_missing = n_slice - n,
         mean = if (n) mean(x) else NA_real_,
         sd = if (n >= 2) stats::sd(x) else NA_real_,
         median = if (n) stats::median(x) else NA_real_,
@@ -214,7 +225,10 @@ stat_describe = function(data, .cols, .by = NULL, conf_level = 0.95) {
 #' @return A tibble with class `stat_infer`: `variable`, `.by` identifiers,
 #'   `n_used`, `n_dropped`, `estimate`, `estimate1`, `estimate2`, `statistic`,
 #'   `df`, `p.value`, `p.adjusted`, `sig`, `conf_low`, `conf_high`,
-#'   `effect` (Cohen's d), `method`, `alternative`.
+#'   `effect` (Cohen's d), `method`, `alternative`. For two-sample tests all
+#'   difference quantities (`estimate`, `statistic`, CI, `effect`) follow the
+#'   group1 − group2 direction (first level minus second level, rstatix
+#'   convention).
 #'
 #' @examples
 #' stat_t_test(sleep, .cols = extra, group = group)
@@ -294,7 +308,7 @@ stat_t_test = function(data, .cols, group, .by = NULL, mu = 0, paired = FALSE,
         variable = vars[v],
         n_used = nrow(d),
         n_dropped = n_drop,
-        estimate = unname(if (has_group) est[2] - est[1] else est[1]),
+        estimate = unname(if (has_group) est[1] - est[2] else est[1]),
         estimate1 = unname(if (has_group) est[1] else NA_real_),
         estimate2 = unname(if (has_group) est[2] else NA_real_),
         statistic = unname(fit$statistic),
@@ -326,7 +340,10 @@ stat_t_test = function(data, .cols, group, .by = NULL, mu = 0, paired = FALSE,
 #'
 #' @return A tibble with class `stat_infer` in the same layout as
 #'   [stat_t_test()], with `statistic`, `p.value`, `effect` (rank-biserial
-#'   correlation) and no `df` column (NA).
+#'   correlation) and no `df` column (NA). For one-sample tests the effect
+#'   is the rank-biserial correlation of the signed ranks versus `mu`
+#'   (positive proportion minus negative proportion); it is `NA` when all
+#'   deviations from `mu` are zero.
 #'
 #' @examples
 #' stat_wilcox_test(sleep, .cols = extra, group = group)
@@ -393,7 +410,14 @@ stat_wilcox_test = function(data, .cols, group, .by = NULL, mu = 0,
         n1 = sum(g == levels(g)[1]); n2 = sum(g == levels(g)[2])
         2 * unname(fit$statistic) / (n1 * n2) - 1
       } else {
-        NA_real_
+        # One-sample rank-biserial from the signed ranks versus mu
+        # (same construction as the paired path; zeros dropped).
+        dv = d[[v]] - mu
+        n0 = sum(!is.na(dv) & dv != 0)
+        if (n0 == 0) NA_real_ else {
+          s_tot = n0 * (n0 + 1) / 2
+          (2 * unname(fit$statistic) - s_tot) / s_tot
+        }
       }
       row = tibble::tibble(
         variable = vars[v],
@@ -439,8 +463,14 @@ stat_wilcox_test = function(data, .cols, group, .by = NULL, mu = 0,
 #' @param .by <[`tidy-select`][tidyselect::language]> Optional slice columns.
 #'
 #' @return A tibble with class `stat_infer`: `resp`, `.by` identifiers,
-#'   `term`, `df`, `sumsq`, `meansq`, `statistic`, `p.value`, `p.adjusted`,
-#'   `sig`, `effect` (partial eta-squared), `method`.
+#'   `term`, `df`, `sumsq`, `meansq`, `statistic`, `p.value`, `sig`,
+#'   `effect` (partial eta-squared), `method`.
+#'
+#' @details The table is the sequential decomposition from
+#'   [stats::anova()] — Type I (sequential) sums of squares. With unbalanced
+#'   designs the early terms therefore differ from the Type II/III
+#'   decompositions of `car::Anova()` or `rstatix::anova_test()` (see
+#'   [stat_ancova()] for a Type II ANCOVA table).
 #'
 #' @examples
 #' stat_anova(ToothGrowth, resp = len, group = supp)
@@ -590,8 +620,11 @@ stat_kruskal = function(data, resp, group, .by = NULL) {
 #' Analysis of Covariance (ANCOVA)
 #'
 #' Fits `resp ~ group + covariates` (group as factor, covariates numeric)
-#' and returns the ANOVA table with partial eta-squared. Optionally checks
-#' the parallel-slopes assumption (group-by-covariate interactions).
+#' and returns the ANOVA table with partial eta-squared. The table uses
+#' Type II sums of squares (via [car::Anova()]) so the group term is
+#' covariate-adjusted — the ANCOVA question proper. Optionally checks
+#' the parallel-slopes assumption (group-by-covariate interactions) for
+#' every response.
 #'
 #' @param data A data frame.
 #' @param resp <[`tidy-select`][tidyselect::language]> Numeric response
@@ -601,12 +634,22 @@ stat_kruskal = function(data, resp, group, .by = NULL) {
 #'   covariate column(s).
 #' @param .by <[`tidy-select`][tidyselect::language]> Optional slice columns.
 #' @param test_parallel Logical; if `TRUE`, the group-by-covariate
-#'   interactions are tested and a warning is issued when any is significant
-#'   at 0.05 (parallel-slopes assumption in doubt).
+#'   interactions are tested for every response and a warning (listing all
+#'   violating responses) is issued when any is significant at 0.05
+#'   (parallel-slopes assumption in doubt).
 #'
 #' @return A tibble with class `stat_infer`: `resp`, `.by` identifiers,
 #'   `term`, `df`, `sumsq`, `meansq`, `statistic`, `p.value`, `sig`,
-#'   `effect` (partial eta-squared), `method`.
+#'   `effect` (partial eta-squared), `method`. Sums of squares are Type II
+#'   (covariate-adjusted group term).
+#'
+#' @details The model is fitted with [stats::aov()] and decomposed with
+#'   `car::Anova(fit, type = 2)`, so each term is adjusted for all other
+#'   terms — for unbalanced group sizes the group sum of squares differs
+#'   from the sequential (Type I) decomposition of `stats::anova()`.
+#'   `test_parallel` refits `resp ~ group * covariates` per response and
+#'   covariate and warns once, listing every response whose interaction
+#'   is significant.
 #'
 #' @examples
 #' d = data.frame(y = c(1:10, 2:11), g = rep(c("a", "b"), each = 10),
@@ -649,34 +692,44 @@ stat_ancova = function(data, resp, group, covariates, .by = NULL,
     }
     cov_nms = names(cov_df)
     if (test_parallel) {
-      for (cn in cov_nms) {
-        fi = stats::aov(
-          stats::as.formula(paste0("`", names(resp_df)[1], "` ~ ",
-            paste0("`", group_nm, "` * `", cn, "`"))),
-          data = d)
-        pi = stats::anova(fi)
-        pi = pi[grepl(":", rownames(pi)), , drop = FALSE]
-        if (any(pi[["Pr(>F)"]] < 0.05, na.rm = TRUE)) {
-          warning("parallel-slopes assumption may not hold: group x `", cn,
-                  "` interaction p = ",
-                  sprintf("%.4g", min(pi[["Pr(>F)"]], na.rm = TRUE)),
-                  ".", call. = FALSE)
+      # Check the parallel-slopes assumption for EVERY response (F4);
+      # collect all violations and warn once.
+      viol = character(0)
+      for (rnm in names(resp_df)) {
+        for (cn in cov_nms) {
+          fi = stats::aov(
+            stats::as.formula(paste0("`", rnm, "` ~ ",
+              paste0("`", group_nm, "` * `", cn, "`"))),
+            data = d)
+          pi = stats::anova(fi)
+          pi = pi[grepl(":", rownames(pi)), , drop = FALSE]
+          if (any(pi[["Pr(>F)"]] < 0.05, na.rm = TRUE)) {
+            viol = c(viol, paste0("`", rnm, "` x `", cn, "` (p = ",
+              sprintf("%.4g", min(pi[["Pr(>F)"]], na.rm = TRUE)), ")"))
+          }
         }
+      }
+      if (length(viol) > 0) {
+        warning("parallel-slopes assumption may not hold: ",
+                paste(viol, collapse = "; "), ".", call. = FALSE)
       }
     }
     do.call(rbind, lapply(names(resp_df), function(rnm) {
       f = stats::as.formula(paste0("`", rnm, "` ~ `", group_nm, "` + ",
         paste(paste0("`", cov_nms, "`"), collapse = " + ")))
       fit = stats::aov(f, data = d)
-      tab = stats::anova(fit)
-      ss_res = tab[nrow(tab), "Sum Sq"]
+      tab = car::Anova(fit, type = 2)
+      ss_res = tab["Residuals", "Sum Sq"]
       term_nms = rownames(tab)
+      tab_df = ifelse(is.na(tab[["Df"]]), NA_real_, tab[["Df"]])
+      meansq = ifelse(is.na(tab_df) | tab_df == 0, NA_real_,
+        tab[["Sum Sq"]] / tab_df)
       out = tibble::tibble(
         resp = rnm,
         term = term_nms,
-        df = unname(tab$Df),
+        df = unname(tab[["Df"]]),
         sumsq = unname(tab[["Sum Sq"]]),
-        meansq = unname(tab[["Mean Sq"]]),
+        meansq = unname(meansq),
         statistic = unname(tab[["F value"]]),
         p.value = unname(tab[["Pr(>F)"]])
       )
@@ -704,7 +757,9 @@ stat_ancova = function(data, resp, group, covariates, .by = NULL,
 #' Correlation Analysis
 #'
 #' Pairwise correlations among numeric columns with test statistics,
-#' p-values and (Pearson) confidence intervals.
+#' p-values and (Pearson) confidence intervals. Each pair uses its own
+#' pairwise-complete rows (rows where both variables are observed, the
+#' [stats::cor.test()] convention); `n_used` is the per-pair complete count.
 #'
 #' @param data A data frame.
 #' @param .cols <[`tidy-select`][tidyselect::language]> Numeric columns
@@ -718,7 +773,9 @@ stat_ancova = function(data, resp, group, covariates, .by = NULL,
 #'
 #' @return A tibble with class `stat_infer`: `.by` identifiers, `var1`,
 #'   `var2`, `n_used`, `estimate`, `statistic`, `df`, `p.value`,
-#'   `p.adjusted`, `sig`, `conf_low`, `conf_high`, `method`.
+#'   `p.adjusted`, `sig`, `conf_low`, `conf_high`, `method`. Each row is
+#'   computed on the pairwise-complete rows of its two variables
+#'   (`n_used` = that pair's complete-row count).
 #'
 #' @examples
 #' stat_cor(mtcars, .cols = mpg:wt)
@@ -738,7 +795,11 @@ stat_cor = function(data, .cols, method = c("pearson", "spearman", "kendall"),
   if (ncol(cols_df) < 2) {
     stop(".cols must select at least 2 columns.", call. = FALSE)
   }
-  keep = stats::complete.cases(cbind(cols_df, slice_df))
+  # Pairwise-complete rows per pair (cor.test convention, F1): rows with
+  # missing slice keys are dropped globally; each pair additionally uses
+  # only the rows where both of its variables are observed.
+  keep = if (ncol(slice_df) == 0) rep(TRUE, nrow(data)) else
+    stats::complete.cases(slice_df)
   cols_df = cols_df[keep, , drop = FALSE]
   slice_df = slice_df[keep, , drop = FALSE]
 
@@ -748,12 +809,25 @@ stat_cor = function(data, .cols, method = c("pearson", "spearman", "kendall"),
     d = cols_df[sl$idx[[k]], , drop = FALSE]
     do.call(rbind, lapply(seq_len(ncol(prs)), function(j) {
       i1 = prs[1, j]; i2 = prs[2, j]
-      fit = stats::cor.test(d[[i1]], d[[i2]], method = method,
-        alternative = alternative, conf.level = conf_level)
+      ok = stats::complete.cases(d[, c(i1, i2)])
+      if (method == "kendall" &&
+          (anyDuplicated(d[[i1]][ok]) > 0 || anyDuplicated(d[[i2]][ok]) > 0)) {
+        warning("kendall correlation for `", names(d)[i1], "` / `",
+                names(d)[i2], "`: ties present, p-value is asymptotic ",
+                "(no exact test).", call. = FALSE)
+      }
+      fit = if (method == "kendall") {
+        suppressWarnings(stats::cor.test(d[[i1]][ok], d[[i2]][ok],
+          method = method, alternative = alternative,
+          conf.level = conf_level))
+      } else {
+        stats::cor.test(d[[i1]][ok], d[[i2]][ok], method = method,
+          alternative = alternative, conf.level = conf_level)
+      }
       row = tibble::tibble(
         var1 = names(d)[i1],
         var2 = names(d)[i2],
-        n_used = nrow(d),
+        n_used = sum(ok),
         estimate = unname(fit$estimate),
         statistic = unname(fit$statistic),
         df = if (method == "pearson") unname(fit$parameter) else NA_real_,
@@ -1005,7 +1079,8 @@ stat_hov_test = function(data, .cols, group, .by = NULL,
         if (method == "bartlett") fit$statistic else fit$statistic)
       df1 = unname(if (method == "levene") fit[1, "Df"] else
         if (method == "bartlett") fit$parameter else fit$parameter[1])
-      df2 = if (method == "levene") unname(fit[2, "Df"]) else NA_real_
+      df2 = if (method == "levene") unname(fit[2, "Df"]) else
+        if (method == "f") unname(fit$parameter[2]) else NA_real_
       p = unname(if (method == "levene") fit[1, "Pr(>F)"] else
         if (method == "bartlett") fit$p.value else fit$p.value)
       mth = switch(method,
@@ -1148,17 +1223,18 @@ stat_bootstrap = function(data, statistic, ..., B = 2000,
 #' statistic is chosen by `type`: group mean difference (`two.sample`),
 #' mean of differences (`paired`), mean around `mu` (`one.sample`), or
 #' Pearson correlation (`independence`). A custom `statistic` of the form
-#' `function(data, indices, ...)` is supported for `two.sample` (indices =
-#' randomly re-ordered row indices, free permutation) and `independence`
-#' (indices = the re-ordered rows used to shuffle the second column).
+#' `function(data, indices, ...)` is supported for `two.sample` and
+#' `independence`; see Details for the permutation semantics.
 #'
 #' @param data A data frame.
 #' @param .cols Numeric test column(s) (required when `statistic = NULL`):
 #'   one column for one-/two-sample, two columns for paired/independence.
-#' @param group Two-level factor column (required for `two.sample` when
-#'   `statistic = NULL`).
+#'   With a custom statistic, `independence` requires exactly two `.cols`
+#'   columns (the second one is shuffled).
+#' @param group Two-level factor column. Required for `two.sample` (also
+#'   with a custom statistic: its labels are permuted).
 #' @param statistic Optional custom function `function(data, indices, ...)`
-#'   returning a scalar; observed value uses `indices = seq_len(n)`.
+#'   returning a scalar; the observed value uses `indices = seq_len(n)`.
 #' @param ... Additional arguments passed to `statistic`.
 #' @param type `"two.sample"`, `"paired"`, `"one.sample"`, or
 #'   `"independence"`.
@@ -1168,6 +1244,17 @@ stat_bootstrap = function(data, statistic, ..., B = 2000,
 #' @param seed Optional integer seed.
 #' @param .by <[`tidy-select`][tidyselect::language]> Optional slice
 #'   columns; the test is repeated within each slice.
+#'
+#' @details Custom-statistic semantics: for `type = "two.sample"` the null
+#'   distribution is built by permuting the GROUP LABELS — for every
+#'   permutation the `group` column of the data handed to `statistic` is
+#'   re-assigned at random (`indices = seq_len(n)`), so any group-contrast
+#'   statistic varies across permutations. For `type = "independence"` the
+#'   SECOND `.cols` column is shuffled (within each `.by` slice; slice
+#'   columns are never touched) before `statistic` sees the data. If the
+#'   permuted statistic is (near-)constant — for example a statistic that
+#'   does not depend on the permuted labels — a warning is issued instead
+#'   of silently reporting a meaningless p = 1.
 #'
 #' @return A tibble with class `stat_infer`: `.by` identifiers, `observed`,
 #'   `p.value`, `null_mean`, `null_sd`, `permutations`, `type`, `alternative`.
@@ -1215,16 +1302,38 @@ stat_perm_test = function(data, .cols = NULL, group = NULL, statistic = NULL,
              "'independence' only.", call. = FALSE)
       }
       n = nrow(d)
-      T0 = statistic(d, seq_len(n), ...)
       if (type == "two.sample") {
-        Tstar = vapply(seq_len(B), function(b) {
-          statistic(d, sample.int(n), ...)
-        }, numeric(1))
-      } else {
-        idx_mat = replicate(B, sample.int(n))
+        # F5: permute the GROUP LABELS, not the row order — reordering
+        # rows moves y and g together and leaves any group-contrast
+        # statistic invariant (degenerate null, p = 1).
+        if (ncol(grp_df) != 1) {
+          stop("two.sample with a custom statistic requires a group ",
+               "column whose labels are permuted.", call. = FALSE)
+        }
+        g_nm = names(grp_df)[1]
+        T0 = statistic(d, seq_len(n), ...)
         Tstar = vapply(seq_len(B), function(b) {
           d2 = d
-          d2[[ncol(d)]] = d[[ncol(d)]][idx_mat[, b]]
+          d2[[g_nm]] = d[[g_nm]][sample.int(n)]
+          statistic(d2, seq_len(n), ...)
+        }, numeric(1))
+      } else {
+        # F6: shuffle the SECOND .cols column (as documented), never a
+        # slice column.
+        if (ncol(cols_df) < 2) {
+          stop("independence with a custom statistic requires at least two ",
+               ".cols columns; the second one is shuffled (got ",
+               ncol(cols_df), ").", call. = FALSE)
+        }
+        shuf_nm = names(cols_df)[2]
+        if (shuf_nm %in% slice_nms) {
+          stop("cannot shuffle column `", shuf_nm, "`: it is a .by slice ",
+               "column.", call. = FALSE)
+        }
+        T0 = statistic(d, seq_len(n), ...)
+        Tstar = vapply(seq_len(B), function(b) {
+          d2 = d
+          d2[[shuf_nm]] = d[[shuf_nm]][sample.int(n)]
           statistic(d2, seq_len(n), ...)
         }, numeric(1))
       }
@@ -1284,11 +1393,16 @@ stat_perm_test = function(data, .cols = NULL, group = NULL, statistic = NULL,
       c0 = if (!is.null(statistic)) mean(Tstar) else 0
       p = (1 + sum(abs(Tstar - c0) >= abs(T0 - c0))) / (B + 1)
     }
+    sd_null = stats::sd(Tstar)
+    if (!is.na(sd_null) && sd_null < 1e-12 * max(1, abs(unname(T0)))) {
+      warning("permuted statistic is invariant; the statistic may not ",
+              "depend on the permuted labels", call. = FALSE)
+    }
     tibble::tibble(
       observed = unname(T0),
       p.value = p,
       null_mean = mean(Tstar),
-      null_sd = stats::sd(Tstar),
+      null_sd = sd_null,
       permutations = B,
       type = type,
       alternative = alternative
@@ -1306,8 +1420,9 @@ stat_perm_test = function(data, .cols = NULL, group = NULL, statistic = NULL,
   if (!is.null(statistic)) {
     sl = .slice_index(slice_df)
     rows = lapply(seq_along(sl$idx), function(k) {
-      d = data[sl$idx[[k]], , drop = FALSE]
-      row = .run_one(d, NULL, NULL)
+      i = sl$idx[[k]]
+      row = .run_one(data[i, , drop = FALSE],
+        cols_df[i, , drop = FALSE], grp_df[i, , drop = FALSE])
       if (is.null(sl$keys)) row else dplyr::bind_cols(sl$keys[k, , drop = FALSE], row)
     })
   } else {
