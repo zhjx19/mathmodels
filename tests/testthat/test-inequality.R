@@ -43,3 +43,39 @@ test_that("inequality input validation", {
   expect_error(gini(c(1,2), c(3,4,5)), "same length")
   expect_error(theil_g(1:5, "g", "y", "p"), "must be a data frame")
 })
+
+# Regression: theil_g2_cross must decompose the ACTUAL total Theil exactly
+# (within-group2 weights are income shares, not population shares).
+test_that("theil_g2_cross decomposes the true total Theil", {
+  d = data.frame(
+    industry = c("A","A","A","A","B","B","B","B"),
+    area = c("East","East","West","West","East","East","West","West"),
+    province = c("Shanghai","Beijing","Sichuan","Yunnan",
+                 "Shanghai","Beijing","Sichuan","Yunnan"),
+    avg_wage = c(500, 400, 80, 60, 300, 250, 50, 40),
+    emp_num = c(100, 80, 90, 70, 120, 100, 80, 60)
+  )
+  r = theil_g2_cross(d, "industry", "area", "avg_wage", "emp_num")
+  # T equals the direct Theil of the raw rows
+  expect_equal(unname(r$theil["T"]), theil(d$avg_wage, d$emp_num),
+               tolerance = 1e-10)
+  # and the three components sum to T exactly
+  expect_equal(unname(r$theil["T"]),
+               unname(r$theil["Tb"] + r$theil["Tw_b"] + r$theil["Tw_w"]),
+               tolerance = 1e-10)
+})
+
+test_that("theil_g2_nest decomposes the true total Theil", {
+  d = data.frame(
+    province = c("A","A","A","A","B","B"),
+    city = c("A1","A1","A2","A2","B1","B1"),
+    industry = c("Manu","Serv","Manu","Serv","Manu","Serv"),
+    y = c(50000, 45000, 60000, 55000, 70000, 65000),
+    pop = c(10000, 8000, 15000, 12000, 10000, 8000)
+  )
+  r = theil_g2_nest(d, "province", "city", "y", "pop")
+  expect_equal(unname(r$theil["T"]), theil(d$y, d$pop), tolerance = 1e-10)
+  expect_equal(unname(r$theil["T"]),
+               unname(r$theil["Tb_g1"] + r$theil["Tb_g2"] + r$theil["Tw"]),
+               tolerance = 1e-10)
+})

@@ -294,8 +294,13 @@ theil_g2_cross = function(data, group1, group2, y, pop) {
       T_g2_w = sapply(data, function(d) {
         d_nested = tidyr::nest(d, .by = group2)
         sum(sapply(d_nested$data, function(dr) {
-          if (nrow(dr) > 1) theil(dr$y, dr$pop) * sum(dr$pop) / sum(d$pop)
-          else 0
+          # Theil within-component weights are INCOME shares (not population
+          # shares); using population shares breaks the identity
+          # T = Tb_g1 + Tb_g2 + Tw_g2.
+          if (nrow(dr) > 1) {
+            w = sum(dr$y * dr$pop) / sum(d$y * d$pop)
+            theil(dr$y, dr$pop) * w
+          } else 0
         }), na.rm = TRUE)
       }),
       # Total within-group1 Theil index for each group1
