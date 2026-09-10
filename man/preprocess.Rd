@@ -60,7 +60,7 @@ A numeric vector of the same length as \code{x}, transformed as follows:
 \item \code{rescale}: Min-Max scaled values in \verb{[a, b]} (default \code{[0, 1]}).
 \item \code{rescale_middle}: Centered-type normalized values in \code{[0, 1]}, where 1 indicates \code{x = m}.
 \item \code{rescale_interval}: Interval-type normalized values in \code{[0, 1]}, where 1 indicates \code{x} in \verb{[a, b]}.
-\item \code{rescale_extreme}: Extreme-based normalized values using \code{min(x)/x} (positive) or \code{x/max(x)} (negative).
+\item \code{rescale_extreme}: Extreme-based normalized values using \code{x/max(x)} (positive) or \code{min(x)/x} (negative).
 \item \code{rescale_initial}: Initial-based normalized values using \code{x/x[1]} or \code{x[1]/x}.
 \item \code{rescale_mean}: Mean-based normalized values using \code{x/mean(x)}.
 \item \code{to_positive}: Converts negative indicators to positive: \code{minmax} returns \code{max(x) - x} (a reversal in the original units, not a rescale to \code{[0, 1]}); \code{reciprocal} returns \code{1/x} and requires strictly positive data.
@@ -77,7 +77,7 @@ These functions support various preprocessing needs in data analysis:
 \item \code{rescale}: Performs Min-Max scaling to a specified range (default \code{[0, 1]}), supporting positive or negative indicators.
 \item \code{rescale_middle}: Normalizes centered-type indicators, where values closer to an optimal value \code{m} are better, mapping to \code{[0, 1]}.
 \item \code{rescale_interval}: Normalizes interval-type indicators, where values within \verb{[a, b]} are optimal, mapping to \code{[0, 1]}.
-\item \code{rescale_extreme}: Normalizes using extreme values: \code{min(x)/x} for positive indicators or \code{x/max(x)} for negative indicators, often used in grey relational analysis.
+\item \code{rescale_extreme}: Normalizes using extreme values: \code{x/max(x)} for positive indicators or \code{min(x)/x} for negative indicators, often used in grey relational analysis.
 \item \code{rescale_initial}: Normalizes by dividing by the first value (\code{x/x[1]} or \code{x[1]/x}), commonly used in grey relational analysis.
 \item \code{rescale_mean}: Normalizes by dividing by the mean (\code{x/mean(x)}), commonly used in grey relational analysis.
 \item \code{to_positive}: Converts negative indicators to positive: \code{minmax} returns \code{max(x) - x} (a reversal in the original units, not a rescale to \code{c(0,1)}), and \code{reciprocal} returns \code{1/x}, which requires strictly positive data (no zeros or negatives).
@@ -109,8 +109,8 @@ Temp = c(35.2, 35.8, 36.6, 37.1, 37.8, 38.4)
 rescale_interval(Temp, 36, 37)
 
 # Extreme-based normalization
-rescale_extreme(x)         # min(x)/x
-rescale_extreme(x, "-")    # x/max(x)
+rescale_extreme(x)         # x/max(x)
+rescale_extreme(x, "-")    # min(x)/x
 
 # Initial-based normalization
 rescale_initial(x)

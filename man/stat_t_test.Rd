@@ -51,7 +51,7 @@ A tibble with class \code{stat_infer}: \code{variable}, \code{.by} identifiers,
 \code{df}, \code{p.value}, \code{p.adjusted}, \code{sig}, \code{conf_low}, \code{conf_high},
 \code{effect} (Cohen's d), \code{method}, \code{alternative}. For two-sample tests all
 difference quantities (\code{estimate}, \code{statistic}, CI, \code{effect}) follow the
-group1 − group2 direction (first level minus second level, rstatix
+group1 - group2 direction (first level minus second level, rstatix
 convention).
 }
 \description{

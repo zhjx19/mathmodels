@@ -246,6 +246,21 @@ reference:
 - title: "Data and Utilities"
   desc: "Built-in datasets and data import utilities."
 
+- title: "Data Cleaning"
+  desc: "Missing-value diagnostics, imputation (simple, model-based, and multiple), Rubin's-rules pooling, and outlier handling."
+  contents:
+  - na_summary
+  - na_mcar_test
+  - plot_na_heatmap
+  - plot_na_bar
+  - impute
+  - impute_model
+  - impute_multiple
+  - rubin_pool
+  - pool_fit
+  - outlier
+  - pivot_table
+
 - title: "Statistical Inference"
   desc: "Tidy hypothesis tests, bootstrap and permutation frameworks, and three-line table export."
   contents:

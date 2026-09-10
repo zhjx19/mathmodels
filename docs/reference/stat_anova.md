@@ -36,8 +36,20 @@ stat_anova(data, resp, group, .by = NULL)
 ## Value
 
 A tibble with class `stat_infer`: `resp`, `.by` identifiers, `term`,
-`df`, `sumsq`, `meansq`, `statistic`, `p.value`, `p.adjusted`, `sig`,
-`effect` (partial eta-squared), `method`.
+`df`, `sumsq`, `meansq`, `statistic`, `p.value`, `sig`, `effect`
+(partial eta-squared), `method`.
+
+## Details
+
+The table is the sequential decomposition from
+[`stats::anova()`](https://rdrr.io/r/stats/anova.html) — Type I
+(sequential) sums of squares. With unbalanced designs the early terms
+therefore differ from the Type II/III decompositions of
+[`car::Anova()`](https://rdrr.io/pkg/car/man/Anova.html) or
+[`rstatix::anova_test()`](https://rpkgs.datanovia.com/rstatix/reference/anova_test.html)
+(see
+[`stat_ancova()`](https://zhjx19.github.io/mathmodels/reference/stat_ancova.md)
+for a Type II ANCOVA table).
 
 ## Examples
 

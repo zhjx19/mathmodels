@@ -102,8 +102,8 @@ A numeric vector of the same length as `x`, transformed as follows:
 - `rescale_interval`: Interval-type normalized values in `[0, 1]`, where
   1 indicates `x` in `[a, b]`.
 
-- `rescale_extreme`: Extreme-based normalized values using `min(x)/x`
-  (positive) or `x/max(x)` (negative).
+- `rescale_extreme`: Extreme-based normalized values using `x/max(x)`
+  (positive) or `min(x)/x` (negative).
 
 - `rescale_initial`: Initial-based normalized values using `x/x[1]` or
   `x[1]/x`.
@@ -135,8 +135,8 @@ These functions support various preprocessing needs in data analysis:
 - `rescale_interval`: Normalizes interval-type indicators, where values
   within `[a, b]` are optimal, mapping to `[0, 1]`.
 
-- `rescale_extreme`: Normalizes using extreme values: `min(x)/x` for
-  positive indicators or `x/max(x)` for negative indicators, often used
+- `rescale_extreme`: Normalizes using extreme values: `x/max(x)` for
+  positive indicators or `min(x)/x` for negative indicators, often used
   in grey relational analysis.
 
 - `rescale_initial`: Normalizes by dividing by the first value (`x/x[1]`
@@ -189,9 +189,9 @@ rescale_interval(Temp, 36, 37)
 #> [1] 0.4285714 0.8571429 1.0000000 0.9285714 0.4285714 0.0000000
 
 # Extreme-based normalization
-rescale_extreme(x)         # min(x)/x
+rescale_extreme(x)         # x/max(x)
 #> [1] 0.500 0.125    NA 0.625 1.000
-rescale_extreme(x, "-")    # x/max(x)
+rescale_extreme(x, "-")    # min(x)/x
 #> [1] 0.250 1.000    NA 0.200 0.125
 
 # Initial-based normalization

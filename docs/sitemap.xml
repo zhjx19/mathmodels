@@ -38,6 +38,9 @@
 <url><loc>https://zhjx19.github.io/mathmodels/reference/grey_analysis.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/grey_models.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/growth_fit.html</loc></url>
+<url><loc>https://zhjx19.github.io/mathmodels/reference/impute.html</loc></url>
+<url><loc>https://zhjx19.github.io/mathmodels/reference/impute_model.html</loc></url>
+<url><loc>https://zhjx19.github.io/mathmodels/reference/impute_multiple.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/impute_ts_df.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/index.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/inequality.html</loc></url>
@@ -60,6 +63,8 @@
 <url><loc>https://zhjx19.github.io/mathmodels/reference/mv_mds.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/mv_pca.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/mv_pcor.html</loc></url>
+<url><loc>https://zhjx19.github.io/mathmodels/reference/na_mcar_test.html</loc></url>
+<url><loc>https://zhjx19.github.io/mathmodels/reference/na_summary.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/ode_logistic.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/ode_lv.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/ode_malthus.html</loc></url>
@@ -68,7 +73,9 @@
 <url><loc>https://zhjx19.github.io/mathmodels/reference/ode_sir.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/ode_sis.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/ode_solver.html</loc></url>
+<url><loc>https://zhjx19.github.io/mathmodels/reference/outlier.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/pca_weight.html</loc></url>
+<url><loc>https://zhjx19.github.io/mathmodels/reference/pivot_table.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/pi_mf.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/plot_compartments.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/plot_incidence.html</loc></url>
@@ -79,6 +86,8 @@
 <url><loc>https://zhjx19.github.io/mathmodels/reference/plot_mv_scores.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/plot_mv_scree.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/plot_mv_silhouette.html</loc></url>
+<url><loc>https://zhjx19.github.io/mathmodels/reference/plot_na_bar.html</loc></url>
+<url><loc>https://zhjx19.github.io/mathmodels/reference/plot_na_heatmap.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/plot_phase_si.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/plot_reg_predict.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/plot_reg_residuals.html</loc></url>
@@ -92,6 +101,7 @@
 <url><loc>https://zhjx19.github.io/mathmodels/reference/plot_ts_sarima_garch.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/plot_ts_stl.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/poly_fit.html</loc></url>
+<url><loc>https://zhjx19.github.io/mathmodels/reference/pool_fit.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/preprocess.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/psigmoid_mf.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/rank_sum_ratio.html</loc></url>
@@ -105,6 +115,7 @@
 <url><loc>https://zhjx19.github.io/mathmodels/reference/reg_plot_residuals.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/reg_poisson.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/reg_predict.html</loc></url>
+<url><loc>https://zhjx19.github.io/mathmodels/reference/rubin_pool.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/sigmoid_mf.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/stat_ancova.html</loc></url>
 <url><loc>https://zhjx19.github.io/mathmodels/reference/stat_anova.html</loc></url>

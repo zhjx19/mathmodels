@@ -78,7 +78,10 @@ stat_t_test(
 A tibble with class `stat_infer`: `variable`, `.by` identifiers,
 `n_used`, `n_dropped`, `estimate`, `estimate1`, `estimate2`,
 `statistic`, `df`, `p.value`, `p.adjusted`, `sig`, `conf_low`,
-`conf_high`, `effect` (Cohen's d), `method`, `alternative`.
+`conf_high`, `effect` (Cohen's d), `method`, `alternative`. For
+two-sample tests all difference quantities (`estimate`, `statistic`, CI,
+`effect`) follow the group1 − group2 direction (first level minus second
+level, rstatix convention).
 
 ## Examples
 
@@ -88,7 +91,7 @@ stat_t_test(sleep, .cols = extra, group = group)
 #> # A tibble: 1 × 16
 #>   variable n_used n_dropped estimate estimate1 estimate2 statistic    df p.value
 #> * <chr>     <int>     <int>    <dbl>     <dbl>     <dbl>     <dbl> <dbl>   <dbl>
-#> 1 extra        20         0     1.58      0.75      2.33     -1.86  17.8  0.0794
+#> 1 extra        20         0    -1.58      0.75      2.33     -1.86  17.8  0.0794
 #> # ℹ 7 more variables: conf_low <dbl>, conf_high <dbl>, effect <dbl>,
 #> #   method <chr>, alternative <chr>, p.adjusted <dbl>, sig <chr>
 stat_t_test(mtcars, .cols = mpg, mu = 20)
@@ -104,7 +107,7 @@ stat_t_test(mtcars, .cols = mpg, group = am, var.equal = TRUE)
 #> # A tibble: 1 × 16
 #>   variable n_used n_dropped estimate estimate1 estimate2 statistic    df p.value
 #> * <chr>     <int>     <int>    <dbl>     <dbl>     <dbl>     <dbl> <dbl>   <dbl>
-#> 1 mpg          32         0     7.24      17.1      24.4     -4.11    30 2.85e-4
+#> 1 mpg          32         0    -7.24      17.1      24.4     -4.11    30 2.85e-4
 #> # ℹ 7 more variables: conf_low <dbl>, conf_high <dbl>, effect <dbl>,
 #> #   method <chr>, alternative <chr>, p.adjusted <dbl>, sig <chr>
 ```

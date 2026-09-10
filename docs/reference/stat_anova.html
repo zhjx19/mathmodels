@@ -13,7 +13,7 @@ model term (plus a Residuals row); resp and .by are repeated
 
     <a class="navbar-brand me-2" href="../index.html">mathmodels</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.13</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.14</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -81,8 +81,16 @@ several columns are entered with interactions (<code>g1 * g2</code>).</p></dd>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A tibble with class <code>stat_infer</code>: <code>resp</code>, <code>.by</code> identifiers,
-<code>term</code>, <code>df</code>, <code>sumsq</code>, <code>meansq</code>, <code>statistic</code>, <code>p.value</code>, <code>p.adjusted</code>,
-<code>sig</code>, <code>effect</code> (partial eta-squared), <code>method</code>.</p>
+<code>term</code>, <code>df</code>, <code>sumsq</code>, <code>meansq</code>, <code>statistic</code>, <code>p.value</code>, <code>sig</code>,
+<code>effect</code> (partial eta-squared), <code>method</code>.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>The table is the sequential decomposition from
+<code><a href="https://rdrr.io/r/stats/anova.html" class="external-link">stats::anova()</a></code> — Type I (sequential) sums of squares. With unbalanced
+designs the early terms therefore differ from the Type II/III
+decompositions of <code><a href="https://rdrr.io/pkg/car/man/Anova.html" class="external-link">car::Anova()</a></code> or <code><a href="https://rpkgs.datanovia.com/rstatix/reference/anova_test.html" class="external-link">rstatix::anova_test()</a></code> (see
+<code><a href="stat_ancova.html">stat_ancova()</a></code> for a Type II ANCOVA table).</p>
     </div>
 
     <div class="section level2">

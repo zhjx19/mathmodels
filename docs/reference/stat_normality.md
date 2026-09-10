@@ -51,10 +51,9 @@ stat_normality(mtcars, .cols = mpg:hp)
 #> 4 hp           32     0.933 0.0488      0.761  0.0522 Shapiro-… 0.0488     "*"  
 stat_normality(ToothGrowth, .cols = len, .by = supp)
 #> Shapiro-Wilk normality test 
-#>    supp variable n_used statistic    p.value       skew       kurt
-#> OJ   OJ      len     30 0.9178434 0.02358773 -0.5504998 -0.8923989
-#> VC   VC      len     30 0.9656715 0.42844646  0.2900364 -0.7820183
-#>                         method p.adjusted sig
-#> OJ Shapiro-Wilk normality test 0.02358773   *
-#> VC Shapiro-Wilk normality test 0.42844646    
+#> # A tibble: 2 × 10
+#>   supp  variable n_used statistic p.value   skew   kurt method  p.adjusted sig  
+#> * <fct> <chr>     <int>     <dbl>   <dbl>  <dbl>  <dbl> <chr>        <dbl> <chr>
+#> 1 OJ    len          30     0.918  0.0236 -0.550 -0.892 Shapir…     0.0236 "*"  
+#> 2 VC    len          30     0.966  0.428   0.290 -0.782 Shapir…     0.428  ""   
 ```

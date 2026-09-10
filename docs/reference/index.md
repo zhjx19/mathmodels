@@ -378,6 +378,34 @@ visualizations.
 
 Built-in datasets and data import utilities.
 
+## Data Cleaning
+
+Missing-value diagnostics, imputation (simple, model-based, and
+multiple), Rubin’s-rules pooling, and outlier handling.
+
+- [`na_summary()`](https://zhjx19.github.io/mathmodels/reference/na_summary.md)
+  : Missing Value Summary
+- [`na_mcar_test()`](https://zhjx19.github.io/mathmodels/reference/na_mcar_test.md)
+  : Little's MCAR Test
+- [`plot_na_heatmap()`](https://zhjx19.github.io/mathmodels/reference/plot_na_heatmap.md)
+  : Missingness Heatmap
+- [`plot_na_bar()`](https://zhjx19.github.io/mathmodels/reference/plot_na_bar.md)
+  : Missingness Bar Plot
+- [`impute()`](https://zhjx19.github.io/mathmodels/reference/impute.md)
+  : Simple Missing Value Imputation
+- [`impute_model()`](https://zhjx19.github.io/mathmodels/reference/impute_model.md)
+  : Model-Based Missing Value Imputation
+- [`impute_multiple()`](https://zhjx19.github.io/mathmodels/reference/impute_multiple.md)
+  : Multiple Imputation via FCS
+- [`rubin_pool()`](https://zhjx19.github.io/mathmodels/reference/rubin_pool.md)
+  : Pool Estimates via Rubin's Rules
+- [`pool_fit()`](https://zhjx19.github.io/mathmodels/reference/pool_fit.md)
+  : Pool lm/glm Fits Across Imputations
+- [`outlier()`](https://zhjx19.github.io/mathmodels/reference/outlier.md)
+  : Outlier Detection and Handling
+- [`pivot_table()`](https://zhjx19.github.io/mathmodels/reference/pivot_table.md)
+  : Pivot Table
+
 ## Statistical Inference
 
 Tidy hypothesis tests, bootstrap and permutation frameworks, and

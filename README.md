@@ -8,12 +8,17 @@
 
 An R package providing a versatile toolkit for mathematical modeling, developed as a companion to the book *Mathematical Modeling: Algorithms and Programming Implementation* (China Machine Press). It focuses on implementing rigorous algorithms in a user-friendly manner.
 
-**Current Version (0.0.13)** introduces a tidy statistical inference toolkit —
-tidy-in/tidy-out hypothesis tests (`stat_t_test()`, `stat_anova()`, `stat_cor()`,
-`stat_chisq()`, ...), generic bootstrap and permutation frameworks
-(`stat_bootstrap()`, `stat_perm_test()`), and Word/LaTeX three-line table export
-(`export_table()`) — plus the multivariate statistics toolkit (`mv_pca()` to
-`mv_pcor()` with `plot_mv_*()` visuals), the factor-analysis weighting method
+**Current Version (0.0.14)** introduces a data-cleaning toolkit — missing-value
+diagnostics with Little's MCAR test (`na_mcar_test()`), missingness visuals
+(`plot_na_heatmap()`, `plot_na_bar()`), simple and model-based imputation
+(`impute()`, `impute_model()` with kNN / linear regression / decision trees),
+multiple imputation by FCS chained equations (`impute_multiple()`) with
+Rubin's-rules pooling (`rubin_pool()`, `pool_fit()`; Barnard-Rubin
+small-sample df),
+and outlier handling (`outlier()`) — plus the Excel-style `pivot_table()`.
+Together with the previous release's tidy statistical inference toolkit
+(`stat_*()` tests, bootstrap and permutation frameworks, `export_table()`),
+the multivariate statistics toolkit (`mv_*()`), the factor-analysis weighting
 `weight_fa()`, and the renamed `weight_*` / `mf_*` families. All this builds on
 the regression prediction toolkit, time-series workflow, epidemic modeling,
 differential equation models, grey prediction, Markov chain models, interpolation
@@ -22,17 +27,28 @@ PCA, TOPSIS, Fuzzy, RSR, DEA).
 
 ## Key Features
 
-*   **Statistical Inference (new)** — tidy hypothesis tests: t-test / Wilcoxon,
-    ANOVA / Kruskal-Wallis, ANCOVA, correlation, chi-square, normality and
-    variance-homogeneity tests (`stat_*()`), each returning one tidy row per
-    test with effect sizes; generic **bootstrap** and **permutation** frameworks;
-    `export_table()` renders results as Word/LaTeX three-line tables.
+*   **Data Cleaning (new)** — missing-value diagnostics (`na_summary()`,
+    `na_mcar_test()` for Little's MCAR test) with heatmap / bar visuals;
+    imputation: simple fills (group mean / median / mode, linear & spline
+    interpolation, constants), a unified model-based framework (`impute_model()`
+    with kNN, linear regression, decision trees), and **multiple imputation**
+    (`impute_multiple()`: FCS chained equations, pmm/norm for numeric columns,
+    logreg/polyreg for categorical ones) with Rubin's-rules pooling
+    (`rubin_pool()` for scalar estimates, `pool_fit()` for lm/glm fits, incl.
+    the Barnard-Rubin small-sample df adjustment); every changed cell is recorded
+    for audit. Outlier detection and handling (`outlier()`: IQR / z-score /
+    Hampel-MAD bounds, set-NA or cap). Excel-style `pivot_table()`.
 *   **Multivariate Statistics (new)** — PCA (`mv_pca()`), EFA (`mv_efa()`),
     hierarchical and k-means clustering with validity metrics (`mv_hclust()`,
     `mv_kmeans()`, `mv_cluster_metrics()`), discriminant analysis (`mv_discrim()`),
     correspondence analysis (`mv_corresp()`), MDS (`mv_mds()`), canonical and
     partial correlation (`mv_cancor()`, `mv_pcor()`), all with tidy components
     and `plot_mv_*()` visuals.
+*   **Statistical Inference** — tidy hypothesis tests: t-test / Wilcoxon,
+    ANOVA / Kruskal-Wallis, ANCOVA, correlation, chi-square, normality and
+    variance-homogeneity tests (`stat_*()`), each returning one tidy row per
+    test with effect sizes; generic **bootstrap** and **permutation** frameworks;
+    `export_table()` renders results as Word/LaTeX three-line tables.
 *   **Evaluation Models** — AHP, Entropy weighting, CRITIC, CV, PCA and factor-analysis
     weighting, TOPSIS, Grey Relational Analysis (GRA),
     Rank Sum Ratio (RSR), Fuzzy Comprehensive Evaluation (FCE) with the `mf_*` family
@@ -127,6 +143,8 @@ This online book is the definitive guide to the package's functionalities. Curre
 - **Differential equation models**: Malthus, Logistic, SI, SIS, SIR, SEIR, Lotka–Volterra with `ode_solver()` and `ode_*()` functions; epidemic visualization (`plot_compartments()`, `plot_incidence()`, `plot_phase_si()`, `plot_Rt_estimate()`) and metrics (`epi_metrics()`)
 - **Statistical inference** (0.0.13): tidy tests — `stat_describe()`, `stat_t_test()`, `stat_wilcox_test()`, `stat_anova()`, `stat_kruskal()`, `stat_ancova()`, `stat_cor()`, `stat_chisq()`, `stat_normality()`, `stat_hov_test()` — all with `.by` slice grouping and effect sizes; generic frameworks `stat_bootstrap()`, `stat_perm_test()`; `export_table()` for Word/LaTeX three-line tables
 - **Multivariate statistics** (0.0.12): `mv_pca()`, `mv_efa()`, `mv_hclust()`, `mv_kmeans()`, `mv_cluster_metrics()`, `mv_discrim()`, `mv_corresp()`, `mv_mds()`, `mv_cancor()`, `mv_pcor()` with `plot_mv_*()` visuals
+- **Data cleaning** (0.0.14): `na_summary()`, `na_mcar_test()` (Little's MCAR test), `plot_na_heatmap()` / `plot_na_bar()`; imputation via `impute()` (group mean/median/mode, linear/spline, constant), the unified model-based framework `impute_model()` (kNN, linear regression, decision trees), and multiple imputation `impute_multiple()` (FCS chained equations) with Rubin's-rules pooling `rubin_pool()` / `pool_fit()`; outlier handling with `outlier()` (detect / set NA / cap)
+- **Pivot table** (0.0.14): `pivot_table()` for Excel-style aggregation and spreading
 - **Time series**: `ts_df()`, `as_ts_df()`, `validate_ts_df()`, `complete_ts_df()`, `impute_ts_df()`, `drop_na_ts_df()`, `ts_transform()`, `ts_back_transform()`, `ts_ets()`, `ts_sarima()`, `ts_arimax()`, `ts_stl()`, `ts_test()`, `ts_forecast()`; visualization: `plot_ts()`, `plot_ts_acf()`, `plot_ts_pacf()`, `plot_ts_forecast()`, `plot_ts_stl()`, `plot_ts_residuals()`
 - **Regression prediction**: `reg_lm()`, `reg_logistic()`, `reg_poisson()`, `reg_negbin()` with stepwise selection; `reg_predict()`, `reg_diagnostics()`, `plot_reg_predict()`, `plot_reg_residuals()`
 - **Interpolation & curve fitting**: `interp_linear()`, `interp_spline()`, `interp_poly()`, `interp_hermite()` for interpolation; `poly_fit()`, `curve_fit()`, `growth_fit()` for curve fitting

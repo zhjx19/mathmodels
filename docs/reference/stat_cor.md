@@ -1,7 +1,10 @@
 # Correlation Analysis
 
 Pairwise correlations among numeric columns with test statistics,
-p-values and (Pearson) confidence intervals.
+p-values and (Pearson) confidence intervals. Each pair uses its own
+pairwise-complete rows (rows where both variables are observed, the
+[`stats::cor.test()`](https://rdrr.io/r/stats/cor.test.html)
+convention); `n_used` is the per-pair complete count.
 
 ## Usage
 
@@ -54,7 +57,9 @@ stat_cor(
 
 A tibble with class `stat_infer`: `.by` identifiers, `var1`, `var2`,
 `n_used`, `estimate`, `statistic`, `df`, `p.value`, `p.adjusted`, `sig`,
-`conf_low`, `conf_high`, `method`.
+`conf_low`, `conf_high`, `method`. Each row is computed on the
+pairwise-complete rows of its two variables (`n_used` = that pair's
+complete-row count).
 
 ## Examples
 

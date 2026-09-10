@@ -16,6 +16,7 @@
 ^vignettes/*_files$
 ^\.positai$
 ^\.claude$
+^\.superpowers$
 ^\.zcode$
 ^docs$
 ^vignettes/welcome\.html$
@@ -26,3 +27,5 @@
 ^CLAUDE\.md$
 ^cran-comments\.md$
 ^CRAN_SUBMISSION\.md$
+^doc$
+^Meta$

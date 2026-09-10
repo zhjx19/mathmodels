@@ -48,7 +48,11 @@ covariate and warns once, listing every response whose interaction
 is significant.
 }
 \examples{
-d = data.frame(y = c(1:10, 2:11), g = rep(c("a", "b"), each = 10),
-               x = 1:20)
+set.seed(1)
+d = data.frame(
+  g = rep(c("a", "b"), each = 10),
+  x = rep(1:10, 2),
+  y = 2 * rep(1:10, 2) + rep(c(0, 5), each = 10) + rnorm(20)
+)
 stat_ancova(d, resp = y, group = g, covariates = x)
 }

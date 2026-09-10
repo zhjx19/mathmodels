@@ -5,22 +5,30 @@ developed as a companion to the book *Mathematical Modeling: Algorithms
 and Programming Implementation* (China Machine Press). It focuses on
 implementing rigorous algorithms in a user-friendly manner.
 
-**Current Version (0.0.13)** introduces a tidy statistical inference
-toolkit — tidy-in/tidy-out hypothesis tests
-([`stat_t_test()`](https://zhjx19.github.io/mathmodels/reference/stat_t_test.md),
-[`stat_anova()`](https://zhjx19.github.io/mathmodels/reference/stat_anova.md),
-[`stat_cor()`](https://zhjx19.github.io/mathmodels/reference/stat_cor.md),
-[`stat_chisq()`](https://zhjx19.github.io/mathmodels/reference/stat_chisq.md),
-…), generic bootstrap and permutation frameworks
-([`stat_bootstrap()`](https://zhjx19.github.io/mathmodels/reference/stat_bootstrap.md),
-[`stat_perm_test()`](https://zhjx19.github.io/mathmodels/reference/stat_perm_test.md)),
-and Word/LaTeX three-line table export
-([`export_table()`](https://zhjx19.github.io/mathmodels/reference/export_table.md))
-— plus the multivariate statistics toolkit
-([`mv_pca()`](https://zhjx19.github.io/mathmodels/reference/mv_pca.md)
-to
-[`mv_pcor()`](https://zhjx19.github.io/mathmodels/reference/mv_pcor.md)
-with `plot_mv_*()` visuals), the factor-analysis weighting method
+**Current Version (0.0.14)** introduces a data-cleaning toolkit —
+missing-value diagnostics with Little’s MCAR test
+([`na_mcar_test()`](https://zhjx19.github.io/mathmodels/reference/na_mcar_test.md)),
+missingness visuals
+([`plot_na_heatmap()`](https://zhjx19.github.io/mathmodels/reference/plot_na_heatmap.md),
+[`plot_na_bar()`](https://zhjx19.github.io/mathmodels/reference/plot_na_bar.md)),
+simple and model-based imputation
+([`impute()`](https://zhjx19.github.io/mathmodels/reference/impute.md),
+[`impute_model()`](https://zhjx19.github.io/mathmodels/reference/impute_model.md)
+with kNN / linear regression / decision trees), multiple imputation by
+FCS chained equations
+([`impute_multiple()`](https://zhjx19.github.io/mathmodels/reference/impute_multiple.md))
+with Rubin’s-rules pooling
+([`rubin_pool()`](https://zhjx19.github.io/mathmodels/reference/rubin_pool.md),
+[`pool_fit()`](https://zhjx19.github.io/mathmodels/reference/pool_fit.md);
+Barnard-Rubin small-sample df), and outlier handling
+([`outlier()`](https://zhjx19.github.io/mathmodels/reference/outlier.md))
+— plus the Excel-style
+[`pivot_table()`](https://zhjx19.github.io/mathmodels/reference/pivot_table.md).
+Together with the previous release’s tidy statistical inference toolkit
+(`stat_*()` tests, bootstrap and permutation frameworks,
+[`export_table()`](https://zhjx19.github.io/mathmodels/reference/export_table.md)),
+the multivariate statistics toolkit (`mv_*()`), the factor-analysis
+weighting
 [`weight_fa()`](https://zhjx19.github.io/mathmodels/reference/weight_fa.md),
 and the renamed `weight_*` / `mf_*` families. All this builds on the
 regression prediction toolkit, time-series workflow, epidemic modeling,
@@ -30,13 +38,27 @@ interpolation and curve fitting, and a rich suite of evaluation methods
 
 ## Key Features
 
-- **Statistical Inference (new)** — tidy hypothesis tests: t-test /
-  Wilcoxon, ANOVA / Kruskal-Wallis, ANCOVA, correlation, chi-square,
-  normality and variance-homogeneity tests (`stat_*()`), each returning
-  one tidy row per test with effect sizes; generic **bootstrap** and
-  **permutation** frameworks;
-  [`export_table()`](https://zhjx19.github.io/mathmodels/reference/export_table.md)
-  renders results as Word/LaTeX three-line tables.
+- **Data Cleaning (new)** — missing-value diagnostics
+  ([`na_summary()`](https://zhjx19.github.io/mathmodels/reference/na_summary.md),
+  [`na_mcar_test()`](https://zhjx19.github.io/mathmodels/reference/na_mcar_test.md)
+  for Little’s MCAR test) with heatmap / bar visuals; imputation: simple
+  fills (group mean / median / mode, linear & spline interpolation,
+  constants), a unified model-based framework
+  ([`impute_model()`](https://zhjx19.github.io/mathmodels/reference/impute_model.md)
+  with kNN, linear regression, decision trees), and **multiple
+  imputation**
+  ([`impute_multiple()`](https://zhjx19.github.io/mathmodels/reference/impute_multiple.md):
+  FCS chained equations, pmm/norm for numeric columns, logreg/polyreg
+  for categorical ones) with Rubin’s-rules pooling
+  ([`rubin_pool()`](https://zhjx19.github.io/mathmodels/reference/rubin_pool.md)
+  for scalar estimates,
+  [`pool_fit()`](https://zhjx19.github.io/mathmodels/reference/pool_fit.md)
+  for lm/glm fits, incl. the Barnard-Rubin small-sample df adjustment);
+  every changed cell is recorded for audit. Outlier detection and
+  handling
+  ([`outlier()`](https://zhjx19.github.io/mathmodels/reference/outlier.md):
+  IQR / z-score / Hampel-MAD bounds, set-NA or cap). Excel-style
+  [`pivot_table()`](https://zhjx19.github.io/mathmodels/reference/pivot_table.md).
 - **Multivariate Statistics (new)** — PCA
   ([`mv_pca()`](https://zhjx19.github.io/mathmodels/reference/mv_pca.md)),
   EFA
@@ -55,6 +77,13 @@ interpolation and curve fitting, and a rich suite of evaluation methods
   ([`mv_cancor()`](https://zhjx19.github.io/mathmodels/reference/mv_cancor.md),
   [`mv_pcor()`](https://zhjx19.github.io/mathmodels/reference/mv_pcor.md)),
   all with tidy components and `plot_mv_*()` visuals.
+- **Statistical Inference** — tidy hypothesis tests: t-test / Wilcoxon,
+  ANOVA / Kruskal-Wallis, ANCOVA, correlation, chi-square, normality and
+  variance-homogeneity tests (`stat_*()`), each returning one tidy row
+  per test with effect sizes; generic **bootstrap** and **permutation**
+  frameworks;
+  [`export_table()`](https://zhjx19.github.io/mathmodels/reference/export_table.md)
+  renders results as Word/LaTeX three-line tables.
 - **Evaluation Models** — AHP, Entropy weighting, CRITIC, CV, PCA and
   factor-analysis weighting, TOPSIS, Grey Relational Analysis (GRA),
   Rank Sum Ratio (RSR), Fuzzy Comprehensive Evaluation (FCE) with the
@@ -242,6 +271,30 @@ functionalities. Currently implemented modules include:
   [`mv_cancor()`](https://zhjx19.github.io/mathmodels/reference/mv_cancor.md),
   [`mv_pcor()`](https://zhjx19.github.io/mathmodels/reference/mv_pcor.md)
   with `plot_mv_*()` visuals
+- **Data cleaning** (0.0.14):
+  [`na_summary()`](https://zhjx19.github.io/mathmodels/reference/na_summary.md),
+  [`na_mcar_test()`](https://zhjx19.github.io/mathmodels/reference/na_mcar_test.md)
+  (Little’s MCAR test),
+  [`plot_na_heatmap()`](https://zhjx19.github.io/mathmodels/reference/plot_na_heatmap.md)
+  /
+  [`plot_na_bar()`](https://zhjx19.github.io/mathmodels/reference/plot_na_bar.md);
+  imputation via
+  [`impute()`](https://zhjx19.github.io/mathmodels/reference/impute.md)
+  (group mean/median/mode, linear/spline, constant), the unified
+  model-based framework
+  [`impute_model()`](https://zhjx19.github.io/mathmodels/reference/impute_model.md)
+  (kNN, linear regression, decision trees), and multiple imputation
+  [`impute_multiple()`](https://zhjx19.github.io/mathmodels/reference/impute_multiple.md)
+  (FCS chained equations) with Rubin’s-rules pooling
+  [`rubin_pool()`](https://zhjx19.github.io/mathmodels/reference/rubin_pool.md)
+  /
+  [`pool_fit()`](https://zhjx19.github.io/mathmodels/reference/pool_fit.md);
+  outlier handling with
+  [`outlier()`](https://zhjx19.github.io/mathmodels/reference/outlier.md)
+  (detect / set NA / cap)
+- **Pivot table** (0.0.14):
+  [`pivot_table()`](https://zhjx19.github.io/mathmodels/reference/pivot_table.md)
+  for Excel-style aggregation and spreading
 - **Time series**:
   [`ts_df()`](https://zhjx19.github.io/mathmodels/reference/ts_df.md),
   [`as_ts_df()`](https://zhjx19.github.io/mathmodels/reference/as_ts_df.md),
@@ -681,6 +734,34 @@ visualizations.
 ## Data and Utilities
 
 Built-in datasets and data import utilities.
+
+## Data Cleaning
+
+Missing-value diagnostics, imputation (simple, model-based, and
+multiple), Rubin’s-rules pooling, and outlier handling.
+
+- [`na_summary()`](https://zhjx19.github.io/mathmodels/reference/na_summary.md)
+  : Missing Value Summary
+- [`na_mcar_test()`](https://zhjx19.github.io/mathmodels/reference/na_mcar_test.md)
+  : Little's MCAR Test
+- [`plot_na_heatmap()`](https://zhjx19.github.io/mathmodels/reference/plot_na_heatmap.md)
+  : Missingness Heatmap
+- [`plot_na_bar()`](https://zhjx19.github.io/mathmodels/reference/plot_na_bar.md)
+  : Missingness Bar Plot
+- [`impute()`](https://zhjx19.github.io/mathmodels/reference/impute.md)
+  : Simple Missing Value Imputation
+- [`impute_model()`](https://zhjx19.github.io/mathmodels/reference/impute_model.md)
+  : Model-Based Missing Value Imputation
+- [`impute_multiple()`](https://zhjx19.github.io/mathmodels/reference/impute_multiple.md)
+  : Multiple Imputation via FCS
+- [`rubin_pool()`](https://zhjx19.github.io/mathmodels/reference/rubin_pool.md)
+  : Pool Estimates via Rubin's Rules
+- [`pool_fit()`](https://zhjx19.github.io/mathmodels/reference/pool_fit.md)
+  : Pool lm/glm Fits Across Imputations
+- [`outlier()`](https://zhjx19.github.io/mathmodels/reference/outlier.md)
+  : Outlier Detection and Handling
+- [`pivot_table()`](https://zhjx19.github.io/mathmodels/reference/pivot_table.md)
+  : Pivot Table
 
 ## Statistical Inference
 

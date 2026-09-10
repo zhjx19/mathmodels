@@ -1,6 +1,65 @@
 # Changelog
 
-## mathmodels 0.0.13
+## mathmodels 0.0.14
+
+### Data cleaning toolkit (new)
+
+- **Diagnostics**:
+  [`na_summary()`](https://zhjx19.github.io/mathmodels/reference/na_summary.md)
+  (per-column missing counts),
+  [`na_mcar_test()`](https://zhjx19.github.io/mathmodels/reference/na_mcar_test.md)
+  (Little’s MCAR test, Little 1988 / SAS-style pattern-mean statistic
+  with EM-estimated mean and covariance, following
+  [`naniar::mcar_test()`](https://naniar.njtierney.com/reference/mcar_test.html)),
+  [`plot_na_heatmap()`](https://zhjx19.github.io/mathmodels/reference/plot_na_heatmap.md)
+  and
+  [`plot_na_bar()`](https://zhjx19.github.io/mathmodels/reference/plot_na_bar.md)
+  for missingness visuals.
+- **Imputation**:
+  [`impute()`](https://zhjx19.github.io/mathmodels/reference/impute.md)
+  for simple fills (group mean / median / mode via `.by` slices,
+  row-order linear and spline interpolation reusing
+  [`interp_linear()`](https://zhjx19.github.io/mathmodels/reference/interp_linear.md)
+  /
+  [`interp_spline()`](https://zhjx19.github.io/mathmodels/reference/interp_spline.md),
+  and constants) and
+  [`impute_model()`](https://zhjx19.github.io/mathmodels/reference/impute_model.md),
+  a unified model-based framework with k-nearest-neighbors
+  (hand-written), linear regression, and decision trees (`rpart`). Both
+  return the data frame of the same shape and record every changed cell
+  in `attr(df, "changes")` (model fits are also summarized in
+  `attr(df, "details")`).
+- **Outliers**:
+  [`outlier()`](https://zhjx19.github.io/mathmodels/reference/outlier.md)
+  detects outliers with IQR / z-score / Hampel-MAD bounds (per `.by`
+  slice). By default the data is untouched and the detection table is
+  returned; `to = "na"` sets detected values to `NA` (ready for
+  [`impute()`](https://zhjx19.github.io/mathmodels/reference/impute.md)),
+  `to = "cap"` caps them at the fence values.
+
+### Pivot table (new)
+
+- **[`pivot_table()`](https://zhjx19.github.io/mathmodels/reference/pivot_table.md)**:
+  aggregates values by the cross of `index` and `columns` (`.by`-style
+  tidy evaluation) and spreads them into a wide tibble; naming is built
+  with `names_glue` so the value-column prefix is always present
+  (e.g. `sales_2023`, `v_c1`), controlled by `names_sep`.
+- **Dependencies** (new): `rpart` (ships with R).
+
+### Multiple imputation toolkit (new)
+
+- **[`impute_multiple()`](https://zhjx19.github.io/mathmodels/reference/impute_multiple.md)**:
+  FCS (fully conditional specification, chained-equations) multiple
+  imputation — `pmm`/`norm` methods for numeric columns and
+  `logreg`/`polyreg` for categorical ones; validated against `mice` in
+  cross-validation tests.
+- **[`rubin_pool()`](https://zhjx19.github.io/mathmodels/reference/rubin_pool.md)**:
+  pools scalar estimates across imputations with Rubin’s rules,
+  including the Barnard-Rubin small-sample degrees-of-freedom
+  adjustment.
+- **[`pool_fit()`](https://zhjx19.github.io/mathmodels/reference/pool_fit.md)**:
+  pools `lm`/`glm` fits (coefficients, SEs, t/p-values, pooled residual
+  df) with automatic Barnard-Rubin edf.
 
 ### Statistical inference toolkit (new)
 
@@ -44,6 +103,10 @@
   from descriptive statistics, `stat_*` results, and `reg_*()`
   regression results.
 - **Dependencies** (new): `boot`, `flextable`.
+
+## mathmodels 0.0.13
+
+### Statistical inference toolkit (new)
 
 ### Breaking changes
 

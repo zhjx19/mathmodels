@@ -3,15 +3,13 @@
 statistic is chosen by type: group mean difference (two.sample),
 mean of differences (paired), mean around mu (one.sample), or
 Pearson correlation (independence). A custom statistic of the form
-function(data, indices, ...) is supported for two.sample (indices =
-randomly re-ordered row indices, free permutation) and independence
-(indices = the re-ordered rows used to shuffle the second column)."><meta property="og:description" content="Generic permutation-test framework. With statistic = NULL the default
+function(data, indices, ...) is supported for two.sample and
+independence; see Details for the permutation semantics."><meta property="og:description" content="Generic permutation-test framework. With statistic = NULL the default
 statistic is chosen by type: group mean difference (two.sample),
 mean of differences (paired), mean around mu (one.sample), or
 Pearson correlation (independence). A custom statistic of the form
-function(data, indices, ...) is supported for two.sample (indices =
-randomly re-ordered row indices, free permutation) and independence
-(indices = the re-ordered rows used to shuffle the second column)."></head><body>
+function(data, indices, ...) is supported for two.sample and
+independence; see Details for the permutation semantics."></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -19,7 +17,7 @@ randomly re-ordered row indices, free permutation) and independence
 
     <a class="navbar-brand me-2" href="../index.html">mathmodels</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.13</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.14</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -55,9 +53,8 @@ randomly re-ordered row indices, free permutation) and independence
 statistic is chosen by <code>type</code>: group mean difference (<code>two.sample</code>),
 mean of differences (<code>paired</code>), mean around <code>mu</code> (<code>one.sample</code>), or
 Pearson correlation (<code>independence</code>). A custom <code>statistic</code> of the form
-<code>function(data, indices, ...)</code> is supported for <code>two.sample</code> (indices =
-randomly re-ordered row indices, free permutation) and <code>independence</code>
-(indices = the re-ordered rows used to shuffle the second column).</p>
+<code>function(data, indices, ...)</code> is supported for <code>two.sample</code> and
+<code>independence</code>; see Details for the permutation semantics.</p>
     </div>
 
     <div class="section level2">
@@ -87,17 +84,19 @@ randomly re-ordered row indices, free permutation) and <code>independence</code>
 
 <dt id="arg--cols">.cols<a class="anchor" aria-label="anchor" href="#arg--cols"></a></dt>
 <dd><p>Numeric test column(s) (required when <code>statistic = NULL</code>):
-one column for one-/two-sample, two columns for paired/independence.</p></dd>
+one column for one-/two-sample, two columns for paired/independence.
+With a custom statistic, <code>independence</code> requires exactly two <code>.cols</code>
+columns (the second one is shuffled).</p></dd>
 
 
 <dt id="arg-group">group<a class="anchor" aria-label="anchor" href="#arg-group"></a></dt>
-<dd><p>Two-level factor column (required for <code>two.sample</code> when
-<code>statistic = NULL</code>).</p></dd>
+<dd><p>Two-level factor column. Required for <code>two.sample</code> (also
+with a custom statistic: its labels are permuted).</p></dd>
 
 
 <dt id="arg-statistic">statistic<a class="anchor" aria-label="anchor" href="#arg-statistic"></a></dt>
 <dd><p>Optional custom function <code>function(data, indices, ...)</code>
-returning a scalar; observed value uses <code>indices = seq_len(n)</code>.</p></dd>
+returning a scalar; the observed value uses <code>indices = seq_len(n)</code>.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
@@ -134,6 +133,19 @@ columns; the test is repeated within each slice.</p></dd>
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A tibble with class <code>stat_infer</code>: <code>.by</code> identifiers, <code>observed</code>,
 <code>p.value</code>, <code>null_mean</code>, <code>null_sd</code>, <code>permutations</code>, <code>type</code>, <code>alternative</code>.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>Custom-statistic semantics: for <code>type = "two.sample"</code> the null
+distribution is built by permuting the GROUP LABELS — for every
+permutation the <code>group</code> column of the data handed to <code>statistic</code> is
+re-assigned at random (<code>indices = seq_len(n)</code>), so any group-contrast
+statistic varies across permutations. For <code>type = "independence"</code> the
+SECOND <code>.cols</code> column is shuffled (within each <code>.by</code> slice; slice
+columns are never touched) before <code>statistic</code> sees the data. If the
+permuted statistic is (near-)constant — for example a statistic that
+does not depend on the permuted labels — a warning is issued instead
+of silently reporting a meaningless p = 1.</p>
     </div>
 
     <div class="section level2">

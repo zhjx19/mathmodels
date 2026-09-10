@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">mathmodels</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.13</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.14</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -80,37 +80,101 @@ details.</p>
 <p>The <code>mathmodels</code> package is developed as a companion to
 the book “<a href="https://item.jd.com/13272295.html" class="external-link">Mathematical
 Modeling: Algorithms and Programming Implementation</a>” (China Machine
-Press). The current version (0.0.6) focuses on <strong>evaluation
-algorithms</strong>, offering a complete suite of solutions from data
-preprocessing to comprehensive evaluation.</p>
+Press). The current version (0.0.14) spans the full modeling workflow:
+<strong>data cleaning and multiple imputation</strong>,
+<strong>statistical inference</strong>, <strong>multivariate
+statistics</strong>, a rich suite of <strong>evaluation
+algorithms</strong> (weighting, TOPSIS, fuzzy evaluation, DEA,
+inequality measures, …), <strong>prediction models</strong> (grey,
+Markov, regression, time series), <strong>interpolation and curve
+fitting</strong>, and <strong>differential equation / epidemic
+models</strong>.</p>
 </div>
 <div class="section level3">
 <h3 id="key-features">Key Features<a class="anchor" aria-label="anchor" href="#key-features"></a>
 </h3>
 <ol style="list-style-type: decimal">
 <li>
-<strong>Comprehensive and Rigorous Algorithms</strong>: The package
-covers a wide range of mainstream evaluation and analysis algorithms,
-including the Analytic Hierarchy Process (AHP), Entropy Weighting,
-CRITIC, Principal Component Analysis (PCA) for weighting, Weight
-Combination methods, Technique for Order Preference by Similarity to
-Ideal Solution (TOPSIS), Grey Relational Analysis, Rank Sum Ratio (RSR),
-Fuzzy Comprehensive Evaluation, Data Envelopment Analysis (DEA),
-Inequality Measures (Gini coefficient, Theil index), System Evaluation
-(Coupling Coordination Degree, Obstacle Degree), and Grey Prediction
-Models.</li>
+<strong>Data Cleaning</strong> — missing-value diagnostics
+(<code><a href="../reference/na_summary.html">na_summary()</a></code>, <code><a href="../reference/na_mcar_test.html">na_mcar_test()</a></code> for Little’s
+MCAR test) with heatmap / bar visuals; imputation via simple fills
+(<code><a href="../reference/impute.html">impute()</a></code>: group mean / median / mode, linear &amp; spline
+interpolation, constants), a unified model-based framework
+(<code><a href="../reference/impute_model.html">impute_model()</a></code>: kNN, linear regression, decision trees),
+and <strong>multiple imputation</strong>
+(<code><a href="../reference/impute_multiple.html">impute_multiple()</a></code>: FCS chained equations with pmm/norm for
+numeric columns and logreg/polyreg for categorical ones) with
+<strong>Rubin’s-rules pooling</strong> (<code><a href="../reference/rubin_pool.html">rubin_pool()</a></code> for
+scalar estimates, <code><a href="../reference/pool_fit.html">pool_fit()</a></code> for lm/glm fits, including the
+Barnard-Rubin small-sample df adjustment); outlier detection and
+handling (<code><a href="../reference/outlier.html">outlier()</a></code>); Excel-style
+<code><a href="../reference/pivot_table.html">pivot_table()</a></code>.</li>
 <li>
-<strong>Elegant Interface, Extremely User-Friendly</strong>:
-Functions are designed with consistency, featuring standardized
-parameter names. Many data preprocessing steps, such as normalization,
-scaling, and indicator direction adjustment, are intelligently handled
-internally, significantly streamlining the workflow.</li>
+<strong>Statistical Inference</strong> — tidy hypothesis tests:
+t-test / Wilcoxon, ANOVA / Kruskal-Wallis, ANCOVA, correlation,
+chi-square, normality and variance-homogeneity tests
+(<code>stat_*()</code>), each returning one tidy row per test with
+effect sizes and <code>.by</code> slice grouping; generic
+<strong>bootstrap</strong> and <strong>permutation</strong> frameworks;
+<code><a href="../reference/export_table.html">export_table()</a></code> renders results as Word/LaTeX three-line
+tables.</li>
 <li>
-<strong>Seamless Integration with Tidyverse</strong>: It integrates
-perfectly with <code>|&gt;</code> pipe operations and other
-<code>tidyverse</code> tools like <code>dplyr</code> and
-<code>tidyr</code>, making data manipulation and batch analysis smooth
-and natural.</li>
+<strong>Multivariate Statistics</strong> — PCA
+(<code><a href="../reference/mv_pca.html">mv_pca()</a></code>), EFA (<code><a href="../reference/mv_efa.html">mv_efa()</a></code>), hierarchical and
+k-means clustering with validity metrics (<code><a href="../reference/mv_hclust.html">mv_hclust()</a></code>,
+<code><a href="../reference/mv_kmeans.html">mv_kmeans()</a></code>, <code><a href="../reference/mv_cluster_metrics.html">mv_cluster_metrics()</a></code>),
+discriminant analysis (<code><a href="../reference/mv_discrim.html">mv_discrim()</a></code>), correspondence
+analysis (<code><a href="../reference/mv_corresp.html">mv_corresp()</a></code>), MDS (<code><a href="../reference/mv_mds.html">mv_mds()</a></code>),
+canonical and partial correlation (<code><a href="../reference/mv_cancor.html">mv_cancor()</a></code>,
+<code><a href="../reference/mv_pcor.html">mv_pcor()</a></code>), all with tidy components and
+<code>plot_mv_*()</code> visuals.</li>
+<li>
+<strong>Evaluation Models</strong> — AHP, Entropy weighting, CRITIC,
+CV, PCA and factor-analysis weighting (<code>weight_*()</code> family),
+weight combination (<code><a href="../reference/combine_weights.html">combine_weights()</a></code>), TOPSIS, Grey
+Relational Analysis (GRA), Rank Sum Ratio (RSR), Fuzzy Comprehensive
+Evaluation (FCE) with the <code>mf_*</code> membership-function family,
+Data Envelopment Analysis (CCR/BCC/SBM, Malmquist), inequality measures
+(Gini, Theil index), regional economics (LQ/HHI/EG), and coupling
+coordination / obstacle degree models.</li>
+<li>
+<strong>Prediction Models</strong> — grey prediction (GM(1,1),
+GM(1,N), DGM(2,1), Verhulst), Markov chain prediction
+(<code><a href="../reference/markov_chain.html">markov_chain()</a></code>, <code><a href="../reference/GM11_markov.html">GM11_markov()</a></code>), a regression
+prediction toolkit (<code><a href="../reference/reg_lm.html">reg_lm()</a></code>, <code><a href="../reference/reg_logistic.html">reg_logistic()</a></code>,
+<code><a href="../reference/reg_poisson.html">reg_poisson()</a></code>, <code><a href="../reference/reg_negbin.html">reg_negbin()</a></code> with stepwise
+selection; <code><a href="../reference/reg_predict.html">reg_predict()</a></code>, <code><a href="../reference/reg_diagnostics.html">reg_diagnostics()</a></code>,
+<code>plot_reg_*()</code>), and a lightweight time-series workflow built
+around <code>ts_df</code> (<code><a href="../reference/as_ts_df.html">as_ts_df()</a></code>,
+<code><a href="../reference/complete_ts_df.html">complete_ts_df()</a></code> / <code><a href="../reference/impute_ts_df.html">impute_ts_df()</a></code>,
+<code><a href="../reference/ts_transform.html">ts_transform()</a></code> / <code><a href="../reference/ts_back_transform.html">ts_back_transform()</a></code>,
+<code><a href="../reference/ts_test.html">ts_test()</a></code>, <code><a href="../reference/ts_stl.html">ts_stl()</a></code>, <code><a href="../reference/ts_ets.html">ts_ets()</a></code>,
+<code><a href="../reference/ts_sarima.html">ts_sarima()</a></code>, <code><a href="../reference/ts_arimax.html">ts_arimax()</a></code>,
+<code><a href="../reference/ts_forecast.html">ts_forecast()</a></code>, plus <code>plot_ts*()</code>).</li>
+<li>
+<strong>Interpolation and Curve Fitting</strong> — piecewise linear,
+cubic spline, polynomial and Hermite interpolation
+(<code><a href="../reference/interp_linear.html">interp_linear()</a></code>, <code><a href="../reference/interp_spline.html">interp_spline()</a></code>,
+<code><a href="../reference/interp_poly.html">interp_poly()</a></code>, <code><a href="../reference/interp_hermite.html">interp_hermite()</a></code>), plus curve
+fitting (<code><a href="../reference/poly_fit.html">poly_fit()</a></code>, <code><a href="../reference/curve_fit.html">curve_fit()</a></code>,
+<code><a href="../reference/growth_fit.html">growth_fit()</a></code>) with automatic starting values for logistic,
+Gompertz and Michaelis-Menten nonlinear models.</li>
+<li>
+<strong>Differential Equation Models</strong> — string-formula
+<code><a href="../reference/ode_solver.html">ode_solver()</a></code> for arbitrary ODE systems; ready-to-use
+population models (Malthus, Logistic), epidemic compartment models (SI,
+SIS, SIR, SEIR) and the Lotka-Volterra predator-prey model, all with a
+unified <code>init</code> + <code>params</code> interface; epidemic
+visualization (<code><a href="../reference/plot_compartments.html">plot_compartments()</a></code>,
+<code><a href="../reference/plot_incidence.html">plot_incidence()</a></code>, <code><a href="../reference/plot_phase_si.html">plot_phase_si()</a></code>,
+<code><a href="../reference/plot_Rt_estimate.html">plot_Rt_estimate()</a></code>) and metrics (<code><a href="../reference/epi_metrics.html">epi_metrics()</a></code>
+for R0, peak, attack rate).</li>
+<li>
+<strong>Elegant, Tidyverse-friendly Interface</strong> —
+standardized argument names, <code>|&gt;</code> pipes and
+<code>dplyr</code>/<code>tidyr</code>/<code>ggplot2</code> integration,
+with data preprocessing (normalization, scaling, indicator direction)
+handled internally.</li>
 </ol>
 </div>
 <div class="section level3">
@@ -161,9 +225,9 @@ perform a quick entropy weighting TOPSIS analysis using the built-in
 <span><span class="va">df</span> <span class="op">=</span> <span class="va">water_quality</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
 <span>    <span class="co"># Optimal PH is 7 -&gt; Centered-type positive</span></span>
-<span>    PH <span class="op">=</span> <span class="fu"><a href="../reference/preprocess.html">rescale_middle</a></span><span class="op">(</span><span class="va">PH</span>, <span class="fl">7</span><span class="op">)</span>,   </span>
+<span>    PH <span class="op">=</span> <span class="fu"><a href="../reference/preprocess.html">rescale_middle</a></span><span class="op">(</span><span class="va">PH</span>, <span class="fl">7</span><span class="op">)</span>,</span>
 <span>    <span class="co"># Optimal nutrient is 10-20 -&gt; Interval-type positive</span></span>
-<span>    nutrient <span class="op">=</span> <span class="fu"><a href="../reference/preprocess.html">rescale_interval</a></span><span class="op">(</span><span class="va">nutrient</span>, <span class="fl">10</span>, <span class="fl">20</span><span class="op">)</span> </span>
+<span>    nutrient <span class="op">=</span> <span class="fu"><a href="../reference/preprocess.html">rescale_interval</a></span><span class="op">(</span><span class="va">nutrient</span>, <span class="fl">10</span>, <span class="fl">20</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
 <p>Calculate weights using the Entropy Method (normalization is handled
 internally). First, specify the indicator directions: since the
@@ -171,8 +235,8 @@ indicator columns PH and nutrient have been pre-normalized, their
 directions are set to <code>NA</code> to avoid repeating the
 normalization process.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">idx</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"+"</span>, <span class="cn">NA</span>, <span class="st">"-"</span>, <span class="cn">NA</span><span class="op">)</span>     <span class="co"># </span></span>
-<span><span class="va">res</span> <span class="op">=</span> <span class="fu"><a href="../reference/weight_entropy.html">weight_entropy</a></span><span class="op">(</span><span class="va">df</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span>, <span class="va">idx</span><span class="op">)</span> </span>
+<code class="sourceCode R"><span><span class="va">idx</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"+"</span>, <span class="cn">NA</span>, <span class="st">"-"</span>, <span class="cn">NA</span><span class="op">)</span></span>
+<span><span class="va">res</span> <span class="op">=</span> <span class="fu"><a href="../reference/weight_entropy.html">weight_entropy</a></span><span class="op">(</span><span class="va">df</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span>, <span class="va">idx</span><span class="op">)</span></span>
 <span><span class="va">res</span><span class="op">$</span><span class="va">w</span>                         <span class="co"># View calculated weights</span></span></code></pre></div>
 <pre><code><span><span class="co">##        O2        PH      germ  nutrient </span></span>
 <span><span class="co">## 0.3153202 0.1813149 0.3506929 0.1526721</span></span></code></pre>
@@ -189,6 +253,24 @@ positive and negative ideal solutions.</p>
 <span><span class="co">##        17        18        19        20 </span></span>
 <span><span class="co">## 0.5565555 0.4815844 0.3070290 0.7098355</span></span></code></pre>
 <p>The obtained result is the relative closeness score.</p>
+<p>The same tidy workflow extends to the other modules. For instance,
+<strong>multiple imputation</strong> of missing values followed by
+<strong>Rubin’s-rules pooling</strong> of a regression model:</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
+<span><span class="va">d</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">40</span><span class="op">)</span>, z <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">40</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">d</span><span class="op">$</span><span class="va">y</span> <span class="op">=</span> <span class="fl">0.5</span> <span class="op">*</span> <span class="va">d</span><span class="op">$</span><span class="va">x</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">40</span><span class="op">)</span></span>
+<span><span class="va">d</span><span class="op">$</span><span class="va">x</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">9</span><span class="op">)</span><span class="op">]</span> <span class="op">=</span> <span class="cn">NA</span>                      <span class="co"># introduce missingness</span></span>
+<span></span>
+<span><span class="va">imps</span> <span class="op">=</span> <span class="fu"><a href="../reference/impute_multiple.html">impute_multiple</a></span><span class="op">(</span><span class="va">d</span>, .cols <span class="op">=</span> <span class="va">x</span>, m <span class="op">=</span> <span class="fl">5</span>, maxit <span class="op">=</span> <span class="fl">3</span>, seed <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>  <span class="co"># 5 imputations</span></span>
+<span><span class="va">fits</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">imps</span>, \<span class="op">(</span><span class="va">dat</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">y</span> <span class="op">~</span> <span class="va">x</span>, <span class="va">dat</span><span class="op">)</span><span class="op">)</span>                        <span class="co"># fit each</span></span>
+<span><span class="fu"><a href="../reference/pool_fit.html">pool_fit</a></span><span class="op">(</span><span class="va">fits</span><span class="op">)</span>                         <span class="co"># pooled coefficients (Rubin's rules)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Pooled estimates (Rubin's rules)</span></span>
+<span><span class="co">## <span style="color: #949494;"># A tibble: 2 × 7</span></span></span>
+<span><span class="co">##   term        estimate std_error     lcl   ucl p_value    fmi</span></span>
+<span><span class="co">##   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">1</span> (Intercept)    0.134     0.133 -<span style="color: #BB0000;">0.135</span>  0.403  0.319  0.052<span style="text-decoration: underline;">0</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">2</span> x              0.277     0.153 -<span style="color: #BB0000;">0.032</span><span style="color: #BB0000; text-decoration: underline;">5</span> 0.587  0.077<span style="text-decoration: underline;">8</span> 0.053<span style="text-decoration: underline;">3</span></span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="getting-help-and-in-depth-learning">Getting Help and In-Depth Learning<a class="anchor" aria-label="anchor" href="#getting-help-and-in-depth-learning"></a>
@@ -203,9 +285,11 @@ Manual - Simplifying Mathematical Modeling (Online
 Book)</a></strong></p>
 <p>This online manual serves as the definitive documentation for the
 <code>mathmodels</code> package. It consolidates content from the
-package vignettes and currently provides complete coverage of all
-evaluation algorithms with R implementations and extensive examples,
-making it your best resource for learning and using this package.</p>
+package vignettes and covers the evaluation algorithms, statistical
+inference, multivariate statistics, data cleaning, prediction models and
+differential equation models, with R implementations and extensive
+examples, making it your best resource for learning and using this
+package.</p>
 <hr>
 <p>We hope <code>mathmodels</code> proves to be a valuable and reliable
 companion on your journey through mathematical modeling and scientific

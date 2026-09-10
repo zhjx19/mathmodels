@@ -4,9 +4,8 @@ Generic permutation-test framework. With `statistic = NULL` the default
 statistic is chosen by `type`: group mean difference (`two.sample`),
 mean of differences (`paired`), mean around `mu` (`one.sample`), or
 Pearson correlation (`independence`). A custom `statistic` of the form
-`function(data, indices, ...)` is supported for `two.sample` (indices =
-randomly re-ordered row indices, free permutation) and `independence`
-(indices = the re-ordered rows used to shuffle the second column).
+`function(data, indices, ...)` is supported for `two.sample` and
+`independence`; see Details for the permutation semantics.
 
 ## Usage
 
@@ -35,17 +34,19 @@ stat_perm_test(
 - .cols:
 
   Numeric test column(s) (required when `statistic = NULL`): one column
-  for one-/two-sample, two columns for paired/independence.
+  for one-/two-sample, two columns for paired/independence. With a
+  custom statistic, `independence` requires exactly two `.cols` columns
+  (the second one is shuffled).
 
 - group:
 
-  Two-level factor column (required for `two.sample` when
-  `statistic = NULL`).
+  Two-level factor column. Required for `two.sample` (also with a custom
+  statistic: its labels are permuted).
 
 - statistic:
 
   Optional custom function `function(data, indices, ...)` returning a
-  scalar; observed value uses `indices = seq_len(n)`.
+  scalar; the observed value uses `indices = seq_len(n)`.
 
 - ...:
 
@@ -81,6 +82,19 @@ stat_perm_test(
 A tibble with class `stat_infer`: `.by` identifiers, `observed`,
 `p.value`, `null_mean`, `null_sd`, `permutations`, `type`,
 `alternative`.
+
+## Details
+
+Custom-statistic semantics: for `type = "two.sample"` the null
+distribution is built by permuting the GROUP LABELS — for every
+permutation the `group` column of the data handed to `statistic` is
+re-assigned at random (`indices = seq_len(n)`), so any group-contrast
+statistic varies across permutations. For `type = "independence"` the
+SECOND `.cols` column is shuffled (within each `.by` slice; slice
+columns are never touched) before `statistic` sees the data. If the
+permuted statistic is (near-)constant — for example a statistic that
+does not depend on the permuted labels — a warning is issued instead of
+silently reporting a meaningless p = 1.
 
 ## Examples
 

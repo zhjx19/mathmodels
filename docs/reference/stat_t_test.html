@@ -11,7 +11,7 @@ with an optional p-value adjustment across rows."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">mathmodels</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.13</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.14</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -120,7 +120,10 @@ the returned rows.</p></dd>
     <p>A tibble with class <code>stat_infer</code>: <code>variable</code>, <code>.by</code> identifiers,
 <code>n_used</code>, <code>n_dropped</code>, <code>estimate</code>, <code>estimate1</code>, <code>estimate2</code>, <code>statistic</code>,
 <code>df</code>, <code>p.value</code>, <code>p.adjusted</code>, <code>sig</code>, <code>conf_low</code>, <code>conf_high</code>,
-<code>effect</code> (Cohen's d), <code>method</code>, <code>alternative</code>.</p>
+<code>effect</code> (Cohen's d), <code>method</code>, <code>alternative</code>. For two-sample tests all
+difference quantities (<code>estimate</code>, <code>statistic</code>, CI, <code>effect</code>) follow the
+group1 − group2 direction (first level minus second level, rstatix
+convention).</p>
     </div>
 
     <div class="section level2">
@@ -130,7 +133,7 @@ the returned rows.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 1 × 16</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   variable n_used n_dropped estimate estimate1 estimate2 statistic    df p.value</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">*</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> extra        20         0     1.58      0.75      2.33     -<span style="color: #BB0000;">1.86</span>  17.8  0.079<span style="text-decoration: underline;">4</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> extra        20         0    -<span style="color: #BB0000;">1.58</span>      0.75      2.33     -<span style="color: #BB0000;">1.86</span>  17.8  0.079<span style="text-decoration: underline;">4</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 7 more variables: conf_low &lt;dbl&gt;, conf_high &lt;dbl&gt;, effect &lt;dbl&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   method &lt;chr&gt;, alternative &lt;chr&gt;, p.adjusted &lt;dbl&gt;, sig &lt;chr&gt;</span></span>
 <span class="r-in"><span><span class="fu">stat_t_test</span><span class="op">(</span><span class="va">mtcars</span>, .cols <span class="op">=</span> <span class="va">mpg</span>, mu <span class="op">=</span> <span class="fl">20</span><span class="op">)</span></span></span>
@@ -146,7 +149,7 @@ the returned rows.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 1 × 16</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   variable n_used n_dropped estimate estimate1 estimate2 statistic    df p.value</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">*</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> mpg          32         0     7.24      17.1      24.4     -<span style="color: #BB0000;">4.11</span>    30 2.85<span style="color: #949494;">e</span><span style="color: #BB0000;">-4</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> mpg          32         0    -<span style="color: #BB0000;">7.24</span>      17.1      24.4     -<span style="color: #BB0000;">4.11</span>    30 2.85<span style="color: #949494;">e</span><span style="color: #BB0000;">-4</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 7 more variables: conf_low &lt;dbl&gt;, conf_high &lt;dbl&gt;, effect &lt;dbl&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   method &lt;chr&gt;, alternative &lt;chr&gt;, p.adjusted &lt;dbl&gt;, sig &lt;chr&gt;</span></span>
 </code></pre></div>

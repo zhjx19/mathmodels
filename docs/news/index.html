@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">mathmodels</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.13</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.14</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -38,9 +38,34 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.0.13" id="mathmodels-0013">mathmodels 0.0.13<a class="anchor" aria-label="anchor" href="#mathmodels-0013"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.0.14" id="mathmodels-0014">mathmodels 0.0.14<a class="anchor" aria-label="anchor" href="#mathmodels-0014"></a></h2>
 <div class="section level3">
-<h3 id="statistical-inference-toolkit-new-0-0-13">Statistical inference toolkit (new)<a class="anchor" aria-label="anchor" href="#statistical-inference-toolkit-new-0-0-13"></a></h3>
+<h3 id="data-cleaning-toolkit-new-0-0-14">Data cleaning toolkit (new)<a class="anchor" aria-label="anchor" href="#data-cleaning-toolkit-new-0-0-14"></a></h3>
+<ul><li>
+<strong>Diagnostics</strong>: <code><a href="../reference/na_summary.html">na_summary()</a></code> (per-column missing counts), <code><a href="../reference/na_mcar_test.html">na_mcar_test()</a></code> (Little’s MCAR test, Little 1988 / SAS-style pattern-mean statistic with EM-estimated mean and covariance, following <code><a href="https://naniar.njtierney.com/reference/mcar_test.html" class="external-link">naniar::mcar_test()</a></code>), <code><a href="../reference/plot_na_heatmap.html">plot_na_heatmap()</a></code> and <code><a href="../reference/plot_na_bar.html">plot_na_bar()</a></code> for missingness visuals.</li>
+<li>
+<strong>Imputation</strong>: <code><a href="../reference/impute.html">impute()</a></code> for simple fills (group mean / median / mode via <code>.by</code> slices, row-order linear and spline interpolation reusing <code><a href="../reference/interp_linear.html">interp_linear()</a></code> / <code><a href="../reference/interp_spline.html">interp_spline()</a></code>, and constants) and <code><a href="../reference/impute_model.html">impute_model()</a></code>, a unified model-based framework with k-nearest-neighbors (hand-written), linear regression, and decision trees (<code>rpart</code>). Both return the data frame of the same shape and record every changed cell in <code>attr(df, "changes")</code> (model fits are also summarized in <code>attr(df, "details")</code>).</li>
+<li>
+<strong>Outliers</strong>: <code><a href="../reference/outlier.html">outlier()</a></code> detects outliers with IQR / z-score / Hampel-MAD bounds (per <code>.by</code> slice). By default the data is untouched and the detection table is returned; <code>to = "na"</code> sets detected values to <code>NA</code> (ready for <code><a href="../reference/impute.html">impute()</a></code>), <code>to = "cap"</code> caps them at the fence values.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="pivot-table-new-0-0-14">Pivot table (new)<a class="anchor" aria-label="anchor" href="#pivot-table-new-0-0-14"></a></h3>
+<ul><li>
+<strong><code><a href="../reference/pivot_table.html">pivot_table()</a></code></strong>: aggregates values by the cross of <code>index</code> and <code>columns</code> (<code>.by</code>-style tidy evaluation) and spreads them into a wide tibble; naming is built with <code>names_glue</code> so the value-column prefix is always present (e.g. <code>sales_2023</code>, <code>v_c1</code>), controlled by <code>names_sep</code>.</li>
+<li>
+<strong>Dependencies</strong> (new): <code>rpart</code> (ships with R).</li>
+</ul></div>
+<div class="section level3">
+<h3 id="multiple-imputation-toolkit-new-0-0-14">Multiple imputation toolkit (new)<a class="anchor" aria-label="anchor" href="#multiple-imputation-toolkit-new-0-0-14"></a></h3>
+<ul><li>
+<strong><code><a href="../reference/impute_multiple.html">impute_multiple()</a></code></strong>: FCS (fully conditional specification, chained-equations) multiple imputation — <code>pmm</code>/<code>norm</code> methods for numeric columns and <code>logreg</code>/<code>polyreg</code> for categorical ones; validated against <code>mice</code> in cross-validation tests.</li>
+<li>
+<strong><code><a href="../reference/rubin_pool.html">rubin_pool()</a></code></strong>: pools scalar estimates across imputations with Rubin’s rules, including the Barnard-Rubin small-sample degrees-of-freedom adjustment.</li>
+<li>
+<strong><code><a href="../reference/pool_fit.html">pool_fit()</a></code></strong>: pools <code>lm</code>/<code>glm</code> fits (coefficients, SEs, t/p-values, pooled residual df) with automatic Barnard-Rubin edf.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="statistical-inference-toolkit-new-0-0-14">Statistical inference toolkit (new)<a class="anchor" aria-label="anchor" href="#statistical-inference-toolkit-new-0-0-14"></a></h3>
 <ul><li>
 <strong>Hypothesis tests</strong> (<code>stat_infer.R</code>): tidy data frames in, tidy tibbles out (one row per test, <code>stat_infer</code> class with a labelled print).
 <ul><li>
@@ -58,6 +83,12 @@
 <li>
 <strong>Dependencies</strong> (new): <code>boot</code>, <code>flextable</code>.</li>
 </ul></div>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.13" id="mathmodels-0013">mathmodels 0.0.13<a class="anchor" aria-label="anchor" href="#mathmodels-0013"></a></h2>
+<div class="section level3">
+<h3 id="statistical-inference-toolkit-new-0-0-13">Statistical inference toolkit (new)<a class="anchor" aria-label="anchor" href="#statistical-inference-toolkit-new-0-0-13"></a></h3>
+</div>
 <div class="section level3">
 <h3 id="breaking-changes-0-0-13">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-0-13"></a></h3>
 <ul><li>

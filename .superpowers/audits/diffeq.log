@@ -1,0 +1,14 @@
+﻿D:\R-4.6.1\bin\Rscript.exe : 鈩?Loading mathmodels
+所在位置 行:1 字符: 1
++ D:\R-4.6.1\bin\Rscript.exe .superpowers\audits\probe-diffeq.R 2>&1 |  ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (鈩?Loading mathmodels:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Registered S3 method overwritten by 'quantmod':
+  method            from
+  as.zoo.data.frame zoo 
+PASS: SIR closed conserves N - max dev=2.27e-13 
+PASS: SIR I rises then falls -  
+Error: Error evaluating equation for 'E': object 'alpha' not found
+Execution halted

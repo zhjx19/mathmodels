@@ -227,7 +227,7 @@ stat_describe = function(data, .cols, .by = NULL, conf_level = 0.95) {
 #'   `df`, `p.value`, `p.adjusted`, `sig`, `conf_low`, `conf_high`,
 #'   `effect` (Cohen's d), `method`, `alternative`. For two-sample tests all
 #'   difference quantities (`estimate`, `statistic`, CI, `effect`) follow the
-#'   group1 − group2 direction (first level minus second level, rstatix
+#'   group1 - group2 direction (first level minus second level, rstatix
 #'   convention).
 #'
 #' @examples
@@ -652,8 +652,12 @@ stat_kruskal = function(data, resp, group, .by = NULL) {
 #'   is significant.
 #'
 #' @examples
-#' d = data.frame(y = c(1:10, 2:11), g = rep(c("a", "b"), each = 10),
-#'                x = 1:20)
+#' set.seed(1)
+#' d = data.frame(
+#'   g = rep(c("a", "b"), each = 10),
+#'   x = rep(1:10, 2),
+#'   y = 2 * rep(1:10, 2) + rep(c(0, 5), each = 10) + rnorm(20)
+#' )
 #' stat_ancova(d, resp = y, group = g, covariates = x)
 #' @export
 stat_ancova = function(data, resp, group, covariates, .by = NULL,

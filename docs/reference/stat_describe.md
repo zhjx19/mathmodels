@@ -2,7 +2,11 @@
 
 Computes per-variable descriptive statistics (optionally grouped by
 slices of `.by`): counts, mean, sd, median, IQR, t-based confidence
-interval for the mean, and moment skewness / excess kurtosis.
+interval for the mean, and moment skewness / excess kurtosis. Statistics
+for each variable use only that variable's own non-missing values
+(per-variable deletion); rows where other selected variables are missing
+do not affect a variable's results. `n_missing` counts the missing
+values of the variable itself within the slice.
 
 ## Usage
 
@@ -35,7 +39,9 @@ stat_describe(data, .cols, .by = NULL, conf_level = 0.95)
 
 A tibble with one row per variable (per slice) and class `stat_infer`:
 `variable`, `.by` identifiers, `n_used`, `n_missing`, `mean`, `sd`,
-`median`, `iqr`, `ci_low`, `ci_high`, `skew`, `kurt`.
+`median`, `iqr`, `ci_low`, `ci_high`, `skew`, `kurt`. `n_used` /
+`n_missing` are per-variable within-slice counts (other variables'
+missing values do not affect them).
 
 ## Examples
 
@@ -52,12 +58,11 @@ stat_describe(mtcars, .cols = mpg:hp)
 #> # ℹ 1 more variable: kurt <dbl>
 stat_describe(mtcars, .cols = mpg, .by = cyl)
 #> Descriptive statistics 
-#>   cyl variable n_used n_missing     mean       sd median  iqr   ci_low  ci_high
-#> 4   4      mpg     11        21 26.66364 4.509828   26.0 7.60 23.63389 29.69338
-#> 6   6      mpg      7        25 19.74286 1.453567   19.7 2.35 18.39853 21.08718
-#> 8   8      mpg     14        18 15.10000 2.560048   15.2 1.85 13.62187 16.57813
-#>         skew       kurt
-#> 4  0.2990323 -1.3604644
-#> 6 -0.1994981 -1.5122667
-#> 8 -0.4054773 -0.1765741
+#> # A tibble: 3 × 12
+#>     cyl variable n_used n_missing  mean    sd median   iqr ci_low ci_high   skew
+#> * <dbl> <chr>     <int>     <int> <dbl> <dbl>  <dbl> <dbl>  <dbl>   <dbl>  <dbl>
+#> 1     4 mpg          11         0  26.7  4.51   26    7.6    23.6    29.7  0.299
+#> 2     6 mpg           7         0  19.7  1.45   19.7  2.35   18.4    21.1 -0.199
+#> 3     8 mpg          14         0  15.1  2.56   15.2  1.85   13.6    16.6 -0.405
+#> # ℹ 1 more variable: kurt <dbl>
 ```

@@ -11,7 +11,7 @@ and output layout match stat_t_test()."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">mathmodels</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.13</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.14</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -114,7 +114,10 @@ the returned rows.</p></dd>
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A tibble with class <code>stat_infer</code> in the same layout as
 <code><a href="stat_t_test.html">stat_t_test()</a></code>, with <code>statistic</code>, <code>p.value</code>, <code>effect</code> (rank-biserial
-correlation) and no <code>df</code> column (NA).</p>
+correlation) and no <code>df</code> column (NA). For one-sample tests the effect
+is the rank-biserial correlation of the signed ranks versus <code>mu</code>
+(positive proportion minus negative proportion); it is <code>NA</code> when all
+deviations from <code>mu</code> are zero.</p>
     </div>
 
     <div class="section level2">

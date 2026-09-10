@@ -1,9 +1,12 @@
 Package: mathmodels
 Type: Package
 Title: Mathematical Modeling Algorithms
-Version: 0.0.13
+Version: 0.0.14
 Authors@R: person("Jingxin", "Zhang", email = "zhjx_19@163.com", role = c("aut", "cre", "cph"))
-Description: Implements algorithms for mathematical modeling across evaluation, prediction, and differential equation systems. It supports indicator preprocessing, weighting, TOPSIS, fuzzy comprehensive evaluation, grey relational analysis, rank sum ratio, data envelopment analysis (DEA), regional economics, inequality measures, grey prediction, Markov prediction, and time series modeling. It also provides ordinary differential equation solvers for compartmental epidemic models together with visualization and summary metrics. It additionally offers multivariate statistics tools covering principal component and exploratory factor analysis, hierarchical and k-means clustering with validity metrics, linear and quadratic discriminant analysis, correspondence analysis, multidimensional scaling, and canonical and partial correlation analysis, plus a tidy statistical-inference toolkit (t-test, ANOVA, ANCOVA, correlation, chi-square, normality and variance-homogeneity tests, bootstrap and permutation frameworks) with Word/LaTeX three-line table export.
+Description: Implements algorithms for mathematical modeling across evaluation, prediction, and differential equation systems. It supports indicator preprocessing, weighting, TOPSIS, fuzzy comprehensive evaluation, grey relational analysis, rank sum ratio, data envelopment analysis (DEA), regional economics, inequality measures, grey prediction, Markov prediction, and time series modeling. It also provides ordinary differential equation solvers for compartmental epidemic models together with visualization and summary metrics. It additionally offers multivariate statistics tools covering principal component and exploratory factor analysis, hierarchical and k-means clustering with validity metrics, linear and quadratic discriminant analysis, correspondence analysis, multidimensional scaling, and canonical and partial correlation analysis, plus a tidy statistical-inference toolkit (t-test, ANOVA, ANCOVA, correlation, chi-square, normality and variance-homogeneity tests, bootstrap and permutation frameworks) with Word/LaTeX three-line table export., a data-cleaning toolkit (missing-value diagnostics with Little's MCAR test, grouped and model-based imputation with k-nearest-neighbors, linear regression, and decision trees, and outlier detection with capping), and a pivot-table function., and a multiple-imputation toolkit (FCS chained-equation imputation
+    with pmm/norm for numeric columns and logreg/polyreg for categorical
+    ones) with Rubin's-rules pooling (including the Barnard-Rubin
+    small-sample adjustment) for scalar estimates and lm/glm fits.
 License: AGPL (>= 3)
 URL: https://github.com/zhjx19/mathmodels, https://zhjx19.github.io/mathmodels/
 BugReports: https://github.com/zhjx19/mathmodels/issues
@@ -17,6 +20,7 @@ Imports:
     lpSolveAPI,
     minpack.lm,
     nnet,
+    rpart,
     dplyr (>= 1.1.0),
     forecast,
     ggplot2 (>= 3.5.0),

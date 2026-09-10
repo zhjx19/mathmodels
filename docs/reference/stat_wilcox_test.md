@@ -74,7 +74,9 @@ stat_wilcox_test(
 A tibble with class `stat_infer` in the same layout as
 [`stat_t_test()`](https://zhjx19.github.io/mathmodels/reference/stat_t_test.md),
 with `statistic`, `p.value`, `effect` (rank-biserial correlation) and no
-`df` column (NA).
+`df` column (NA). For one-sample tests the effect is the rank-biserial
+correlation of the signed ranks versus `mu` (positive proportion minus
+negative proportion); it is `NA` when all deviations from `mu` are zero.
 
 ## Examples
 

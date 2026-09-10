@@ -13,31 +13,127 @@ bogged down in implementation details.
 The `mathmodels` package is developed as a companion to the book
 “[Mathematical Modeling: Algorithms and Programming
 Implementation](https://item.jd.com/13272295.html)” (China Machine
-Press). The current version (0.0.6) focuses on **evaluation
-algorithms**, offering a complete suite of solutions from data
-preprocessing to comprehensive evaluation.
+Press). The current version (0.0.14) spans the full modeling workflow:
+**data cleaning and multiple imputation**, **statistical inference**,
+**multivariate statistics**, a rich suite of **evaluation algorithms**
+(weighting, TOPSIS, fuzzy evaluation, DEA, inequality measures, …),
+**prediction models** (grey, Markov, regression, time series),
+**interpolation and curve fitting**, and **differential equation /
+epidemic models**.
 
 ### Key Features
 
-1.  **Comprehensive and Rigorous Algorithms**: The package covers a wide
-    range of mainstream evaluation and analysis algorithms, including
-    the Analytic Hierarchy Process (AHP), Entropy Weighting, CRITIC,
-    Principal Component Analysis (PCA) for weighting, Weight Combination
-    methods, Technique for Order Preference by Similarity to Ideal
-    Solution (TOPSIS), Grey Relational Analysis, Rank Sum Ratio (RSR),
-    Fuzzy Comprehensive Evaluation, Data Envelopment Analysis (DEA),
-    Inequality Measures (Gini coefficient, Theil index), System
-    Evaluation (Coupling Coordination Degree, Obstacle Degree), and Grey
-    Prediction Models.
-2.  **Elegant Interface, Extremely User-Friendly**: Functions are
-    designed with consistency, featuring standardized parameter names.
-    Many data preprocessing steps, such as normalization, scaling, and
-    indicator direction adjustment, are intelligently handled
-    internally, significantly streamlining the workflow.
-3.  **Seamless Integration with Tidyverse**: It integrates perfectly
-    with `|>` pipe operations and other `tidyverse` tools like `dplyr`
-    and `tidyr`, making data manipulation and batch analysis smooth and
-    natural.
+1.  **Data Cleaning** — missing-value diagnostics
+    ([`na_summary()`](https://zhjx19.github.io/mathmodels/reference/na_summary.md),
+    [`na_mcar_test()`](https://zhjx19.github.io/mathmodels/reference/na_mcar_test.md)
+    for Little’s MCAR test) with heatmap / bar visuals; imputation via
+    simple fills
+    ([`impute()`](https://zhjx19.github.io/mathmodels/reference/impute.md):
+    group mean / median / mode, linear & spline interpolation,
+    constants), a unified model-based framework
+    ([`impute_model()`](https://zhjx19.github.io/mathmodels/reference/impute_model.md):
+    kNN, linear regression, decision trees), and **multiple imputation**
+    ([`impute_multiple()`](https://zhjx19.github.io/mathmodels/reference/impute_multiple.md):
+    FCS chained equations with pmm/norm for numeric columns and
+    logreg/polyreg for categorical ones) with **Rubin’s-rules pooling**
+    ([`rubin_pool()`](https://zhjx19.github.io/mathmodels/reference/rubin_pool.md)
+    for scalar estimates,
+    [`pool_fit()`](https://zhjx19.github.io/mathmodels/reference/pool_fit.md)
+    for lm/glm fits, including the Barnard-Rubin small-sample df
+    adjustment); outlier detection and handling
+    ([`outlier()`](https://zhjx19.github.io/mathmodels/reference/outlier.md));
+    Excel-style
+    [`pivot_table()`](https://zhjx19.github.io/mathmodels/reference/pivot_table.md).
+2.  **Statistical Inference** — tidy hypothesis tests: t-test /
+    Wilcoxon, ANOVA / Kruskal-Wallis, ANCOVA, correlation, chi-square,
+    normality and variance-homogeneity tests (`stat_*()`), each
+    returning one tidy row per test with effect sizes and `.by` slice
+    grouping; generic **bootstrap** and **permutation** frameworks;
+    [`export_table()`](https://zhjx19.github.io/mathmodels/reference/export_table.md)
+    renders results as Word/LaTeX three-line tables.
+3.  **Multivariate Statistics** — PCA
+    ([`mv_pca()`](https://zhjx19.github.io/mathmodels/reference/mv_pca.md)),
+    EFA
+    ([`mv_efa()`](https://zhjx19.github.io/mathmodels/reference/mv_efa.md)),
+    hierarchical and k-means clustering with validity metrics
+    ([`mv_hclust()`](https://zhjx19.github.io/mathmodels/reference/mv_hclust.md),
+    [`mv_kmeans()`](https://zhjx19.github.io/mathmodels/reference/mv_kmeans.md),
+    [`mv_cluster_metrics()`](https://zhjx19.github.io/mathmodels/reference/mv_cluster_metrics.md)),
+    discriminant analysis
+    ([`mv_discrim()`](https://zhjx19.github.io/mathmodels/reference/mv_discrim.md)),
+    correspondence analysis
+    ([`mv_corresp()`](https://zhjx19.github.io/mathmodels/reference/mv_corresp.md)),
+    MDS
+    ([`mv_mds()`](https://zhjx19.github.io/mathmodels/reference/mv_mds.md)),
+    canonical and partial correlation
+    ([`mv_cancor()`](https://zhjx19.github.io/mathmodels/reference/mv_cancor.md),
+    [`mv_pcor()`](https://zhjx19.github.io/mathmodels/reference/mv_pcor.md)),
+    all with tidy components and `plot_mv_*()` visuals.
+4.  **Evaluation Models** — AHP, Entropy weighting, CRITIC, CV, PCA and
+    factor-analysis weighting (`weight_*()` family), weight combination
+    ([`combine_weights()`](https://zhjx19.github.io/mathmodels/reference/combine_weights.md)),
+    TOPSIS, Grey Relational Analysis (GRA), Rank Sum Ratio (RSR), Fuzzy
+    Comprehensive Evaluation (FCE) with the `mf_*` membership-function
+    family, Data Envelopment Analysis (CCR/BCC/SBM, Malmquist),
+    inequality measures (Gini, Theil index), regional economics
+    (LQ/HHI/EG), and coupling coordination / obstacle degree models.
+5.  **Prediction Models** — grey prediction (GM(1,1), GM(1,N), DGM(2,1),
+    Verhulst), Markov chain prediction
+    ([`markov_chain()`](https://zhjx19.github.io/mathmodels/reference/markov_chain.md),
+    [`GM11_markov()`](https://zhjx19.github.io/mathmodels/reference/GM11_markov.md)),
+    a regression prediction toolkit
+    ([`reg_lm()`](https://zhjx19.github.io/mathmodels/reference/reg_lm.md),
+    [`reg_logistic()`](https://zhjx19.github.io/mathmodels/reference/reg_logistic.md),
+    [`reg_poisson()`](https://zhjx19.github.io/mathmodels/reference/reg_poisson.md),
+    [`reg_negbin()`](https://zhjx19.github.io/mathmodels/reference/reg_negbin.md)
+    with stepwise selection;
+    [`reg_predict()`](https://zhjx19.github.io/mathmodels/reference/reg_predict.md),
+    [`reg_diagnostics()`](https://zhjx19.github.io/mathmodels/reference/reg_diagnostics.md),
+    `plot_reg_*()`), and a lightweight time-series workflow built around
+    `ts_df`
+    ([`as_ts_df()`](https://zhjx19.github.io/mathmodels/reference/as_ts_df.md),
+    [`complete_ts_df()`](https://zhjx19.github.io/mathmodels/reference/complete_ts_df.md)
+    /
+    [`impute_ts_df()`](https://zhjx19.github.io/mathmodels/reference/impute_ts_df.md),
+    [`ts_transform()`](https://zhjx19.github.io/mathmodels/reference/ts_transform.md)
+    /
+    [`ts_back_transform()`](https://zhjx19.github.io/mathmodels/reference/ts_back_transform.md),
+    [`ts_test()`](https://zhjx19.github.io/mathmodels/reference/ts_test.md),
+    [`ts_stl()`](https://zhjx19.github.io/mathmodels/reference/ts_stl.md),
+    [`ts_ets()`](https://zhjx19.github.io/mathmodels/reference/ts_ets.md),
+    [`ts_sarima()`](https://zhjx19.github.io/mathmodels/reference/ts_sarima.md),
+    [`ts_arimax()`](https://zhjx19.github.io/mathmodels/reference/ts_arimax.md),
+    [`ts_forecast()`](https://zhjx19.github.io/mathmodels/reference/ts_forecast.md),
+    plus `plot_ts*()`).
+6.  **Interpolation and Curve Fitting** — piecewise linear, cubic
+    spline, polynomial and Hermite interpolation
+    ([`interp_linear()`](https://zhjx19.github.io/mathmodels/reference/interp_linear.md),
+    [`interp_spline()`](https://zhjx19.github.io/mathmodels/reference/interp_spline.md),
+    [`interp_poly()`](https://zhjx19.github.io/mathmodels/reference/interp_poly.md),
+    [`interp_hermite()`](https://zhjx19.github.io/mathmodels/reference/interp_hermite.md)),
+    plus curve fitting
+    ([`poly_fit()`](https://zhjx19.github.io/mathmodels/reference/poly_fit.md),
+    [`curve_fit()`](https://zhjx19.github.io/mathmodels/reference/curve_fit.md),
+    [`growth_fit()`](https://zhjx19.github.io/mathmodels/reference/growth_fit.md))
+    with automatic starting values for logistic, Gompertz and
+    Michaelis-Menten nonlinear models.
+7.  **Differential Equation Models** — string-formula
+    [`ode_solver()`](https://zhjx19.github.io/mathmodels/reference/ode_solver.md)
+    for arbitrary ODE systems; ready-to-use population models (Malthus,
+    Logistic), epidemic compartment models (SI, SIS, SIR, SEIR) and the
+    Lotka-Volterra predator-prey model, all with a unified `init` +
+    `params` interface; epidemic visualization
+    ([`plot_compartments()`](https://zhjx19.github.io/mathmodels/reference/plot_compartments.md),
+    [`plot_incidence()`](https://zhjx19.github.io/mathmodels/reference/plot_incidence.md),
+    [`plot_phase_si()`](https://zhjx19.github.io/mathmodels/reference/plot_phase_si.md),
+    [`plot_Rt_estimate()`](https://zhjx19.github.io/mathmodels/reference/plot_Rt_estimate.md))
+    and metrics
+    ([`epi_metrics()`](https://zhjx19.github.io/mathmodels/reference/epi_metrics.md)
+    for R0, peak, attack rate).
+8.  **Elegant, Tidyverse-friendly Interface** — standardized argument
+    names, `|>` pipes and `dplyr`/`tidyr`/`ggplot2` integration, with
+    data preprocessing (normalization, scaling, indicator direction)
+    handled internally.
 
 ### Quick Start
 
@@ -98,9 +194,9 @@ water_quality
 df = water_quality |>
   mutate(
     # Optimal PH is 7 -> Centered-type positive
-    PH = rescale_middle(PH, 7),   
+    PH = rescale_middle(PH, 7),
     # Optimal nutrient is 10-20 -> Interval-type positive
-    nutrient = rescale_interval(nutrient, 10, 20) 
+    nutrient = rescale_interval(nutrient, 10, 20)
   )
 ```
 
@@ -111,8 +207,8 @@ directions are set to `NA` to avoid repeating the normalization process.
 
 ``` r
 
-idx = c("+", NA, "-", NA)     # 
-res = weight_entropy(df[-1], idx) 
+idx = c("+", NA, "-", NA)
+res = weight_entropy(df[-1], idx)
 res$w                         # View calculated weights
 ```
 
@@ -138,6 +234,29 @@ topsis(df[2:5], res$w, idx)
 
 The obtained result is the relative closeness score.
 
+The same tidy workflow extends to the other modules. For instance,
+**multiple imputation** of missing values followed by **Rubin’s-rules
+pooling** of a regression model:
+
+``` r
+
+set.seed(1)
+d = data.frame(x = rnorm(40), z = rnorm(40))
+d$y = 0.5 * d$x + rnorm(40)
+d$x[c(3, 9)] = NA                      # introduce missingness
+
+imps = impute_multiple(d, .cols = x, m = 5, maxit = 3, seed = 2)  # 5 imputations
+fits = lapply(imps, \(dat) lm(y ~ x, dat))                        # fit each
+pool_fit(fits)                         # pooled coefficients (Rubin's rules)
+```
+
+    ## Pooled estimates (Rubin's rules)
+    ## # A tibble: 2 × 7
+    ##   term        estimate std_error     lcl   ucl p_value    fmi
+    ##   <chr>          <dbl>     <dbl>   <dbl> <dbl>   <dbl>  <dbl>
+    ## 1 (Intercept)    0.134     0.133 -0.135  0.403  0.319  0.0520
+    ## 2 x              0.277     0.153 -0.0325 0.587  0.0778 0.0533
+
 ### Getting Help and In-Depth Learning
 
 This Vignette offers just a glimpse into the capabilities of
@@ -151,9 +270,11 @@ manual**:
 
 This online manual serves as the definitive documentation for the
 `mathmodels` package. It consolidates content from the package vignettes
-and currently provides complete coverage of all evaluation algorithms
-with R implementations and extensive examples, making it your best
-resource for learning and using this package.
+and covers the evaluation algorithms, statistical inference,
+multivariate statistics, data cleaning, prediction models and
+differential equation models, with R implementations and extensive
+examples, making it your best resource for learning and using this
+package.
 
 ------------------------------------------------------------------------
 
