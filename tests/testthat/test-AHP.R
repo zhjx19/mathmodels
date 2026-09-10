@@ -14,9 +14,22 @@ test_that("AHP consistency", {
                1/3, 1/5, 3, 1,   1), byrow = TRUE, nrow = 5)
   rlt = AHP(A)
   expect_equal(rlt$CR, rlt$CI / c(0,0,0.58,0.90,1.12,1.24,1.32,1.41,1.45,1.49,
-                                   1.51,1.48,1.56,1.57,1.59)[5])
+                                   1.51,1.54,1.56,1.57,1.59)[5])
   expect_true(rlt$Lmax > 0)
   expect_equal(sum(rlt$w), 1, tolerance = 1e-8)
+})
+
+test_that("AHP uses the canonical Saaty RI (n=12 is 1.54, not 1.48)", {
+  set.seed(7)
+  A = matrix(1, 12, 12)
+  A[upper.tri(A)] = runif(66, 1/9, 9)
+  A[lower.tri(A)] = 1 / t(A)[lower.tri(A)]   # exact reciprocal pairs
+  rlt = AHP(A)
+  ev = eigen(A)
+  Lmax = Re(ev$values[which.max(Mod(ev$values))])
+  CI = (Lmax - 12) / 11
+  # CR must be CI / 1.54 for n = 12
+  expect_equal(rlt$CR, CI / 1.54, tolerance = 1e-8)
 })
 
 test_that("AHP input validation", {

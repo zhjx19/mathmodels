@@ -54,7 +54,7 @@ AHP = function(A) {
   # Consistency ratio
   # Saaty's random Consistency indexes (extended to n=15)
   RI = c(0, 0, 0.58, 0.90, 1.12, 1.24, 1.32, 1.41, 1.45, 1.49,
-         1.51, 1.48, 1.56, 1.57, 1.59)
+         1.51, 1.54, 1.56, 1.57, 1.59)
   # For n <= 2 the comparison matrix cannot be inconsistent
   if (n <= 2) {
     CI = 0
