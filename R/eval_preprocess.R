@@ -24,7 +24,7 @@
 #'   \item `rescale`: Min-Max scaled values in `[a, b]` (default \code{[0, 1]}).
 #'   \item `rescale_middle`: Centered-type normalized values in \code{[0, 1]}, where 1 indicates `x = m`.
 #'   \item `rescale_interval`: Interval-type normalized values in \code{[0, 1]}, where 1 indicates `x` in `[a, b]`.
-#'   \item `rescale_extreme`: Extreme-based normalized values using `min(x)/x` (positive) or `x/max(x)` (negative).
+#'   \item `rescale_extreme`: Extreme-based normalized values using `x/max(x)` (positive) or `min(x)/x` (negative).
 #'   \item `rescale_initial`: Initial-based normalized values using `x/x[1]` or `x[1]/x`.
 #'   \item `rescale_mean`: Mean-based normalized values using `x/mean(x)`.
 #'   \item `to_positive`: Converts negative indicators to positive: `minmax` returns `max(x) - x` (a reversal in the original units, not a rescale to \code{[0, 1]}); `reciprocal` returns `1/x` and requires strictly positive data.
@@ -38,7 +38,7 @@
 #'   \item `rescale`: Performs Min-Max scaling to a specified range (default \code{[0, 1]}), supporting positive or negative indicators.
 #'   \item `rescale_middle`: Normalizes centered-type indicators, where values closer to an optimal value `m` are better, mapping to \code{[0, 1]}.
 #'   \item `rescale_interval`: Normalizes interval-type indicators, where values within `[a, b]` are optimal, mapping to \code{[0, 1]}.
-#'   \item `rescale_extreme`: Normalizes using extreme values: `min(x)/x` for positive indicators or `x/max(x)` for negative indicators, often used in grey relational analysis.
+#'   \item `rescale_extreme`: Normalizes using extreme values: `x/max(x)` for positive indicators or `min(x)/x` for negative indicators, often used in grey relational analysis.
 #'   \item `rescale_initial`: Normalizes by dividing by the first value (`x/x[1]` or `x[1]/x`), commonly used in grey relational analysis.
 #'   \item `rescale_mean`: Normalizes by dividing by the mean (`x/mean(x)`), commonly used in grey relational analysis.
 #'   \item `to_positive`: Converts negative indicators to positive: `minmax` returns `max(x) - x` (a reversal in the original units, not a rescale to `c(0,1)`), and `reciprocal` returns `1/x`, which requires strictly positive data (no zeros or negatives).
@@ -71,8 +71,8 @@
 #' rescale_interval(Temp, 36, 37)
 #'
 #' # Extreme-based normalization
-#' rescale_extreme(x)         # min(x)/x
-#' rescale_extreme(x, "-")    # x/max(x)
+#' rescale_extreme(x)         # x/max(x)
+#' rescale_extreme(x, "-")    # min(x)/x
 #'
 #' # Initial-based normalization
 #' rescale_initial(x)
