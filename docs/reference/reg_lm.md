@@ -135,7 +135,7 @@ reg_lm(y ~ x1 + x2, data = data.frame(y, x1, x2))
 #> 
 #> $formula
 #> y ~ x1 + x2
-#> <environment: 0x00000267a8288ac0>
+#> <environment: 0x0000020f00c56888>
 #> 
 #> $input
 #>               y          x1            x2

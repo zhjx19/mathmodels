@@ -80,7 +80,7 @@ A tibble with class `stat_infer`: `variable`, `.by` identifiers,
 `statistic`, `df`, `p.value`, `p.adjusted`, `sig`, `conf_low`,
 `conf_high`, `effect` (Cohen's d), `method`, `alternative`. For
 two-sample tests all difference quantities (`estimate`, `statistic`, CI,
-`effect`) follow the group1 − group2 direction (first level minus second
+`effect`) follow the group1 - group2 direction (first level minus second
 level, rstatix convention).
 
 ## Examples
