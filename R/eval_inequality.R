@@ -28,6 +28,12 @@
 #'   \item `theil`: theil (Theil index and its decomposition),
 #'   \item `ratio`: ratio (contribution rates of each component).
 #' }
+#' For the two-level functions the layout of each vector is \code{T, Tb_g1, Tb_g2, Tw},
+#' then per-\code{group1} between-group terms, then per-\code{group1}/\code{group2}
+#' within terms. \strong{In `theil_g2_nest` the `ratio` vector carries one extra block}
+#' (each \code{group1}'s total within contribution, with names suffixed
+#' \code{".within"}), so \code{length(ratio) != length(theil)}. Do not \code{cbind()}
+#' the two vectors, or align them by position or by name.
 #'
 #' @examples
 #' # Sample data
@@ -399,10 +405,12 @@ theil_g2_nest = function(data, group1, group2, y, pop) {
   Rwi = df_within$Yr * df_within$Tw / TT
 
   # 3. Each group1's total contribution (sum of within-group2 contributions within each group1)
-  df_within_group1 = df_within |>
-    dplyr::group_by(group1) |>
-    dplyr::summarise(R_group1_total = sum(Rwi, na.rm = TRUE))
-  R_group1_total = setNames(df_within_group1$R_group1_total, df_within_group1$group1)
+  #    NOTE: `Rwi` is an outside variable, not a column of df_within, so
+  #    `sum(Rwi)` inside a grouped summarise() would NOT subset by group and
+  #    would return the global within total for every group. Collapse the
+  #    already-computed vector by group1 directly, which keeps the grouping
+  #    explicit and avoids non-standard evaluation.
+  R_group1_total = tapply(Rwi, df_within$group1, sum, na.rm = TRUE)
 
   # Return results
   list(
@@ -412,6 +420,9 @@ theil_g2_nest = function(data, group1, group2, y, pop) {
     ratio = c(T = 1, Tb_g1 = Tb_g1/TT, Tb_g2 = Tb_g2/TT, Tw = Tw/TT,
               setNames(R_group1, df_g2$group1),  # Each group1's between-group2 contribution
               setNames(Rwi, paste(df_within$group1, df_within$group2, sep = "_")),  # Each group2's within contribution
-              setNames(R_group1_total, names(R_group1_total)))  # Each group1's total within contribution
+              # Each group1's TOTAL within contribution. Suffixed because it would
+              # otherwise reuse the group1 names of the between-group2 block above,
+              # which made this block unreachable by name.
+              setNames(R_group1_total, paste0(names(R_group1_total), ".within")))
   )
 }

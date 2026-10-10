@@ -308,6 +308,7 @@ basic_DEA = function(data, inputs, outputs, ud_outputs = NULL,
       c(colnames(t(dd$Y_g)),
         if (s2 > 0) colnames(t(dd$Y_b)) else NULL)))
 
+  failed = character(0)
   for (i in seq_len(n)) {
     y_g = dd$Y_g[, i]
     y_b = if (s2 > 0) dd$Y_b[, i] else NULL
@@ -321,8 +322,14 @@ basic_DEA = function(data, inputs, outputs, ud_outputs = NULL,
       s_in_mat[i, ] = res$s_in
       s_out_mat[i, seq_len(s1)] = res$s_out
       if (s2 > 0) s_out_mat[i, (s1 + 1):(s1 + s2)] = res$s_b
+    } else {
+      failed = c(failed, dd$dmu[i])
     }
   }
+  if (length(failed))
+    warning("basic_DEA: LP infeasible for DMU(s): ",
+            paste(failed, collapse = ", "), "; efficiency set to NA.",
+            call. = FALSE)
 
   attr(dd, "orientation") = orientation
   build_result(dd, theta_vec, lambda_mat, s_in_mat, s_out_mat, rts)
@@ -356,6 +363,7 @@ super_DEA = function(data, inputs, outputs,
   s_out_mat = matrix(NA_real_, n, s1,
     dimnames = list(dd$dmu, colnames(t(dd$Y_g))))
 
+  failed = character(0)
   for (i in seq_len(n)) {
     if (n <= 1) next
     idx_ref = setdiff(seq_len(n), i)
@@ -369,8 +377,14 @@ super_DEA = function(data, inputs, outputs,
       lambda_mat[i, idx_ref] = res$lambda
       s_in_mat[i, ]  = res$s_in
       s_out_mat[i, seq_len(s1)] = res$s_out
+    } else {
+      failed = c(failed, dd$dmu[i])
     }
   }
+  if (length(failed))
+    warning("super_DEA: LP infeasible for DMU(s): ",
+            paste(failed, collapse = ", "), "; efficiency set to NA.",
+            call. = FALSE)
 
   attr(dd, "orientation") = orientation
   build_result(dd, theta_vec, lambda_mat, s_in_mat, s_out_mat, rts)

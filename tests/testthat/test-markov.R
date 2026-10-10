@@ -116,3 +116,16 @@ test_that("GM11_markov input validation", {
   expect_error(GM11_markov(X, n_ahead = 1.5), "n_ahead must be a positive integer")
   expect_error(GM11_markov(X, breaks = "a"), "breaks must be a numeric vector")
 })
+
+test_that("markov_chain names the transition-matrix margins", {
+  S = c("A", "B", "A", "C", "A", "B", "C", "B", "A", "C")
+  r = markov_chain(S, s0 = "A", n_steps = 3)
+
+  expect_s3_class(r$trans_mat, "table")
+  expect_equal(names(dimnames(r$trans_mat)), c("from", "to"))
+  # unnamed margins made tibble::as_tibble() fail with
+  # "Columns 1 and 2 must be named"
+  tb = tibble::as_tibble(r$trans_mat, rownames = "from")
+  expect_true("from" %in% names(tb))
+  expect_equal(nrow(tb), 9L)          # 3 x 3 table -> long form
+})

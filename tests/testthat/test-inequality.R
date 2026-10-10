@@ -79,3 +79,36 @@ test_that("theil_g2_nest decomposes the true total Theil", {
                unname(r$theil["Tb_g1"] + r$theil["Tb_g2"] + r$theil["Tw"]),
                tolerance = 1e-10)
 })
+
+test_that("theil_g2_nest: ratio names are unique and its blocks add up", {
+  d = data.frame(
+    province = c("A","A","A","A","B","B"),
+    city = c("A1","A1","A2","A2","B1","B1"),
+    industry = c("Manu","Serv","Manu","Serv","Manu","Serv"),
+    y = c(50000, 45000, 60000, 55000, 70000, 65000),
+    pop = c(10000, 8000, 15000, 12000, 10000, 8000)
+  )
+  r = theil_g2_nest(d, "province", "city", "y", "pop")
+
+  # The per-group1 total-within block used to reuse the group1 names, which
+  # made it unreachable by name; it is now suffixed ".within".
+  expect_false(anyDuplicated(names(r$ratio)) > 0)
+  expect_true(any(grepl("\\.within$", names(r$ratio))))
+
+  # theil and ratio differ in length by design (see @return); the three
+  # top-level ratios must still sum to 1
+  expect_equal(length(r$ratio) - length(r$theil), 2L)
+  expect_equal(unname(r$ratio["Tb_g1"] + r$ratio["Tb_g2"] + r$ratio["Tw"]),
+               1, tolerance = 1e-10)
+
+  # the per-group1 total-within block is the group1 collapse of the
+  # per-group1/group2 within block -- per group, not the global total
+  within_total = sum(r$ratio[grepl("\\.within$", names(r$ratio))])
+  expect_equal(within_total, unname(r$ratio["Tw"]), tolerance = 1e-10)
+
+  cells = r$ratio[grepl("^[AB]_", names(r$ratio))]
+  expect_equal(unname(r$ratio["A.within"]),
+               sum(cells[grepl("^A_", names(cells))]), tolerance = 1e-10)
+  expect_equal(unname(r$ratio["B.within"]),
+               sum(cells[grepl("^B_", names(cells))]), tolerance = 1e-10)
+})

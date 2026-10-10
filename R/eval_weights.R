@@ -346,6 +346,17 @@ weight_entropy = function(X, index = NULL, epsilon = 0.002) {
                     function(x) rescale(x, type = "-", a = epsilon, b = 1-epsilon))
   # Compute proportion p(i,j) of sample i in indicator j
   if (any(X < 0)) stop("weight_entropy() requires non-negative data.")
+  # Mixed scales: + / - columns were rescaled to [0, 1] just above, so any
+  # index = NA column is expected to be on that scale too. Only NA columns can
+  # exceed 1 here; when one does, `s` combines incommensurable units.
+  # (index = NULL rescales nothing, so it is left alone.)
+  na_cols = is.na(index)
+  if ((length(pos) + length(neg) > 0) && any(na_cols) &&
+      any(X[, na_cols, drop = FALSE] > 1))
+    warning("weight_entropy(): columns with index = NA are expected to be ",
+            "already normalized to [0, 1]; found values > 1 while other ",
+            "columns were rescaled, so the returned 100-scale scores mix ",
+            "units and may be meaningless.", call. = FALSE)
   P = data.frame(lapply(X, function(x) x / sum(x)))
   # Compute entropy e(j) for each indicator j
   e = sapply(P, \(x) -sum(x * log(x)) / log(nrow(P)))

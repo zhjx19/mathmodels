@@ -42,3 +42,19 @@ test_that("weight_entropy index validation", {
   expect_error(weight_entropy(X, c("+", "pos")), 'index must contain only')
 })
 
+test_that("weight_entropy warns when NA and rescaled columns mix scales", {
+  X = data.frame(a = 1:10, b = 1:10)   # a is "+" (rescaled), b is NA (raw)
+  expect_warning(weight_entropy(X, index = c("+", NA)), "already normalized")
+})
+
+test_that("weight_entropy stays quiet when NA columns are normalised", {
+  X = data.frame(a = 1:10, b = seq(0.1, 1, length.out = 10))
+  expect_no_warning(weight_entropy(X, index = c("+", NA)))
+  # + and - columns are rescaled internally, so they never trip the guard
+  Y = data.frame(x1 = c(3, 5, 2, 7), x2 = c(10, 20, 15, 25))
+  expect_no_warning(weight_entropy(Y, c("+", "-")))
+  # index = NULL rescales nothing, so raw data is not reported
+  expect_no_warning(weight_entropy(data.frame(x1 = c(3, 5, 2, 7),
+                                              x2 = c(10, 20, 15, 25))))
+})
+

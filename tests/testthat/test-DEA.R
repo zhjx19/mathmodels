@@ -270,3 +270,34 @@ test_that("DEA validates inputs correctly", {
   # Fewer than 3 columns
   expect_error(basic_DEA(df[, 1:2], inputs = 2, outputs = 2), "at least 3")
 })
+
+test_that("basic_DEA and super_DEA stay silent on a well-posed problem", {
+  df = data.frame(
+    DMU = paste0("DMU", 1:7),
+    x1  = c(20, 60, 40, 60, 70, 30, 50),
+    x2  = c(151, 200, 120, 170, 250, 210, 90),
+    y1  = c(100, 210, 150, 240, 220, 80, 200)
+  )
+  expect_no_warning(basic_DEA(df, inputs = 2:3, outputs = 4, rts = "crs"))
+  expect_no_warning(super_DEA(df, inputs = 2:3, outputs = 4, rts = "crs"))
+})
+
+test_that("LP failures are reported instead of silently returning NA", {
+  # Force the solver to fail: theta = NA is what solve_radial_lp returns on a
+  # non-zero LP status. Previously both models wrote NA with no message.
+  local_mocked_bindings(
+    solve_radial_lp = function(...) {
+      list(theta = NA_real_, phi = NA_real_, lambda = rep(NA_real_, 1),
+           s_in = NA_real_, s_out = NA_real_, s_b = numeric(0))
+    },
+    .package = "mathmodels"
+  )
+  df = data.frame(DMU = c("A", "B", "C"), x1 = c(1, 2, 3), y1 = c(3, 2, 1))
+
+  expect_warning(r <- basic_DEA(df, inputs = 2, outputs = 3, rts = "vrs"),
+                 "basic_DEA: LP infeasible for DMU")
+  expect_true(all(is.na(r$efficiencies)))
+
+  expect_warning(super_DEA(df, inputs = 2, outputs = 3, rts = "vrs"),
+                 "super_DEA: LP infeasible for DMU")
+})

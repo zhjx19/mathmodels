@@ -36,7 +36,8 @@
 #'
 #' @return
 #' \itemize{
-#'   \item For membership functions (`mf_tri`, `mf_trap`, `mf_gauss`, `mf_gbell`, `mf_gauss2`, `mf_sigmoid`, `mf_dsigmoid`, `mf_psigmoid`, `mf_z`, `mf_pi`, `mf_s`): A numeric vector of membership values in \code{[0, 1]}, same length as `x`.
+#'   \item For membership functions (`mf_tri`, `mf_trap`, `mf_gauss`, `mf_gbell`, `mf_gauss2`, `mf_sigmoid`, `mf_psigmoid`, `mf_z`, `mf_pi`, `mf_s`): A numeric vector of membership values in \code{[0, 1]}, same length as `x`.
+#'   \item For `mf_dsigmoid`: A numeric vector holding the difference of two sigmoids. Values lie in \eqn{[-1, 1]} and are \strong{negative when \code{c1 > c2}}, so unlike the other membership functions it is \emph{not} guaranteed to be in \code{[0, 1]}. Clip the result to \code{[0, 1]}, or use `mf_psigmoid()` instead, before passing it to `fuzzy_eval()`.
 #'   \item For `plot_mf`: A ggplot2 object, plotting the membership function.
 #' }
 #'
@@ -572,7 +573,9 @@ fuzzy_eval = function(w, R, type) {
   if(!is.matrix(R) || !is.numeric(R))
     stop("R must be a numeric matrix.", call. = FALSE)
   if(anyNA(R) || any(R < 0) || any(R > 1))
-    stop("R must contain only values between 0 and 1, with no NA.", call. = FALSE)
+    stop("R must contain only values between 0 and 1, with no NA. ",
+         "Note `mf_dsigmoid()` can return negative values; use `mf_psigmoid()` ",
+         "or clip to [0, 1] before building R.", call. = FALSE)
   if(length(w) != ncol(R))
     stop("Length of w must equal ncol(R).")
   if(anyNA(w) || any(w < 0))
@@ -605,11 +608,17 @@ fuzzy_eval = function(w, R, type) {
            # Normalized min-sum, balanced average
            "5" = {
              r0 = sum(R[j,])
-             B[j] = sum(apply(rbind(w, R[j,] / r0), 2, min))
+             # A grade no factor supports is impossible, so its combined
+             # membership is 0. Guarding here avoids 0/0 = NaN, which would
+             # make `sum(B)` NaN and `if (sum(B) == 0)` throw
+             # "missing value where TRUE/FALSE needed" before its own message.
+             B[j] = if(r0 > 0) sum(apply(rbind(w, R[j,] / r0), 2, min)) else 0
            }
     )
   }
-  if(sum(B) == 0) stop("Normalization failed: sum of B is zero.")
+  # Non-finite-safe: reachable only when every grade is impossible.
+  if(!is.finite(sum(B)) || sum(B) == 0)
+    stop("Normalization failed: sum of B is zero.")
   B / sum(B)      # Normalize
 }
 

@@ -68,7 +68,8 @@ right top, right base); one-sided shoulders are supported with
 }
 \value{
 \itemize{
-\item For membership functions (\code{mf_tri}, \code{mf_trap}, \code{mf_gauss}, \code{mf_gbell}, \code{mf_gauss2}, \code{mf_sigmoid}, \code{mf_dsigmoid}, \code{mf_psigmoid}, \code{mf_z}, \code{mf_pi}, \code{mf_s}): A numeric vector of membership values in \code{[0, 1]}, same length as \code{x}.
+\item For membership functions (\code{mf_tri}, \code{mf_trap}, \code{mf_gauss}, \code{mf_gbell}, \code{mf_gauss2}, \code{mf_sigmoid}, \code{mf_psigmoid}, \code{mf_z}, \code{mf_pi}, \code{mf_s}): A numeric vector of membership values in \code{[0, 1]}, same length as \code{x}.
+\item For \code{mf_dsigmoid}: A numeric vector holding the difference of two sigmoids. Values lie in \eqn{[-1, 1]} and are \strong{negative when \code{c1 > c2}}, so unlike the other membership functions it is \emph{not} guaranteed to be in \code{[0, 1]}. Clip the result to \code{[0, 1]}, or use \code{mf_psigmoid()} instead, before passing it to \code{fuzzy_eval()}.
 \item For \code{plot_mf}: A ggplot2 object, plotting the membership function.
 }
 }

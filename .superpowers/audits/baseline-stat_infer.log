@@ -1,0 +1,11 @@
+pkg: D:/WorkBuddy/mathmodels技能/mathmodels | filter: ^stat_infer$ 
+stat_infer: ...........................................................................WW...........................................................
+
+══ Warnings ════════════════════════════════════════════════════════════════════
+1. stat_cor matches stats::cor.test (pearson and spearman) ('test-stat_infer.R:292:3') - cannot compute exact p-value with ties
+
+2. stat_cor matches stats::cor.test (pearson and spearman) ('test-stat_infer.R:293:3') - cannot compute exact p-value with ties
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+
+SUMMARY failed=0 error=0 warning=2 skipped=0 passed=134

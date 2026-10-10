@@ -16,11 +16,15 @@ markov_chain(S, s0, n_steps = 5)
 \value{
 A list with components:
 \describe{
-\item{trans_mat}{Transition probability matrix.}
+\item{trans_mat}{Transition probability matrix, a base \code{table} whose margins
+are named \code{"from"} and \code{"to"}.}
 \item{pred_probs}{Matrix of state probabilities for each prediction step.}
 \item{pred_states}{Predicted states, taking the most likely state at each step.}
 \item{pi_final}{Ultimate stationary distribution.}
 }
+\code{trans_mat} and \code{pred_probs} are base objects, not tibbles. To convert one to a
+tibble, use \code{as.data.frame()} together with \code{tibble::rownames_to_column()};
+note that \code{tibble::as_tibble()} on a plain matrix silently drops the row names.
 }
 \description{
 Constructs a transition probability matrix from a state sequence and performs

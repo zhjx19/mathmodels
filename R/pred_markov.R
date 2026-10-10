@@ -10,11 +10,15 @@
 #'
 #' @return A list with components:
 #' \describe{
-#'   \item{trans_mat}{Transition probability matrix.}
+#'   \item{trans_mat}{Transition probability matrix, a base `table` whose margins
+#'     are named `"from"` and `"to"`.}
 #'   \item{pred_probs}{Matrix of state probabilities for each prediction step.}
 #'   \item{pred_states}{Predicted states, taking the most likely state at each step.}
 #'   \item{pi_final}{Ultimate stationary distribution.}
 #' }
+#' `trans_mat` and `pred_probs` are base objects, not tibbles. To convert one to a
+#' tibble, use `as.data.frame()` together with `tibble::rownames_to_column()`;
+#' note that `tibble::as_tibble()` on a plain matrix silently drops the row names.
 #'
 #' @details
 #' For states that never appear as a starting state, equal transition
@@ -60,6 +64,8 @@ markov_chain = function(S, s0, n_steps = 5) {
   # For states that only appear as destination but never as source:
   # assign equal probabilities to keep row sums = 1
   P[is.nan(P)] = 1 / ncol(P)
+  # Name the margins so the table survives tibble::as_tibble() and friends
+  dimnames(P) = stats::setNames(dimnames(P), c("from", "to"))
   
   # Iterative prediction
   pred = matrix(NA_real_, nrow = n_steps + 1, ncol = length(lvl))

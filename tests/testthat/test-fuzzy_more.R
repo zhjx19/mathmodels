@@ -147,3 +147,38 @@ test_that("defuzzify max_membership ties return the first maximum", {
   expect_length(r, 1)
   expect_equal(r, 10)
 })
+
+test_that("fuzzy_eval type 5 tolerates a grade with zero membership", {
+  w = c(0.2, 0.1, 0.15, 0.3, 0.25)
+  R = matrix(c(0,   0,   0,   0,   0,     # grade 1: no factor supports it
+               0.3, 0.4, 0.5, 0.2, 0.6,
+               0.7, 0.6, 0.5, 0.8, 0.4), nrow = 3, byrow = TRUE)
+
+  r = fuzzy_eval(w, R, 5)
+
+  expect_length(r, 3)
+  expect_false(anyNA(r))
+  expect_equal(sum(r), 1, tolerance = 1e-12)
+  expect_equal(r[1], 0)          # impossible grade stays 0
+  # regression: this used to raise "missing value where TRUE/FALSE needed"
+  # from 0/0 = NaN, never reaching the function's own error message
+  expect_no_error(fuzzy_eval(w, R, 5))
+})
+
+test_that("fuzzy_eval errors cleanly when every grade is impossible", {
+  R0 = matrix(0, nrow = 2, ncol = 2)
+  expect_error(fuzzy_eval(c(0.5, 0.5), R0, 5),
+               "Normalization failed: sum of B is zero")
+})
+
+test_that("fuzzy_eval rejects negative R and points at mf_dsigmoid", {
+  expect_error(fuzzy_eval(c(0.5, 0.5), matrix(c(-0.2, 0.5, 0.5, 1), 2, 2), 3),
+               "mf_dsigmoid")
+})
+
+test_that("mf_dsigmoid range depends on params (documented as [-1, 1])", {
+  x = seq(0, 10, by = 0.01)
+  expect_true(all(mf_dsigmoid(x, c(5, 2, 5, 7)) >= -1e-9))  # c1 < c2 -> non-negative
+  expect_true(any(mf_dsigmoid(x, c(5, 7, 5, 2)) < 0))       # c1 > c2 -> negative
+  expect_true(all(abs(mf_dsigmoid(x, c(5, 7, 5, 2))) <= 1 + 1e-9))
+})

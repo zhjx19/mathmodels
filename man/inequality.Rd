@@ -50,6 +50,12 @@ For \code{theil0_g}, \code{theil_g}, \code{theil_g2_cross}, \code{theil_g2_nest}
 \item \code{theil}: theil (Theil index and its decomposition),
 \item \code{ratio}: ratio (contribution rates of each component).
 }
+For the two-level functions the layout of each vector is \code{T, Tb_g1, Tb_g2, Tw},
+then per-\code{group1} between-group terms, then per-\code{group1}/\code{group2}
+within terms. \strong{In \code{theil_g2_nest} the \code{ratio} vector carries one extra block}
+(each \code{group1}'s total within contribution, with names suffixed
+\code{".within"}), so \code{length(ratio) != length(theil)}. Do not \code{cbind()}
+the two vectors, or align them by position or by name.
 }
 \description{
 Computes inequality indices for individual or grouped data:

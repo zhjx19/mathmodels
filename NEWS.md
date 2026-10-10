@@ -1,5 +1,38 @@
 # mathmodels 0.0.14
 
+## Bug fixes
+
+- **`fuzzy_eval(type = 5)` no longer dies on an impossible grade.** When a
+  grade had zero membership across every factor, `R[j, ] / r0` was `0 / 0 = NaN`,
+  so `sum(B)` became `NaN` and the `if (sum(B) == 0)` guard threw
+  `"missing value where TRUE/FALSE needed"` — its own error message was
+  unreachable. Such a grade now contributes `B[j] = 0`, and the guard is
+  non-finite-safe so it fires (with its own message) only when *every* grade is
+  impossible.
+- **`theil_g2_nest()` `ratio` block was misnamed and miscalculated.** The
+  per-`group1` total-within block reused the `group1` names of the
+  between-`group2` block, so it could never be reached by name (and
+  `length(ratio) != length(theil)`). Its values were also wrong: `Rwi` is not a
+  column of the nested frame, so `sum(Rwi)` inside a grouped `summarise()`
+  returned the *global* within total for every group. The block is now suffixed
+  `".within"` and computed per group (so it sums to `ratio["Tw"]`). The layout is
+  documented in `?theil_g2_nest`.
+- **`weight_entropy()` now warns when `index = NA` columns mix scales** with
+  rescaled `+` / `-` columns, since the returned `s` then combines
+  incommensurable units. `index = NULL` (the default) is unaffected.
+- **`basic_DEA()` and `super_DEA()` report LP failures** for individual DMUs
+  instead of silently writing `NA` into the efficiency vector.
+- **`markov_chain()`** names the margins of the transition matrix
+  (`c("from", "to")`), so `tibble::as_tibble(trans_mat)` no longer fails with
+  "Columns 1 and 2 must be named".
+
+## Documentation
+
+- `?membership`: `mf_dsigmoid()` is no longer documented as returning values in
+  `[0, 1]`. It is the difference of two sigmoids, lies in `[-1, 1]`, and is
+  **negative when `c1 > c2`**; clip it or use `mf_psigmoid()` before
+  `fuzzy_eval()`. The `fuzzy_eval()` range guard now says so too.
+
 ## Data cleaning toolkit (new)
 
 - **Diagnostics**: `na_summary()` (per-column missing counts), `na_mcar_test()`

@@ -1,0 +1,41 @@
+mathmodels loaded from: E:/Github/mathmodels 
+
+
+ ------ 1. fuzzy_eval type 5, grade 1 all-zero membership ------ 
+type = 3 -> 0, 0.385, 0.615 
+type = 5 -> 0, 0.4688, 0.5312 
+  r0 = 0 | B[1] = NaN | is.nan(B[1]) = TRUE 
+  `NaN == 0` -> NA 
+  >> package's own 'Normalization failed' message reached: FALSE 
+  all-zero R -> ERR: Normalization failed: sum of B is zero. 
+
+ ------ 2. theil_g2_nest(): ratio length / duplicate names ------ 
+  group1 = 区域 | group2 = 地区 | y = 平均工资 | pop = 就业人数 
+  length(theil) = 39 | length(ratio) = 43 | diff = 4 
+  duplicated names in ratio:  
+  ratio[['东北']] = 0.0001540317 
+  >> lengths equal: FALSE 
+  >> tibble(theil, ratio) side by side: Tibble columns must have compatible sizes.
+• Size 39: Existing data.
+• Size 43: Column `b`.
+ℹ Only values of size one are recycled. 
+
+ ------ 3. mf_dsigmoid() range vs documented [0,1] ------ 
+  params 5,2,5,7              range = [  0.0000,   1.0000]  any negative: FALSE
+  params 5,7,5,2              range = [ -1.0000,  -0.0000]  any negative: TRUE
+  params 1,1.5,9,1.5          range = [ -0.3747,   0.3747]  any negative: TRUE
+
+ ------ 4. markov_chain(): unnamed dimnames ------ 
+  class(P): table 
+  names(dimnames(P)): 'from','to' | all empty: FALSE 
+  as_tibble(P, rownames='x') -> ok (no error) 
+
+ ------ 5. weight_entropy(): no upper-bound warning on un-normalised NA column ------ 
+  WARNING: weight_entropy(): columns with index = NA are expected to be already normalized to [0, 1]; found values > 1. The returned scores are on a 100 scale and may be meaningless. 
+  number of warnings: 1 | range(s) = [ 37.87 , 440.29 ]
+  >> silent for values > 1: FALSE 
+
+ ------ 6. super_DEA(): silent NA when LP fails ------ 
+  no NA in 400 random trials; code path still lacks an else-branch
+
+=== done ===
