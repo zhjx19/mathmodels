@@ -1,5 +1,5 @@
 === devtools::check() ===
-started: 2026-10-11 01:53:57 
+started: 2026-10-11 02:30:42 
 R: R version 4.6.1 (2026-06-24 ucrt) | devtools: 2.5.2 
 
 ══ Building ════════════════════════════════════════════════════════════════════
@@ -18,7 +18,6 @@ Setting env vars:
 * creating vignettes ... OK
 * checking for LF line-endings in source and make files and shell scripts
 * checking for empty or unneeded directories
-Removed empty directory 'mathmodels/tests/testthat/_snaps'
 * building 'mathmodels_0.0.14.tar.gz'
 
 ══ Checking ════════════════════════════════════════════════════════════════════
@@ -28,7 +27,7 @@ Setting env vars:
 • _R_CHECK_FORCE_SUGGESTS_      : FALSE
 • NOT_CRAN                      : true
 ── R CMD check ─────────────────────────────────────────────────────────────────
-* using log directory 'C:/Users/zhang/AppData/Local/Temp/RtmpmE5UCu/file4e8476271a84/mathmodels.Rcheck'
+* using log directory 'C:/Users/zhang/AppData/Local/Temp/Rtmp0gbhGy/file75742b913dc0/mathmodels.Rcheck'
 * using R version 4.6.1 (2026-06-24 ucrt)
 * using platform: x86_64-w64-mingw32
 * R was compiled by
@@ -36,7 +35,7 @@ Setting env vars:
     GNU Fortran (GCC) 14.3.0
 * running under: Windows 11 x64 (build 26100)
 * using session charset: UTF-8
-* current time: 2026-10-10 17:54:26 UTC
+* current time: 2026-10-10 18:31:15 UTC
 * using option '--no-manual'
 * checking for file 'mathmodels/DESCRIPTION' ... OK
 * checking extension type ... Package
@@ -87,7 +86,7 @@ Setting env vars:
 * checking examples ... OK
 Examples with CPU (user + system) or elapsed time > 5s
                   user system elapsed
-plot_ts_residuals    5   0.14    5.54
+plot_ts_residuals    5   0.19     5.3
 * checking for unstated dependencies in 'tests' ... OK
 * checking tests ...
   Running 'testthat.R'
@@ -102,10 +101,10 @@ Status: OK
 
 === returned object ===
 ── R CMD check results ────────────────────────────────── mathmodels 0.0.14 ────
-Duration: 2m 52.5s
+Duration: 3m 7.7s
 
 0 errors ✔ | 0 warnings ✔ | 0 notes ✔
 
 errors: 0 | warnings: 0 | notes: 0 
 
-finished: 2026-10-11 01:57:18 
+finished: 2026-10-11 02:34:22 

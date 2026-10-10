@@ -282,9 +282,37 @@ test_that("basic_DEA and super_DEA stay silent on a well-posed problem", {
   expect_no_warning(super_DEA(df, inputs = 2:3, outputs = 4, rts = "crs"))
 })
 
-test_that("LP failures are reported instead of silently returning NA", {
-  # Force the solver to fail: theta = NA is what solve_radial_lp returns on a
-  # non-zero LP status. Previously both models wrote NA with no message.
+test_that("super_DEA reports LP-infeasible DMUs (VRS + super-efficient DMU)", {
+  # F is super-efficient. Under VRS, once F is removed from the reference set
+  # no convex combination of the remaining DMUs can reach its output levels,
+  # so its LP is infeasible -- the textbook VRS super-efficiency failure. It
+  # needs VRS *and* an extreme DMU: CRS never fails here, which is why random
+  # or single-output data does not surface it.
+  dea = data.frame(dmu = LETTERS[1:6],
+                   x1 = c(2, 3, 4, 5, 3, 4), x2 = c(3, 4, 5, 6, 4, 5),
+                   y1 = c(8, 9, 10, 12, 11, 13), y2 = c(5, 6, 7, 8, 7, 9))
+
+  # input-oriented: F fails
+  expect_warning(r_io <- super_DEA(dea, 2:3, 4:5, orientation = "io", rts = "vrs"),
+                 "LP infeasible for DMU")
+  expect_true(is.na(r_io$efficiencies[["F"]]))
+  expect_false(anyNA(r_io$efficiencies[setdiff(names(r_io$efficiencies), "F")]))
+
+  # output-oriented: A fails
+  expect_warning(r_oo <- super_DEA(dea, 2:3, 4:5, orientation = "oo", rts = "vrs"),
+                 "LP infeasible for DMU")
+  expect_true(is.na(r_oo$efficiencies[["A"]]))
+
+  # CRS is feasible on the same data
+  expect_no_warning(super_DEA(dea, 2:3, 4:5, orientation = "io", rts = "crs"))
+  expect_no_warning(super_DEA(dea, 2:3, 4:5, orientation = "oo", rts = "crs"))
+})
+
+test_that("basic_DEA's LP-failure branch is wired (unreachable on real data)", {
+  # basic_DEA always keeps the target DMU in its own reference set, so
+  # theta = 1 with lambda = e_i is feasible and the solver cannot fail. Unlike
+  # super_DEA the branch is therefore unreachable from real data and has to be
+  # forced.
   local_mocked_bindings(
     solve_radial_lp = function(...) {
       list(theta = NA_real_, phi = NA_real_, lambda = rep(NA_real_, 1),
@@ -293,11 +321,7 @@ test_that("LP failures are reported instead of silently returning NA", {
     .package = "mathmodels"
   )
   df = data.frame(DMU = c("A", "B", "C"), x1 = c(1, 2, 3), y1 = c(3, 2, 1))
-
   expect_warning(r <- basic_DEA(df, inputs = 2, outputs = 3, rts = "vrs"),
                  "basic_DEA: LP infeasible for DMU")
   expect_true(all(is.na(r$efficiencies)))
-
-  expect_warning(super_DEA(df, inputs = 2, outputs = 3, rts = "vrs"),
-                 "super_DEA: LP infeasible for DMU")
 })
