@@ -94,9 +94,15 @@ plot_mf(mf, xlim = c(0, 10), main = NULL)
 ## Value
 
 - For membership functions (`mf_tri`, `mf_trap`, `mf_gauss`, `mf_gbell`,
-  `mf_gauss2`, `mf_sigmoid`, `mf_dsigmoid`, `mf_psigmoid`, `mf_z`,
-  `mf_pi`, `mf_s`): A numeric vector of membership values in `[0, 1]`,
-  same length as `x`.
+  `mf_gauss2`, `mf_sigmoid`, `mf_psigmoid`, `mf_z`, `mf_pi`, `mf_s`): A
+  numeric vector of membership values in `[0, 1]`, same length as `x`.
+
+- For `mf_dsigmoid`: A numeric vector holding the difference of two
+  sigmoids. Values lie in \\\[-1, 1\]\\ and are **negative when
+  `c1 > c2`**, so unlike the other membership functions it is *not*
+  guaranteed to be in `[0, 1]`. Clip the result to `[0, 1]`, or use
+  `mf_psigmoid()` instead, before passing it to
+  [`fuzzy_eval()`](https://zhjx19.github.io/mathmodels/reference/fuzzy_eval.md).
 
 - For `plot_mf`: A ggplot2 object, plotting the membership function.
 

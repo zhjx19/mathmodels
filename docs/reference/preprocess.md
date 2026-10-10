@@ -55,21 +55,21 @@ to_positive(x, type = "minmax")
 
   "+"
 
-  :   Positive direction (larger values are better, for `rescale`,
-      `rescale_extreme` and `rescale_initial`).
+  : Positive direction (larger values are better, for `rescale`,
+    `rescale_extreme` and `rescale_initial`).
 
   "-"
 
-  :   Negative direction (smaller values are better, for `rescale`
-      `rescale_extreme` and `rescale_initial`).
+  : Negative direction (smaller values are better, for `rescale`
+    `rescale_extreme` and `rescale_initial`).
 
   "minmax"
 
-  :   Min-max transformation (for `to_positive`).
+  : Min-max transformation (for `to_positive`).
 
   "reciprocal"
 
-  :   Reciprocal transformation (for `to_positive`).
+  : Reciprocal transformation (for `to_positive`).
 
 - a:
 

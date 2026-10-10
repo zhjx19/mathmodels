@@ -20,7 +20,7 @@ ode_malthus(init, params, times, ...)
 
   r
 
-  :   Intrinsic growth rate (per time unit).
+  : Intrinsic growth rate (per time unit).
 
 - times:
 

@@ -123,7 +123,13 @@ For <code>theil</code>, <code>theil0_g</code>, <code>theil_g</code>, <code>theil
 For <code>theil0</code>, <code>theil</code>: Numeric Theil index.
 For <code>theil0_g</code>, <code>theil_g</code>, <code>theil_g2_cross</code>, <code>theil_g2_nest</code>: List with two vectors:</p><ul><li><p><code>theil</code>: theil (Theil index and its decomposition),</p></li>
 <li><p><code>ratio</code>: ratio (contribution rates of each component).</p></li>
-</ul></div>
+</ul><p>For the two-level functions the layout of each vector is <code>T, Tb_g1, Tb_g2, Tw</code>,
+then per-<code>group1</code> between-group terms, then per-<code>group1</code>/<code>group2</code>
+within terms. <strong>In <code>theil_g2_nest</code> the <code>ratio</code> vector carries one extra block</strong>
+(each <code>group1</code>'s total within contribution, with names suffixed
+<code>".within"</code>), so <code>length(ratio) != length(theil)</code>. Do not <code><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind()</a></code>
+the two vectors, or align them by position or by name.</p>
+    </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
@@ -211,8 +217,8 @@ For <code>theil0_g</code>, <code>theil_g</code>, <code>theil_g2_cross</code>, <c
 <span class="r-out co"><span class="r-pr">#&gt;</span> $ratio</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>          T      Tb_g1      Tb_g2         Tw          A          B       A_A1 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1.00000000 0.60803891 0.29304024 0.09892085 0.29304024 0.00000000 0.03360868 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       A_A2       B_B1          A          B </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 0.04165351 0.02365866 0.09892085 0.09892085 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       A_A2       B_B1   A.within   B.within </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 0.04165351 0.02365866 0.07526219 0.02365866 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
@@ -226,7 +232,7 @@ For <code>theil0_g</code>, <code>theil_g</code>, <code>theil_g2_cross</code>, <c
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>

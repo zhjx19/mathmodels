@@ -109,7 +109,8 @@ right top, right base); one-sided shoulders are supported with
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
 
-<ul><li><p>For membership functions (<code>mf_tri</code>, <code>mf_trap</code>, <code>mf_gauss</code>, <code>mf_gbell</code>, <code>mf_gauss2</code>, <code>mf_sigmoid</code>, <code>mf_dsigmoid</code>, <code>mf_psigmoid</code>, <code>mf_z</code>, <code>mf_pi</code>, <code>mf_s</code>): A numeric vector of membership values in <code>[0, 1]</code>, same length as <code>x</code>.</p></li>
+<ul><li><p>For membership functions (<code>mf_tri</code>, <code>mf_trap</code>, <code>mf_gauss</code>, <code>mf_gbell</code>, <code>mf_gauss2</code>, <code>mf_sigmoid</code>, <code>mf_psigmoid</code>, <code>mf_z</code>, <code>mf_pi</code>, <code>mf_s</code>): A numeric vector of membership values in <code>[0, 1]</code>, same length as <code>x</code>.</p></li>
+<li><p>For <code>mf_dsigmoid</code>: A numeric vector holding the difference of two sigmoids. Values lie in \([-1, 1]\) and are <strong>negative when <code>c1 &gt; c2</code></strong>, so unlike the other membership functions it is <em>not</em> guaranteed to be in <code>[0, 1]</code>. Clip the result to <code>[0, 1]</code>, or use <code>mf_psigmoid()</code> instead, before passing it to <code><a href="fuzzy_eval.html">fuzzy_eval()</a></code>.</p></li>
 <li><p>For <code>plot_mf</code>: A ggplot2 object, plotting the membership function.</p></li>
 </ul></div>
     <div class="section level2">
@@ -215,7 +216,7 @@ Implemented in base R, except <code>plot_mf</code>, which requires ggplot2.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>

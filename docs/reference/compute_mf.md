@@ -26,31 +26,31 @@ compute_mf(x, knots, .builder = "tri", ...)
 
   `"tri"`
 
-  :   (default) Piecewise linear (triangular + trapezoidal). First level
-      decays linearly from 1 to 0 across `[th[1], th[2]]`, last level
-      rises from 0 to 1 across `[th[n-1], th[n]]`, middle levels are
-      isosceles triangles peaking at each knot.
+  : (default) Piecewise linear (triangular + trapezoidal). First level
+    decays linearly from 1 to 0 across `[th[1], th[2]]`, last level
+    rises from 0 to 1 across `[th[n-1], th[n]]`, middle levels are
+    isosceles triangles peaking at each knot.
 
   `"gauss"`
 
-  :   Gaussian (normal) membership. First level is a right-half Gaussian
-      decaying from 1 at `th[1]`, last level is a left-half Gaussian
-      rising to 1 at `th[n]`, middle levels are full Gaussians centered
-      at each knot. Pass `sigma` to control spread (default =
-      `mean(diff(knots)) / 3`).
+  : Gaussian (normal) membership. First level is a right-half Gaussian
+    decaying from 1 at `th[1]`, last level is a left-half Gaussian
+    rising to 1 at `th[n]`, middle levels are full Gaussians centered at
+    each knot. Pass `sigma` to control spread (default =
+    `mean(diff(knots)) / 3`).
 
   `"sigmoid"`
 
-  :   Sigmoid-based membership. First level uses a decreasing sigmoid,
-      last level an increasing sigmoid, middle levels use
-      difference-of-sigmoids (bell-shaped). Pass `slope` to control
-      steepness (default = `5 / mean(diff(knots))`).
+  : Sigmoid-based membership. First level uses a decreasing sigmoid,
+    last level an increasing sigmoid, middle levels use
+    difference-of-sigmoids (bell-shaped). Pass `slope` to control
+    steepness (default = `5 / mean(diff(knots))`).
 
   User-supplied function
 
-  :   A function with signature `function(knots, ...)` that returns a
-      list of \\n\\ functions, each accepting a numeric vector `x` and
-      returning membership values in \\\[0, 1\]\\.
+  : A function with signature `function(knots, ...)` that returns a list
+    of \\n\\ functions, each accepting a numeric vector `x` and
+    returning membership values in \\\[0, 1\]\\.
 
 - ...:
 

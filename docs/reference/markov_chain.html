@@ -69,7 +69,8 @@ multi-step Markov chain prediction.</p>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A list with components:</p><dl><dt>trans_mat</dt>
-<dd><p>Transition probability matrix.</p></dd>
+<dd><p>Transition probability matrix, a base <code>table</code> whose margins
+are named <code>"from"</code> and <code>"to"</code>.</p></dd>
 
 <dt>pred_probs</dt>
 <dd><p>Matrix of state probabilities for each prediction step.</p></dd>
@@ -81,7 +82,10 @@ multi-step Markov chain prediction.</p>
 <dd><p>Ultimate stationary distribution.</p></dd>
 
 
-</dl></div>
+</dl><p><code>trans_mat</code> and <code>pred_probs</code> are base objects, not tibbles. To convert one to a
+tibble, use <code><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame()</a></code> together with <code><a href="https://tibble.tidyverse.org/reference/rownames.html" class="external-link">tibble::rownames_to_column()</a></code>;
+note that <code><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">tibble::as_tibble()</a></code> on a plain matrix silently drops the row names.</p>
+    </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>For states that never appear as a starting state, equal transition
@@ -99,8 +103,8 @@ stationary distribution is computed using eigenvalue decomposition.</p>
 <span class="r-in"><span>            levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Rainy"</span>, <span class="st">"Cloudy"</span>, <span class="st">"Sunny"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">markov_chain</span><span class="op">(</span><span class="va">S</span>, s0 <span class="op">=</span> <span class="st">"Cloudy"</span>, n_steps <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $trans_mat</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              Rainy    Cloudy     Sunny</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         to</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> from         Rainy    Cloudy     Sunny</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   Rainy  0.0000000 0.5000000 0.5000000</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   Cloudy 0.3333333 0.0000000 0.6666667</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   Sunny  0.2222222 0.4444444 0.3333333</span>
@@ -130,7 +134,7 @@ stationary distribution is computed using eigenvalue decomposition.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>

@@ -76,6 +76,15 @@ For `gini0`, `gini`: Numeric Gini coefficient (0 to 1). For `theil0`,
 
 - `ratio`: ratio (contribution rates of each component).
 
+For the two-level functions the layout of each vector is
+`T, Tb_g1, Tb_g2, Tw`, then per-`group1` between-group terms, then
+per-`group1`/`group2` within terms. **In `theil_g2_nest` the `ratio`
+vector carries one extra block** (each `group1`'s total within
+contribution, with names suffixed `".within"`), so
+`length(ratio) != length(theil)`. Do not
+[`cbind()`](https://rdrr.io/r/base/cbind.html) the two vectors, or align
+them by position or by name.
+
 ## Examples
 
 ``` r
@@ -163,7 +172,7 @@ theil_g2_nest(data4, "province", "city", "y", "pop")
 #> $ratio
 #>          T      Tb_g1      Tb_g2         Tw          A          B       A_A1 
 #> 1.00000000 0.60803891 0.29304024 0.09892085 0.29304024 0.00000000 0.03360868 
-#>       A_A2       B_B1          A          B 
-#> 0.04165351 0.02365866 0.09892085 0.09892085 
+#>       A_A2       B_B1   A.within   B.within 
+#> 0.04165351 0.02365866 0.07526219 0.02365866 
 #> 
 ```

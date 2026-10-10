@@ -40,6 +40,24 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.14" id="mathmodels-0014">mathmodels 0.0.14<a class="anchor" aria-label="anchor" href="#mathmodels-0014"></a></h2>
 <div class="section level3">
+<h3 id="bug-fixes-0-0-14">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-0-14"></a></h3>
+<ul><li>
+<strong><code>fuzzy_eval(type = 5)</code> no longer dies on an impossible grade.</strong> When a grade had zero membership across every factor, <code>R[j, ] / r0</code> was <code>0 / 0 = NaN</code>, so <code>sum(B)</code> became <code>NaN</code> and the <code>if (sum(B) == 0)</code> guard threw <code>"missing value where TRUE/FALSE needed"</code> — its own error message was unreachable. Such a grade now contributes <code>B[j] = 0</code>, and the guard is non-finite-safe so it fires (with its own message) only when <em>every</em> grade is impossible.</li>
+<li>
+<strong><code><a href="../reference/inequality.html">theil_g2_nest()</a></code> <code>ratio</code> block was misnamed and miscalculated.</strong> The per-<code>group1</code> total-within block reused the <code>group1</code> names of the between-<code>group2</code> block, so it could never be reached by name (and <code>length(ratio) != length(theil)</code>). Its values were also wrong: <code>Rwi</code> is not a column of the nested frame, so <code>sum(Rwi)</code> inside a grouped <code><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise()</a></code> returned the <em>global</em> within total for every group. The block is now suffixed <code>".within"</code> and computed per group (so it sums to <code>ratio["Tw"]</code>). The layout is documented in <code><a href="../reference/inequality.html">?theil_g2_nest</a></code>.</li>
+<li>
+<strong><code><a href="../reference/weight_entropy.html">weight_entropy()</a></code> now warns when <code>index = NA</code> columns mix scales</strong> with rescaled <code>+</code> / <code>-</code> columns, since the returned <code>s</code> then combines incommensurable units. <code>index = NULL</code> (the default) is unaffected.</li>
+<li>
+<strong><code><a href="../reference/DEA.html">basic_DEA()</a></code> and <code><a href="../reference/DEA.html">super_DEA()</a></code> report LP failures</strong> for individual DMUs instead of silently writing <code>NA</code> into the efficiency vector.</li>
+<li>
+<strong><code><a href="../reference/markov_chain.html">markov_chain()</a></code></strong> names the margins of the transition matrix (<code>c("from", "to")</code>), so <code>tibble::as_tibble(trans_mat)</code> no longer fails with “Columns 1 and 2 must be named”.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="documentation-0-0-14">Documentation<a class="anchor" aria-label="anchor" href="#documentation-0-0-14"></a></h3>
+<ul><li>
+<code><a href="../reference/membership.html">?membership</a></code>: <code><a href="../reference/membership.html">mf_dsigmoid()</a></code> is no longer documented as returning values in <code>[0, 1]</code>. It is the difference of two sigmoids, lies in <code>[-1, 1]</code>, and is <strong>negative when <code>c1 &gt; c2</code></strong>; clip it or use <code><a href="../reference/membership.html">mf_psigmoid()</a></code> before <code><a href="../reference/fuzzy_eval.html">fuzzy_eval()</a></code>. The <code><a href="../reference/fuzzy_eval.html">fuzzy_eval()</a></code> range guard now says so too.</li>
+</ul></div>
+<div class="section level3">
 <h3 id="data-cleaning-toolkit-new-0-0-14">Data cleaning toolkit (new)<a class="anchor" aria-label="anchor" href="#data-cleaning-toolkit-new-0-0-14"></a></h3>
 <ul><li>
 <strong>Diagnostics</strong>: <code><a href="../reference/na_summary.html">na_summary()</a></code> (per-column missing counts), <code><a href="../reference/na_mcar_test.html">na_mcar_test()</a></code> (Little’s MCAR test, Little 1988 / SAS-style pattern-mean statistic with EM-estimated mean and covariance, following <code><a href="https://naniar.njtierney.com/reference/mcar_test.html" class="external-link">naniar::mcar_test()</a></code>), <code><a href="../reference/plot_na_heatmap.html">plot_na_heatmap()</a></code> and <code><a href="../reference/plot_na_bar.html">plot_na_bar()</a></code> for missingness visuals.</li>
@@ -505,7 +523,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>

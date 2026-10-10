@@ -29,7 +29,8 @@ A list with components:
 
 - trans_mat:
 
-  Transition probability matrix.
+  Transition probability matrix, a base `table` whose margins are named
+  `"from"` and `"to"`.
 
 - pred_probs:
 
@@ -42,6 +43,15 @@ A list with components:
 - pi_final:
 
   Ultimate stationary distribution.
+
+`trans_mat` and `pred_probs` are base objects, not tibbles. To convert
+one to a tibble, use
+[`as.data.frame()`](https://rdrr.io/r/base/as.data.frame.html) together
+with
+[`tibble::rownames_to_column()`](https://tibble.tidyverse.org/reference/rownames.html);
+note that
+[`tibble::as_tibble()`](https://tibble.tidyverse.org/reference/as_tibble.html)
+on a plain matrix silently drops the row names.
 
 ## Details
 
@@ -60,8 +70,8 @@ S = factor(c("Sunny", "Sunny", "Cloudy", "Rainy", "Sunny",
             levels = c("Rainy", "Cloudy", "Sunny"))
 markov_chain(S, s0 = "Cloudy", n_steps = 3)
 #> $trans_mat
-#>         
-#>              Rainy    Cloudy     Sunny
+#>         to
+#> from         Rainy    Cloudy     Sunny
 #>   Rainy  0.0000000 0.5000000 0.5000000
 #>   Cloudy 0.3333333 0.0000000 0.6666667
 #>   Sunny  0.2222222 0.4444444 0.3333333

@@ -21,20 +21,20 @@ ode_lv(init, params, times, ...)
 
   alpha
 
-  :   Prey intrinsic growth rate.
+  : Prey intrinsic growth rate.
 
   beta
 
-  :   Predation rate (prey killed per predator per unit time).
+  : Predation rate (prey killed per predator per unit time).
 
   delta
 
-  :   Predator reproduction rate per prey consumed.
+  : Predator reproduction rate per prey consumed.
 
   mu
 
-  :   Predator mortality rate. Named `mu` (not `gamma`) to avoid
-      confusion with the recovery rate used in epidemic models.
+  : Predator mortality rate. Named `mu` (not `gamma`) to avoid confusion
+    with the recovery rate used in epidemic models.
 
 - times:
 

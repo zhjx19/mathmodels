@@ -21,25 +21,25 @@ ode_sir(init, params, times, ...)
 
   beta
 
-  :   Transmission rate.
+  : Transmission rate.
 
   gamma
 
-  :   Recovery rate (1/gamma = mean infectious period).
+  : Recovery rate (1/gamma = mean infectious period).
 
   N
 
-  :   Total population size. Optional — defaults to `sum(init)`.
+  : Total population size. Optional — defaults to `sum(init)`.
 
   b
 
-  :   Recruitment rate — births enter the S compartment at the constant
-      rate `b * N`. Optional; providing `b` and/or `d` (the omitted one
-      defaults to 0) switches to the open-population equations.
+  : Recruitment rate — births enter the S compartment at the constant
+    rate `b * N`. Optional; providing `b` and/or `d` (the omitted one
+    defaults to 0) switches to the open-population equations.
 
   d
 
-  :   Per capita death rate. Optional; see `b`.
+  : Per capita death rate. Optional; see `b`.
 
 - times:
 

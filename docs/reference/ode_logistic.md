@@ -21,11 +21,11 @@ ode_logistic(init, params, times, ...)
 
   r
 
-  :   Intrinsic growth rate.
+  : Intrinsic growth rate.
 
   K
 
-  :   Carrying capacity.
+  : Carrying capacity.
 
 - times:
 

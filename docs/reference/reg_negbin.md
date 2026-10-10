@@ -118,7 +118,7 @@ reg_negbin(y ~ x1, data = data.frame(y, x1))
 #> 
 #> $formula
 #> y ~ x1
-#> <environment: 0x0000020f11905658>
+#> <environment: 0x000001ecd1e58000>
 #> 
 #> $input
 #>      y          x1
