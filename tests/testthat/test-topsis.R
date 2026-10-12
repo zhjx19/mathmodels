@@ -69,3 +69,9 @@ test_that("topsis accepts a matrix that contains a zero", {
   # rownames (-> "Sample1"..) while as.data.frame() supplies "1".."4".
   expect_equal(unname(r_m), unname(r_df), tolerance = 1e-12)
 })
+
+test_that("topsis reports a readable error for non-finite w", {
+  A = data.frame(a = c(2, 5, 3), b = c(8, 1, 6), c = c(5, 5, 3))
+  expect_error(topsis(A, c(0.4, 0.3, Inf)), "finite")
+  expect_error(topsis(A, c(0.4, 0.3, NaN)), "no NA")
+})

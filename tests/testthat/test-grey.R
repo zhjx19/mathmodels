@@ -94,3 +94,9 @@ test_that("grey_corr_topsis enforces the same size floors as topsis", {
   expect_error(grey_corr_topsis(data.frame(x = 1:3), 1), "at least 2 columns")
   expect_error(grey_corr_topsis(data.frame(a = 1, b = 2), c(0.5, 0.5)), "at least 2 rows")
 })
+
+test_that("grey_corr_topsis reports readable errors for NA and non-finite w", {
+  X = data.frame(x1 = c(8, 7, 6, 9), x2 = c(150, 180, 200, 160), x3 = c(60, 80, 100, 70))
+  expect_error(grey_corr_topsis(X, c(0.4, 0.3, NA)), "no NA")
+  expect_error(grey_corr_topsis(X, c(0.4, 0.3, Inf)), "finite")
+})

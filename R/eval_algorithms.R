@@ -67,6 +67,8 @@ topsis = function(X, w = NULL, index = NULL) {
     stop("w must have length equal to ncol(X).")
   if(!is.numeric(w) || anyNA(w))
     stop("w must be numeric and contain no NA values.", call. = FALSE)
+  if(!all(is.finite(w)))
+    stop("w must contain only finite values (Inf is not allowed).", call. = FALSE)
   if(any(w < 0) || sum(w) == 0)
     stop("w must be non-negative and sum to a positive value.")
 
@@ -276,6 +278,10 @@ grey_corr_topsis = function(X, w, index = NULL, rho = 0.5) {
   if(is.null(w)) w = rep(1/m, m)
   if(length(w) != m)
     stop("w must have length equal to ncol(X).")
+  if(!is.numeric(w) || anyNA(w))
+    stop("w must be numeric and contain no NA values.")
+  if(!all(is.finite(w)))
+    stop("w must contain only finite values (Inf is not allowed).")
   if(any(w < 0) || sum(w) == 0)
     stop("w must be non-negative and sum to a positive value.")
 
