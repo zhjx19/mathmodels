@@ -61,6 +61,28 @@
   centralised in `R/utils.R`, which also removes the
   `lapply()`-over-a-sub-frame idiom from `grey_corr_topsis()`,
   `weight_entropy()` and `weight_pca()`.
+- **`topsis()` rejected a valid matrix that contained a zero.** The zero-column
+  check used `X[[j]]`, which selects *elements* on a matrix but *columns* on a
+  data frame, so a matrix with a zero anywhere was refused with "Criterion
+  column(s) 1 contain only zeros" while the identical data frame worked. It now
+  uses `X[, j]`.
+- **`grey_corr_topsis()` now enforces the same size floors as `topsis()`** — at
+  least 2 columns and 2 rows. Before, a single-column input died with the
+  unrelated `dim(X) must have a positive length`, and a single-row input did not
+  error at all: it returned a degenerate closeness value. Both now raise the same
+  readable messages `topsis()` uses.
+- **`topsis()` and `grey_corr_topsis()` now report readable errors for `NA` /
+  `Inf` weights.** `topsis()` silently accepted `Inf` (an infinite sum does not
+  equal zero), and `grey_corr_topsis()` had no numeric or missing-value check at
+  all, so `NA` or `Inf` reached `if (NA)` and threw
+  "missing value where TRUE/FALSE needed". Both now say which is wrong. `NaN`
+  was already reported clearly by `topsis()` and still is.
+- **`grey_corr_topsis()` now returns a named vector** — `rownames(X)`, or
+  `Sample1`, `Sample2`, ... when `X` has none — matching `topsis()`. **This
+  changes the shape of the return value**; code comparing the result to an
+  unnamed vector should wrap it in `unname()`.
+- **`weight_fa()`'s `index` argument is now validated by the shared checker**
+  introduced in this release. Messages are unchanged.
 
 ## Documentation
 
