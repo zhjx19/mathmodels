@@ -209,7 +209,7 @@ weight_critic = function(X, index = NULL, method = "std",
 
       X[X == 1] = 1 - epsilon
       P = data.frame(lapply(X, \(x) x / sum(x)))
-      e = sapply(P, function(x) - sum(x * log(x)) /log(nrow(P)))
+      e = sapply(P, \(x) - sum(x * log(x)) /log(nrow(P)))
       1 - e
     })
 
@@ -256,7 +256,7 @@ weight_cv = function(X) {
   if(ncol(X) < 2)
     stop("X must have at least 2 columns.")
   if (anyNA(X)) stop("X must not contain NA.")
-  if(any(apply(X, 2, function(x) any(x <= 0, na.rm = TRUE))))
+  if(any(apply(X, 2, \(x) any(x <= 0, na.rm = TRUE))))
     stop("All values in X must be positive for CV weighting.")
 
   means = apply(X, 2, mean, na.rm = TRUE)
@@ -339,7 +339,7 @@ weight_entropy = function(X, index = NULL, epsilon = 0.002) {
             "already normalized to [0, 1]; found values > 1 while other ",
             "columns were rescaled, so the returned 100-scale scores mix ",
             "units and may be meaningless.", call. = FALSE)
-  P = data.frame(lapply(X, function(x) x / sum(x)))
+  P = data.frame(lapply(X, \(x) x / sum(x)))
   # Compute entropy e(j) for each indicator j
   e = sapply(P, \(x) -sum(x * log(x)) / log(nrow(P)))
   d = 1 - e          # Compute redundancy degree
@@ -431,7 +431,7 @@ weight_fa = function(X, index = NULL, nfs = 1, rotation = "varimax",
     stop("rotation must be 'varimax', 'promax', 'none', or the name of ",
          "an available rotation function.", call. = FALSE)
   }
-  if (any(vapply(X, function(x) stats::sd(x) == 0, logical(1)))) {
+  if (any(vapply(X, \(x) stats::sd(x) == 0, logical(1)))) {
     stop("X must not contain constant columns.", call. = FALSE)
   }
 
