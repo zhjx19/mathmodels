@@ -118,3 +118,14 @@ test_that("grey_corr_topsis names its result like topsis", {
   Mr = as.matrix(Xr)
   expect_named(grey_corr_topsis(Mr, w, idx), c("A", "B", "C", "D"))
 })
+
+test_that("grey_corr_topsis validates the index allowed set", {
+  X = data.frame(x1 = c(8, 7, 6, 9), x2 = c(150, 180, 200, 160), x3 = c(60, 80, 100, 70))
+  w = c(0.3, 0.4, 0.3)
+  # Before this change a junk direction was silently treated as "no rescale"
+  # and the call returned a number.
+  expect_error(grey_corr_topsis(X, w, c("+", "q", "+")),
+               'index must contain only "+", "-", or NA', fixed = TRUE)
+  # NA remains a valid direction (an already-rescaled column); one value per row.
+  expect_length(grey_corr_topsis(X, w, c("+", NA, "+")), nrow(X))
+})

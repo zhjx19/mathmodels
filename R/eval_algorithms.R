@@ -277,7 +277,8 @@ grey_corr_topsis = function(X, w, index = NULL, rho = 0.5) {
   if(m < 2) stop("X must have at least 2 columns.")
   if(nrow(X) < 2) stop("X must have at least 2 rows.")
   index = .check_index(index, m, "index must have length equal to ncol(X).",
-                       msg_allowed = NULL, default = NA_character_)
+                       'index must contain only "+", "-", or NA',
+                       allow_na = TRUE, default = NA_character_)
   if(is.null(w)) w = rep(1/m, m)
   if(length(w) != m)
     stop("w must have length equal to ncol(X).")
