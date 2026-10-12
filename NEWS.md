@@ -84,6 +84,12 @@
 - **`weight_fa()`'s `index` argument is now validated by the shared checker**
   introduced in this release. Messages are unchanged; as with the other migrated
   guards it now raises `rlang_error` rather than `simpleError`.
+- **`grey_corr_topsis()` and `weight_pca()` now validate their `index`
+  argument.** A direction other than `"+"`, `"-"` or `NA` — a typo such as `"q"` —
+  used to be silently treated as "no rescaling for this column", so the call
+  returned a result computed from the wrong directions; for `weight_pca()` the
+  returned scores could even carry the wrong sign. Both now raise the same error
+  the other weighting functions already raise.
 
 ## Documentation
 
