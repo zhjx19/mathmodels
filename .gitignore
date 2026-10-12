@@ -5,6 +5,9 @@
 # --- Build artifacts ---
 mathmodels.pdf
 docs/deps/
+# pkgdown's own build metadata: it carries a `last_built` timestamp that changes
+# on every build_site(), so tracking it guarantees a one-line diff each rebuild.
+docs/pkgdown.yml
 
 # --- Editor / IDE ---
 .Rproj.user
