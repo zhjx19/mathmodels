@@ -184,26 +184,17 @@ combine_weights = function(w_subj, w_obj, type = "linear", alpha = 0.5) {
 
 weight_critic = function(X, index = NULL, method = "std",
                          cor_method = "pearson", epsilon = 0.002) {
-  if(!is.data.frame(X) && !is.matrix(X))
-    stop("X must be a data frame or matrix.")
-  if (is.matrix(X)) X = as.data.frame(X)
+  X = .check_matrix_like(X, "X must be a data frame or matrix.", coerce = TRUE)
   if (anyNA(X)) stop("X must not contain NA.")
   if(ncol(X) < 2)
     stop("X must have at least 2 columns.")
   if(nrow(X) < 3)
     stop("X must have at least 3 rows (correlations are degenerate with 2 rows).")
-  if(!is.null(index) && length(index) != ncol(X))
-    stop("index must have length equal to ncol(X), or be NULL.")
-
-  if(is.null(index)) index = rep(NA, ncol(X))
-  if(!all(is.na(index) | index %in% c("+", "-")))
-    stop('index must contain only "+", "-", or NA')
-  pos = which(index == "+")
-  neg = which(index == "-")
+  index = .check_index(index, ncol(X), "index must have length equal to ncol(X), or be NULL.",
+                       'index must contain only "+", "-", or NA', allow_na = TRUE)
 
   # Normalize the data
-  X[,pos] = lapply(X[,pos, drop = FALSE], rescale)
-  X[,neg] = lapply(X[,neg, drop = FALSE], rescale, type = "-")
+  X = .rescale_indicators(X, index)
 
   # Compute sum of conflicts (1 - correlation) for each indicator
   R = apply(1 - cor(X, method = cor_method), 2, sum)
@@ -261,8 +252,7 @@ weight_critic = function(X, index = NULL, method = "std",
 #'
 #' @export
 weight_cv = function(X) {
-  if(!is.data.frame(X) && !is.matrix(X))
-    stop("X must be a data frame or matrix.")
+  .check_matrix_like(X, "X must be a data frame or matrix.")
   if(ncol(X) < 2)
     stop("X must have at least 2 columns.")
   if (anyNA(X)) stop("X must not contain NA.")
@@ -317,20 +307,14 @@ weight_cv = function(X) {
 #'
 
 weight_entropy = function(X, index = NULL, epsilon = 0.002) {
-  if(!is.data.frame(X) && !is.matrix(X))
-    stop("X must be a data frame or matrix.")
-  if (is.matrix(X)) X = as.data.frame(X)
+  X = .check_matrix_like(X, "X must be a data frame or matrix.", coerce = TRUE)
   if (anyNA(X)) stop("X must not contain NA.")
   if(ncol(X) < 2)
     stop("X must have at least 2 columns.")
   if(nrow(X) < 2)
     stop("X must have at least 2 rows.")
-  if(!is.null(index) && length(index) != ncol(X))
-    stop("index must have length equal to ncol(X), or be NULL.")
-
-  if(is.null(index)) index = rep(NA, ncol(X))
-  if(!all(is.na(index) | index %in% c("+", "-")))
-    stop('index must contain only "+", "-", or NA')
+  index = .check_index(index, ncol(X), "index must have length equal to ncol(X), or be NULL.",
+                       'index must contain only "+", "-", or NA', allow_na = TRUE)
   if(any(is.na(index))) {
     X_na = X[is.na(index)]
     X_na[X_na == 0] = epsilon
@@ -339,11 +323,9 @@ weight_entropy = function(X, index = NULL, epsilon = 0.002) {
   }
   pos = which(index == "+")
   neg = which(index == "-")
-  # Normalize the data
-  X[,pos] = lapply(X[,pos, drop = FALSE],
-                    function(x) rescale(x, a = epsilon, b = 1-epsilon))
-  X[,neg] = lapply(X[,neg, drop = FALSE],
-                    function(x) rescale(x, type = "-", a = epsilon, b = 1-epsilon))
+  # Normalize the data (the epsilon fix above runs first; NA columns are
+  # untouched by either step)
+  X = .rescale_indicators(X, index, a = epsilon, b = 1 - epsilon)
   # Compute proportion p(i,j) of sample i in indicator j
   if (any(X < 0)) stop("weight_entropy() requires non-negative data.")
   # Mixed scales: + / - columns were rescaled to [0, 1] just above, so any
@@ -415,9 +397,7 @@ weight_entropy = function(X, index = NULL, epsilon = 0.002) {
 #' @export
 weight_fa = function(X, index = NULL, nfs = 1, rotation = "varimax",
                      method = "abs") {
-  if (!is.data.frame(X) && !is.matrix(X))
-    stop("X must be a data frame or matrix.")
-  X = as.data.frame(X)
+  X = .check_matrix_like(X, "X must be a data frame or matrix.", coerce = TRUE)
   if (anyNA(X))
     stop("X must not contain NA.")
   if (ncol(X) < 2)
@@ -507,8 +487,7 @@ weight_fa = function(X, index = NULL, nfs = 1, rotation = "varimax",
 #' linear_sum(data, w)
 
 linear_sum = function(data, w) {
-  if(!is.data.frame(data) && !is.matrix(data))
-    stop("data must be a data frame or matrix.")
+  .check_matrix_like(data, "data must be a data frame or matrix.")
   if(!is.numeric(w) || is.matrix(w))
     stop("w must be a numeric vector.")
   if(length(w) != ncol(data))
@@ -563,17 +542,14 @@ linear_sum = function(data, w) {
 
 weight_pca = function(X, index = NULL, nfs = NULL, varimax = TRUE,
                       method = "abs") {
-  if(!is.data.frame(X) && !is.matrix(X))
-    stop("X must be a data frame or matrix.")
+  X = .check_matrix_like(X, "X must be a data frame or matrix.", coerce = TRUE)
   if(ncol(X) < 2)
     stop("X must have at least 2 columns.")
   if(nrow(X) < 2)
     stop("X must have at least 2 rows.")
-  if(!is.null(index) && length(index) != ncol(X))
-    stop("index must have length equal to ncol(X), or be NULL.")
+  index = .check_index(index, ncol(X), "index must have length equal to ncol(X), or be NULL.",
+                       msg_allowed = NULL, allow_na = TRUE)
 
-  if(is.null(index)) index = rep(NA, ncol(X))
-  pos = which(index == "+")
   neg = which(index == "-")
 
   # Standardize data

@@ -56,6 +56,17 @@ test_that(".rescale_indicators is identical for matrix and data frame", {
   expect_true(all(out_d[[2]] >= 0 & out_d[[2]] <= 1))
 })
 
+test_that(".rescale_indicators honours custom a/b bounds", {
+  # weight_entropy() rescales to [epsilon, 1 - epsilon], not [0, 1]
+  M = matrix(c(3, 1, 2, 10, 20, 30), 3, 2)
+  out = mathmodels:::.rescale_indicators(M, c("+", "-"), a = 0.002, b = 0.998)
+  expect_equal(range(out[[1]]), c(0.002, 0.998), tolerance = 1e-12)
+  expect_equal(range(out[[2]]), c(0.002, 0.998), tolerance = 1e-12)
+  # default bounds unchanged
+  out0 = mathmodels:::.rescale_indicators(M, c("+", "-"))
+  expect_equal(range(out0[[1]]), c(0, 1), tolerance = 1e-12)
+})
+
 test_that(".rescale_indicators handles all-NA index and a single column", {
   M = matrix(runif(9), 3, 3)
   out = mathmodels:::.rescale_indicators(M, c(NA, NA, NA))

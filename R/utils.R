@@ -63,11 +63,12 @@
 #'
 #' @param X Data frame or matrix of indicators (one per column).
 #' @param index Character vector of `"+"`, `"-"` or `NA`, length `ncol(X)`.
+#' @param a,b Target range passed through to [rescale()].
 #' @return A data frame with the same dimensions.
 #' @noRd
-.rescale_indicators = function(X, index) {
+.rescale_indicators = function(X, index, a = 0, b = 1) {
   X = as.data.frame(X)
-  for (j in which(index == "+")) X[[j]] = rescale(X[[j]], type = "+")
-  for (j in which(index == "-")) X[[j]] = rescale(X[[j]], type = "-")
+  for (j in which(index == "+")) X[[j]] = rescale(X[[j]], type = "+", a = a, b = b)
+  for (j in which(index == "-")) X[[j]] = rescale(X[[j]], type = "-", a = a, b = b)
   X
 }
