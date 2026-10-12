@@ -15,7 +15,7 @@
 #' matching the MATLAB convention used in DEA linear programming.
 #' @noRd
 extract_dea_data = function(data, inputs, outputs, ud_outputs = NULL) {
-  if (!is.data.frame(data)) stop("`data` must be a data frame.")
+  .check_matrix_like(data, "`data` must be a data frame.", df_only = TRUE)
   if (ncol(data) < 3) stop("`data` must have at least 3 columns (DMU + >=1 input + >=1 output).")
 
   dmu_names = data[[1]]
@@ -612,7 +612,7 @@ malmquist = function(data, period, inputs, outputs,
   type1 = match.arg(type1, c("cont", "seq", "glob"))
   type2 = match.arg(type2, c("fgnz", "rd"))
 
-  if (!is.data.frame(data)) stop("`data` must be a data frame.")
+  .check_matrix_like(data, "`data` must be a data frame.", df_only = TRUE)
   if (ncol(data) < 4)       stop("data must have >= 4 columns.")
 
   dmu_vec    = data[[1]]
