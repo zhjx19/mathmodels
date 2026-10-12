@@ -25,6 +25,38 @@
 - **`markov_chain()`** names the margins of the transition matrix
   (`c("from", "to")`), so `tibble::as_tibble(trans_mat)` no longer fails with
   "Columns 1 and 2 must be named".
+- **`grey_corr_topsis()` dimension error on non-square matrices, and a silently
+  wrong answer on square ones.** The internal call passed the weighted matrix
+  `C` straight to `grey_corr()`, but `grey_corr()` requires `length(ref)` (the
+  per-indicator ideal, length `m`) to equal `nrow(cmp)`. That held only when the
+  number of alternatives equalled the number of indicators, so every `n != m`
+  matrix died with "Length of ref must equal number of rows in cmp" while
+  `n == m` matrices compared mismatched axes and returned a meaningless value.
+  The comparison sequences are now transposed (`grey_corr(Cstar, t(C), rho)`),
+  so the function returns one relative-closeness value per alternative for any
+  shape. The transpose was first added in 0.0.6 and lost in a later refactor.
+- **`grey_corr_topsis()` rejected `matrix` input** even though `X` is documented
+  as "matrix or data frame". The normalisation step called `lapply()` on the
+  indicator sub-frame, which iterates *elements* for a matrix but *columns* for a
+  data frame, so a matrix reached `rescale()` one number at a time and died with
+  "x has zero range; cannot rescale." Rescaling now loops over columns, so both
+  input types behave identically.
+- **`weight_pca()` silently returned different weights for a `matrix` than for
+  the equivalent data frame.** The standardisation step used
+  `X[idx] = scale(X[idx])`, and `X[idx]` selects *columns* for a data frame but
+  *elements* (column-major) for a matrix, so a matrix had the wrong slice scaled
+  with no error raised. `X` is now coerced with
+  `if (is.matrix(X)) X = as.data.frame(X)`, matching its sibling `weight_*()`
+  functions.
+- **Evaluation functions now build their input errors with rlang.** Errors carry
+  the `rlang_error` class, and where a check lives in the exported function the
+  reported call site is now that function rather than a suppressed call
+  (`call. = FALSE` previously dropped it, so `Error in ...` named nothing). Error
+  messages are unchanged, so message matching and `tryCatch(error = )` still
+  work. The duplicated matrix/data-frame and indicator-direction checks across
+  `eval_*` are now centralised in `R/utils.R`, which also removes the last two
+  places that rescaled indicators with `lapply()` over a sub-frame — the idiom
+  behind the `grey_corr_topsis()` and `weight_pca()` matrix bugs.
 
 ## Documentation
 

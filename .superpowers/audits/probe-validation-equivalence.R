@@ -144,11 +144,14 @@ if (identical(mode, "capture")) {
     "topsis:str" = "topsis", "topsis:i_bad" = "topsis", "topsis:w_na" = "topsis",
     "gct:i_len" = "grey_corr_topsis", "critic:str" = "weight_critic",
     "critic:i_len" = "weight_critic", "pca:i_len" = "weight_pca",
-    "entropy:df" = "weight_entropy", "cv:str" = "weight_cv",
+    "entropy:str" = "weight_entropy", "cv:str" = "weight_cv",
     "coupling:str" = "coupling_degree", "obstacle:str" = "obstacle_degree",
     "linear_sum:str" = "linear_sum", "theil_g:str" = "theil_g",
     "theil0_g:str" = "theil0_g", "LQ:str" = "LQ", "EG:str" = "EG",
-    "dea:str" = "basic_DEA", "fa:str" = "weight_fa", "rsr:str" = "rank_sum_ratio"
+    # `extract_dea_data` is DEA's internal choke point and already owned this
+    # error before migration (baseline records the same call) -- unchanged.
+    "dea:str" = "extract_dea_data",
+    "fa:str" = "weight_fa", "rsr:str" = "rank_sum_ratio"
   )
   bad = 0
   for (nm in names(expect_fn)) {
