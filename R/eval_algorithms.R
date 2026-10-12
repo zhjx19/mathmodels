@@ -269,6 +269,8 @@ grey_corr = function(ref, cmp, rho = 0.5, w = NULL) {
 grey_corr_topsis = function(X, w, index = NULL, rho = 0.5) {
   .check_matrix_like(X, "X must be a matrix or data frame.")
   m = ncol(X)
+  if(m < 2) stop("X must have at least 2 columns.")
+  if(nrow(X) < 2) stop("X must have at least 2 rows.")
   index = .check_index(index, m, "index must have length equal to ncol(X).",
                        msg_allowed = NULL, default = NA_character_)
   if(is.null(w)) w = rep(1/m, m)
