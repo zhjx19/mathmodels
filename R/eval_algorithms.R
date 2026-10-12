@@ -70,7 +70,7 @@ topsis = function(X, w = NULL, index = NULL) {
   if(any(w < 0) || sum(w) == 0)
     stop("w must be non-negative and sum to a positive value.")
 
-  zero_cols = which(vapply(seq_len(m), \(j) all(X[[j]] == 0), logical(1)))
+  zero_cols = which(vapply(seq_len(m), \(j) all(X[, j] == 0), logical(1)))
   if(length(zero_cols) > 0)
     stop(sprintf("Criterion column(s) %s contain only zeros; L2 normalization is undefined.",
                  paste(zero_cols, collapse = ", ")), call. = FALSE)

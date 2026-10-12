@@ -55,3 +55,17 @@ test_that("grey_corr rejects NA or negative w", {
   expect_error(grey_corr(ref, cmp, w = c(-0.5, 1, 0.5)), "w must")
   expect_error(grey_corr(ref, cmp, w = c(0.5, 0.5)), "length")
 })
+
+test_that("topsis accepts a matrix that contains a zero", {
+  # Regression: `X[[j]]` is linear indexing on a matrix, so a valid matrix with
+  # a zero in any position was rejected while the identical data frame worked.
+  M   = matrix(c(0, 7, 6, 9, 150, 180, 200, 160, 60, 80, 100, 70), 4, 3)
+  w   = c(0.3, 0.4, 0.3)
+  idx = c("+", "+", "+")
+  r_m  = topsis(M, w, idx)
+  r_df = topsis(as.data.frame(M), w, idx)
+  expect_length(r_m, 4)
+  # Values must match; names legitimately differ because a bare matrix has no
+  # rownames (-> "Sample1"..) while as.data.frame() supplies "1".."4".
+  expect_equal(unname(r_m), unname(r_df), tolerance = 1e-12)
+})
