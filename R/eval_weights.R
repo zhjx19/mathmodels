@@ -126,7 +126,7 @@ combine_weights = function(w_subj, w_obj, type = "linear", alpha = 0.5) {
                S = crossprod(w_mat)
                alpha_vec = tryCatch(
                  solve(S, diag(S)),
-                 error = function(e) MASS::ginv(S) %*% diag(S))
+                 error = \(e) MASS::ginv(S) %*% diag(S))
                alpha_vec = alpha_vec / sum(alpha_vec)
                as.vector(w_mat %*% alpha_vec)
              },

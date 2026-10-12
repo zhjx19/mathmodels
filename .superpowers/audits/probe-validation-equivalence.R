@@ -132,8 +132,19 @@ if (identical(mode, "capture")) {
     } else if (b$ok && !isTRUE(all.equal(b$value, n$value, tolerance = 1e-12))) {
       cat("MISMATCH value:", nm, "\n"); bad = bad + 1
     } else if (("nms" %in% names(b)) && ("nms" %in% names(n)) && !identical(b$nms, n$nms)) {
-      # Return-shape (names) check. Guarded on BOTH records carrying the field so
-      # baselines captured before this check existed stay valid.
+      # Return-shape (names) check. Guarded on BOTH records carrying the field.
+      #
+      # NOTE: the stored Phase-A baseline predates this field, so against THAT
+      # baseline this check is INERT by construction. It cannot be made live
+      # retroactively without re-capturing, which would destroy the
+      # pre-migration gate. It becomes live from the next `capture` onward.
+      # Until then, return-shape changes are covered by
+      # probe-review-focus-diff.R (which re-runs BOTH revisions with this
+      # script) and by the tests.
+      #
+      # Do NOT "fail loudly on schema mismatch" here: the old baseline lacks
+      # the field for all 57 cases, so that would report 57 spurious mismatches
+      # and destroy the equivalence gate it is meant to protect.
       cat("MISMATCH names:", nm, "\n  base:", paste(b$nms, collapse = ","),
           "\n  new :", paste(n$nms, collapse = ","), "\n"); bad = bad + 1
     } else if (!b$ok && !all(b$class %in% c("error", "simpleError")) &&

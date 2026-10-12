@@ -125,7 +125,8 @@ test_that("grey_corr_topsis validates the index allowed set", {
   # Before this change a junk direction was silently treated as "no rescale"
   # and the call returned a number.
   expect_error(grey_corr_topsis(X, w, c("+", "q", "+")),
-               'index must contain only "+", "-", or NA', fixed = TRUE)
+               'index must contain only "+", "-", or NA', fixed = TRUE,
+               class = "rlang_error")
   # NA remains a valid direction (an already-rescaled column); one value per row.
   expect_length(grey_corr_topsis(X, w, c("+", NA, "+")), nrow(X))
 })
