@@ -469,8 +469,9 @@ stat_wilcox_test = function(data, .cols, group, .by = NULL, mu = 0,
 #' @details The table is the sequential decomposition from
 #'   [stats::anova()] — Type I (sequential) sums of squares. With unbalanced
 #'   designs the early terms therefore differ from the Type II/III
-#'   decompositions of `car::Anova()` or `rstatix::anova_test()` (see
-#'   [stat_ancova()] for a Type II ANCOVA table).
+#'   decompositions of `car::Anova()` or
+#'   [rstatix::anova_test()](https://rpkgs.datanovia.com/rstatix/reference/anova_test.html)
+#'   (see [stat_ancova()] for a Type II ANCOVA table).
 #'
 #' @examples
 #' stat_anova(ToothGrowth, resp = len, group = supp)

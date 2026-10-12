@@ -46,7 +46,7 @@ The table is the sequential decomposition from
 (sequential) sums of squares. With unbalanced designs the early terms
 therefore differ from the Type II/III decompositions of
 [`car::Anova()`](https://rdrr.io/pkg/car/man/Anova.html) or
-[`rstatix::anova_test()`](https://rpkgs.datanovia.com/rstatix/reference/anova_test.html)
+[rstatix::anova_test()](https://rpkgs.datanovia.com/rstatix/reference/anova_test.html)
 (see
 [`stat_ancova()`](https://zhjx19.github.io/mathmodels/reference/stat_ancova.md)
 for a Type II ANCOVA table).

@@ -32,8 +32,9 @@ model term (plus a \code{Residuals} row); \code{resp} and \code{.by} are repeate
 The table is the sequential decomposition from
 \code{\link[stats:anova]{stats::anova()}} — Type I (sequential) sums of squares. With unbalanced
 designs the early terms therefore differ from the Type II/III
-decompositions of \code{car::Anova()} or \code{rstatix::anova_test()} (see
-\code{\link[=stat_ancova]{stat_ancova()}} for a Type II ANCOVA table).
+decompositions of \code{car::Anova()} or
+\href{https://rpkgs.datanovia.com/rstatix/reference/anova_test.html}{rstatix::anova_test()}
+(see \code{\link[=stat_ancova]{stat_ancova()}} for a Type II ANCOVA table).
 }
 \examples{
 stat_anova(ToothGrowth, resp = len, group = supp)
