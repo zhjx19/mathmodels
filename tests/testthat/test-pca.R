@@ -81,3 +81,15 @@ test_that("weight_fa index validation keeps its exact messages", {
   expect_error(weight_fa(X, index = c("+", "x", "+")),
                'index must contain only "+", "-", or NA', fixed = TRUE)
 })
+
+test_that("weight_pca validates the index allowed set", {
+  set.seed(1)
+  X = data.frame(a = rnorm(20), b = rnorm(20), c = rnorm(20), d = rnorm(20))
+  # Before this change a junk direction was silently treated as "no rescale".
+  # weight_pca() builds its weights with abs(), so `w` looked unaffected while
+  # the returned scores were mis-signed -- a silent wrong answer.
+  expect_error(weight_pca(X, index = c("+", "q", "+", "-"), nfs = 1),
+               'index must contain only "+", "-", or NA', fixed = TRUE)
+  # NA stays a valid direction (already-standardised column).
+  expect_length(weight_pca(X, index = c("+", NA, "+", "-"), nfs = 1)$w, 4)
+})

@@ -546,7 +546,7 @@ weight_pca = function(X, index = NULL, nfs = NULL, varimax = TRUE,
   if(nrow(X) < 2)
     stop("X must have at least 2 rows.")
   index = .check_index(index, ncol(X), "index must have length equal to ncol(X), or be NULL.",
-                       msg_allowed = NULL, allow_na = TRUE)
+                       'index must contain only "+", "-", or NA', allow_na = TRUE)
 
   neg = which(index == "-")
 
