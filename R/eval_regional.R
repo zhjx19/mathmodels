@@ -88,8 +88,7 @@ LQ = function(data, region, total, .cols, .by = NULL) {
   # region, total: specify the region and total columns, respectively
   # .cols: specifies the columns for which to calculate the location quotient
   # .by: specifies the grouping column, defaults to `NULL` (no grouping)
-  if(!is.data.frame(data))
-    stop("data must be a data frame.")
+  .check_matrix_like(data, "data must be a data frame.", df_only = TRUE)
    `:=` = NULL
   quotient = function(x) x[-1] / x[1]
   data |>
@@ -124,8 +123,7 @@ HHI = function(x, scaled = FALSE) {
 EG = function(data, region, industry, y) {
   # data: a data frame containing region, industry, and indicator columns (e.g., employment or output)
   # region, industry, y: specify the region, industry, and indicator columns, respectively
-  if(!is.data.frame(data))
-    stop("data must be a data frame.")
+  .check_matrix_like(data, "data must be a data frame.", df_only = TRUE)
   if(anyNA(dplyr::pull(data, {{y}})))
     stop("EG requires no missing values in y.")
   x = s = NULL
