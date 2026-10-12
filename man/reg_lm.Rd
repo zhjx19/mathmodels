@@ -49,6 +49,7 @@ combination of terms by AIC.
 set.seed(42)
 x1 = rnorm(100); x2 = rnorm(100)
 y = 1 + 2*x1 - 3*x2 + rnorm(100, sd = 2)
-reg_lm(y ~ x1 + x2, data = data.frame(y, x1, x2))
+res = reg_lm(y ~ x1 + x2, data = data.frame(y, x1, x2))
+res$coefficient
 
 }

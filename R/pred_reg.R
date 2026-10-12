@@ -203,7 +203,8 @@ globalVariables(c(".data", "x"))
 #' set.seed(42)
 #' x1 = rnorm(100); x2 = rnorm(100)
 #' y = 1 + 2*x1 - 3*x2 + rnorm(100, sd = 2)
-#' reg_lm(y ~ x1 + x2, data = data.frame(y, x1, x2))
+#' res = reg_lm(y ~ x1 + x2, data = data.frame(y, x1, x2))
+#' res$coefficient
 #'
 #' @export
 reg_lm = function(formula, data,
@@ -287,7 +288,8 @@ reg_lm = function(formula, data,
 #' logit = 0.5 + x1
 #' prob = 1 / (1 + exp(-logit))
 #' y = rbinom(100, 1, prob)
-#' reg_logistic(y ~ x1, data = data.frame(y, x1))
+#' res = reg_logistic(y ~ x1, data = data.frame(y, x1))
+#' res$coefficient
 #'
 #' @export
 reg_logistic = function(formula, data,
@@ -369,7 +371,8 @@ reg_logistic = function(formula, data,
 #' x1 = rnorm(100)
 #' mu = exp(1 + 0.3*x1)
 #' y = rpois(100, mu)
-#' reg_poisson(y ~ x1, data = data.frame(y, x1))
+#' res = reg_poisson(y ~ x1, data = data.frame(y, x1))
+#' res$coefficient
 #'
 #' @export
 reg_poisson = function(formula, data,
@@ -449,7 +452,8 @@ reg_poisson = function(formula, data,
 #' x1 = rnorm(100)
 #' mu = exp(1 + 0.3*x1)
 #' y = rnbinom(100, size = 1, mu = mu)
-#' reg_negbin(y ~ x1, data = data.frame(y, x1))
+#' res = reg_negbin(y ~ x1, data = data.frame(y, x1))
+#' res$coefficient
 #'
 #' @export
 reg_negbin = function(formula, data,

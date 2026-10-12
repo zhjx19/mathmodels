@@ -40,6 +40,7 @@ set.seed(42)
 x1 = rnorm(100)
 mu = exp(1 + 0.3*x1)
 y = rnbinom(100, size = 1, mu = mu)
-reg_negbin(y ~ x1, data = data.frame(y, x1))
+res = reg_negbin(y ~ x1, data = data.frame(y, x1))
+res$coefficient
 
 }

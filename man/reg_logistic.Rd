@@ -45,6 +45,7 @@ x1 = rnorm(100)
 logit = 0.5 + x1
 prob = 1 / (1 + exp(-logit))
 y = rbinom(100, 1, prob)
-reg_logistic(y ~ x1, data = data.frame(y, x1))
+res = reg_logistic(y ~ x1, data = data.frame(y, x1))
+res$coefficient
 
 }
