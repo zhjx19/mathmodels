@@ -31,7 +31,8 @@ meaning no rescaling is performed.}
 \value{
 \describe{
 \item{grey_corr}{Returns a numeric vector of grey correlation degrees for each comparison sequence.}
-\item{grey_corr_topsis}{Returns a numeric vector of relative closeness (grey correlation degrees).}
+\item{grey_corr_topsis}{Returns a named numeric vector of relative closeness (grey correlation degrees);
+names are taken from \code{rownames(X)} or default to \code{"Sample1"}, \code{"Sample2"}, ....}
 }
 }
 \description{

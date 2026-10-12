@@ -93,6 +93,8 @@ test_that("grey_corr_topsis input validation", {
 test_that("grey_corr_topsis enforces the same size floors as topsis", {
   expect_error(grey_corr_topsis(data.frame(x = 1:3), 1), "at least 2 columns")
   expect_error(grey_corr_topsis(data.frame(a = 1, b = 2), c(0.5, 0.5)), "at least 2 rows")
+  # Both floors violated at once: the column check runs first, so it must win.
+  expect_error(grey_corr_topsis(data.frame(a = 1), 1), "at least 2 columns")
 })
 
 test_that("grey_corr_topsis reports readable errors for NA and non-finite w", {

@@ -70,7 +70,7 @@ test_that("topsis accepts a matrix that contains a zero", {
   expect_equal(unname(r_m), unname(r_df), tolerance = 1e-12)
 })
 
-test_that("topsis reports a readable error for non-finite w", {
+test_that("topsis reports a readable Inf error and pins the existing NaN message", {
   A = data.frame(a = c(2, 5, 3), b = c(8, 1, 6), c = c(5, 5, 3))
   expect_error(topsis(A, c(0.4, 0.3, Inf)), "finite")
   expect_error(topsis(A, c(0.4, 0.3, NaN)), "no NA")

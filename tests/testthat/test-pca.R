@@ -76,6 +76,8 @@ test_that("weight_fa index validation keeps its exact messages", {
   # not a behaviour change.
   set.seed(1)
   X = data.frame(a = rnorm(20), b = rnorm(20), c = rnorm(20))
-  expect_error(weight_fa(X, index = c("+", "+")), "index must have length")
-  expect_error(weight_fa(X, index = c("+", "x", "+")), "index must contain only")
+  expect_error(weight_fa(X, index = c("+", "+")),
+               "index must have length equal to ncol(X), or be NULL.", fixed = TRUE)
+  expect_error(weight_fa(X, index = c("+", "x", "+")),
+               'index must contain only "+", "-", or NA', fixed = TRUE)
 })

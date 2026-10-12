@@ -202,7 +202,8 @@ rank_sum_ratio = function(data, w = NULL, method = "int") {
 #' @return
 #' \describe{
 #'   \item{grey_corr}{Returns a numeric vector of grey correlation degrees for each comparison sequence.}
-#'   \item{grey_corr_topsis}{Returns a numeric vector of relative closeness (grey correlation degrees).}
+#'   \item{grey_corr_topsis}{Returns a named numeric vector of relative closeness (grey correlation degrees);
+#'                           names are taken from `rownames(X)` or default to `"Sample1"`, `"Sample2"`, ....}
 #' }
 #'
 #' @details
@@ -298,6 +299,6 @@ grey_corr_topsis = function(X, w, index = NULL, rho = 0.5) {
   Sstar = grey_corr(Cstar, t(C), rho)
   S0 = grey_corr(C0, t(C), rho)
   r = Sstar / (S0 + Sstar)
-  names(r) = if (is.null(rn)) paste0("Sample", seq_len(nrow(X))) else rn
+  names(r) = if (is.null(rn)) paste0("Sample", seq_along(r)) else rn
   r
 }

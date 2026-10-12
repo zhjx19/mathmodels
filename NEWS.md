@@ -54,9 +54,9 @@
   rather than a suppressed one (`call. = FALSE` used to drop the call entirely,
   so `Error in ...` named nothing). Error *messages* are unchanged, so message
   matching and `tryCatch(error = )` still work. This is a class change, not a
-  blanket one: checks deliberately left alone in this release — the `w` checks,
-  `weight_fa()`'s index checks, `weight_cv()`'s positivity check — still raise
-  `simpleError`, so the same text can arrive as either class. The duplicated
+  blanket one: checks deliberately left alone in this release — the `w` checks
+  and `weight_cv()`'s positivity check — still raise `simpleError`, so the same
+  text can arrive as either class. The duplicated
   matrix/data-frame and indicator-direction checks across `eval_*` are now
   centralised in `R/utils.R`, which also removes the
   `lapply()`-over-a-sub-frame idiom from `grey_corr_topsis()`,
@@ -82,7 +82,8 @@
   changes the shape of the return value**; code comparing the result to an
   unnamed vector should wrap it in `unname()`.
 - **`weight_fa()`'s `index` argument is now validated by the shared checker**
-  introduced in this release. Messages are unchanged.
+  introduced in this release. Messages are unchanged; as with the other migrated
+  guards it now raises `rlang_error` rather than `simpleError`.
 
 ## Documentation
 
