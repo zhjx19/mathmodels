@@ -54,7 +54,7 @@ test_that("grey_corr_topsis handles non-square matrices (n != m)", {
   r = grey_corr_topsis(X, w, idx, rho = 0.5)
   expect_length(r, nrow(X))
   expect_true(all(r >= 0 & r <= 1))
-  expect_equal(r, c(0.3589743590, 0.4901108455, 0.5806451613, 0.5018455581),
+  expect_equal(unname(r), c(0.3589743590, 0.4901108455, 0.5806451613, 0.5018455581),
                tolerance = 1e-8)
 })
 
@@ -73,8 +73,8 @@ test_that("grey_corr_topsis accepts matrix input like a data frame", {
   M   = matrix(runif(60), 12, 5)
   w   = c(0.1, 0.25, 0.2, 0.15, 0.3)
   idx = c("+", "-", NA, "+", "-")
-  expect_equal(grey_corr_topsis(M, w, idx),
-               grey_corr_topsis(as.data.frame(M), w, idx),
+  expect_equal(unname(grey_corr_topsis(M, w, idx)),
+               unname(grey_corr_topsis(as.data.frame(M), w, idx)),
                tolerance = 1e-12)
 })
 
@@ -99,4 +99,20 @@ test_that("grey_corr_topsis reports readable errors for NA and non-finite w", {
   X = data.frame(x1 = c(8, 7, 6, 9), x2 = c(150, 180, 200, 160), x3 = c(60, 80, 100, 70))
   expect_error(grey_corr_topsis(X, c(0.4, 0.3, NA)), "no NA")
   expect_error(grey_corr_topsis(X, c(0.4, 0.3, Inf)), "finite")
+})
+
+test_that("grey_corr_topsis names its result like topsis", {
+  X   = data.frame(x1 = c(8, 7, 6, 9), x2 = c(150, 180, 200, 160), x3 = c(60, 80, 100, 70))
+  w   = c(0.3, 0.4, 0.3)
+  idx = c("+", "+", "+")
+  # A data frame always has rownames, so names come from them.
+  expect_named(grey_corr_topsis(X, w, idx), rownames(X))
+  # A bare matrix has no rownames -> "Sample1".., exactly as topsis() does.
+  M = matrix(c(8, 7, 6, 9, 150, 180, 200, 160, 60, 80, 100, 70), 4, 3)
+  expect_named(grey_corr_topsis(M, w, idx), paste0("Sample", 1:4))
+  # Explicit rownames are used, for both a data frame and a matrix.
+  Xr = X; rownames(Xr) = c("A", "B", "C", "D")
+  expect_named(grey_corr_topsis(Xr, w, idx), c("A", "B", "C", "D"))
+  Mr = as.matrix(Xr)
+  expect_named(grey_corr_topsis(Mr, w, idx), c("A", "B", "C", "D"))
 })

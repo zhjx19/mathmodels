@@ -270,6 +270,8 @@ grey_corr = function(ref, cmp, rho = 0.5, w = NULL) {
 #' @export
 grey_corr_topsis = function(X, w, index = NULL, rho = 0.5) {
   .check_matrix_like(X, "X must be a matrix or data frame.")
+  rn = rownames(X)   # captured before .rescale_indicators(), whose as.data.frame()
+                     # would otherwise give a bare matrix default rownames "1".."n"
   m = ncol(X)
   if(m < 2) stop("X must have at least 2 columns.")
   if(nrow(X) < 2) stop("X must have at least 2 rows.")
@@ -295,5 +297,7 @@ grey_corr_topsis = function(X, w, index = NULL, rho = 0.5) {
   # alternative. Without the transpose this only worked when n == m.
   Sstar = grey_corr(Cstar, t(C), rho)
   S0 = grey_corr(C0, t(C), rho)
-  Sstar / (S0 + Sstar)
+  r = Sstar / (S0 + Sstar)
+  names(r) = if (is.null(rn)) paste0("Sample", seq_len(nrow(X))) else rn
+  r
 }
