@@ -173,8 +173,7 @@ theil0_g = function(data, group, y) {
   #   - theil: Total Theil index (T), between-group (Tb), within-group (Tw), and per-group1 within-group Theil indices
   #   - ratio: corresponding contribution rates
 
-  if(!is.data.frame(data))
-    stop("data must be a data frame.")
+  .check_matrix_like(data, "data must be a data frame.", df_only = TRUE)
   if(!is.character(group) || length(group) != 1)
     stop("group must be a character scalar (column name).")
   if(!is.character(y) || length(y) != 1)
@@ -218,8 +217,7 @@ theil_g = function(data, group, y, pop) {
   #   - theil: Total Theil index (T), between-group (Tb), within-group (Tw), and per-group within-group Theil indices
   #   - ratio: Corresponding contribution rates
 
-  if(!is.data.frame(data))
-    stop("data must be a data frame.")
+  .check_matrix_like(data, "data must be a data frame.", df_only = TRUE)
   if(!is.character(group) || length(group) != 1)
     stop("group must be a character scalar (column name).")
   if(!is.character(y) || length(y) != 1)
@@ -266,8 +264,7 @@ theil_g2_cross = function(data, group1, group2, y, pop) {
   #            between-group2 (Tw_b), within-group2 (Tw_w), and per-group1 within-group Theil indices
   #   - ratio: corresponding contribution rates
 
-  if(!is.data.frame(data))
-    stop("data must be a data frame.")
+  .check_matrix_like(data, "data must be a data frame.", df_only = TRUE)
   if(!is.character(group1) || length(group1) != 1)
     stop("group1 must be a character scalar (column name).")
   if(!is.character(group2) || length(group2) != 1)
@@ -345,8 +342,7 @@ theil_g2_nest = function(data, group1, group2, y, pop) {
   #            within-group2 (Tw), and per-group1/group2 Theil indices
   #   - ratio: corresponding contribution rates
 
-  if(!is.data.frame(data))
-    stop("data must be a data frame.")
+  .check_matrix_like(data, "data must be a data frame.", df_only = TRUE)
   if(!is.character(group1) || length(group1) != 1)
     stop("group1 must be a character scalar (column name).")
   if(!is.character(group2) || length(group2) != 1)
