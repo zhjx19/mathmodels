@@ -55,16 +55,13 @@ utils::globalVariables(c("RSR", "ID", "barR", "f", "barRn", "Probit",
 #' topsis(A, w, idx)
 
 topsis = function(X, w = NULL, index = NULL) {
-  if(!is.data.frame(X) && !is.matrix(X))
-    stop("X must be a data frame or matrix.")
+  .check_matrix_like(X, "X must be a data frame or matrix.")
   m = ncol(X)
   if(m < 2) stop("X must have at least 2 columns.")
   if(nrow(X) < 2) stop("X must have at least 2 rows.")
-  if(is.null(index)) index = rep("+", m)
-  if(length(index) != m)
-    stop("index must have length equal to ncol(X).")
-  if(!all(index %in% c("+", "-")))
-    stop('index must contain only "+" and "-"', call. = FALSE)
+  index = .check_index(index, m, "index must have length equal to ncol(X).",
+                       'index must contain only "+" and "-"',
+                       allow_na = FALSE, default = "+")
   if(is.null(w)) w = rep(1/m, m)
   if(length(w) != m)
     stop("w must have length equal to ncol(X).")
@@ -142,8 +139,7 @@ topsis = function(X, w = NULL, index = NULL) {
 #' @export
 #' @importFrom stats qnorm lm predict
 rank_sum_ratio = function(data, w = NULL, method = "int") {
-  if(!is.data.frame(data))
-    stop("data must be a data frame.")
+  .check_matrix_like(data, "data must be a data frame.", df_only = TRUE)
   if(ncol(data) < 2)
     stop("data must have at least 2 columns (ID + at least 1 indicator).")
   n = nrow(data)
@@ -243,8 +239,7 @@ NULL
 #' @export
 grey_corr = function(ref, cmp, rho = 0.5, w = NULL) {
   if(!is.numeric(ref)) stop("ref must be a numeric vector.")
-  if(!is.matrix(cmp) && !is.data.frame(cmp))
-    stop("cmp must be a matrix or data frame.")
+  .check_matrix_like(cmp, "cmp must be a matrix or data frame.")
   if(length(ref) != nrow(cmp))
     stop("Length of ref must equal number of rows in cmp.")
   if(!is.null(w)) {
@@ -272,28 +267,25 @@ grey_corr = function(ref, cmp, rho = 0.5, w = NULL) {
 #' @rdname grey_analysis
 #' @export
 grey_corr_topsis = function(X, w, index = NULL, rho = 0.5) {
-  if(!is.matrix(X) && !is.data.frame(X))
-    stop("X must be a matrix or data frame.")
+  .check_matrix_like(X, "X must be a matrix or data frame.")
   m = ncol(X)
-  if(is.null(index)) index = rep(NA, m)
-  if(length(index) != m)
-    stop("index must have length equal to ncol(X).")
+  index = .check_index(index, m, "index must have length equal to ncol(X).",
+                       msg_allowed = NULL, default = NA_character_)
   if(is.null(w)) w = rep(1/m, m)
   if(length(w) != m)
     stop("w must have length equal to ncol(X).")
   if(any(w < 0) || sum(w) == 0)
     stop("w must be non-negative and sum to a positive value.")
 
-  pos = which(index == "+")
-  neg = which(index == "-")
-  # Normalize the data
-  X[,pos] = lapply(X[,pos, drop = FALSE], rescale)
-  X[,neg] = lapply(X[,neg, drop = FALSE], function(x) rescale(x, type = "-"))
+  X = .rescale_indicators(X, index)
   # Weighted normalized matrix
   C = as.matrix(X) %*% diag(w)
   Cstar = apply(C, 2, max)
   C0 = apply(C, 2, min)
-  Sstar = grey_corr(Cstar, C, rho)
-  S0 = grey_corr(C0, C, rho)
+  # t(C): each *alternative* (row of C) becomes a comparison sequence, so the
+  # reference vectors (length m) match nrow(cmp) and one degree is returned per
+  # alternative. Without the transpose this only worked when n == m.
+  Sstar = grey_corr(Cstar, t(C), rho)
+  S0 = grey_corr(C0, t(C), rho)
   Sstar / (S0 + Sstar)
 }
