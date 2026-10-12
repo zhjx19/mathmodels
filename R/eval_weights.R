@@ -406,11 +406,8 @@ weight_fa = function(X, index = NULL, nfs = 1, rotation = "varimax",
     stop("X must have at least 2 rows.")
   if (!all(vapply(X, is.numeric, logical(1))))
     stop("X must be all numeric.")
-  if (!is.null(index) && length(index) != ncol(X))
-    stop("index must have length equal to ncol(X), or be NULL.")
-  if (is.null(index)) index = rep(NA, ncol(X))
-  if (!all(is.na(index) | index %in% c("+", "-")))
-    stop('index must contain only "+", "-", or NA')
+  index = .check_index(index, ncol(X), "index must have length equal to ncol(X), or be NULL.",
+                       'index must contain only "+", "-", or NA', allow_na = TRUE)
   if (!is.numeric(nfs) || length(nfs) != 1 || nfs < 1 ||
       nfs != floor(nfs)) {
     stop("nfs must be a positive integer.", call. = FALSE)
@@ -438,9 +435,10 @@ weight_fa = function(X, index = NULL, nfs = 1, rotation = "varimax",
     stop("X must not contain constant columns.", call. = FALSE)
   }
 
-  # Standardize (directional) columns
+  # Standardize (directional) columns. X is a data frame here (guaranteed by the
+  # guard above), so column subsetting is safe for a matrix argument too.
   idx_std = which(!is.na(index))
-  X[idx_std] = lapply(X[idx_std], function(x) as.vector(scale(x)))
+  X[idx_std] = lapply(X[idx_std], \(x) as.vector(scale(x)))
   neg = which(index == "-")
   if (length(neg) > 0) {
     X[, neg] = lapply(X[, neg, drop = FALSE], `*`, -1)

@@ -11,6 +11,16 @@ test_that("weight_pca input validation", {
   expect_error(weight_pca(X), "at least 2 columns")
 })
 
+test_that("weight_pca treats matrix and data frame input identically", {
+  set.seed(1)
+  M   = matrix(runif(120), 30, 4)
+  ind = c("+", "+", "-", "-")
+  r_df = weight_pca(as.data.frame(M), ind, nfs = 2)
+  r_m  = weight_pca(M, ind, nfs = 2)
+  expect_equal(r_m$w, r_df$w, tolerance = 1e-12)
+  expect_equal(r_m$s, r_df$s, tolerance = 1e-12)
+})
+
 test_that("weight_fa matches factanal loadings-based weights", {
   set.seed(1)
   X = data.frame(
@@ -58,4 +68,14 @@ test_that("weight_fa input validation", {
   expect_error(weight_fa(Xna), "NA")
   Xconst = X; Xconst$c = 5
   expect_error(weight_fa(Xconst), "constant columns")
+})
+
+test_that("weight_fa index validation keeps its exact messages", {
+  # Pinning test: these two assertions pass BEFORE the migration to
+  # .check_index() and must still pass AFTER it -- the task is de-duplication,
+  # not a behaviour change.
+  set.seed(1)
+  X = data.frame(a = rnorm(20), b = rnorm(20), c = rnorm(20))
+  expect_error(weight_fa(X, index = c("+", "+")), "index must have length")
+  expect_error(weight_fa(X, index = c("+", "x", "+")), "index must contain only")
 })
