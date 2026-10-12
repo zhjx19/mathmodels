@@ -34,29 +34,33 @@
   `n == m` matrices compared mismatched axes and returned a meaningless value.
   The comparison sequences are now transposed (`grey_corr(Cstar, t(C), rho)`),
   so the function returns one relative-closeness value per alternative for any
-  shape. The transpose was first added in 0.0.6 and lost in a later refactor.
+  shape. The transpose had been present since the initial commit and was dropped
+  in the 0.0.6 release.
 - **`grey_corr_topsis()` rejected `matrix` input** even though `X` is documented
   as "matrix or data frame". The normalisation step called `lapply()` on the
   indicator sub-frame, which iterates *elements* for a matrix but *columns* for a
   data frame, so a matrix reached `rescale()` one number at a time and died with
-  "x has zero range; cannot rescale." Rescaling now loops over columns, so both
-  input types behave identically.
+  "x has zero range; cannot rescale." Rescaling now goes through a single
+  column-wise helper, so both input types behave identically.
 - **`weight_pca()` silently returned different weights for a `matrix` than for
   the equivalent data frame.** The standardisation step used
   `X[idx] = scale(X[idx])`, and `X[idx]` selects *columns* for a data frame but
   *elements* (column-major) for a matrix, so a matrix had the wrong slice scaled
-  with no error raised. `X` is now coerced with
-  `if (is.matrix(X)) X = as.data.frame(X)`, matching its sibling `weight_*()`
-  functions.
-- **Evaluation functions now build their input errors with rlang.** Errors carry
-  the `rlang_error` class, and where a check lives in the exported function the
-  reported call site is now that function rather than a suppressed call
-  (`call. = FALSE` previously dropped it, so `Error in ...` named nothing). Error
-  messages are unchanged, so message matching and `tryCatch(error = )` still
-  work. The duplicated matrix/data-frame and indicator-direction checks across
-  `eval_*` are now centralised in `R/utils.R`, which also removes the last two
-  places that rescaled indicators with `lapply()` over a sub-frame — the idiom
-  behind the `grey_corr_topsis()` and `weight_pca()` matrix bugs.
+  with no error raised. `X` is now coerced through the shared matrix-like guard
+  (`coerce = TRUE`), matching its sibling `weight_*()` functions.
+- **The migrated `eval_*` guards now build their errors with rlang.** Those
+  specific checks raise `rlang_error` instead of a bare `simpleError`, and where
+  the check lives in the exported function the reported call is now that function
+  rather than a suppressed one (`call. = FALSE` used to drop the call entirely,
+  so `Error in ...` named nothing). Error *messages* are unchanged, so message
+  matching and `tryCatch(error = )` still work. This is a class change, not a
+  blanket one: checks deliberately left alone in this release — the `w` checks,
+  `weight_fa()`'s index checks, `weight_cv()`'s positivity check — still raise
+  `simpleError`, so the same text can arrive as either class. The duplicated
+  matrix/data-frame and indicator-direction checks across `eval_*` are now
+  centralised in `R/utils.R`, which also removes the
+  `lapply()`-over-a-sub-frame idiom from `grey_corr_topsis()`,
+  `weight_entropy()` and `weight_pca()`.
 
 ## Documentation
 

@@ -67,6 +67,19 @@ test_that(".rescale_indicators honours custom a/b bounds", {
   expect_equal(range(out0[[1]]), c(0, 1), tolerance = 1e-12)
 })
 
+test_that("migrated guards surface rlang_error and name the exported function", {
+  # The class change advertised in NEWS: base stop() -> rlang::abort().
+  expect_error(weight_critic("a"), class = "rlang_error")
+  expect_error(weight_entropy("a"), class = "rlang_error")
+  # Spec D2: the reported call now names the exported function. This was FALSE
+  # before the refactor -- probe-validation-baseline.rds records call = NA for
+  # case `topsis:i_bad`, because that guard used stop(..., call. = FALSE).
+  err = tryCatch(topsis(data.frame(a = 2:4, b = 5:7), c(0.5, 0.5), c("+", "x")),
+                 error = identity)
+  expect_s3_class(err, "rlang_error")
+  expect_match(paste(deparse(conditionCall(err)), collapse = " "), "topsis", fixed = TRUE)
+})
+
 test_that(".rescale_indicators handles all-NA index and a single column", {
   M = matrix(runif(9), 3, 3)
   out = mathmodels:::.rescale_indicators(M, c(NA, NA, NA))
