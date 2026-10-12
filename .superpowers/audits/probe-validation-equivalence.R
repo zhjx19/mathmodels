@@ -108,6 +108,7 @@ run_case = function(expr) {
   } else {
     list(ok = TRUE,
          value = if (is.numeric(val)) signif(as.numeric(val), 12) else val,
+         nms = names(val),
          class = class(val), message = NA_character_, call = NA_character_)
   }
 }
@@ -130,6 +131,11 @@ if (identical(mode, "capture")) {
       cat("MISMATCH ok:", nm, "\n"); bad = bad + 1
     } else if (b$ok && !isTRUE(all.equal(b$value, n$value, tolerance = 1e-12))) {
       cat("MISMATCH value:", nm, "\n"); bad = bad + 1
+    } else if (("nms" %in% names(b)) && ("nms" %in% names(n)) && !identical(b$nms, n$nms)) {
+      # Return-shape (names) check. Guarded on BOTH records carrying the field so
+      # baselines captured before this check existed stay valid.
+      cat("MISMATCH names:", nm, "\n  base:", paste(b$nms, collapse = ","),
+          "\n  new :", paste(n$nms, collapse = ","), "\n"); bad = bad + 1
     } else if (!b$ok && !all(b$class %in% c("error", "simpleError")) &&
                !all(n$class %in% c(b$class, "rlang_error"))) {
       cat("MISMATCH class:", nm, "\n  base:", paste(b$class, collapse = ","),

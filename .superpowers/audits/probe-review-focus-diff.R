@@ -72,6 +72,7 @@ run_case = function(expr) {
   } else {
     list(ok = TRUE,
          value = if (is.numeric(val)) signif(as.numeric(val), 12) else val,
+         nms = names(val),
          class = class(val), message = NA_character_, call = NA_character_)
   }
 }

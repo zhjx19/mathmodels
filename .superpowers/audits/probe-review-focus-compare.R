@@ -7,15 +7,21 @@ stopifnot(identical(names(b), names(h)))
 same = 0; diff = 0
 for (nm in names(b)) {
   x = b[[nm]]; y = h[[nm]]
+  has_nms = ("nms" %in% names(x)) && ("nms" %in% names(y))
   ok = identical(x$message, y$message) &&
        identical(x$ok, y$ok) &&
        identical(x$class, y$class) &&
+       (!has_nms || identical(x$nms, y$nms)) &&
        (if (x$ok) isTRUE(all.equal(x$value, y$value, tolerance = 1e-12)) else TRUE)
   if (ok) { same = same + 1 } else {
     diff = diff + 1
     cat("DIFF:", nm, "\n")
     cat("   base: ok=", x$ok, " class=", paste(x$class, collapse = ","), " msg=", x$message, "\n", sep = "")
     cat("   head: ok=", y$ok, " class=", paste(y$class, collapse = ","), " msg=", y$message, "\n", sep = "")
+    if (has_nms && !identical(x$nms, y$nms)) {
+      cat("   names base: [", paste(x$nms, collapse = ","), "]\n", sep = "")
+      cat("   names head: [", paste(y$nms, collapse = ","), "]\n", sep = "")
+    }
   }
 }
 cat(sprintf("\nreview-focus diff: %d cases, %d identical, %d different\n", length(b), same, diff))
