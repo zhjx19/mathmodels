@@ -121,7 +121,7 @@ reg_poisson(y ~ x1, data = data.frame(y, x1))
 #> 
 #> $formula
 #> y ~ x1
-#> <environment: 0x000001ecd4cb0708>
+#> <environment: 0x000002bd7beaa4d8>
 #> 
 #> $input
 #>     y          x1

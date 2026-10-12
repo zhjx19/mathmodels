@@ -35,6 +35,109 @@
   names the margins of the transition matrix (`c("from", "to")`), so
   `tibble::as_tibble(trans_mat)` no longer fails with “Columns 1 and 2
   must be named”.
+- **[`grey_corr_topsis()`](https://zhjx19.github.io/mathmodels/reference/grey_analysis.md)
+  dimension error on non-square matrices, and a silently wrong answer on
+  square ones.** The internal call passed the weighted matrix `C`
+  straight to
+  [`grey_corr()`](https://zhjx19.github.io/mathmodels/reference/grey_analysis.md),
+  but
+  [`grey_corr()`](https://zhjx19.github.io/mathmodels/reference/grey_analysis.md)
+  requires `length(ref)` (the per-indicator ideal, length `m`) to equal
+  `nrow(cmp)`. That held only when the number of alternatives equalled
+  the number of indicators, so every `n != m` matrix died with “Length
+  of ref must equal number of rows in cmp” while `n == m` matrices
+  compared mismatched axes and returned a meaningless value. The
+  comparison sequences are now transposed
+  (`grey_corr(Cstar, t(C), rho)`), so the function returns one
+  relative-closeness value per alternative for any shape. The transpose
+  had been present since the initial commit and was dropped in the 0.0.6
+  release.
+- **[`grey_corr_topsis()`](https://zhjx19.github.io/mathmodels/reference/grey_analysis.md)
+  rejected `matrix` input** even though `X` is documented as “matrix or
+  data frame”. The normalisation step called
+  [`lapply()`](https://rdrr.io/r/base/lapply.html) on the indicator
+  sub-frame, which iterates *elements* for a matrix but *columns* for a
+  data frame, so a matrix reached
+  [`rescale()`](https://zhjx19.github.io/mathmodels/reference/preprocess.md)
+  one number at a time and died with “x has zero range; cannot rescale.”
+  Rescaling now goes through a single column-wise helper, so both input
+  types behave identically.
+- **[`weight_pca()`](https://zhjx19.github.io/mathmodels/reference/weight_pca.md)
+  silently returned different weights for a `matrix` than for the
+  equivalent data frame.** The standardisation step used
+  `X[idx] = scale(X[idx])`, and `X[idx]` selects *columns* for a data
+  frame but *elements* (column-major) for a matrix, so a matrix had the
+  wrong slice scaled with no error raised. `X` is now coerced through
+  the shared matrix-like guard (`coerce = TRUE`), matching its sibling
+  `weight_*()` functions.
+- **The migrated `eval_*` guards now build their errors with rlang.**
+  Those specific checks raise `rlang_error` instead of a bare
+  `simpleError`, and where the check lives in the exported function the
+  reported call is now that function rather than a suppressed one
+  (`call. = FALSE` used to drop the call entirely, so `Error in ...`
+  named nothing). Error *messages* are unchanged, so message matching
+  and `tryCatch(error = )` still work. This is a class change, not a
+  blanket one: checks deliberately left alone in this release — the `w`
+  checks and
+  [`weight_cv()`](https://zhjx19.github.io/mathmodels/reference/weight_cv.md)’s
+  positivity check — still raise `simpleError`, so the same text can
+  arrive as either class. The duplicated matrix/data-frame and
+  indicator-direction checks across `eval_*` are now centralised in
+  `R/utils.R`, which also removes the
+  [`lapply()`](https://rdrr.io/r/base/lapply.html)-over-a-sub-frame
+  idiom from
+  [`grey_corr_topsis()`](https://zhjx19.github.io/mathmodels/reference/grey_analysis.md),
+  [`weight_entropy()`](https://zhjx19.github.io/mathmodels/reference/weight_entropy.md)
+  and
+  [`weight_pca()`](https://zhjx19.github.io/mathmodels/reference/weight_pca.md).
+- **[`topsis()`](https://zhjx19.github.io/mathmodels/reference/topsis.md)
+  rejected a valid matrix that contained a zero.** The zero-column check
+  used `X[[j]]`, which selects *elements* on a matrix but *columns* on a
+  data frame, so a matrix with a zero anywhere was refused with
+  “Criterion column(s) 1 contain only zeros” while the identical data
+  frame worked. It now uses `X[, j]`.
+- **[`grey_corr_topsis()`](https://zhjx19.github.io/mathmodels/reference/grey_analysis.md)
+  now enforces the same size floors as
+  [`topsis()`](https://zhjx19.github.io/mathmodels/reference/topsis.md)**
+  — at least 2 columns and 2 rows. Before, a single-column input died
+  with the unrelated `dim(X) must have a positive length`, and a
+  single-row input did not error at all: it returned a degenerate
+  closeness value. Both now raise the same readable messages
+  [`topsis()`](https://zhjx19.github.io/mathmodels/reference/topsis.md)
+  uses.
+- **[`topsis()`](https://zhjx19.github.io/mathmodels/reference/topsis.md)
+  and
+  [`grey_corr_topsis()`](https://zhjx19.github.io/mathmodels/reference/grey_analysis.md)
+  now report readable errors for `NA` / `Inf` weights.**
+  [`topsis()`](https://zhjx19.github.io/mathmodels/reference/topsis.md)
+  silently accepted `Inf` (an infinite sum does not equal zero), and
+  [`grey_corr_topsis()`](https://zhjx19.github.io/mathmodels/reference/grey_analysis.md)
+  had no numeric or missing-value check at all, so `NA` or `Inf` reached
+  `if (NA)` and threw “missing value where TRUE/FALSE needed”. Both now
+  say which is wrong. `NaN` was already reported clearly by
+  [`topsis()`](https://zhjx19.github.io/mathmodels/reference/topsis.md)
+  and still is.
+- **[`grey_corr_topsis()`](https://zhjx19.github.io/mathmodels/reference/grey_analysis.md)
+  now returns a named vector** — `rownames(X)`, or `Sample1`, `Sample2`,
+  … when `X` has none — matching
+  [`topsis()`](https://zhjx19.github.io/mathmodels/reference/topsis.md).
+  **This changes the shape of the return value**; code comparing the
+  result to an unnamed vector should wrap it in
+  [`unname()`](https://rdrr.io/r/base/unname.html).
+- **[`weight_fa()`](https://zhjx19.github.io/mathmodels/reference/weight_fa.md)’s
+  `index` argument is now validated by the shared checker** introduced
+  in this release. Messages are unchanged; as with the other migrated
+  guards it now raises `rlang_error` rather than `simpleError`.
+- **[`grey_corr_topsis()`](https://zhjx19.github.io/mathmodels/reference/grey_analysis.md)
+  and
+  [`weight_pca()`](https://zhjx19.github.io/mathmodels/reference/weight_pca.md)
+  now validate their `index` argument.** A direction other than `"+"`,
+  `"-"` or `NA` — a typo such as `"q"` — used to be silently treated as
+  “no rescaling for this column”, so the call returned a result computed
+  from the wrong directions; for
+  [`weight_pca()`](https://zhjx19.github.io/mathmodels/reference/weight_pca.md)
+  the returned scores could even carry the wrong sign. Both now raise
+  the same error the other weighting functions already raise.
 
 ### Documentation
 

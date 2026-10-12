@@ -55,8 +55,9 @@ grey_corr_topsis(X, w, index = NULL, rho = 0.5)
 
 - grey_corr_topsis:
 
-  Returns a numeric vector of relative closeness (grey correlation
-  degrees).
+  Returns a named numeric vector of relative closeness (grey correlation
+  degrees); names are taken from `rownames(X)` or default to
+  `"Sample1"`, `"Sample2"`, ....
 
 ## Details
 
@@ -95,5 +96,6 @@ X = data.frame(x1 = c(8, 7, 6), x2 = c(150, 180, 200), x3 = c(60, 80, 100))
 w = c(0.3, 0.4, 0.3)
 idx = c("+", "+", "+")
 grey_corr_topsis(X, w, idx, rho = 0.5)
-#> [1] 0.4642511 0.4421740 0.4642511
+#>         1         2         3 
+#> 0.4193548 0.5153240 0.5806452 
 ```
