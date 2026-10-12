@@ -62,8 +62,7 @@ coupling_degree = function(data, w = NULL, id_cols = NULL,
   # id_cols: Non-subsystem columns to preserve (not used in calculation)
   # Returns: coupling (Coupling Degree), coord (Coordination Index), coupling_coord (Coupling Coordination Degree)
 
-  if(!is.data.frame(data))
-    stop("data must be a data frame.")
+  .check_matrix_like(data, "data must be a data frame.", df_only = TRUE)
 
   type = match.arg(type, c("standard", "adjusted"))
 
@@ -113,8 +112,7 @@ obstacle_degree = function(data, w = NULL, id_cols = NULL, scaled = FALSE) {
   # scaled: Whether to perform row normalization on the obstacle degree
   # Return: Secondary indicator obstacle degrees
 
-  if(!is.data.frame(data))
-    stop("data must be a data frame.")
+  .check_matrix_like(data, "data must be a data frame.", df_only = TRUE)
 
   ID = NULL
   if(!is.null(id_cols)) {
