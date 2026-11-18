@@ -238,6 +238,7 @@ importFrom(stats,
   vcov
 )
 importFrom(stringr,
+  str_detect,
   str_remove,
   str_remove_all
 )

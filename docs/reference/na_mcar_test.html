@@ -54,7 +54,7 @@ df = sum(observed columns per pattern) - p."></head><body>
 
     <div class="ref-description section level2">
     <p>Performs Little's (1988) test of Missing Completely At Random (the
-implementation follows <code><a href="https://naniar.njtierney.com/reference/mcar_test.html" class="external-link">naniar::mcar_test()</a></code> / Hawkins' refinement):
+implementation follows <code>naniar::mcar_test()</code> / Hawkins' refinement):
 the mean vector and covariance matrix are first estimated under the
 MCAR assumption by maximum likelihood (EM algorithm), then each
 missingness pattern's mean (on its observed columns) is compared with

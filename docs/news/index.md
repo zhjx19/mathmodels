@@ -161,7 +161,7 @@
   [`na_mcar_test()`](https://zhjx19.github.io/mathmodels/reference/na_mcar_test.md)
   (Little’s MCAR test, Little 1988 / SAS-style pattern-mean statistic
   with EM-estimated mean and covariance, following
-  [`naniar::mcar_test()`](https://naniar.njtierney.com/reference/mcar_test.html)),
+  `naniar::mcar_test()`),
   [`plot_na_heatmap()`](https://zhjx19.github.io/mathmodels/reference/plot_na_heatmap.md)
   and
   [`plot_na_bar()`](https://zhjx19.github.io/mathmodels/reference/plot_na_bar.md)
@@ -414,7 +414,12 @@
   non-finite start-value fallbacks;
   [`interp_poly()`](https://zhjx19.github.io/mathmodels/reference/interp_poly.md)
   validates `degree`.
-- **read_nbs**: `range = "A1"` (version-robust header read).
+- **read_nbs**: the indicator name is now read from the header block
+  (cells A1:A5 of column A) instead of a single cell.
+  `read_excel(range = "A1")` read that cell as the *column name* of a
+  zero-row table, so `pull(1)` returned `character(0)` and
+  [`purrr::map_chr()`](https://purrr.tidyverse.org/reference/map.html)
+  failed with “Result must be length 1, not 0” for every file.
 - **DESCRIPTION**: `dplyr (>= 1.1.0)` now declared
   ([`reframe()`](https://dplyr.tidyverse.org/reference/reframe.html)
   requires it).

@@ -1,14 +1,13 @@
 # Little's MCAR Test
 
 Performs Little's (1988) test of Missing Completely At Random (the
-implementation follows
-[`naniar::mcar_test()`](https://naniar.njtierney.com/reference/mcar_test.html)
-/ Hawkins' refinement): the mean vector and covariance matrix are first
-estimated under the MCAR assumption by maximum likelihood (EM
-algorithm), then each missingness pattern's mean (on its observed
-columns) is compared with the overall mean via a Mahalanobis distance
-weighted by the pattern size. The statistic is referred to a chi-square
-distribution with `df = sum(observed columns per pattern) - p`.
+implementation follows `naniar::mcar_test()` / Hawkins' refinement): the
+mean vector and covariance matrix are first estimated under the MCAR
+assumption by maximum likelihood (EM algorithm), then each missingness
+pattern's mean (on its observed columns) is compared with the overall
+mean via a Mahalanobis distance weighted by the pattern size. The
+statistic is referred to a chi-square distribution with
+`df = sum(observed columns per pattern) - p`.
 
 ## Usage
 

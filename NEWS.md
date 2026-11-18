@@ -251,7 +251,11 @@
   `standardize`); `curve_fit()`/`growth_fit()` report AIC/BIC on the
   original scale (fixes NaN at n = p) with non-finite start-value
   fallbacks; `interp_poly()` validates `degree`.
-- **read_nbs**: `range = "A1"` (version-robust header read).
+- **read_nbs**: the indicator name is now read from the header block
+  (cells A1:A5 of column A) instead of a single cell. `read_excel(range = "A1")`
+  read that cell as the *column name* of a zero-row table, so
+  `pull(1)` returned `character(0)` and `purrr::map_chr()` failed with
+  "Result must be length 1, not 0" for every file.
 - **DESCRIPTION**: `dplyr (>= 1.1.0)` now declared (`reframe()` requires it).
 
 ## Multivariate statistics toolkit (new)

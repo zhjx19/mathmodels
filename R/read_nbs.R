@@ -2,10 +2,10 @@
 #'
 #' This function reads multiple XLS files downloaded from the National Bureau of Statistics of China
 #' website (\url{https://www.stats.gov.cn}) without requiring renaming. It extracts the variable name
-#' from the "indicator: XXX" text in cell A1 of each file, skips the first 3 rows of headers, reads
-#' the first 31 rows of data, and combines the data into a single data frame by stacking vertically
-#' based on the indicator names. It also simplifies region names by removing suffixes such as "city",
-#' "province", "autonomous region", "clan", or "Uyghur".
+#' from the "indicator: XXX" text in the header block (cells A1:A5) of each file, skips the first 3
+#' rows of headers, reads the first 31 rows of data, and combines the data into a single data frame
+#' by stacking vertically based on the indicator names. It also simplifies region names by removing
+#' suffixes such as "city", "province", "autonomous region", "clan", or "Uyghur".
 #'
 #' @param paths A character vector containing the file paths to the XLS files.
 #' @return A tibble containing the combined data with an additional column `indicator` representing
@@ -13,7 +13,7 @@
 #' @importFrom readxl read_excel
 #' @importFrom dplyr pull mutate rename
 #' @importFrom purrr map map_chr set_names list_rbind
-#' @importFrom stringr str_remove str_remove_all
+#' @importFrom stringr str_detect str_remove str_remove_all
 #'
 #' @examples
 #' \dontrun{
@@ -25,8 +25,13 @@
 read_nbs = function(paths) {
   region = NULL
   vars = purrr::map_chr(paths, \(path) {
-    readxl::read_excel(path, range = "A1") |>
-      dplyr::pull(1) |> stringr::str_remove("\\u6307\\u6807\\uff1a")
+    header = readxl::read_excel(path, range = "A1:A5", col_names = FALSE) |>
+      dplyr::pull(1) |>
+      as.character()
+    header = header[!is.na(header)]
+    hit = header[stringr::str_detect(header, "\\u6307\\u6807")]
+    label = if (length(hit) > 0) hit[1] else header[1]
+    stringr::str_remove(label, "\\u6307\\u6807\\uff1a")
   })
   purrr::map(paths, \(path) readxl::read_excel(path, skip = 3, n_max = 31)) |>
     rlang::set_names(vars) |>
